@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Configuration;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.Shared;
 
@@ -11,14 +13,22 @@ namespace Web.Api.Infrastructure.Data
 {
     public class AppDbContext : DbContext
     {
+        private IConfiguration _configuration;
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<User> Users { get; set; }
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
+            string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            _configuration = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{environmentName}.json", true)
+                .AddEnvironmentVariables().Build();
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        protected override void OnModelCreating(ModelBuilder modelBuilder) =>
             modelBuilder.Entity<User>(ConfigureUser);
-        }
 
         public void ConfigureUser(EntityTypeBuilder<User> builder)
         {
@@ -29,9 +39,6 @@ namespace Web.Api.Infrastructure.Data
             builder.Ignore(b => b.Email);
             builder.Ignore(b => b.PasswordHash);
         }
-
-        public DbSet<RefreshToken> RefreshTokens { get; set; }
-        public DbSet<User> Users { get; set; }
 
         public override int SaveChanges()
         {
@@ -51,10 +58,8 @@ namespace Web.Api.Infrastructure.Data
             foreach (var entry in entries)
             {
                 if (entry.State == EntityState.Added)
-                {
-                    ((BaseEntity)entry.Entity).Created = DateTime.UtcNow;
-                }
-                ((BaseEntity)entry.Entity).Modified = DateTime.UtcNow;
+                    ((BaseEntity)entry.Entity).Created = DateTimeOffset.UtcNow;
+                ((BaseEntity)entry.Entity).Modified = DateTimeOffset.UtcNow;
             }
         }
     }

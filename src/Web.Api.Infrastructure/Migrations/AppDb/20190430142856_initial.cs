@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Web.Api.Infrastructure.Migrations.AppDb
@@ -13,9 +12,9 @@ namespace Web.Api.Infrastructure.Migrations.AppDb
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Created = table.Column<DateTime>(nullable: false),
-                    Modified = table.Column<DateTime>(nullable: false),
+                        .Annotation("MySQL:AutoIncrement", true),
+                    Created = table.Column<DateTimeOffset>(nullable: false),
+                    Modified = table.Column<DateTimeOffset>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
                     IdentityId = table.Column<string>(nullable: true),
@@ -31,11 +30,11 @@ namespace Web.Api.Infrastructure.Migrations.AppDb
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Created = table.Column<DateTime>(nullable: false),
-                    Modified = table.Column<DateTime>(nullable: false),
+                        .Annotation("MySQL:AutoIncrement", true),
+                    Created = table.Column<DateTimeOffset>(nullable: false),
+                    Modified = table.Column<DateTimeOffset>(nullable: false),
                     Token = table.Column<string>(nullable: true),
-                    Expires = table.Column<DateTime>(nullable: false),
+                    Expires = table.Column<DateTimeOffset>(nullable: false),
                     UserId = table.Column<int>(nullable: false),
                     RemoteIpAddress = table.Column<string>(nullable: true)
                 },

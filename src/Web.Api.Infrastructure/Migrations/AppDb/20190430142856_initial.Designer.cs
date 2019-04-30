@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Web.Api.Infrastructure.Data;
@@ -10,28 +9,25 @@ using Web.Api.Infrastructure.Data;
 namespace Web.Api.Infrastructure.Migrations.AppDb
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20181025175259_initial")]
+    [Migration("20190430142856_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.0-preview2-35157")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
 
             modelBuilder.Entity("Web.Api.Core.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTimeOffset>("Created");
 
-                    b.Property<DateTime>("Expires");
+                    b.Property<DateTimeOffset>("Expires");
 
-                    b.Property<DateTime>("Modified");
+                    b.Property<DateTimeOffset>("Modified");
 
                     b.Property<string>("RemoteIpAddress");
 
@@ -49,10 +45,9 @@ namespace Web.Api.Infrastructure.Migrations.AppDb
             modelBuilder.Entity("Web.Api.Core.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTimeOffset>("Created");
 
                     b.Property<string>("FirstName");
 
@@ -60,7 +55,7 @@ namespace Web.Api.Infrastructure.Migrations.AppDb
 
                     b.Property<string>("LastName");
 
-                    b.Property<DateTime>("Modified");
+                    b.Property<DateTimeOffset>("Modified");
 
                     b.Property<string>("UserName");
 

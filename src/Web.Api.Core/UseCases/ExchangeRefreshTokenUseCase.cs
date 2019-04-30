@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Web.Api.Core.Dto.UseCaseRequests;
 using Web.Api.Core.Dto.UseCaseResponses;
@@ -34,9 +35,8 @@ namespace Web.Api.Core.UseCases
             // invalid token/signing key was passed and we can't extract user claims
             if (cp != null)
             {
-                var id = cp.Claims.First(c => c.Type == "id");
-                var user = await _userRepository.GetSingleBySpec(new UserSpecification(id.Value));
-
+                Claim claim = cp.Claims.First(c => c.Type == "id");
+                var user = await _userRepository.GetSingleBySpec(new UserSpecification(claim.Value));
                 if (user.HasValidRefreshToken(message.RefreshToken))
                 {
                     var jwtToken = await _jwtFactory.GenerateEncodedToken(user.IdentityId, user.UserName);

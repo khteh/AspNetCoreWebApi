@@ -40,8 +40,8 @@ namespace Web.Api.Infrastructure.Auth
                 _jwtOptions.Issuer,
                 _jwtOptions.Audience,
                 claims,
-                _jwtOptions.NotBefore,
-                _jwtOptions.Expiration,
+                _jwtOptions.NotBefore.DateTime,
+                _jwtOptions.Expiration.DateTime,
                 _jwtOptions.SigningCredentials);
           
             return new AccessToken(_jwtTokenHandler.WriteToken(jwt), (int)_jwtOptions.ValidFor.TotalSeconds);
@@ -57,7 +57,7 @@ namespace Web.Api.Infrastructure.Auth
         }
 
         /// <returns>Date converted to seconds since Unix epoch (Jan 1, 1970, midnight UTC).</returns>
-        private static long ToUnixEpochDate(DateTime date)
+        private static long ToUnixEpochDate(DateTimeOffset date)
           => (long)Math.Round((date.ToUniversalTime() -
                                new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero))
                               .TotalSeconds);

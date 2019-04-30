@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.Dto;
 using Web.Api.Core.Dto.UseCaseRequests;
 using Web.Api.Core.Dto.UseCaseResponses;
@@ -28,7 +29,7 @@ namespace Web.Api.Core.UseCases
             if (!string.IsNullOrEmpty(message.UserName) && !string.IsNullOrEmpty(message.Password))
             {
                 // ensure we have a user with the given user name
-                var user = await _userRepository.FindByName(message.UserName);
+                User user = await _userRepository.FindByName(message.UserName);
                 if (user != null)
                 {
                     // validate password

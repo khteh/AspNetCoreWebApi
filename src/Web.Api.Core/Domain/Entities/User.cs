@@ -20,7 +20,7 @@ namespace Web.Api.Core.Domain.Entities
 
         internal User() { /* Required by EF */ }
 
-        internal User(string firstName, string lastName, string identityId,string userName)
+        internal User(string firstName, string lastName, string identityId, string userName)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -35,7 +35,7 @@ namespace Web.Api.Core.Domain.Entities
 
         public void AddRefreshToken(string token,int userId,string remoteIpAddress,double daysToExpire=5)
         {
-            _refreshTokens.Add(new RefreshToken(token, DateTime.UtcNow.AddDays(daysToExpire),userId, remoteIpAddress));
+            _refreshTokens.Add(new RefreshToken(token, DateTimeOffset.UtcNow.AddDays(daysToExpire),userId, remoteIpAddress));
         }
 
         public void RemoveRefreshToken(string refreshToken)
