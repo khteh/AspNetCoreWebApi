@@ -24,6 +24,9 @@ The available APIs include:
 - DELETE `/api/accounts/{username}` - Delete a user using username.
 - GET `/api/protected` - Protected controller for testing role-based authorization.
 
+# Continuous Integration:
+* Integrated with CircleCI
+
 # Contact
 mark@fullstackmark.com
 funcoolgeek@gmail.com
