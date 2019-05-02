@@ -12,10 +12,10 @@ jobs:
             apt -y update && apt -y upgrade && apt install -y libimage-exiftool-perl curl sudo
             curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
             apt -y install npm
-      - run: dotnet restore --runtime ubuntu.18.10-x64
-      - run: dotnet build -c Release --version-suffix $CIRCLE_BUILD_NUM --runtime ubuntu.18.10-x64 --no-restore
-      - run: dotnet test -c Release --runtime ubuntu.18.10-x64
-      - run: dotnet publish -c Release --no-restore --no-build --runtime ubuntu.18.10-x64
+      - run: dotnet restore --runtime ubuntu.18.10-x64 src
+      - run: dotnet build -c Release --version-suffix $CIRCLE_BUILD_NUM --runtime ubuntu.18.10-x64 --no-restore src
+      - run: dotnet test -c Release --runtime ubuntu.18.10-x64 src
+      - run: dotnet publish -c Release --no-restore --no-build --runtime ubuntu.18.10-x64 src
       - setup_remote_docker:
           docker_layer_caching: true
       # use a primary image that already has Docker (recommended)
