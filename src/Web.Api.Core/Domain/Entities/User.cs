@@ -28,19 +28,12 @@ namespace Web.Api.Core.Domain.Entities
             UserName = userName;
         }
 
-        public bool HasValidRefreshToken(string refreshToken)
-        {
-            return _refreshTokens.Any(rt => rt.Token == refreshToken && rt.Active);
-        }
+        public bool HasValidRefreshToken(string refreshToken) => _refreshTokens.Any(rt => rt.Token == refreshToken && rt.Active);
 
-        public void AddRefreshToken(string token,int userId,string remoteIpAddress,double daysToExpire=5)
-        {
-            _refreshTokens.Add(new RefreshToken(token, DateTimeOffset.UtcNow.AddDays(daysToExpire),userId, remoteIpAddress));
-        }
+        public void AddRefreshToken(string token,int userId,string remoteIpAddress,double daysToExpire=5) =>
+            _refreshTokens.Add(new RefreshToken(token, DateTimeOffset.UtcNow.AddDays(daysToExpire), userId, remoteIpAddress));
 
-        public void RemoveRefreshToken(string refreshToken)
-        {
+        public void RemoveRefreshToken(string refreshToken) =>
             _refreshTokens.Remove(_refreshTokens.First(t => t.Token == refreshToken));
-        }
     }
 }

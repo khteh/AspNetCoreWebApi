@@ -6,14 +6,10 @@ using Web.Api.Infrastructure.Interfaces;
 
 namespace Web.Api.Infrastructure.Auth
 {
-    internal sealed class JwtTokenValidator : IJwtTokenValidator
+    public sealed class JwtTokenValidator : IJwtTokenValidator
     {
         private readonly IJwtTokenHandler _jwtTokenHandler;
-
-        internal JwtTokenValidator(IJwtTokenHandler jwtTokenHandler)
-        {
-            _jwtTokenHandler = jwtTokenHandler;
-        }
+        public JwtTokenValidator(IJwtTokenHandler jwtTokenHandler) => _jwtTokenHandler = jwtTokenHandler;
 
         public ClaimsPrincipal GetPrincipalFromToken(string token, string signingKey)
         {

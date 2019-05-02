@@ -7,13 +7,7 @@ namespace Web.Api.Presenters
 {
     public sealed class ExchangeRefreshTokenPresenter : IOutputPort<ExchangeRefreshTokenResponse>
     {
-        public JsonContentResult ContentResult { get; }
-
-        public ExchangeRefreshTokenPresenter()
-        {
-            ContentResult = new JsonContentResult();
-        }
-
+        public JsonContentResult ContentResult { get; } = new JsonContentResult();
         public void Handle(ExchangeRefreshTokenResponse response)
         {
             ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);

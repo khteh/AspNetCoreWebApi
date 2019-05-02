@@ -13,17 +13,13 @@ namespace Web.Api.Infrastructure.Identity
         public override string Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateTimeOffset Created { get; set; }
-        public DateTimeOffset Modified { get; set; }
         public AppUser() { }
-        public AppUser(string username, string email, string firstName, string lastName, string passwordHash, DateTimeOffset created, DateTimeOffset modified)
+        public AppUser(string username, string email, string firstName, string lastName, string passwordHash)
         {
             UserName = username;
             Email = email;
             FirstName = firstName;
             LastName = lastName;
-            Created = created;
-            Modified = modified;
             PasswordHash = passwordHash;
         }
     }

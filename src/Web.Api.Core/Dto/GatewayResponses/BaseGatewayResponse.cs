@@ -14,4 +14,3 @@ namespace Web.Api.Core.Dto.GatewayResponses
     }
   }
 }
-

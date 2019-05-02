@@ -28,21 +28,44 @@ namespace Web.Api.Infrastructure.Data.Repositories
         {
             try
             {
-                var appUser = new AppUser { Email = email, UserName = userName };
+                var appUser = new AppUser { Email = email, UserName = userName, FirstName = firstName, LastName = lastName };
                 var identityResult = await _userManager.CreateAsync(appUser, password);
-
-                if (!identityResult.Succeeded) return new CreateUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
-
+                if (!identityResult.Succeeded)
+                    return new CreateUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
                 var user = new User(firstName, lastName, appUser.Id.ToString(), appUser.UserName);
                 _appDbContext.Users.Add(user);
                 await _appDbContext.SaveChangesAsync();
-
                 return new CreateUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
             } catch (Exception e) {
                 return new CreateUserResponse(null, false, new List<Error>() { new Error(null, e.Message) });
             }
         }
-
+        public async Task<DeleteUserResponse> Delete(string userName)
+        {
+            try
+            {
+                var appUser = await _userManager.FindByNameAsync(userName);
+                if (appUser != null)
+                {
+                    var identityResult = await _userManager.DeleteAsync(appUser);
+                    if (!identityResult.Succeeded)
+                        return new DeleteUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
+                    User user = _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
+                    if (user != null)
+                    {
+                        _appDbContext.Users.Remove(user);
+                        await _appDbContext.SaveChangesAsync();
+                    } else
+                        return new DeleteUserResponse(null, false, new List<Error>() { new Error(null, "Failed to remove user from app DB! This is result in inconsistency between application Users table and Identity framework!") });
+                    return new DeleteUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
+                } else
+                    return new DeleteUserResponse(null, false, new List<Error>() { new Error(null, "Invalid user!") });
+            }
+            catch (Exception e)
+            {
+                return new DeleteUserResponse(null, false, new List<Error>() { new Error(null, e.Message) });
+            }
+        }
         public async Task<User> FindByName(string userName)
         {
             try

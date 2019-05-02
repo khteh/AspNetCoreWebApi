@@ -26,6 +26,16 @@ namespace Web.Api.IntegrationTests.Controllers
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
             dynamic result = JObject.Parse(stringResponse);
             Assert.True((bool) result.success);
+            Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
+        }
+        [Fact]
+        public async Task CanDeleteUserWithValidAccountDetails()
+        {
+            var httpResponse = await _client.DeleteAsync("/api/accounts/deleteme");
+            httpResponse.EnsureSuccessStatusCode();
+            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+            dynamic result = JObject.Parse(stringResponse);
+            Assert.True((bool)result.success);
             Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
         }
 
@@ -37,8 +47,13 @@ namespace Web.Api.IntegrationTests.Controllers
             Assert.Contains("'Email' is not a valid email address.", stringResponse);
             Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
         }
+        [Fact]
+        public async Task CantDeleteUserWithInvalidAccountDetails()
+        {
+            var httpResponse = await _client.DeleteAsync("/api/accounts/DeleteMeNot"); // UserManager is NOT case sensitive!
+            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+            Assert.Contains("Invalid user!", stringResponse);
+            Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
+        }
     }
 }
-
- 
-

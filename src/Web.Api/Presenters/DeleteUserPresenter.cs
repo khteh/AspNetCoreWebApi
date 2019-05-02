@@ -5,12 +5,12 @@ using Web.Api.Serialization;
 
 namespace Web.Api.Presenters
 {
-    public sealed class RegisterUserPresenter : IOutputPort<RegisterUserResponse>
+    public class DeleteUserPresenter : IOutputPort<DeleteUserResponse>
     {
         public JsonContentResult ContentResult { get; } = new JsonContentResult();
-        public void Handle(RegisterUserResponse response)
+        public void Handle(DeleteUserResponse response)
         {
-            ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.Created : HttpStatusCode.BadRequest);
+            ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
             ContentResult.Content = JsonSerializer.SerializeObject(response);
         }
     }

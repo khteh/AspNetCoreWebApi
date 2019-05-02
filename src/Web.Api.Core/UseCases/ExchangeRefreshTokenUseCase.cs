@@ -19,7 +19,6 @@ namespace Web.Api.Core.UseCases
         private readonly IJwtFactory _jwtFactory;
         private readonly ITokenFactory _tokenFactory;
 
-
         public ExchangeRefreshTokenUseCase(IJwtTokenValidator jwtTokenValidator, IUserRepository userRepository, IJwtFactory jwtFactory, ITokenFactory tokenFactory)
         {
             _jwtTokenValidator = jwtTokenValidator;
@@ -37,7 +36,7 @@ namespace Web.Api.Core.UseCases
             {
                 Claim claim = cp.Claims.First(c => c.Type == "id");
                 var user = await _userRepository.GetSingleBySpec(new UserSpecification(claim.Value));
-                if (user.HasValidRefreshToken(message.RefreshToken))
+                if (user != null && user.HasValidRefreshToken(message.RefreshToken))
                 {
                     var jwtToken = await _jwtFactory.GenerateEncodedToken(user.IdentityId, user.UserName);
                     var refreshToken = _tokenFactory.GenerateToken();
@@ -46,7 +45,8 @@ namespace Web.Api.Core.UseCases
                     await _userRepository.Update(user);
                     outputPort.Handle(new ExchangeRefreshTokenResponse(jwtToken, refreshToken, true));
                     return true;
-                }
+                } else if (user == null)
+                    outputPort.Handle(new ExchangeRefreshTokenResponse(false, "Invalid user!"));
             }
             outputPort.Handle(new ExchangeRefreshTokenResponse(false, "Invalid token."));
             return false;

@@ -11,12 +11,7 @@ namespace Web.Api.Core.UseCases
     public sealed class RegisterUserUseCase : IRegisterUserUseCase
     {
         private readonly IUserRepository _userRepository;
-
-        public RegisterUserUseCase(IUserRepository userRepository)
-        {
-            _userRepository = userRepository;
-        }
-
+        public RegisterUserUseCase(IUserRepository userRepository) => _userRepository = userRepository;
         public async Task<bool> Handle(RegisterUserRequest message, IOutputPort<RegisterUserResponse> outputPort)
         {
             var response = await _userRepository.Create(message.FirstName, message.LastName,message.Email, message.UserName, message.Password);

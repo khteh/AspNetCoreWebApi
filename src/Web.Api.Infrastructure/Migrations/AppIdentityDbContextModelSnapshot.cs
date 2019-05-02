@@ -73,9 +73,9 @@ namespace Web.Api.Infrastructure.Migrations
 
                     b.Property<string>("Email");
 
-                    b.Property<bool>("EmailConfirmed");
+                    b.Property<short>("EmailConfirmed");
 
-                    b.Property<bool>("LockoutEnabled");
+                    b.Property<short>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
 
@@ -89,11 +89,11 @@ namespace Web.Api.Infrastructure.Migrations
 
                     b.Property<string>("PhoneNumber");
 
-                    b.Property<bool>("PhoneNumberConfirmed");
+                    b.Property<short>("PhoneNumberConfirmed");
 
                     b.Property<string>("SecurityStamp");
 
-                    b.Property<bool>("TwoFactorEnabled");
+                    b.Property<short>("TwoFactorEnabled");
 
                     b.Property<string>("UserName");
 
@@ -188,22 +188,18 @@ namespace Web.Api.Infrastructure.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
-                    b.Property<DateTimeOffset>("Created");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
-                    b.Property<bool>("EmailConfirmed");
+                    b.Property<short>("EmailConfirmed");
 
                     b.Property<string>("FirstName");
 
                     b.Property<string>("LastName");
 
-                    b.Property<bool>("LockoutEnabled");
+                    b.Property<short>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
-
-                    b.Property<DateTimeOffset>("Modified");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256);
@@ -215,11 +211,11 @@ namespace Web.Api.Infrastructure.Migrations
 
                     b.Property<string>("PhoneNumber");
 
-                    b.Property<bool>("PhoneNumberConfirmed");
+                    b.Property<short>("PhoneNumberConfirmed");
 
                     b.Property<string>("SecurityStamp");
 
-                    b.Property<bool>("TwoFactorEnabled");
+                    b.Property<short>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256);

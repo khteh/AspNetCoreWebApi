@@ -10,12 +10,12 @@ using Web.Api.Infrastructure.Interfaces;
 
 namespace Web.Api.Infrastructure.Auth
 {
-    internal sealed class JwtFactory : IJwtFactory
+    public sealed class JwtFactory : IJwtFactory
     {
         private readonly IJwtTokenHandler _jwtTokenHandler;
         private readonly JwtIssuerOptions _jwtOptions;
 
-        internal JwtFactory(IJwtTokenHandler jwtTokenHandler, IOptions<JwtIssuerOptions> jwtOptions)
+        public JwtFactory(IJwtTokenHandler jwtTokenHandler, IOptions<JwtIssuerOptions> jwtOptions)
         {
             _jwtTokenHandler = jwtTokenHandler;
             _jwtOptions = jwtOptions.Value;
@@ -30,7 +30,8 @@ namespace Web.Api.Infrastructure.Auth
             {
                  new Claim(JwtRegisteredClaimNames.Sub, userName),
                  new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
-                 new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
+                 //new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
+                 new Claim(JwtRegisteredClaimNames.Iat, _jwtOptions.IssuedAt.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
                  identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol),
                  identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Id)
              };
@@ -40,8 +41,8 @@ namespace Web.Api.Infrastructure.Auth
                 _jwtOptions.Issuer,
                 _jwtOptions.Audience,
                 claims,
-                _jwtOptions.NotBefore.DateTime,
-                _jwtOptions.Expiration.DateTime,
+                _jwtOptions.NotBefore.UtcDateTime,
+                _jwtOptions.Expiration.UtcDateTime,
                 _jwtOptions.SigningCredentials);
           
             return new AccessToken(_jwtTokenHandler.WriteToken(jwt), (int)_jwtOptions.ValidFor.TotalSeconds);
@@ -57,11 +58,14 @@ namespace Web.Api.Infrastructure.Auth
         }
 
         /// <returns>Date converted to seconds since Unix epoch (Jan 1, 1970, midnight UTC).</returns>
-        private static long ToUnixEpochDate(DateTimeOffset date)
-          => (long)Math.Round((date.ToUniversalTime() -
-                               new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero))
-                              .TotalSeconds);
-
+        private static long ToUnixEpochDate(DateTimeOffset date) => date.ToUnixTimeSeconds();
+        //{
+            //DateTimeOffset dto = date.ToUniversalTime();
+            //date.ToUnixTimeSeconds
+          //return (long)Math.Round((date.ToUniversalTime() -
+          //                     new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero))
+          //                    .TotalSeconds);
+        //}
         private static void ThrowIfInvalidOptions(JwtIssuerOptions options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));

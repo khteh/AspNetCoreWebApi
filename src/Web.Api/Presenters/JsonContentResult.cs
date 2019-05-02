@@ -6,7 +6,7 @@ namespace Web.Api.Presenters
   {
     public JsonContentResult()
     {
-      ContentType = "application/json";
+        ContentType = "application/json";
     }
   }
 }

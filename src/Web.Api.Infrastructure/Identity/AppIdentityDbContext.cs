@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
 using System;
 
@@ -24,7 +25,6 @@ namespace Web.Api.Infrastructure.Identity
             builder.Entity<IdentityUser>(entity => entity.Property(m => m.Id).HasMaxLength(85));
             builder.Entity<IdentityUser>(entity => entity.Property(m => m.NormalizedEmail).HasMaxLength(85));
             builder.Entity<IdentityUser>(entity => entity.Property(m => m.NormalizedUserName).HasMaxLength(85));
-
             builder.Entity<IdentityRole>(entity => entity.Property(m => m.Id).HasMaxLength(85));
             builder.Entity<IdentityRole>(entity => entity.Property(m => m.NormalizedName).HasMaxLength(85));
 
@@ -43,6 +43,10 @@ namespace Web.Api.Infrastructure.Identity
             builder.Entity<IdentityUserClaim<string>>(entity => entity.Property(m => m.UserId).HasMaxLength(85));
             builder.Entity<IdentityRoleClaim<string>>(entity => entity.Property(m => m.Id).HasMaxLength(85));
             builder.Entity<IdentityRoleClaim<string>>(entity => entity.Property(m => m.RoleId).HasMaxLength(85));
+            foreach (var entityType in builder.Model.GetEntityTypes())
+                foreach (var property in entityType.GetProperties())
+                    if (property.ClrType == typeof(bool))
+                        property.SetValueConverter(new BoolToZeroOneConverter<Int16>());
         }
     }
 }
