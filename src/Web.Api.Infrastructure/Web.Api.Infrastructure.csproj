@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RuntimeFrameworkVersion>2.2.4</RuntimeFrameworkVersion>    
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="automapper" Version="8.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
@@ -37,7 +36,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="appsettings.json">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -45,10 +43,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Web.Api.Core\Web.Api.Core.csproj" />
   </ItemGroup>
- 
-
 </Project>
