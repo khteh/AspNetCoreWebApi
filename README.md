@@ -14,7 +14,7 @@ Open the solution file <code>AspNetCoreApiStarter.sln</code> and build/run.
 Open the <code>src</code> folder and <code>F5</code> to build/run.
 
 # Swagger Enabled
-To explore and test the available APIs simply run the project and use the Swagger UI @ http://localhost:port/swagger/index.html
+To explore and test the available APIs simply run the project and use the Swagger UI @ http://localhost:{port}/swagger/index.html
 
 The available APIs include:
 - POST `/api/accounts` - Creates a new user.
