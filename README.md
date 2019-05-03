@@ -1,9 +1,8 @@
 # AspNetCoreApiStarter
 An ASP.NET Core (v2.2) Web API project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.
 
-# Setup
+# Database Setup
 - Uses MySQL.
-- Uses Microsoft.Extensios.DependencyInjection.
 - Apply database migrations to create the db.  From a command line within the *Web.Api.Infrastructure* project folder use the dotnet CLI to run : 
 - <code>Web.Api.Infrastructure>**dotnet ef database update --context AppDbContext**</code>
 - <code>Web.Api.Infrastructure>**dotnet ef database update --context AppIdentityDbContext**</code>
