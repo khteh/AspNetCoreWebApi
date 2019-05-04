@@ -1,30 +1,30 @@
-﻿using NLog;
-
+﻿//using NLog;
+using Microsoft.AspNetCore.Hosting;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
+using Serilog.Formatting.Elasticsearch;
 
 namespace Web.Api.Infrastructure.Logging
 {
     public class Logger : Core.Interfaces.Services.ILogger
     {
-        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-
-        public void LogDebug(string message)
+        public Logger(IHostingEnvironment env)
         {
-            logger.Debug(message);
+            LoggerConfiguration config = new LoggerConfiguration()
+                       .MinimumLevel.Debug()
+                       .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                       .Enrich.FromLogContext();
+            if (env.IsDevelopment())
+                //config.WriteTo.Console(new CompactJsonFormatter())
+                config.WriteTo.Console();
+            else
+                config.WriteTo.Console(new ElasticsearchJsonFormatter());
+            Log.Logger = config.CreateLogger();
         }
-
-        public void LogError(string message)
-        {
-            logger.Error(message);
-        }
-
-        public void LogInfo(string message)
-        {
-            logger.Info(message);
-        }
-
-        public void LogWarn(string message)
-        {
-            logger.Warn(message);
-        }
+        public void LogDebug(string message) => Log.Debug(message);
+        public void LogError(string message) =>  Log.Error(message);
+        public void LogInfo(string message) => Log.Information(message);
+        public void LogWarn(string message) => Log.Warning(message);
     }
 }

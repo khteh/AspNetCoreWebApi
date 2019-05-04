@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using NLog;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
@@ -37,16 +36,8 @@ namespace Web.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            // Don't try and load nlog config during integ tests.
-            var nLogConfigPath = string.Concat(Directory.GetCurrentDirectory(), "/nlog.config");
-            if (File.Exists(nLogConfigPath)) { LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));}
-            Configuration = configuration;
-        }
-
         public IConfiguration Configuration { get; }
-
+        public Startup(IConfiguration configuration) => Configuration = configuration;
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
