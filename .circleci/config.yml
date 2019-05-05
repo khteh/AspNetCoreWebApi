@@ -3,15 +3,21 @@ jobs:
   build:
     working_directory: ~/workspace
     docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:latest
+      - image: mcr.microsoft.com/dotnet/core/sdk:2.2-bionic
     steps:
       - checkout
       - run: 
           name: Install Python exiftool
           command: |
-            apt -y update && apt -y upgrade && apt install -y libimage-exiftool-perl curl sudo
-            curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
-            apt -y install npm
+            apt -y update
+            apt install -y libimage-exiftool-perl
+      - run:
+          name: Install Docker client
+          command: |
+            VER="18.06.3-ce"
+            curl -sL -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
       - run: dotnet restore --runtime ubuntu.18.10-x64 src
       - run: dotnet build -c Release --version-suffix $CIRCLE_BUILD_NUM --runtime ubuntu.18.10-x64 --no-restore src
       - run: dotnet test -c Release --runtime ubuntu.18.10-x64 src
@@ -20,13 +26,6 @@ jobs:
           docker_layer_caching: true
       # use a primary image that already has Docker (recommended)
       # or install it during a build like we do here
-      - run:
-          name: Install Docker client
-          command: |
-            VER="18.06.3-ce"
-            curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
-            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
-            mv /tmp/docker/* /usr/bin
       - run:
           name: Extract FileVersion from published binary
           command: |

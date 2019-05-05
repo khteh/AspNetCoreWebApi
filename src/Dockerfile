@@ -1,4 +1,6 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:latest
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2.4-bionic
 MAINTAINER Kok How, Teh <funcoolgeek@gmail.com>
-ADD Web.Api/bin/Release/netcoreapp2.2/ubuntu.18.10-x64/publish/ app/
-ENTRYPOINT ["dotnet", "app/Web.Api.dll"]
+WORKDIR /app
+ADD Web.Api/bin/Release/netcoreapp2.2/ubuntu.18.10-x64/publish/ .
+EXPOSE 80 443
+ENTRYPOINT ["dotnet", "Web.Api.dll"]
