@@ -14,15 +14,19 @@ namespace Web.Api.Controllers
     {
         private readonly IRegisterUserUseCase _registerUserUseCase;
         private readonly RegisterUserPresenter _registerUserPresenter;
+        private readonly IFindUserUseCase _findUserUseCase;
+        private readonly FindUserPresenter _findUserPresenter;
         private readonly IDeleteUserUseCase _deleteUserUseCase;
         private readonly DeleteUserPresenter _deleteUserPresenter;
 
-        public AccountsController(IRegisterUserUseCase registerUserUseCase, RegisterUserPresenter registerUserPresenter, IDeleteUserUseCase deleteUserUseCase, DeleteUserPresenter deleteUserPresenter)
+        public AccountsController(IRegisterUserUseCase registerUserUseCase, RegisterUserPresenter registerUserPresenter, IDeleteUserUseCase deleteUserUseCase, DeleteUserPresenter deleteUserPresenter, IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter)
         {
             _registerUserUseCase = registerUserUseCase;
             _registerUserPresenter = registerUserPresenter;
             _deleteUserUseCase = deleteUserUseCase;
             _deleteUserPresenter = deleteUserPresenter;
+            _findUserUseCase = findUserUseCase;
+            _findUserPresenter = findUserPresenter;
         }
 
         // POST api/accounts
@@ -41,6 +45,27 @@ namespace Web.Api.Controllers
         {
             await _deleteUserUseCase.Handle(new DeleteUserRequest(id), _deleteUserPresenter);
             return _deleteUserPresenter.ContentResult;
+        }
+        // POST api/accounts/FindById
+        [HttpGet("id/{id}")]
+        public async Task<ActionResult> FindById(string id)
+        {
+            await _findUserUseCase.Handle(new FindUserRequest(string.Empty, string.Empty, id), _findUserPresenter);
+            return _findUserPresenter.ContentResult;
+        }
+        // POST api/accounts/FindByUserName
+        [HttpGet("username/{username}")]
+        public async Task<ActionResult> FindByUserName(string username)
+        {
+            await _findUserUseCase.Handle(new FindUserRequest(string.Empty, username, string.Empty), _findUserPresenter);
+            return _findUserPresenter.ContentResult;
+        }
+        // POST api/accounts/FindByEmail
+        [HttpGet("email/{email}")]
+        public async Task<ActionResult> FindByEmail(string email)
+        {
+            await _findUserUseCase.Handle(new FindUserRequest(email, string.Empty, string.Empty), _findUserPresenter);
+            return _findUserPresenter.ContentResult;
         }
     }
 }

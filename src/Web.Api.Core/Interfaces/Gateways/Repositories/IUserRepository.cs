@@ -7,8 +7,11 @@ namespace Web.Api.Core.Interfaces.Gateways.Repositories
     public interface IUserRepository  : IRepository<User>
     {
         Task<CreateUserResponse> Create(string firstName, string lastName, string email, string userName, string password);
-        Task<Web.Api.Core.Dto.GatewayResponses.Repositories.DeleteUserResponse> Delete(string username);
-        Task<User> FindByName(string userName);
+        Task<DeleteUserResponse> Delete(string username);
+        Task<FindUserResponse> FindById(string id);
+        Task<User> FindUserByName(string userName);
+        Task<FindUserResponse> FindByName(string userName);
+        Task<FindUserResponse> FindByEmail(string email);
         Task<bool> CheckPassword(User user, string password);
     }
 }

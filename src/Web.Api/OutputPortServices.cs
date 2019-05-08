@@ -18,6 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<ExchangeRefreshTokenPresenter>()
                 .AddSingleton<LoginPresenter>()
                 .AddSingleton<RegisterUserPresenter>()
+                .AddSingleton<FindUserPresenter>()
                 .AddSingleton<DeleteUserPresenter>();
     }
 }

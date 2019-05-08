@@ -18,19 +18,13 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Web.Api.Controllers;
-using Web.Api.Core.Dto.UseCaseResponses;
-using Web.Api.Core.Interfaces;
-using Web.Api.Core.Interfaces.Services;
 using Web.Api.Extensions;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Mapping;
 using Web.Api.Infrastructure.Helpers;
 using Web.Api.Infrastructure.Identity;
-using Web.Api.Infrastructure.Interfaces;
 using Web.Api.Models.Settings;
-using Web.Api.Presenters;
 
 namespace Web.Api
 {

@@ -29,7 +29,7 @@ namespace Web.Api.Core.UseCases
             if (!string.IsNullOrEmpty(message.UserName) && !string.IsNullOrEmpty(message.Password))
             {
                 // ensure we have a user with the given user name
-                User user = await _userRepository.FindByName(message.UserName);
+                User user = await _userRepository.FindUserByName(message.UserName);
                 if (user != null)
                 {
                     // validate password

@@ -18,7 +18,7 @@ namespace Web.Api.Core.UnitTests.UseCases
         {
             // arrange
             var mockUserRepository = new Mock<IUserRepository>();
-            mockUserRepository.Setup(repo => repo.FindByName(It.IsAny<string>())).ReturnsAsync(new User("","","",""));
+            mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync(new User("","","",""));
 
             mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(true);
 
@@ -44,7 +44,7 @@ namespace Web.Api.Core.UnitTests.UseCases
         {
             // arrange
             var mockUserRepository = new Mock<IUserRepository>();
-            mockUserRepository.Setup(repo => repo.FindByName(It.IsAny<string>())).ReturnsAsync(new User("","","",""));
+            mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync(new User("","","",""));
 
             mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(false);
 
@@ -73,7 +73,7 @@ namespace Web.Api.Core.UnitTests.UseCases
         {
             // arrange
             var mockUserRepository = new Mock<IUserRepository>();
-            mockUserRepository.Setup(repo => repo.FindByName(It.IsAny<string>())).ReturnsAsync((User)null);
+            mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync((User)null);
 
             mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(true);
 
@@ -100,7 +100,7 @@ namespace Web.Api.Core.UnitTests.UseCases
         {
             // arrange
             var mockUserRepository = new Mock<IUserRepository>();
-            mockUserRepository.Setup(repo => repo.FindByName(It.IsAny<string>())).ReturnsAsync((User)null);
+            mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync((User)null);
 
             mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(false);
 

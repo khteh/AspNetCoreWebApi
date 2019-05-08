@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.Dto;
 using Web.Api.Core.Dto.GatewayResponses.Repositories;
+//using Web.Api.Core.Dto.UseCaseResponses;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Specifications;
 using Web.Api.Infrastructure.Identity;
@@ -66,22 +67,61 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 return new DeleteUserResponse(null, false, new List<Error>() { new Error(null, e.Message) });
             }
         }
-        public async Task<User> FindByName(string userName)
+        public async Task<User> FindUserByName(string userName)
         {
             try
             {
                 var appUser = await _userManager.FindByNameAsync(userName);
                 return appUser == null ? null : _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 return null;
             }
         }
 
+        public async Task<FindUserResponse> FindByName(string userName)
+        {
+            try
+            {
+                return await getUser(await _userManager.FindByNameAsync(userName));
+            } catch (Exception e)
+            {
+                return null;
+            }
+        }
+        public async Task<FindUserResponse> FindById(string id)
+        {
+            try
+            {
+                return await getUser(await _userManager.FindByIdAsync(id));
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+        public async Task<FindUserResponse> FindByEmail(string email)
+        {
+            try
+            {
+                return await getUser(await _userManager.FindByEmailAsync(email));
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
         public async Task<bool> CheckPassword(User user, string password)
         {
             AppUser appUser = _mapper.Map<AppUser>(user);
             return await _userManager.CheckPasswordAsync(_mapper.Map<AppUser>(user), password);
+        }
+        private async Task<FindUserResponse> getUser(AppUser appUser)
+        {
+            User user = appUser == null ? null : _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
+            return user == null ? new FindUserResponse(null, false, new List<Error>() { new Error(null, "User not found!") }) : 
+                new FindUserResponse(appUser.Id, true, null);
         }
     }
 }

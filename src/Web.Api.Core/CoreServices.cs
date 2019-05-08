@@ -7,6 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddCore(this IServiceCollection service) =>
             service.AddScoped<IRegisterUserUseCase, RegisterUserUseCase>()
+            .AddScoped<IFindUserUseCase, FindUserUseCase>()
             .AddScoped<IDeleteUserUseCase, DeleteUserUseCase>()
             .AddScoped<ILoginUseCase, LoginUseCase>()
             .AddScoped<IExchangeRefreshTokenUseCase, ExchangeRefreshTokenUseCase>();

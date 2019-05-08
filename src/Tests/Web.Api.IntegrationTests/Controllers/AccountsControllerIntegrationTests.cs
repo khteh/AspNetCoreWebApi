@@ -55,5 +55,39 @@ namespace Web.Api.IntegrationTests.Controllers
             Assert.Contains("Invalid user!", stringResponse);
             Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
         }
+        [Fact]
+        public async Task CanFindById()
+        {
+            var httpResponse = await _client.GetAsync("/api/accounts/id/41532945-599e-4910-9599-0e7402017fbe"); // UserManager is NOT case sensitive!
+            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+            dynamic result = JObject.Parse(stringResponse);
+            Assert.True((bool)result.success);
+            Assert.False(string.IsNullOrEmpty((string)result.id));
+            Assert.Equal("41532945-599e-4910-9599-0e7402017fbe", (string)result.id);
+            Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        }
+        [Fact]
+        public async Task CanFindByUsername()
+        {
+            var httpResponse = await _client.GetAsync("/api/accounts/username/mickeymouse"); // UserManager is NOT case sensitive!
+            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+            dynamic result = JObject.Parse(stringResponse);
+            Assert.True((bool)result.success);
+            Assert.False(string.IsNullOrEmpty((string)result.id));
+            Assert.Equal("41532945-599e-4910-9599-0e7402017fbe", (string)result.id);
+            Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        }
+        [Fact]
+        public async Task CanFindByEmail()
+        {
+            //var httpResponse = await _client.GetAsync(WebUtility.UrlEncode("/api/accounts/email/mickey@mouse.com")); // UserManager is NOT case sensitive!
+            var httpResponse = await _client.GetAsync("/api/accounts/email/mickey@mouse.com"); // UserManager is NOT case sensitive!
+            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+            dynamic result = JObject.Parse(stringResponse);
+            Assert.True((bool)result.success);
+            Assert.False(string.IsNullOrEmpty((string)result.id));
+            Assert.Equal("41532945-599e-4910-9599-0e7402017fbe", (string)result.id);
+            Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        }
     }
 }
