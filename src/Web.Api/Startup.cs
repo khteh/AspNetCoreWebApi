@@ -25,7 +25,7 @@ using Web.Api.Infrastructure.Data.Mapping;
 using Web.Api.Infrastructure.Helpers;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.Models.Settings;
-
+using Web.Api.Hubs;
 namespace Web.Api
 {
     public class Startup
@@ -35,6 +35,13 @@ namespace Web.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
             // Add framework services.
             services.AddDbContext<AppIdentityDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
             services.AddDbContext<AppDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
@@ -139,6 +146,7 @@ namespace Web.Api
                     { "Bearer", new string[] { } }
                 });
             });
+            services.AddSignalR();
             // Register Infrastructure Services
             services.AddInfrastructure().AddCore().AddOutputPorts();
             //services.AddScoped<AuthController>();
@@ -181,7 +189,11 @@ namespace Web.Api
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
-            app.UseAuthentication();
+            app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
+            app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub"));
             app.UseMvc();
         }
     }
