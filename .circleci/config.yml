@@ -20,10 +20,10 @@ jobs:
             mv /tmp/docker/* /usr/bin
       - run: wget -q https://packages.microsoft.com/config/ubuntu/19.04/packages-microsoft-prod.deb
       - run: dpkg -i packages-microsoft-prod.deb
-      - run: dotnet restore --runtime ubuntu.18.10-x64 src
-      - run: dotnet build -c Release --version-suffix $CIRCLE_BUILD_NUM --runtime ubuntu.18.10-x64 --no-restore src
-      - run: dotnet test -c Release --runtime ubuntu.18.10-x64 src
-      - run: dotnet publish -c Release --no-restore --no-build --runtime ubuntu.18.10-x64 src
+      - run: dotnet restore --runtime ubuntu.19.04-x64 src
+      - run: dotnet build -c Release --version-suffix $CIRCLE_BUILD_NUM --runtime ubuntu.19.04-x64 --no-restore src
+      - run: dotnet test -c Release --runtime ubuntu.19.04-x64 src
+      - run: dotnet publish -c Release --no-restore --no-build --runtime ubuntu.19.04-x64 src
       - setup_remote_docker:
           docker_layer_caching: true
       # use a primary image that already has Docker (recommended)
@@ -31,7 +31,7 @@ jobs:
       - run:
           name: Extract FileVersion from published binary
           command: |
-            exiftool src/Web.Api/bin/Release/netcoreapp2.2/ubuntu.18.10-x64/publish/Web.Api.dll | grep "File Version" | awk -F":" '{ print $2 }' | xargs echo -n > version.txt
+            exiftool src/Web.Api/bin/Release/netcoreapp2.2/ubuntu.19.04-x64/publish/Web.Api.dll | grep "File Version" | awk -F":" '{ print $2 }' | xargs echo -n > version.txt
       - run:
           name: Build & Push docker image
           command: |
