@@ -19,7 +19,7 @@ jobs:
             tar -xz -C /tmp -f /tmp/docker-$VER.tgz
             mv /tmp/docker/* /usr/bin
       - run: wget -q https://packages.microsoft.com/config/ubuntu/19.04/packages-microsoft-prod.deb
-      - run: sudo dpkg -i packages-microsoft-prod.deb
+      - run: dpkg -i packages-microsoft-prod.deb
       - run: dotnet restore --runtime ubuntu.18.10-x64 src
       - run: dotnet build -c Release --version-suffix $CIRCLE_BUILD_NUM --runtime ubuntu.18.10-x64 --no-restore src
       - run: dotnet test -c Release --runtime ubuntu.18.10-x64 src
