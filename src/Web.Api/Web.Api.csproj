@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RuntimeFrameworkVersion>2.2.4</RuntimeFrameworkVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <!--<RuntimeIdentifier>ubuntu.18.10-x64</RuntimeIdentifier>-->
+    <!--<RuntimeIdentifier>ubuntu.19.04-x64</RuntimeIdentifier> Do not need this when building for framework dependent deployments -->
   </PropertyGroup>
 
   <ItemGroup>

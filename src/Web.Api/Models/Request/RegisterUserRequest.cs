@@ -1,6 +1,4 @@
-﻿
-
-namespace Web.Api.Models.Request
+﻿namespace Web.Api.Models.Request
 {
     public class RegisterUserRequest
     {

@@ -26,6 +26,8 @@ using Web.Api.Infrastructure.Helpers;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.Models.Settings;
 using Web.Api.Hubs;
+using Microsoft.AspNetCore.SignalR;
+
 namespace Web.Api
 {
     public class Startup
@@ -100,6 +102,23 @@ namespace Web.Api
                             context.Response.Headers.Add("Token-Expired", "true");
                         }
                         return Task.CompletedTask;
+                    },
+                    // We have to hook the OnMessageReceived event in order to
+                    // allow the JWT authentication handler to read the access
+                    // token from the query string when a WebSocket or 
+                    // Server-Sent Events request comes in.
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/hubs/chat")))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
                     }
                 };
             });
@@ -123,9 +142,7 @@ namespace Web.Api
 
             identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
             identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
-
             services.AddAutoMapper(typeof(DataProfile));
 
             // Register the Swagger generator, defining 1 or more Swagger documents
@@ -147,6 +164,18 @@ namespace Web.Api
                 });
             });
             services.AddSignalR();
+            // Change to use Name as the user identifier for SignalR
+            // WARNING: This requires that the source of your JWT token 
+            // ensures that the Name claim is unique!
+            // If the Name claim isn't unique, users could receive messages 
+            // intended for a different user!
+            services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+
+            // Change to use email as the user identifier for SignalR
+            // services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
+
+            // WARNING: use *either* the NameUserIdProvider *or* the 
+            // EmailBasedUserIdProvider, but do not use both. 
             // Register Infrastructure Services
             services.AddInfrastructure().AddCore().AddOutputPorts();
             //services.AddScoped<AuthController>();

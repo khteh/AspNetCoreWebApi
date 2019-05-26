@@ -1,5 +1,9 @@
 "use strict";
-var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub", {
+    skipNegotiation: true,
+    transport: signalR.HttpTransportType.WebSockets,
+    accessTokenFactory: () => this.getToken()//document.getElementById("tokenInput").value
+}).configureLogging(signalR.LogLevel.Trace).build();
 // Disable send button until connection is established
 document.getElementById("sendButton").disabled = true;
 connection.on("ReceiveMessageFromUser", function (user, message) {
@@ -30,3 +34,6 @@ document.getElementById("sendButton").addEventListener("click", function (event)
         connection.invoke("ReceiveMessage", message).catch(function (err) { return console.error(err.toString()); });
     event.preventDefault();
 });
+function getToken() {
+    return document.getElementById("tokenInput").value
+}

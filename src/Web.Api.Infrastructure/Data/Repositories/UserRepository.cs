@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -33,6 +34,8 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 var identityResult = await _userManager.CreateAsync(appUser, password);
                 if (!identityResult.Succeeded)
                     return new CreateUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
+                // add the email claim and value for this user
+                await _userManager.AddClaimAsync(appUser, new Claim(ClaimTypes.Name, appUser.UserName));
                 var user = new User(firstName, lastName, appUser.Id.ToString(), appUser.UserName);
                 _appDbContext.Users.Add(user);
                 await _appDbContext.SaveChangesAsync();
