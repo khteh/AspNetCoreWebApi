@@ -12,15 +12,16 @@ using Web.Api.Core.Dto.GatewayResponses.Repositories;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Specifications;
 using Web.Api.Infrastructure.Identity;
-
+using Microsoft.Extensions.Logging;
 namespace Web.Api.Infrastructure.Data.Repositories
 {
     internal sealed class UserRepository : EfRepository<User>, IUserRepository
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly ILogger<UserRepository> _logger;
 
-        public UserRepository(UserManager<AppUser> userManager, IMapper mapper, AppDbContext appDbContext): base(appDbContext)
+        public UserRepository(ILogger<UserRepository> logger, UserManager<AppUser> userManager, IMapper mapper, AppDbContext appDbContext): base(appDbContext)
         {
             _userManager = userManager;
             _mapper = mapper;
