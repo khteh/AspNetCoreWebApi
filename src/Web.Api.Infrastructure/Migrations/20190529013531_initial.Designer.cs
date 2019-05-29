@@ -9,7 +9,7 @@ using Web.Api.Infrastructure.Identity;
 namespace Web.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(AppIdentityDbContext))]
-    [Migration("20190503120008_initial")]
+    [Migration("20190529013531_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

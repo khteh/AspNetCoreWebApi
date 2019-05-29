@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Web.Api.Core.Shared;
 
-
 namespace Web.Api.Core.Domain.Entities
 {
     public class User : BaseEntity
@@ -19,7 +18,6 @@ namespace Web.Api.Core.Domain.Entities
         public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
 
         internal User() { /* Required by EF */ }
-
         internal User(string firstName, string lastName, string identityId, string userName)
         {
             FirstName = firstName;
@@ -27,12 +25,9 @@ namespace Web.Api.Core.Domain.Entities
             IdentityId = identityId;
             UserName = userName;
         }
-
         public bool HasValidRefreshToken(string refreshToken) => _refreshTokens.Any(rt => rt.Token == refreshToken && rt.Active);
-
-        public void AddRefreshToken(string token,int userId,string remoteIpAddress,double daysToExpire=5) =>
+        public void AddRefreshToken(string token, int userId,string remoteIpAddress,double daysToExpire=5) =>
             _refreshTokens.Add(new RefreshToken(token, DateTimeOffset.UtcNow.AddDays(daysToExpire), userId, remoteIpAddress));
-
         public void RemoveRefreshToken(string refreshToken) =>
             _refreshTokens.Remove(_refreshTokens.First(t => t.Token == refreshToken));
     }
