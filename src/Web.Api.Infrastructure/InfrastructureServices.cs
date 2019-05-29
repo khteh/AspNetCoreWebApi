@@ -14,7 +14,6 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddSingleton<IJwtFactory, JwtFactory>()
             .AddSingleton<IJwtTokenHandler, JwtTokenHandler>()
             .AddSingleton<ITokenFactory, TokenFactory>()
-            .AddSingleton<IJwtTokenValidator, JwtTokenValidator>()
-            .AddSingleton<ILogger, Logger>();
+            .AddSingleton<IJwtTokenValidator, JwtTokenValidator>();
     }
 }

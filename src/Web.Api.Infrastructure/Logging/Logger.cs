@@ -7,6 +7,7 @@ using Serilog.Formatting.Elasticsearch;
 
 namespace Web.Api.Infrastructure.Logging
 {
+    #if false
     public class Logger : Core.Interfaces.Services.ILogger
     {
         public Logger(IHostingEnvironment env)
@@ -27,4 +28,5 @@ namespace Web.Api.Infrastructure.Logging
         public void LogInfo(string message) => Log.Information(message);
         public void LogWarn(string message) => Log.Warning(message);
     }
+    #endif
 }
