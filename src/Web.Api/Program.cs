@@ -31,7 +31,7 @@ namespace Web.Api
             LoggerConfiguration logConfig = new LoggerConfiguration()
                     .MinimumLevel.Debug()
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                    .WriteTo.RollingFile(config["Logging:LogFile"], fileSizeLimitBytes: 10485760, retainedFileCountLimit: null)
+                    //.WriteTo.RollingFile(config["Logging:LogFile"], fileSizeLimitBytes: 10485760, retainedFileCountLimit: null)
                     .Enrich.FromLogContext();
             if (isDevelopment)
                 //config.WriteTo.Console(new CompactJsonFormatter())
@@ -49,7 +49,7 @@ namespace Web.Api
                 Log.Fatal($"Exception: {e.Message}");
             } finally {
                 Log.CloseAndFlush();
-            }            
+            }
         }
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration((hostingContext, config) => {
