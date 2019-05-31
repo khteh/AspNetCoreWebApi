@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Web.Api.Core.Interfaces.Services;
 using Web.Api.Infrastructure.Interfaces;
@@ -10,8 +11,8 @@ namespace Web.Api.Infrastructure.Auth
     public sealed class JwtTokenHandler : IJwtTokenHandler
     {
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
-        private readonly ILogger _logger;
-        public JwtTokenHandler(ILogger logger)
+        private readonly ILogger<JwtTokenHandler> _logger;
+        public JwtTokenHandler(ILogger<JwtTokenHandler> logger)
         {
             if (_jwtSecurityTokenHandler == null)
                 _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();

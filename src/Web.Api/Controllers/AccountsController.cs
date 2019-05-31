@@ -8,7 +8,7 @@ using Web.Api.Presenters;
 
 namespace Web.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class AccountsController : ControllerBase
     {
@@ -18,8 +18,10 @@ namespace Web.Api.Controllers
         private readonly FindUserPresenter _findUserPresenter;
         private readonly IDeleteUserUseCase _deleteUserUseCase;
         private readonly DeleteUserPresenter _deleteUserPresenter;
+        private readonly IChangePasswordUseCase _changePasswordUseCase;
+        private readonly ChangePasswordPresenter _changePasswordPresenter;
 
-        public AccountsController(IRegisterUserUseCase registerUserUseCase, RegisterUserPresenter registerUserPresenter, IDeleteUserUseCase deleteUserUseCase, DeleteUserPresenter deleteUserPresenter, IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter)
+        public AccountsController(IRegisterUserUseCase registerUserUseCase, RegisterUserPresenter registerUserPresenter, IDeleteUserUseCase deleteUserUseCase, DeleteUserPresenter deleteUserPresenter, IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter, IChangePasswordUseCase changePasswordUseCase, ChangePasswordPresenter changePasswordPresenter)
         {
             _registerUserUseCase = registerUserUseCase;
             _registerUserPresenter = registerUserPresenter;
@@ -27,6 +29,8 @@ namespace Web.Api.Controllers
             _deleteUserPresenter = deleteUserPresenter;
             _findUserUseCase = findUserUseCase;
             _findUserPresenter = findUserPresenter;
+            _changePasswordUseCase = changePasswordUseCase;
+            _changePasswordPresenter = changePasswordPresenter;
         }
 
         // POST api/accounts
@@ -37,6 +41,15 @@ namespace Web.Api.Controllers
                 return BadRequest(ModelState);
             await _registerUserUseCase.Handle(new RegisterUserRequest(request.FirstName, request.LastName, request.Email, request.UserName, request.Password), _registerUserPresenter);
             return _registerUserPresenter.ContentResult;
+        }
+        // POST api/accounts
+        [HttpPost]
+        public async Task<ActionResult> ChangePassword([FromBody] Models.Request.ChangePasswordRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            await _changePasswordUseCase.Handle(new ChangePasswordRequest(request.UserName, request.Password, request.NewPassword), _changePasswordPresenter);
+            return _changePasswordPresenter.ContentResult;
         }
 
         // POST api/accounts

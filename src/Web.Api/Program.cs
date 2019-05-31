@@ -13,6 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Net;
 
 namespace Web.Api
 {
@@ -66,6 +68,14 @@ namespace Web.Api
                 logging.AddEventSourceLogger();
                 logging.AddSerilog(dispose: true);
             }).UseSerilog()
-            .UseStartup<Startup>();
+            .UseStartup<Startup>()
+            .ConfigureKestrel((context, options) =>
+            {
+                options.Listen(IPAddress.Loopback, 5000, listenOptions =>
+                {
+                    listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+                    //listenOptions.UseHttps("testCert.pfx", "testPassword");
+                });
+            });
     }
 }

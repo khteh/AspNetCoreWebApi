@@ -31,7 +31,7 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <Compile Update="appsettings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -45,7 +45,8 @@
       <LastGenOutput>appsettings.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
+    <None Update="appsettings.Development.json" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup> -->
   <ItemGroup>
     <ProjectReference Include="..\Web.Api.Core\Web.Api.Core.csproj" />
   </ItemGroup>

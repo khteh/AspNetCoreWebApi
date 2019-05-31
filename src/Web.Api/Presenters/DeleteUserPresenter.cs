@@ -5,10 +5,9 @@ using Web.Api.Serialization;
 
 namespace Web.Api.Presenters
 {
-    public class DeleteUserPresenter : IOutputPort<DeleteUserResponse>
+    public class DeleteUserPresenter : PresenterBase<DeleteUserResponse>
     {
-        public JsonContentResult ContentResult { get; } = new JsonContentResult();
-        public void Handle(DeleteUserResponse response)
+        public override void Handle(DeleteUserResponse response)
         {
             ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
             ContentResult.Content = JsonSerializer.SerializeObject(response);

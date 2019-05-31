@@ -121,6 +121,24 @@ namespace Web.Api.Infrastructure.Data.Repositories
             AppUser appUser = _mapper.Map<AppUser>(user);
             return await _userManager.CheckPasswordAsync(_mapper.Map<AppUser>(user), password);
         }
+        public async Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword)
+        {
+            try {
+                AppUser appUser = await _userManager.FindByIdAsync(id);
+                if (appUser == null)
+                    return new PasswordResponse(null, false, new List<Error>(){new Error(null, "User not found!")});
+                IdentityResult identityResult = await _userManager.ChangePasswordAsync(appUser, oldPassword, newPassword);
+                if (identityResult.Succeeded)
+                    return new PasswordResponse(id, true, null);
+                else {
+                    _logger.LogError($"{nameof(ChangePassword)} failed to change password of user {id}!");
+                    return new PasswordResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
+                }
+            } catch (Exception e) {
+                _logger.LogError($"{nameof(ChangePassword)} exception", e);
+                return null;
+            }
+        }
         private async Task<FindUserResponse> getUser(AppUser appUser)
         {
             User user = appUser == null ? null : _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));

@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Web.Api.Core\Web.Api.Core.csproj" />
     <ProjectReference Include="..\Web.Api.Infrastructure\Web.Api.Infrastructure.csproj" />
+    <Content Update="appsettings.json" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Update="appsettings.Development.json" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
-
 </Project>
