@@ -15,12 +15,16 @@
             "cwd": "${workspaceFolder}/src/Web.Api",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+		"ASPNETCORE_URLS": "http://localhost:5000/swagger"
+            },
             "launchBrowser": {
                 "enabled": true,
-                "args": "http://localhost:5000/swagger",
+                "args": "${auto-detect-url}",
                 "windows": {
                     "command": "cmd.exe",
-                    "args": "/C start http://localhost:5000/swagger"
+                    "args": "/C start ${auto-detect-url}"
                 },
                 "osx": {
                     "command": "open"
@@ -28,9 +32,6 @@
                 "linux": {
                     "command": "xdg-open"
                 }
-            },
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
@@ -42,5 +43,5 @@
             "request": "attach",
             "processId": "${command:pickProcess}"
         }
-    ,]
+    ]
 }
