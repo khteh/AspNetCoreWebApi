@@ -15,7 +15,7 @@ namespace Web.Api.Core.UseCases
         public async Task<bool> Handle(DeleteUserRequest message, IOutputPort<DeleteUserResponse> outputPort)
         {
             var response = await _userRepository.Delete(message.UserName);
-            outputPort.Handle(response.Success ? new DeleteUserResponse(response.Id.ToString(), true) : new DeleteUserResponse(response.Errors.Select(e => e.Description)));
+            outputPort.Handle(response.Success ? new DeleteUserResponse(response.Id.ToString(), true) : new DeleteUserResponse(response.Errors));
             return response.Success;
         }
     }

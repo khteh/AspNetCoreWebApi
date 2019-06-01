@@ -6,13 +6,9 @@ namespace Web.Api.Core.Dto.UseCaseResponses
     public class RegisterUserResponse : UseCaseResponseMessage 
     {
         public string Id { get; }
-        public IEnumerable<string> Errors {  get; }
-
-        public RegisterUserResponse(IEnumerable<string> errors, bool success=false, string message=null) : base(success, message)
+        public RegisterUserResponse(List<Error> errors, bool success=false, string message=null) : base(success, message, errors)
         {
-            Errors = errors;
         }
-
         public RegisterUserResponse(string id, bool success = false, string message = null) : base(success, message)
         {
             Id = id;

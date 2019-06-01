@@ -7,10 +7,9 @@ namespace Web.Api.Core.Dto.UseCaseResponses
     public class ChangePasswordResponse : UseCaseResponseMessage
     {
         public string Id { get; }
-        public IEnumerable<Error> Errors { get; }
-        public ChangePasswordResponse(IEnumerable<Error> errors, bool success = false, string message = null) : base(success, message)
+        public ChangePasswordResponse() {}
+        public ChangePasswordResponse(List<Error> errors, bool success = false, string message = null) : base(success, message, errors)
         {
-            Errors = errors;
         }
 
         public ChangePasswordResponse(string id, bool success = false, string message = null) : base(success, message)

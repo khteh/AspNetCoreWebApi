@@ -10,6 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddScoped<IFindUserUseCase, FindUserUseCase>()
             .AddScoped<IDeleteUserUseCase, DeleteUserUseCase>()
             .AddScoped<ILoginUseCase, LoginUseCase>()
-            .AddScoped<IExchangeRefreshTokenUseCase, ExchangeRefreshTokenUseCase>();
+            .AddScoped<IExchangeRefreshTokenUseCase, ExchangeRefreshTokenUseCase>()
+            .AddScoped<IChangePasswordUseCase, ChangePasswordUseCase>();
     }
 }

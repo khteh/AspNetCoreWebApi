@@ -34,13 +34,13 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 var appUser = new AppUser { Email = email, UserName = userName, FirstName = firstName, LastName = lastName };
                 var identityResult = await _userManager.CreateAsync(appUser, password);
                 if (!identityResult.Succeeded)
-                    return new CreateUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
+                    return new CreateUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                 // add the email claim and value for this user
                 await _userManager.AddClaimAsync(appUser, new Claim(ClaimTypes.Name, appUser.UserName));
                 var user = new User(firstName, lastName, appUser.Id.ToString(), appUser.UserName);
                 _appDbContext.Users.Add(user);
                 await _appDbContext.SaveChangesAsync();
-                return new CreateUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
+                return new CreateUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
             } catch (Exception e) {
                 return new CreateUserResponse(null, false, new List<Error>() { new Error(null, e.Message) });
             }
@@ -54,7 +54,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 {
                     var identityResult = await _userManager.DeleteAsync(appUser);
                     if (!identityResult.Succeeded)
-                        return new DeleteUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
+                        return new DeleteUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                     User user = _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
                     if (user != null)
                     {
@@ -62,7 +62,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
                         await _appDbContext.SaveChangesAsync();
                     } else
                         return new DeleteUserResponse(null, false, new List<Error>() { new Error(null, "Failed to remove user from app DB! This is result in inconsistency between application Users table and Identity framework!") });
-                    return new DeleteUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
+                    return new DeleteUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                 } else
                     return new DeleteUserResponse(null, false, new List<Error>() { new Error(null, "Invalid user!") });
             }
@@ -129,10 +129,10 @@ namespace Web.Api.Infrastructure.Data.Repositories
                     return new PasswordResponse(null, false, new List<Error>(){new Error(null, "User not found!")});
                 IdentityResult identityResult = await _userManager.ChangePasswordAsync(appUser, oldPassword, newPassword);
                 if (identityResult.Succeeded)
-                    return new PasswordResponse(id, true, null);
+                    return new PasswordResponse(appUser.Id, true, null);
                 else {
                     _logger.LogError($"{nameof(ChangePassword)} failed to change password of user {id}!");
-                    return new PasswordResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)));
+                    return new PasswordResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                 }
             } catch (Exception e) {
                 _logger.LogError($"{nameof(ChangePassword)} exception", e);

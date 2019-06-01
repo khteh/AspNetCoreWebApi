@@ -15,7 +15,7 @@ namespace Web.Api.Core.UseCases
         public async Task<bool> Handle(RegisterUserRequest message, IOutputPort<RegisterUserResponse> outputPort)
         {
             var response = await _userRepository.Create(message.FirstName, message.LastName,message.Email, message.UserName, message.Password);
-            outputPort.Handle(response.Success ? new RegisterUserResponse(response.Id.ToString(), true) : new RegisterUserResponse(response.Errors.Select(e => e.Description)));
+            outputPort.Handle(response.Success ? new RegisterUserResponse(response.Id, true) : new RegisterUserResponse(response.Errors));
             return response.Success;
         }
     }

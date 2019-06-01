@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
+using Web.Api.Core.Dto;
 using Web.Api.Core.Dto.UseCaseRequests;
 using Web.Api.Core.Dto.UseCaseResponses;
 using Web.Api.Core.Interfaces;
@@ -27,11 +28,11 @@ namespace Web.Api.Core.UseCases
                 response = await _userRepository.FindByEmail(message.Email);
             if (response == null)
             {
-                outputPort.Handle(new FindUserResponse(new List<string>(), false, "Invalid request input!"));
+                outputPort.Handle(new FindUserResponse(new List<Error>() { new Error(null, "Invalid request input!")}, false, "Invalid request input!"));
                 return false;
             } else
                 outputPort.Handle(response.Success ? new FindUserResponse(response.Id.ToString(), true) :
-                                                new FindUserResponse(response.Errors.Select(e => e.Description)));
+                                                new FindUserResponse(response.Errors));
             return response.Success;
         }
     }

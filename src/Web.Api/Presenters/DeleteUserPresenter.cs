@@ -7,10 +7,5 @@ namespace Web.Api.Presenters
 {
     public class DeleteUserPresenter : PresenterBase<DeleteUserResponse>
     {
-        public override void Handle(DeleteUserResponse response)
-        {
-            ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
-            ContentResult.Content = JsonSerializer.SerializeObject(response);
-        }
     }
 }

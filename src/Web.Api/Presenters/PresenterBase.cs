@@ -11,7 +11,7 @@ namespace Web.Api.Presenters
         public virtual void Handle(T response)
         {
             ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
-            ContentResult.Content = JsonSerializer.SerializeObject(response);
+            ContentResult.Content = response.Success ? JsonSerializer.SerializeObject(response) : JsonSerializer.SerializeObject(response.Errors);
         }
     }
 }

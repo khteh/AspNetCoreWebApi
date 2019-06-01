@@ -8,7 +8,7 @@ using Web.Api.Presenters;
 
 namespace Web.Api.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : ControllerBase
     {
@@ -33,9 +33,9 @@ namespace Web.Api.Controllers
             _changePasswordPresenter = changePasswordPresenter;
         }
 
-        // POST api/accounts
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] Models.Request.RegisterUserRequest request)
+        // POST api/accounts/register
+        [HttpPost("register")]
+        public async Task<ActionResult> Register([FromBody] Models.Request.RegisterUserRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -43,12 +43,12 @@ namespace Web.Api.Controllers
             return _registerUserPresenter.ContentResult;
         }
         // POST api/accounts
-        [HttpPost]
+        [HttpPost("changepassword")]
         public async Task<ActionResult> ChangePassword([FromBody] Models.Request.ChangePasswordRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            await _changePasswordUseCase.Handle(new ChangePasswordRequest(request.UserName, request.Password, request.NewPassword), _changePasswordPresenter);
+            await _changePasswordUseCase.Handle(new ChangePasswordRequest(request.Id, request.Password, request.NewPassword), _changePasswordPresenter);
             return _changePasswordPresenter.ContentResult;
         }
 

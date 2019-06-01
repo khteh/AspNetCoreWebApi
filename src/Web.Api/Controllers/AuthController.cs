@@ -17,7 +17,6 @@ namespace Web.Api.Controllers
         private readonly IExchangeRefreshTokenUseCase _exchangeRefreshTokenUseCase;
         private readonly ExchangeRefreshTokenPresenter _exchangeRefreshTokenPresenter;
         private readonly AuthSettings _authSettings;
-        
         public AuthController(ILoginUseCase loginUseCase, LoginPresenter loginPresenter, IExchangeRefreshTokenUseCase exchangeRefreshTokenUseCase, ExchangeRefreshTokenPresenter exchangeRefreshTokenPresenter, IOptions<AuthSettings> authSettings)
         {
             _loginUseCase = loginUseCase;

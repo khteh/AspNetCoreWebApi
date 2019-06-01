@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Web.Api.Core.Dto;
 using Web.Api.Core.Dto.UseCaseResponses;
 using Web.Api.Presenters;
 using Xunit;
@@ -47,11 +48,11 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new FindUserPresenter();
 
             // act
-            presenter.Handle(new FindUserResponse(new[] { "missing first name" }));
+            presenter.Handle(new FindUserResponse(new List<Error>() { new Error(null, "missing first name") }));
 
             // assert
             dynamic data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
-            Assert.False(data.success.Value);
+            Assert.Equal((int)HttpStatusCode.BadRequest, presenter.ContentResult.StatusCode);
             Assert.Equal("missing first name", data.errors.First.Value);
         }
     }

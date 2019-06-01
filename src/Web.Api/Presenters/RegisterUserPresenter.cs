@@ -9,8 +9,8 @@ namespace Web.Api.Presenters
     {
         public override void Handle(RegisterUserResponse response)
         {
+            base.Handle(response);
             ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.Created : HttpStatusCode.BadRequest);
-            ContentResult.Content = JsonSerializer.SerializeObject(response);
         }
     }
 }

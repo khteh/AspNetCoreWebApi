@@ -1,53 +1,35 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <RuntimeFrameworkVersion>2.2.4</RuntimeFrameworkVersion>    
+    <RuntimeFrameworkVersion>2.2.4</RuntimeFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="automapper" Version="8.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.2.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="2.2.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.4.0" />
-    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.16" />
-    <PackageReference Include="MySql.Data.EntityFrameworkCore.Design" Version="8.0.16" />
-    <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
-    <PackageReference Include="Serilog.Formatting.Compact" Version="1.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
-    <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="7.1.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
-    <!-- Keep this -->
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0-preview2-35157" />
+    <PackageReference Include="automapper" Version="8.1.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4"/>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.2.4"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0"/>
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="2.2.0"/>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.4.0"/>
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.16"/>
+    <PackageReference Include="MySql.Data.EntityFrameworkCore.Design" Version="8.0.16"/>
+    <PackageReference Include="Serilog.AspNetCore" Version="2.1.1"/>
+    <PackageReference Include="Serilog.Formatting.Compact" Version="1.0.0"/>
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1"/>
+    <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="7.1.0"/>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0"/>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0"/>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2"/>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0-preview2-35157"/>
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="System">
       <HintPath>System</HintPath>
     </Reference>
   </ItemGroup>
-
-  <!--<ItemGroup>
-    <Compile Update="appsettings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>appsettings.json</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
   <ItemGroup>
-    <None Update="appsettings.json">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>appsettings.Designer.cs</LastGenOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="appsettings.Development.json" CopyToOutputDirectory="PreserveNewest"/>
-  </ItemGroup> -->
-  <ItemGroup>
-    <ProjectReference Include="..\Web.Api.Core\Web.Api.Core.csproj" />
+    <ProjectReference Include="..\Web.Api.Core\Web.Api.Core.csproj"/>
   </ItemGroup>
 </Project>

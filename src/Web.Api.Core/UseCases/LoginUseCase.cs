@@ -46,7 +46,7 @@ namespace Web.Api.Core.UseCases
                     }
                 }
             }
-            outputPort.Handle(new LoginResponse(new[] { new Error("login_failure", "Invalid username or password.") }));
+            outputPort.Handle(new LoginResponse(new System.Collections.Generic.List<Error>() { new Error("login_failure", "Invalid username or password.") }));
             return false;
         }
     }
