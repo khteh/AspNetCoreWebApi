@@ -14,14 +14,8 @@ namespace Web.Api.Serialization
             ContractResolver = new JsonContractResolver(),
             NullValueHandling = NullValueHandling.Ignore,
         };
-        public static string SerializeObject(object o)
-        {
-            return JsonConvert.SerializeObject(o, Formatting.Indented, Settings);
-        }
-        public static T DeSerializeObject<T>(string str)
-        {
-            return JsonConvert.DeserializeObject<T>(str, Settings);
-        }
+        public static string SerializeObject(object o) => JsonConvert.SerializeObject(o, Formatting.Indented, Settings);
+        public static T DeSerializeObject<T>(string str) => JsonConvert.DeserializeObject<T>(str, Settings);
         public sealed class JsonContractResolver : CamelCasePropertyNamesContractResolver
         {
         }

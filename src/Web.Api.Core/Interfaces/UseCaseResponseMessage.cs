@@ -9,7 +9,6 @@ namespace Web.Api.Core.Interfaces
         public bool Success { get; }
         public string Message { get; }
         public List<Error> Errors { get; }
-
         protected UseCaseResponseMessage(bool success = false, string message = null, List<Error> errors = null)
         {
             Success = success;
