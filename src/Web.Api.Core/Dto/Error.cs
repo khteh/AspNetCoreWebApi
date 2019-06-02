@@ -1,7 +1,10 @@
-﻿ 
+﻿
+
+using System;
 
 namespace Web.Api.Core.Dto
 {
+    [Serializable]
     public sealed class Error
     {
         public string Code { get; }

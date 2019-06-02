@@ -8,11 +8,12 @@ namespace Web.Api.Serialization
         private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.All,
-            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,//System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full,
+            PreserveReferencesHandling = PreserveReferencesHandling.All,
+            ObjectCreationHandling = ObjectCreationHandling.Replace,
+            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
             ContractResolver = new JsonContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
+            NullValueHandling = NullValueHandling.Ignore,
         };
-
         public static string SerializeObject(object o)
         {
             return JsonConvert.SerializeObject(o, Formatting.Indented, Settings);
@@ -21,7 +22,6 @@ namespace Web.Api.Serialization
         {
             return JsonConvert.DeserializeObject<T>(str, Settings);
         }
-
         public sealed class JsonContractResolver : CamelCasePropertyNamesContractResolver
         {
         }

@@ -50,11 +50,11 @@ namespace Web.Api.UnitTests.Presenters
             presenter.Handle(new ChangePasswordResponse(new List<Error> { new Error("", "Invalid username/password") }));
 
             // assert
-            ChangePasswordResponse data = Serialization.JsonSerializer.DeSerializeObject<ChangePasswordResponse>(presenter.ContentResult.Content);
+            List<Error> errors = Serialization.JsonSerializer.DeSerializeObject<List<Error>>(presenter.ContentResult.Content);
             Assert.Equal((int)HttpStatusCode.BadRequest, presenter.ContentResult.StatusCode);
-            Assert.Null(data.Errors);
-            Assert.NotEmpty(data.Errors);
-            Assert.Equal("Invalid username/password", data.Errors.First().Description);
+            Assert.NotNull(errors);
+            Assert.NotEmpty(errors);
+            Assert.Equal("Invalid username/password", errors.First().Description);
         }
     }
 }

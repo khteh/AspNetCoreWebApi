@@ -49,11 +49,11 @@ namespace Web.Api.UnitTests.Presenters
             presenter.Handle(new DeleteUserResponse(new List<Error>() { new Error(null, "Invalid user!") }));
 
             // assert
-            DeleteUserResponse data = Serialization.JsonSerializer.DeSerializeObject<DeleteUserResponse>(presenter.ContentResult.Content);
+            List<Error> errors = Serialization.JsonSerializer.DeSerializeObject<List<Error>>(presenter.ContentResult.Content);
             Assert.Equal((int)HttpStatusCode.BadRequest, presenter.ContentResult.StatusCode);
-            Assert.NotNull(data.Errors);
-            Assert.NotEmpty(data.Errors);
-            Assert.Equal("Invalid user!", data.Errors.First().Description);
+            Assert.NotNull(errors);
+            Assert.NotEmpty(errors);
+            Assert.Equal("Invalid user!", errors.First().Description);
         }
     }
 }
