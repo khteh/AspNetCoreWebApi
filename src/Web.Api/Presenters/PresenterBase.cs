@@ -11,7 +11,6 @@ namespace Web.Api.Presenters
         {
             ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
             ContentResult.Content = response.Success ? JsonSerializer.SerializeObject(response) : JsonSerializer.SerializeObject(response.Errors);
-            //ContentResult.Content = response.Success ? JsonConvert.SerializeObject(response, Formatting.Indented) :
         }
     }
 }
