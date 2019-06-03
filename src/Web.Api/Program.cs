@@ -67,7 +67,8 @@ namespace Web.Api
                 logging.AddDebug();
                 logging.AddEventSourceLogger();
                 logging.AddSerilog(dispose: true);
-            }).UseSerilog()
+            })
+            .UseSerilog() // Add the Serilog ILoggerFactory to IHostBuilder
             .UseStartup<Startup>()
             .ConfigureKestrel((context, options) =>
             {
