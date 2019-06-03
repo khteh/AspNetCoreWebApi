@@ -37,7 +37,8 @@ namespace Web.Api.Core.UnitTests.UseCases
 
             // assert
             Assert.True(response);
+            mockUserRepository.VerifyAll();
+            mockOutputPort.VerifyAll();
         }
-
     }
 }

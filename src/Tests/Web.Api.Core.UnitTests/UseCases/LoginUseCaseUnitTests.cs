@@ -37,6 +37,10 @@ namespace Web.Api.Core.UnitTests.UseCases
 
             // assert
             Assert.True(response);
+            mockUserRepository.VerifyAll();
+            mockOutputPort.VerifyAll();
+            mockTokenFactory.VerifyAll();
+            mockJwtFactory.VerifyAll();
         }
 
         [Fact]
@@ -65,6 +69,11 @@ namespace Web.Api.Core.UnitTests.UseCases
             // assert
             Assert.False(response);
             mockTokenFactory.Verify(factory => factory.GenerateToken(32), Times.Never);
+            mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
+            mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+            mockOutputPort.VerifyAll();
+            mockTokenFactory.VerifyAll();
+            mockJwtFactory.Verify(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
 
@@ -93,6 +102,11 @@ namespace Web.Api.Core.UnitTests.UseCases
             // assert
             Assert.False(response);
             mockTokenFactory.Verify(factory => factory.GenerateToken(32), Times.Never);
+            mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
+            mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+            mockOutputPort.VerifyAll();
+            mockTokenFactory.VerifyAll();
+            mockJwtFactory.Verify(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -120,6 +134,11 @@ namespace Web.Api.Core.UnitTests.UseCases
             // assert
             Assert.False(response);
             mockTokenFactory.Verify(factory => factory.GenerateToken(32), Times.Never);
+            mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
+            mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+            mockOutputPort.VerifyAll();
+            mockTokenFactory.VerifyAll();
+            mockJwtFactory.Verify(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
     }
 }

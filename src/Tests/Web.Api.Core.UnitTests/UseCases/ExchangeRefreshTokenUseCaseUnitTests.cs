@@ -32,6 +32,8 @@ namespace Web.Api.Core.UnitTests.UseCases
 
             // assert
             Assert.False(response);
+            mockJwtTokenValidator.VerifyAll();
+            mockOutputPort.VerifyAll();
         }
 
         [Fact]
@@ -67,6 +69,9 @@ namespace Web.Api.Core.UnitTests.UseCases
 
             // assert
             Assert.True(response);
+            mockJwtTokenValidator.VerifyAll();
+            mockOutputPort.VerifyAll();
+            mockTokenFactory.VerifyAll();
         }
     }
 }

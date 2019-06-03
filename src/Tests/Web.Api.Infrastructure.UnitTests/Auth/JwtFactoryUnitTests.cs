@@ -35,6 +35,7 @@ namespace Web.Api.Infrastructure.UnitTests.Auth
 
             // assert
             Assert.Equal(token,result.Token);
+            mockJwtTokenHandler.VerifyAll();
         }
     }
 }

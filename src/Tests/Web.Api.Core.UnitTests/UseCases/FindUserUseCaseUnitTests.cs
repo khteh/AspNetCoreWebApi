@@ -37,6 +37,8 @@ namespace Web.Api.Core.UnitTests.UseCases
 
             // assert
             Assert.True(response);
+            mockUserRepository.VerifyAll();
+            mockOutputPort.VerifyAll();
         }
         [Fact]
         public async void Handle_FindByUsername_Succeed()
@@ -64,6 +66,8 @@ namespace Web.Api.Core.UnitTests.UseCases
 
             // assert
             Assert.True(response);
+            mockUserRepository.VerifyAll();
+            mockOutputPort.VerifyAll();
         }
         [Fact]
         public async void Handle_FindByEmail_Succeed()
@@ -91,6 +95,8 @@ namespace Web.Api.Core.UnitTests.UseCases
 
             // assert
             Assert.True(response);
+            mockUserRepository.VerifyAll();
+            mockOutputPort.VerifyAll();
         }
         [Fact]
         public async void Handle_FindByMultipleParams_ShouldPassWithFindById()
@@ -118,6 +124,8 @@ namespace Web.Api.Core.UnitTests.UseCases
 
             // assert
             Assert.True(response);
+            mockUserRepository.VerifyAll();
+            mockOutputPort.VerifyAll();
         }
         [Fact]
         public async void Handle_FindByInvalidEmptyParams_ShouldFail()
@@ -145,7 +153,8 @@ namespace Web.Api.Core.UnitTests.UseCases
 
             // assert
             Assert.False(response);
+            mockUserRepository.Verify(factory => factory.FindById(string.Empty), Times.Never);
+            mockOutputPort.VerifyAll();
         }
-
     }
 }
