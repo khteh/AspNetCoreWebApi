@@ -8,7 +8,6 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.Services;
 using Web.Api.Core.Interfaces.UseCases;
 
-
 namespace Web.Api.Core.UseCases
 {
     public sealed class LoginUseCase : ILoginUseCase
@@ -28,13 +27,10 @@ namespace Web.Api.Core.UseCases
         {
             if (!string.IsNullOrEmpty(message.UserName) && !string.IsNullOrEmpty(message.Password))
             {
-                // ensure we have a user with the given user name
-                User user = await _userRepository.FindUserByName(message.UserName);
-                if (user != null)
+                if (await _userRepository.CheckPassword(message.UserName, message.Password))
                 {
-                    // validate password
-                    if (await _userRepository.CheckPassword(user, message.Password))
-                    {
+                    User user = await _userRepository.FindUserByName(message.UserName);
+                    if (user != null) {
                         // generate refresh token
                         var refreshToken = _tokenFactory.GenerateToken();
                         user.AddRefreshToken(refreshToken, user.Id, message.RemoteIpAddress);

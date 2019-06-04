@@ -116,10 +116,10 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 return null;
             }
         }
-        public async Task<bool> CheckPassword(User user, string password)
-        {
-            AppUser appUser = _mapper.Map<AppUser>(user);
-            return await _userManager.CheckPasswordAsync(_mapper.Map<AppUser>(user), password);
+        public async Task<bool> CheckPassword(string username, string password) {
+            AppUser user = await _userManager.FindByNameAsync(username);
+            return user != null ?
+            await _userManager.CheckPasswordAsync(user, password) : false;
         }
         public async Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword)
         {

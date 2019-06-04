@@ -13,13 +13,12 @@ namespace Web.Api.Infrastructure.Identity
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public AppUser() { }
-        public AppUser(string username, string email, string firstName, string lastName, string passwordHash)
+        public AppUser(string username, string email, string firstName, string lastName)
         {
             UserName = username;
             Email = email;
             FirstName = firstName;
             LastName = lastName;
-            PasswordHash = passwordHash;
         }
     }
 }

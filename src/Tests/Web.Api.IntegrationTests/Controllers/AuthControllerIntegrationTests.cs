@@ -40,7 +40,7 @@ namespace Web.Api.IntegrationTests.Controllers
         [Fact]
         public async Task CanLoginWithValidCredentials()
         {
-            var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest{UserName = "mickeymouse", Password = "Pa$$W0rd1" }), Encoding.UTF8, "application/json"));
+            var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest{UserName = "mickeymouse", Password = "P@$$w0rd" }), Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
             dynamic result = JObject.Parse(stringResponse);

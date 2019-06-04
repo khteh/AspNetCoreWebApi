@@ -8,7 +8,7 @@ namespace Web.Api.Infrastructure.Data.Mapping
     {
         public DataProfile()
         {
-            CreateMap<User, AppUser>().ConstructUsing(u => new AppUser(u.UserName, u.Email, u.FirstName, u.LastName, u.PasswordHash))
+            CreateMap<User, AppUser>().ConstructUsing(u => new AppUser(u.UserName, u.Email, u.FirstName, u.LastName))
                                         .ForMember(au => au.Id, opt => opt.Ignore())
                                         .ForAllOtherMembers(o => o.Ignore());
             CreateMap<AppUser, User>()

@@ -12,7 +12,7 @@ namespace Web.Api.Core.Interfaces.Gateways.Repositories
         Task<User> FindUserByName(string userName);
         Task<FindUserResponse> FindByName(string userName);
         Task<FindUserResponse> FindByEmail(string email);
-        Task<bool> CheckPassword(User user, string password);
+        Task<bool> CheckPassword(string username, string password);
         Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword);
     }
 }
