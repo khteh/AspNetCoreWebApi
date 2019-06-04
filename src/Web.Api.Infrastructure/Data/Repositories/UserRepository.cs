@@ -118,8 +118,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
         }
         public async Task<bool> CheckPassword(string username, string password) {
             AppUser user = await _userManager.FindByNameAsync(username);
-            return user != null ?
-            await _userManager.CheckPasswordAsync(user, password) : false;
+            return user != null ? await _userManager.CheckPasswordAsync(user, password) : false;
         }
         public async Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword)
         {
