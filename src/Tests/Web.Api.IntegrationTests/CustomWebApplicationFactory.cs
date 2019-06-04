@@ -32,7 +32,6 @@ namespace Web.Api.IntegrationTests
                     options.UseInMemoryDatabase("InMemoryIdentityDb");
                     options.UseInternalServiceProvider(serviceProvider);
                 });
-               
                 // Build the service provider.
                 var sp = services.BuildServiceProvider();
 
