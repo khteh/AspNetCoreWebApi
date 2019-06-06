@@ -14,8 +14,8 @@ namespace Web.Api.Infrastructure.Data.Mapping
             CreateMap<AppUser, User>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.IdentityId, o => o.MapFrom(src => src.Id))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.PasswordHash))
                 .ForMember(dest => dest.FirstName, o => o.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.LastName, o => o.MapFrom(src => src.LastName))
                 .ForAllOtherMembers(opt => opt.Ignore());

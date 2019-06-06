@@ -55,7 +55,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
                     var identityResult = await _userManager.DeleteAsync(appUser);
                     if (!identityResult.Succeeded)
                         return new DeleteUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
-                    User user = _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
+                    User user = await GetSingleBySpec(new UserSpecification(appUser.Id));
                     if (user != null)
                     {
                         _appDbContext.Users.Remove(user);
@@ -75,11 +75,12 @@ namespace Web.Api.Infrastructure.Data.Repositories
         {
             try
             {
-                var appUser = await _userManager.FindByNameAsync(userName);
-                return appUser == null ? null : _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
+                AppUser appUser = await _userManager.FindByNameAsync(userName);
+                return appUser == null ? null : await GetSingleBySpec(new UserSpecification(appUser.Id));
             }
             catch (Exception e)
             {
+                _logger.LogCritical($"{nameof(FindUserByName)} exception", e);
                 return null;
             }
         }
@@ -140,7 +141,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
         }
         private async Task<FindUserResponse> getUser(AppUser appUser)
         {
-            User user = appUser == null ? null : _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
+            User user = appUser == null ? null : await GetSingleBySpec(new UserSpecification(appUser.Id));
             return user == null ? new FindUserResponse(null, false, new List<Error>() { new Error(null, "User not found!") }) : 
                 new FindUserResponse(appUser.Id, true, null);
         }
