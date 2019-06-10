@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Identity;
-
+using Web.Api.Infrastructure.Data.Repositories;
 namespace Web.Api.IntegrationTests
 {
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Startup>
@@ -17,7 +18,7 @@ namespace Web.Api.IntegrationTests
             {
                 // Create a new service provider.
                 var serviceProvider = new ServiceCollection()
-                    .AddEntityFrameworkInMemoryDatabase()
+                    .AddEntityFrameworkInMemoryDatabase().AddLogging()
                     .BuildServiceProvider();
 
                 // Add a database context (AppDbContext) using an in-memory database for testing.
@@ -32,6 +33,11 @@ namespace Web.Api.IntegrationTests
                     options.UseInMemoryDatabase("InMemoryIdentityDb");
                     options.UseInternalServiceProvider(serviceProvider);
                 });
+                services.AddScoped<SignInManager<AppUser>>();
+                services.AddScoped<ILogger<UserRepository>>(provider => {
+                    ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+                    return loggerFactory.CreateLogger<UserRepository>();
+                });
                 // Build the service provider.
                 var sp = services.BuildServiceProvider();
 
@@ -41,7 +47,6 @@ namespace Web.Api.IntegrationTests
                     var scopedServices = scope.ServiceProvider;
                     var appDb = scopedServices.GetRequiredService<AppDbContext>();
                     var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
-
                     var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
 
                     // Ensure the database is created.

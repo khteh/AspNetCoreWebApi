@@ -1,7 +1,7 @@
 using Moq;
-using Web.Api.Core.Dto.GatewayResponses.Repositories;
-using Web.Api.Core.Dto.UseCaseRequests;
-using Web.Api.Core.Dto.UseCaseResponses;
+using Web.Api.Core.DTO.GatewayResponses.Repositories;
+using Web.Api.Core.DTO.UseCaseRequests;
+using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
@@ -19,7 +19,7 @@ namespace Web.Api.Core.UnitTests.UseCases
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository
               .Setup(repo => repo.ChangePassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new Dto.GatewayResponses.Repositories.PasswordResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse("", true));
 
             // 2. The use case and star of this test
             var useCase = new ChangePasswordUseCase(mockUserRepository.Object);

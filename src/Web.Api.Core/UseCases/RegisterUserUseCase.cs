@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Web.Api.Core.Dto.UseCaseRequests;
-using Web.Api.Core.Dto.UseCaseResponses;
+using Web.Api.Core.DTO.UseCaseRequests;
+using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.UseCases;
@@ -14,7 +14,7 @@ namespace Web.Api.Core.UseCases
         public RegisterUserUseCase(IUserRepository userRepository) => _userRepository = userRepository;
         public async Task<bool> Handle(RegisterUserRequest message, IOutputPort<RegisterUserResponse> outputPort)
         {
-            var response = await _userRepository.Create(message.FirstName, message.LastName,message.Email, message.UserName, message.Password);
+            var response = await _userRepository.Create(message.FirstName, message.LastName, message.Email, message.UserName, message.Password);
             outputPort.Handle(response.Success ? new RegisterUserResponse(response.Id, true) : new RegisterUserResponse(response.Errors));
             return response.Success;
         }

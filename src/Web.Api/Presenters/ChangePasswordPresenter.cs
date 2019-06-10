@@ -1,4 +1,4 @@
-using Web.Api.Core.Dto.UseCaseResponses;
+using Web.Api.Core.DTO.UseCaseResponses;
 
 namespace Web.Api.Presenters
 {

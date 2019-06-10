@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Web.Api.Core.Interfaces;
 
-namespace Web.Api.Core.Dto.UseCaseResponses
+namespace Web.Api.Core.DTO.UseCaseResponses
 {
     public class RegisterUserResponse : UseCaseResponseMessage 
     {

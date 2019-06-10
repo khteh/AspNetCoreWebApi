@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using Newtonsoft.Json;
-using Web.Api.Core.Dto;
-using Web.Api.Core.Dto.UseCaseResponses;
+using Web.Api.Core.DTO;
+using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Presenters;
 using Xunit;
 

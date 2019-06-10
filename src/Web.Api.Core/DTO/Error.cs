@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Web.Api.Core.Dto
+namespace Web.Api.Core.DTO
 {
     public sealed class Error
     {

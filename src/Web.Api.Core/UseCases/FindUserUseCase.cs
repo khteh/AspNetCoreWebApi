@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
-using Web.Api.Core.Dto;
-using Web.Api.Core.Dto.UseCaseRequests;
-using Web.Api.Core.Dto.UseCaseResponses;
+using Web.Api.Core.DTO;
+using Web.Api.Core.DTO.UseCaseRequests;
+using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.UseCases;
@@ -19,7 +19,7 @@ namespace Web.Api.Core.UseCases
         public FindUserUseCase(IUserRepository userRepository) => _userRepository = userRepository;
         public async Task<bool> Handle(FindUserRequest message, IOutputPort<FindUserResponse> outputPort)
         {
-            Dto.GatewayResponses.Repositories.FindUserResponse response = null;
+            DTO.GatewayResponses.Repositories.FindUserResponse response = null;
             if (!string.IsNullOrEmpty(message.Id))
                 response = await _userRepository.FindById(message.Id);
             else if (!string.IsNullOrEmpty(message.UserName))

@@ -1,6 +1,6 @@
 ﻿
 using System.Collections.Generic;
-using Web.Api.Core.Dto;
+using Web.Api.Core.DTO;
 
 namespace Web.Api.Core.Interfaces
 {

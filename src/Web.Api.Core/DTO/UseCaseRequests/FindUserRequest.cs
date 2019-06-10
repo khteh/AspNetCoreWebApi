@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Web.Api.Core.Dto.UseCaseResponses;
+using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 
-namespace Web.Api.Core.Dto.UseCaseRequests
+namespace Web.Api.Core.DTO.UseCaseRequests
 {
     public class FindUserRequest : IUseCaseRequest<FindUserResponse>
     {

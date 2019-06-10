@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Web.Api.Core.Dto;
+using Web.Api.Core.DTO;
 
 namespace Web.Api.Core.Interfaces.Services
 {

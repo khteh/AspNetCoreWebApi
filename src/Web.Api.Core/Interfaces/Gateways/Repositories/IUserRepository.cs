@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
-using Web.Api.Core.Dto.GatewayResponses.Repositories;
+using Web.Api.Core.DTO.GatewayResponses.Repositories;
 
 namespace Web.Api.Core.Interfaces.Gateways.Repositories
 {
@@ -12,7 +12,8 @@ namespace Web.Api.Core.Interfaces.Gateways.Repositories
         Task<User> FindUserByName(string userName);
         Task<FindUserResponse> FindByName(string userName);
         Task<FindUserResponse> FindByEmail(string email);
-        Task<bool> CheckPassword(string username, string password);
+        Task<LogInResponse> CheckPassword(string username, string password);
+        Task<LogInResponse> SignIn(string username, string password, bool rememberMe, bool logoutOnFailure);
         Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword);
     }
 }

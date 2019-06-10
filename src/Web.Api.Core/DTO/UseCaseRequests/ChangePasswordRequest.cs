@@ -1,8 +1,8 @@
 using System;
-using Web.Api.Core.Dto.UseCaseResponses;
+using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 
-namespace Web.Api.Core.Dto.UseCaseRequests
+namespace Web.Api.Core.DTO.UseCaseRequests
 {
     public class ChangePasswordRequest : IUseCaseRequest<ChangePasswordResponse>
     {

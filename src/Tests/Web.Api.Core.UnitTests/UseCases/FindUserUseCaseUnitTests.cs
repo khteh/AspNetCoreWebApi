@@ -1,7 +1,7 @@
 ﻿using Moq;
-using Web.Api.Core.Dto.GatewayResponses.Repositories;
-using Web.Api.Core.Dto.UseCaseRequests;
-using Web.Api.Core.Dto.UseCaseResponses;
+using Web.Api.Core.DTO.GatewayResponses.Repositories;
+using Web.Api.Core.DTO.UseCaseRequests;
+using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
@@ -20,15 +20,15 @@ namespace Web.Api.Core.UnitTests.UseCases
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository
               .Setup(repo => repo.FindById(It.IsAny<string>()))
-              .ReturnsAsync(new Dto.GatewayResponses.Repositories.FindUserResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", true));
 
             // 2. The use case and star of this test
             var useCase = new FindUserUseCase(mockUserRepository.Object);
 
             // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
             // for final preparation to deliver back to the UI/web page/api response etc.
-            var mockOutputPort = new Mock<IOutputPort<Dto.UseCaseResponses.FindUserResponse>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<Dto.UseCaseResponses.FindUserResponse>()));
+            var mockOutputPort = new Mock<IOutputPort<DTO.UseCaseResponses.FindUserResponse>>();
+            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<DTO.UseCaseResponses.FindUserResponse>()));
 
             // act
 
@@ -49,15 +49,15 @@ namespace Web.Api.Core.UnitTests.UseCases
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository
               .Setup(repo => repo.FindByName(It.IsAny<string>()))
-              .ReturnsAsync(new Dto.GatewayResponses.Repositories.FindUserResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", true));
 
             // 2. The use case and star of this test
             var useCase = new FindUserUseCase(mockUserRepository.Object);
 
             // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
             // for final preparation to deliver back to the UI/web page/api response etc.
-            var mockOutputPort = new Mock<IOutputPort<Dto.UseCaseResponses.FindUserResponse>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<Dto.UseCaseResponses.FindUserResponse>()));
+            var mockOutputPort = new Mock<IOutputPort<DTO.UseCaseResponses.FindUserResponse>>();
+            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<DTO.UseCaseResponses.FindUserResponse>()));
 
             // act
 
@@ -78,15 +78,15 @@ namespace Web.Api.Core.UnitTests.UseCases
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository
               .Setup(repo => repo.FindByEmail(It.IsAny<string>()))
-              .ReturnsAsync(new Dto.GatewayResponses.Repositories.FindUserResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", true));
 
             // 2. The use case and star of this test
             var useCase = new FindUserUseCase(mockUserRepository.Object);
 
             // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
             // for final preparation to deliver back to the UI/web page/api response etc.
-            var mockOutputPort = new Mock<IOutputPort<Dto.UseCaseResponses.FindUserResponse>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<Dto.UseCaseResponses.FindUserResponse>()));
+            var mockOutputPort = new Mock<IOutputPort<DTO.UseCaseResponses.FindUserResponse>>();
+            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<DTO.UseCaseResponses.FindUserResponse>()));
 
             // act
 
@@ -107,15 +107,15 @@ namespace Web.Api.Core.UnitTests.UseCases
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository
               .Setup(repo => repo.FindById(It.IsAny<string>()))
-              .ReturnsAsync(new Dto.GatewayResponses.Repositories.FindUserResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", true));
 
             // 2. The use case and star of this test
             var useCase = new FindUserUseCase(mockUserRepository.Object);
 
             // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
             // for final preparation to deliver back to the UI/web page/api response etc.
-            var mockOutputPort = new Mock<IOutputPort<Dto.UseCaseResponses.FindUserResponse>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<Dto.UseCaseResponses.FindUserResponse>()));
+            var mockOutputPort = new Mock<IOutputPort<DTO.UseCaseResponses.FindUserResponse>>();
+            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<DTO.UseCaseResponses.FindUserResponse>()));
 
             // act
 
@@ -136,15 +136,15 @@ namespace Web.Api.Core.UnitTests.UseCases
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository
               .Setup(repo => repo.FindById(It.IsAny<string>()))
-              .ReturnsAsync(new Dto.GatewayResponses.Repositories.FindUserResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", true));
 
             // 2. The use case and star of this test
             var useCase = new FindUserUseCase(mockUserRepository.Object);
 
             // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
             // for final preparation to deliver back to the UI/web page/api response etc.
-            var mockOutputPort = new Mock<IOutputPort<Dto.UseCaseResponses.FindUserResponse>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<Dto.UseCaseResponses.FindUserResponse>()));
+            var mockOutputPort = new Mock<IOutputPort<DTO.UseCaseResponses.FindUserResponse>>();
+            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<DTO.UseCaseResponses.FindUserResponse>()));
 
             // act
 

@@ -6,25 +6,27 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Web.Api.Core.Domain.Entities;
-using Web.Api.Core.Dto;
-using Web.Api.Core.Dto.GatewayResponses.Repositories;
-//using Web.Api.Core.Dto.UseCaseResponses;
+using Web.Api.Core.DTO;
+using Web.Api.Core.DTO.GatewayResponses.Repositories;
+//using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Specifications;
 using Web.Api.Infrastructure.Identity;
 using Microsoft.Extensions.Logging;
 namespace Web.Api.Infrastructure.Data.Repositories
 {
-    internal sealed class UserRepository : EfRepository<User>, IUserRepository
+    public sealed class UserRepository : EfRepository<User>, IUserRepository
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly IMapper _mapper;
         private readonly ILogger<UserRepository> _logger;
-
-        public UserRepository(ILogger<UserRepository> logger, UserManager<AppUser> userManager, IMapper mapper, AppDbContext appDbContext): base(appDbContext)
+        public UserRepository(ILogger<UserRepository> logger, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IMapper mapper, AppDbContext appDbContext): base(appDbContext)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<CreateUserResponse> Create(string firstName, string lastName, string email, string userName, string password)
@@ -42,6 +44,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 await _appDbContext.SaveChangesAsync();
                 return new CreateUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
             } catch (Exception e) {
+                _logger.LogCritical($"{nameof(UserRepository)}.{nameof(Create)} Exception! {e.Message}");
                 return new CreateUserResponse(null, false, new List<Error>() { new Error(null, e.Message) });
             }
         }
@@ -55,7 +58,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
                     var identityResult = await _userManager.DeleteAsync(appUser);
                     if (!identityResult.Succeeded)
                         return new DeleteUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
-                    User user = await GetSingleBySpec(new UserSpecification(appUser.Id));
+                    User user = _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
                     if (user != null)
                     {
                         _appDbContext.Users.Remove(user);
@@ -68,6 +71,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
             }
             catch (Exception e)
             {
+                _logger.LogCritical($"{nameof(UserRepository)}.{nameof(Delete)} Exception! {e.Message}");
                 return new DeleteUserResponse(null, false, new List<Error>() { new Error(null, e.Message) });
             }
         }
@@ -76,7 +80,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
             try
             {
                 AppUser appUser = await _userManager.FindByNameAsync(userName);
-                return appUser == null ? null : await GetSingleBySpec(new UserSpecification(appUser.Id));
+                return appUser == null ? null : _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
             }
             catch (Exception e)
             {
@@ -92,6 +96,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 return await getUser(await _userManager.FindByNameAsync(userName));
             } catch (Exception e)
             {
+                _logger.LogCritical($"{nameof(UserRepository)}.{nameof(FindByName)} Exception! {e.Message}");
                 return null;
             }
         }
@@ -103,6 +108,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
             }
             catch (Exception e)
             {
+                _logger.LogCritical($"{nameof(UserRepository)}.{nameof(FindById)} Exception! {e.Message}");
                 return null;
             }
         }
@@ -114,12 +120,60 @@ namespace Web.Api.Infrastructure.Data.Repositories
             }
             catch (Exception e)
             {
+                _logger.LogCritical($"{nameof(UserRepository)}.{nameof(FindByEmail)} Exception! {e.Message}");
                 return null;
             }
         }
-        public async Task<bool> CheckPassword(string username, string password) {
+        /// <summary>
+        /// SignIn - Requires AddCookie() in startup.cs
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <param name="rememberMe"></param>
+        /// <param name="logoutOnFailure"></param>
+        /// <returns></returns>
+        public async Task<LogInResponse> SignIn(string username, string password, bool rememberMe, bool logoutOnFailure)
+        {
+            try {
+            SignInResult result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, logoutOnFailure);
+            if (result.IsNotAllowed)
+            {
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} is not allowed to login!");
+                return new LogInResponse(null, false, new List<Error>() {new Error("IsNotAllowed", $"User account {username} is not allowed to login!")});
+            }
+            if (result.IsLockedOut)
+            {
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} locked out!");
+                return new LogInResponse(null, false, new List<Error>() {new Error("IsLockedOut", $"User account {username} locked out!")});
+            }
+            if (result.RequiresTwoFactor)
+            {
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} requires two-factor authentication!");
+                return new LogInResponse(null, false, new List<Error>() {new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!")});
+            }
+            if (!result.Succeeded) {
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password}!");
+                return new LogInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Invalid username or password!")});
+            }
+            _logger.LogInformation(2, $"User {username} log in successfully!");
+            return new LogInResponse(await FindUserByName(username), true);
+            } catch (Exception e) {
+                _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Exception! e.Message");
+                return new LogInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Exception! e.Message")});
+            }
+        }
+        public async Task<LogInResponse> CheckPassword(string username, string password) {
+            try {
             AppUser user = await _userManager.FindByNameAsync(username);
-            return user != null ? await _userManager.CheckPasswordAsync(user, password) : false;
+            if (user == null || !await _userManager.CheckPasswordAsync(user, password)) {
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Invalid username {username} and password {password}!");
+                return new LogInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Invalid username or password!")});
+            }
+            return new LogInResponse(await FindUserByName(username), true);
+            } catch (Exception e) {
+                _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Exception! e.Message");
+                return new LogInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Exception! e.Message")});
+            }
         }
         public async Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword)
         {
@@ -141,7 +195,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
         }
         private async Task<FindUserResponse> getUser(AppUser appUser)
         {
-            User user = appUser == null ? null : await GetSingleBySpec(new UserSpecification(appUser.Id));
+            User user = appUser == null ? null : _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
             return user == null ? new FindUserResponse(null, false, new List<Error>() { new Error(null, "User not found!") }) : 
                 new FindUserResponse(appUser.Id, true, null);
         }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Web.Api.Core.Dto.GatewayResponses.Repositories
+namespace Web.Api.Core.DTO.GatewayResponses.Repositories
 {
     public sealed class DeleteUserResponse : BaseGatewayResponse
     {

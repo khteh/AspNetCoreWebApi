@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
-using Web.Api.Core.Dto;
-using Web.Api.Core.Dto.UseCaseRequests;
-using Web.Api.Core.Dto.UseCaseResponses;
+using Web.Api.Core.DTO;
+using Web.Api.Core.DTO.GatewayResponses.Repositories;
+using Web.Api.Core.DTO.UseCaseRequests;
+using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.Services;
@@ -25,24 +26,22 @@ namespace Web.Api.Core.UseCases
 
         public async Task<bool> Handle(LoginRequest message, IOutputPort<LoginResponse> outputPort)
         {
+            LogInResponse result = null;
             if (!string.IsNullOrEmpty(message.UserName) && !string.IsNullOrEmpty(message.Password))
             {
-                if (await _userRepository.CheckPassword(message.UserName, message.Password))
-                {
-                    User user = await _userRepository.FindUserByName(message.UserName);
-                    if (user != null) {
-                        // generate refresh token
-                        var refreshToken = _tokenFactory.GenerateToken();
-                        user.AddRefreshToken(refreshToken, user.Id, message.RemoteIpAddress);
-                        await _userRepository.Update(user);
-
-                        // generate access token
-                        outputPort.Handle(new LoginResponse(await _jwtFactory.GenerateEncodedToken(user.IdentityId, user.UserName), refreshToken, true));
-                        return true;
-                    }
+                result = message.CheckLoginAllowed ? await _userRepository.SignIn(message.UserName, message.Password, message.RememberMe, message.LockoutOnFailure)
+                                                    : await _userRepository.CheckPassword(message.UserName, message.Password);
+                if (result != null && result.Success && result.User != null) {
+                    // generate refresh token
+                    var refreshToken = _tokenFactory.GenerateToken();
+                    result.User.AddRefreshToken(refreshToken, result.User.Id, message.RemoteIpAddress);
+                    await _userRepository.Update(result.User);
+                    // generate access token
+                    outputPort.Handle(new LoginResponse(await _jwtFactory.GenerateEncodedToken(result.User.IdentityId, result.User.UserName), refreshToken, true));
+                    return true;
                 }
             }
-            outputPort.Handle(new LoginResponse(new System.Collections.Generic.List<Error>() { new Error("login_failure", "Invalid username or password.") }));
+            outputPort.Handle(new LoginResponse(result != null ? result.Errors : new System.Collections.Generic.List<Error>() { new Error("login_failure", "Invalid username or password.") }));
             return false;
         }
     }

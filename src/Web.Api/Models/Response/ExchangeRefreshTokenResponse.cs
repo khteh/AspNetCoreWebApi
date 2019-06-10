@@ -1,4 +1,4 @@
-﻿using Web.Api.Core.Dto;
+﻿using Web.Api.Core.DTO;
 
 namespace Web.Api.Models.Response
 {

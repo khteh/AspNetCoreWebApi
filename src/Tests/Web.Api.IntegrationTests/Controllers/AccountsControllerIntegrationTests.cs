@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Web.Api.Core.Dto.UseCaseRequests;
+using Web.Api.Core.DTO.UseCaseRequests;
 using Xunit;
 
 namespace Web.Api.IntegrationTests.Controllers
@@ -103,7 +103,7 @@ namespace Web.Api.IntegrationTests.Controllers
             Assert.False(string.IsNullOrEmpty((string)result.id));
 
             // Login
-            var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest{UserName = "user1", Password = "Pa$$word1" }), Encoding.UTF8, "application/json"));
+            var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user1", "Pa$$word1")), Encoding.UTF8, "application/json"));
             loginResponse.EnsureSuccessStatusCode();
             var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
             dynamic loginResult = JObject.Parse(strLoginSuccessResponse);
@@ -121,13 +121,13 @@ namespace Web.Api.IntegrationTests.Controllers
             Assert.Equal(result.Id, pwdResult.Id);
 
             // Should fail login with previous password
-            var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest{UserName = "user1", Password = "Pa$$W0rd1" }), Encoding.UTF8, "application/json"));
+            var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user1", "Pa$$W0rd1")), Encoding.UTF8, "application/json"));
             var strLoginFailResponse = await loginFailResponse.Content.ReadAsStringAsync();
-            Assert.Contains("Invalid username or password.", strLoginFailResponse);
+            Assert.Contains("Invalid username or password!", strLoginFailResponse);
             Assert.Equal(HttpStatusCode.Unauthorized, loginFailResponse.StatusCode);
 
             // Login
-            var loginSuccessResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest{UserName = "user1", Password = "Pa$$W0rd2" }), Encoding.UTF8, "application/json"));
+            var loginSuccessResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user1", "Pa$$W0rd2")), Encoding.UTF8, "application/json"));
             loginResponse.EnsureSuccessStatusCode();
             var strLoginSuccessResponse1 = await loginResponse.Content.ReadAsStringAsync();
             dynamic loginResult1 = JObject.Parse(strLoginSuccessResponse1);

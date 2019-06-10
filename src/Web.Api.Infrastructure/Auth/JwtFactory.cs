@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Web.Api.Core.Dto;
+using Web.Api.Core.DTO;
 using Web.Api.Core.Interfaces.Services;
 using Web.Api.Infrastructure.Interfaces;
 
@@ -44,7 +44,6 @@ namespace Web.Api.Infrastructure.Auth
                 _jwtOptions.NotBefore.UtcDateTime,
                 _jwtOptions.Expiration.UtcDateTime,
                 _jwtOptions.SigningCredentials);
-          
             return new AccessToken(_jwtTokenHandler.WriteToken(jwt), (int)_jwtOptions.ValidFor.TotalSeconds);
         }
 

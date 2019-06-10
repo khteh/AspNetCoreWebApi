@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
-using Web.Api.Core.Dto.UseCaseResponses;
+using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Extensions;
 using Web.Api.Infrastructure.Auth;
@@ -40,7 +40,7 @@ namespace Web.Api.IntegrationTests.Controllers
         [Fact]
         public async Task CanLoginWithValidCredentials()
         {
-            var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest{UserName = "mickeymouse", Password = "P@$$w0rd" }), Encoding.UTF8, "application/json"));
+            var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
             dynamic result = JObject.Parse(stringResponse);
@@ -52,9 +52,9 @@ namespace Web.Api.IntegrationTests.Controllers
         [Fact]
         public async Task CantLoginWithInvalidCredentials()
         {
-            var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest { UserName = "unknown", Password = "Rhcp1234" }), Encoding.UTF8, "application/json"));
+            var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("unknown", "Rhcp1234")), Encoding.UTF8, "application/json"));
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
-            Assert.Contains("Invalid username or password.", stringResponse);
+            Assert.Contains("Invalid username or password!", stringResponse);
             Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
         }
 

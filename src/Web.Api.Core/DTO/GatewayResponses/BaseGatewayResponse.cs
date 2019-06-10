@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Web.Api.Core.Dto.GatewayResponses
+namespace Web.Api.Core.DTO.GatewayResponses
 {
   public abstract class BaseGatewayResponse
   {
