@@ -52,13 +52,13 @@ namespace Web.Api.Infrastructure.Data.Repositories
         {
             try
             {
-                var appUser = await _userManager.FindByNameAsync(userName);
+                AppUser appUser = await _userManager.FindByNameAsync(userName);
                 if (appUser != null)
                 {
                     var identityResult = await _userManager.DeleteAsync(appUser);
                     if (!identityResult.Succeeded)
                         return new DeleteUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
-                    User user = _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
+                    User user = await getUser(appUser);
                     if (user != null)
                     {
                         _appDbContext.Users.Remove(user);
@@ -75,55 +75,10 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 return new DeleteUserResponse(null, false, new List<Error>() { new Error(null, e.Message) });
             }
         }
-        public async Task<User> FindUserByName(string userName)
-        {
-            try
-            {
-                AppUser appUser = await _userManager.FindByNameAsync(userName);
-                return appUser == null ? null : _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
-            }
-            catch (Exception e)
-            {
-                _logger.LogCritical($"{nameof(FindUserByName)} exception", e);
-                return null;
-            }
-        }
-
-        public async Task<FindUserResponse> FindByName(string userName)
-        {
-            try
-            {
-                return await getUser(await _userManager.FindByNameAsync(userName));
-            } catch (Exception e)
-            {
-                _logger.LogCritical($"{nameof(UserRepository)}.{nameof(FindByName)} Exception! {e.Message}");
-                return null;
-            }
-        }
-        public async Task<FindUserResponse> FindById(string id)
-        {
-            try
-            {
-                return await getUser(await _userManager.FindByIdAsync(id));
-            }
-            catch (Exception e)
-            {
-                _logger.LogCritical($"{nameof(UserRepository)}.{nameof(FindById)} Exception! {e.Message}");
-                return null;
-            }
-        }
-        public async Task<FindUserResponse> FindByEmail(string email)
-        {
-            try
-            {
-                return await getUser(await _userManager.FindByEmailAsync(email));
-            }
-            catch (Exception e)
-            {
-                _logger.LogCritical($"{nameof(UserRepository)}.{nameof(FindByEmail)} Exception! {e.Message}");
-                return null;
-            }
-        }
+        public async Task<User> FindUserByName(string userName) => await getUser(await _userManager.FindByNameAsync(userName));
+        public async Task<FindUserResponse> FindByName(string userName) => await getFindUserResponse(await _userManager.FindByNameAsync(userName));
+        public async Task<FindUserResponse> FindById(string id) => await getFindUserResponse(await _userManager.FindByIdAsync(id));
+        public async Task<FindUserResponse> FindByEmail(string email) => await getFindUserResponse(await _userManager.FindByEmailAsync(email));
         /// <summary>
         /// SignIn - Requires AddCookie() in startup.cs
         /// </summary>
@@ -193,10 +148,11 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 return null;
             }
         }
-        private async Task<FindUserResponse> getUser(AppUser appUser)
+        private async Task<User> getUser(AppUser appUser) => appUser == null ? null : _mapper.Map<AppUser, User>(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
+        private async Task<FindUserResponse> getFindUserResponse(AppUser appUser)
         {
-            User user = appUser == null ? null : _mapper.Map(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)), opt => opt.ConfigureMap(MemberList.None));
-            return user == null ? new FindUserResponse(null, false, new List<Error>() { new Error(null, "User not found!") }) : 
+            User user = await getUser(appUser);
+            return user == null ? new FindUserResponse(null, false, new List<Error>() { new Error(null, "User not found!") }) :
                 new FindUserResponse(appUser.Id, true, null);
         }
     }
