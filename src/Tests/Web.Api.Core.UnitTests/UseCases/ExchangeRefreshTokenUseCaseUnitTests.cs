@@ -48,7 +48,8 @@ namespace Web.Api.Core.UnitTests.UseCases
 
             const string refreshToken = "1234";
             var user = new User("", "", "", "");
-            user.AddRefreshToken(refreshToken, 0, "");
+            user.Id = 0;
+            user.AddRefreshToken(refreshToken, "");
 
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository.Setup(repo => repo.GetSingleBySpec(It.IsAny<UserSpecification>())).ReturnsAsync(user);

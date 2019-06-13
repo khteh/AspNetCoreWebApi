@@ -34,7 +34,7 @@ namespace Web.Api.Core.UseCases
                 if (result != null && result.Success && result.User != null) {
                     // generate refresh token
                     var refreshToken = _tokenFactory.GenerateToken();
-                    result.User.AddRefreshToken(refreshToken, result.User.Id, message.RemoteIpAddress);
+                    result.User.AddRefreshToken(refreshToken, message.RemoteIpAddress);
                     await _userRepository.Update(result.User);
                     // generate access token
                     outputPort.Handle(new LoginResponse(await _jwtFactory.GenerateEncodedToken(result.User.IdentityId, result.User.UserName), refreshToken, true));
