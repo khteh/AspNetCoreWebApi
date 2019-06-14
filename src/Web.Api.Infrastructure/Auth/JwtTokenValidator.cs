@@ -15,7 +15,7 @@ namespace Web.Api.Infrastructure.Auth
         {
             return _jwtTokenHandler.ValidateToken(token, new TokenValidationParameters
             {
-                ValidateAudience = false,
+                ValidateAudience = true,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
