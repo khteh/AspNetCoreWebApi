@@ -16,10 +16,10 @@ namespace Web.Api.Infrastructure.Auth
             return _jwtTokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateAudience = true,
-                ValidateIssuer = false,
+                ValidateIssuer = true,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
-                ValidateLifetime = false // we check expired tokens here
+                ValidateLifetime = true// we check expired tokens here
             });
         }
     }
