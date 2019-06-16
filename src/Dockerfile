@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2.4-bionic
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2.5-bionic
 MAINTAINER Kok How, Teh <funcoolgeek@gmail.com>
 WORKDIR /app
 ADD Web.Api/bin/Release/netcoreapp2.2/publish/ .
