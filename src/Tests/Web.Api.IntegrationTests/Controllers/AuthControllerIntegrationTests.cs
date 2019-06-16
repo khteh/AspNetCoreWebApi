@@ -45,8 +45,8 @@ namespace Web.Api.IntegrationTests.Controllers
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
             dynamic result = JObject.Parse(stringResponse);
             Assert.NotNull(result.accessToken.token);
-            Assert.Equal(7200,(int)result.accessToken.expiresIn);
             Assert.NotNull(result.refreshToken);
+            Assert.Equal(7200,(int)result.accessToken.expiresIn);
         }
 
         [Fact]
@@ -62,8 +62,8 @@ namespace Web.Api.IntegrationTests.Controllers
         public async Task CanExchangeValidRefreshToken()
         {
             var httpResponse = await _client.PostAsync("/api/auth/refreshtoken", new StringContent(JsonConvert.SerializeObject(new Models.Request.ExchangeRefreshTokenRequest {
-                AccessToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtaWNrZXltb3VzZSIsImp0aSI6IjhkYjQ0ODgzLWJiNzEtNDc4ZS1hYWJiLWY1ZmY0Nzg1YmU5ZSIsImlhdCI6MTU1Njc3NDkxOSwicm9sIjoiYXBpX2FjY2VzcyIsImlkIjoiNDE1MzI5NDUtNTk5ZS00OTEwLTk1OTktMGU3NDAyMDE3ZmJlIiwibmJmIjoxNTU2Nzc0OTE5LCJleHAiOjE1NTY3ODIxMTksImlzcyI6IndlYkFwaSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMC8ifQ.xKocIPlwAF2_gT8oyZBOo3i7sXRwQ6ZaALd09f22MJm2LCqZuKLBJnfog_v7P9gu9CDD2YMAmzAU_j8xMSNWog",
-                RefreshToken = "cvVsJXuuvb+gTyz+Rk0mBbitkw3AaLgsLecU3cwsUXU="
+                AccessToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtaWNrZXltb3VzZSIsImp0aSI6IjNhM2RiZGRiLTQ3M2ItNGIwYy1hMjkzLTkwOWQ4ZDlkYjkxNSIsImlhdCI6MTU2MDYwNzY3Mywicm9sIjoiYXBpX2FjY2VzcyIsImlkIjoiNDE1MzI5NDUtNTk5ZS00OTEwLTk1OTktMGU3NDAyMDE3ZmJlIiwibmJmIjoxNTYwNjA3NjczLCJleHAiOjE1NjA2MTQ4NzMsImlzcyI6IndlYkFwaSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMC8ifQ.cq55tyu5VQCicZEHu3NbHKmoYKNlbZedJsF8kHhiYpS7BBdCgfztQXGXUO6__aVYAIFK7lxSUlSgjnDHnEWKpg",
+                RefreshToken = "pEMr32xIMB5Riwn5a7PEn8vSDOEECdaqnAjdXoFtAoE="
             }), Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();

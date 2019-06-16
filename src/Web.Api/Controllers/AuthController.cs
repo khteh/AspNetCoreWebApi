@@ -36,11 +36,7 @@ namespace Web.Api.Controllers
         public async Task<ActionResult> Login([FromBody] Models.Request.LoginRequest request)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
-            await _loginUseCase.Handle(new LoginRequest(request.UserName, request.Password, Request.HttpContext.Connection.RemoteIpAddress?.ToString(), request.RememberMe, true, false), _loginPresenter);
-            Models.Response.LoginResponse response = JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(_loginPresenter.ContentResult.Content);
-            //Response.Headers.Add("Authorization", $"Bearer {response.AccessToken.Token}");  Doesn't work
-            //Response.Headers.Add("www-authenticate", $"Bearer {response.AccessToken.Token}"); Doesn't work
-            //return LocalRedirect($"/api/protected?access_token={response.AccessToken.Token}"); This works
+            await _loginUseCase.Handle(new LoginRequest(request.UserName, request.Password, Request.HttpContext.Connection.RemoteIpAddress?.ToString()), _loginPresenter);
             return _loginPresenter.ContentResult;
         }
 

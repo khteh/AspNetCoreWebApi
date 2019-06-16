@@ -87,34 +87,75 @@ namespace Web.Api.Infrastructure.Data.Repositories
         /// <param name="rememberMe"></param>
         /// <param name="logoutOnFailure"></param>
         /// <returns></returns>
-        public async Task<LogInResponse> SignIn(string username, string password, bool rememberMe, bool logoutOnFailure)
+        public async Task<SignInResponse> SignInMobile(string username, string password, bool logoutOnFailure)
         {
             try {
-            SignInResult result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, logoutOnFailure);
+            AppUser user = await _userManager.FindByNameAsync(username);
+            if (user == null) {
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username {username} and password {password}!");
+                return new SignInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Invalid username {username} and password {password}!")});
+            }
+            SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, password, logoutOnFailure);;
             if (result.IsNotAllowed)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} is not allowed to login!");
-                return new LogInResponse(null, false, new List<Error>() {new Error("IsNotAllowed", $"User account {username} is not allowed to login!")});
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} is not allowed to login!");
+                return new SignInResponse(null, false, new List<Error>() {new Error("IsNotAllowed", $"User account {username} is not allowed to login!")});
             }
             if (result.IsLockedOut)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} locked out!");
-                return new LogInResponse(null, false, new List<Error>() {new Error("IsLockedOut", $"User account {username} locked out!")});
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} locked out!");
+                return new SignInResponse(null, false, new List<Error>() {new Error("IsLockedOut", $"User account {username} locked out!")});
             }
             if (result.RequiresTwoFactor)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} requires two-factor authentication!");
-                return new LogInResponse(null, false, new List<Error>() {new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!")});
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} requires two-factor authentication!");
+                return new SignInResponse(null, false, new List<Error>() {new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!")});
             }
             if (!result.Succeeded) {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password}!");
-                return new LogInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Invalid username or password!")});
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username {username} and password {password}!");
+                return new SignInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Invalid username {username} and password {password}!")});
             }
-            _logger.LogInformation(2, $"User {username} log in successfully!");
-            return new LogInResponse(await FindUserByName(username), true);
+            // Use _userManager.IsInRoleAsync(user,  to check if user is in the required role
+            _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User {username} signed in successfully!");
+            return new SignInResponse(user.Id, true);
             } catch (Exception e) {
-                _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Exception! e.Message");
-                return new LogInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Exception! e.Message")});
+                _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Exception! {e.Message}");
+                return new SignInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Exception! {e.Message}")});
+            }
+        }
+        public async Task<SignInResponse> SignIn(string username, string password, bool rememberMe, bool logoutOnFailure)
+        {
+            try {
+                AppUser user = await _userManager.FindByNameAsync(username);
+                if (user == null) {
+                    _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password}!");
+                    return new SignInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Invalid username {username} and password {password}!")});
+                }
+                SignInResult result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, logoutOnFailure);
+                if (result.IsNotAllowed)
+                {
+                    _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} is not allowed to login!");
+                    return new SignInResponse(null, false, new List<Error>() {new Error("IsNotAllowed", $"User account {username} is not allowed to login!")});
+                }
+                if (result.IsLockedOut)
+                {
+                    _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} locked out!");
+                    return new SignInResponse(null, false, new List<Error>() {new Error("IsLockedOut", $"User account {username} locked out!")});
+                }
+                if (result.RequiresTwoFactor)
+                {
+                    _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} requires two-factor authentication!");
+                    return new SignInResponse(null, false, new List<Error>() {new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!")});
+                }
+                if (!result.Succeeded) {
+                    _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password}!");
+                    return new SignInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Invalid username {username} and password {password}!")});
+                }
+                _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User {username} signed in successfully!");
+                return new SignInResponse(user.Id, true);
+            } catch (Exception e) {
+                _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Exception! {e.Message}");
+                return new SignInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Exception! {e.Message}")});
             }
         }
         public async Task<LogInResponse> CheckPassword(string username, string password) {

@@ -29,8 +29,7 @@ namespace Web.Api.Core.UseCases
             LogInResponse result = null;
             if (!string.IsNullOrEmpty(message.UserName) && !string.IsNullOrEmpty(message.Password))
             {
-                result = message.CheckLoginAllowed ? await _userRepository.SignIn(message.UserName, message.Password, message.RememberMe, message.LockoutOnFailure)
-                                                    : await _userRepository.CheckPassword(message.UserName, message.Password);
+                result = await _userRepository.CheckPassword(message.UserName, message.Password);
                 if (result != null && result.Success && result.User != null) {
                     // generate refresh token
                     var refreshToken = _tokenFactory.GenerateToken();
