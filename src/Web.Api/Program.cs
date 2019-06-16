@@ -72,7 +72,7 @@ namespace Web.Api
             .UseStartup<Startup>()
             .ConfigureKestrel((context, options) =>
             {
-                options.Listen(IPAddress.Loopback, 5000, listenOptions =>
+                options.Listen(IPAddress.Any, 5000, listenOptions =>
                 {
                     listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
                     //listenOptions.UseHttps("testCert.pfx", "testPassword");
