@@ -1,13 +1,11 @@
-﻿using System.Runtime.Serialization.Json;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces.UseCases;
-using Web.Api.Models.Settings;
+using Web.Api.Infrastructure.Auth;
 using Web.Api.Presenters;
-using Web.Api.Serialization;
 
 namespace Web.Api.Controllers
 {

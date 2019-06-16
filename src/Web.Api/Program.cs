@@ -27,7 +27,7 @@ namespace Web.Api
             bool isDevelopment = environment == EnvironmentName.Development;
             IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile("appsettings.json", false, true)
                 .AddJsonFile($"appsettings.{environment}.json", true, true)
                 .AddEnvironmentVariables().Build();
             LoggerConfiguration logConfig = new LoggerConfiguration()

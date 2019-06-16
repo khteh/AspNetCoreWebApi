@@ -20,11 +20,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Web.Api.Extensions;
 using Web.Api.Infrastructure.Auth;
-using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Mapping;
 using Web.Api.Infrastructure.Helpers;
 using Web.Api.Infrastructure.Identity;
-using Web.Api.Models.Settings;
 using Web.Api.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -84,7 +82,7 @@ namespace Web.Api
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = signingKey,
 
-                RequireExpirationTime = true,//false,
+                RequireExpirationTime = true,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
             };
@@ -120,10 +118,8 @@ namespace Web.Api
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
-                        {
                             // Read the token out of the query string
                             context.Token = accessToken;
-                        }
                         return Task.CompletedTask;
                     }
                 };
