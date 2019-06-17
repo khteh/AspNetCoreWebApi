@@ -193,13 +193,19 @@ namespace Web.Api
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
-            #if true
+            #if false
             app.Use((context, next) =>
             {
                 context.Request.PathBase = new PathString("/apistarter");
                 return next();
             });
             #endif
+            app.Use((context, next) =>
+            {
+                if (context.Request.Path.StartsWithSegments("/apistarter", out var remainder))
+                    context.Request.Path = remainder;
+                return next();
+            });
             //app.UsePathBase("/apistarter");
             app.UseExceptionHandler(
                 builder =>
