@@ -193,6 +193,7 @@ namespace Web.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
             #if false
             app.Use((context, next) =>
             {
@@ -200,6 +201,7 @@ namespace Web.Api
                 return next();
             });
             #endif
+            app.UsePathBase("/apistarter");
             app.UseExceptionHandler(
                 builder =>
                 {
