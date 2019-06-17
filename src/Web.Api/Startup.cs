@@ -150,7 +150,7 @@ namespace Web.Api
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "AspNetCoreApiStarter", Version = "v1" });
+                c.SwaggerDoc("v2", new Info { Title = "AspNetCoreApiStarter", Version = "v2" });
                 // Swagger 2.+ support
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
@@ -159,7 +159,6 @@ namespace Web.Api
                     Name = "Authorization",
                     Type = "apiKey"
                 });
-
                 c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
                 {
                     { "Bearer", new string[] { } }
@@ -222,7 +221,7 @@ namespace Web.Api
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AspNetCoreApiStarter V1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "AspNetCoreApiStarter V2");
             });
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
