@@ -193,11 +193,13 @@ namespace Web.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            #if false
             app.Use((context, next) =>
             {
                 context.Request.PathBase = new PathString("/apistarter");
                 return next();
             });
+            #endif
             app.UseExceptionHandler(
                 builder =>
                 {
@@ -206,7 +208,6 @@ namespace Web.Api
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-
                             var error = context.Features.Get<IExceptionHandlerFeature>();
                             if (error != null)
                             {
@@ -215,14 +216,12 @@ namespace Web.Api
                             }
                         });
                 });
-
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "AspNetCoreApiStarter V1");
             });
-
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
