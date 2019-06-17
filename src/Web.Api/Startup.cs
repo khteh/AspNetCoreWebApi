@@ -199,13 +199,13 @@ namespace Web.Api
                 context.Request.PathBase = new PathString("/apistarter");
                 return next();
             });
-            #endif
             app.Use((context, next) =>
             {
                 if (context.Request.Path.StartsWithSegments("/apistarter", out var remainder))
                     context.Request.Path = remainder;
                 return next();
             });
+            #endif
             //app.UsePathBase("/apistarter");
             app.UseExceptionHandler(
                 builder =>
