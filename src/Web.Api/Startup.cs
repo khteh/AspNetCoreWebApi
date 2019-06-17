@@ -200,7 +200,7 @@ namespace Web.Api
                 return next();
             });
             #endif
-            app.UsePathBase("/apistarter");
+            //app.UsePathBase("/apistarter");
             app.UseExceptionHandler(
                 builder =>
                 {
