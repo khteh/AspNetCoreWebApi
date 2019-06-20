@@ -31,8 +31,8 @@ namespace Web.Api.Infrastructure.UnitTests.UseCases
 
             var useCase = new SignInUseCase(mockUserRepository.Object);
 
-            var mockOutputPort = new Mock<IOutputPort<Core.DTO.UseCaseResponses.SignInResponse>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<Core.DTO.UseCaseResponses.SignInResponse>()));
+            var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
+            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
 
             // act
             var response = await useCase.Handle(new SignInRequest("userName", "password", true, true, false), mockOutputPort.Object);
@@ -56,8 +56,8 @@ namespace Web.Api.Infrastructure.UnitTests.UseCases
 
             mockUserRepository.Setup(repo => repo.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.SignInResponse(null, false));
 
-            var mockOutputPort = new Mock<IOutputPort<Core.DTO.UseCaseResponses.SignInResponse>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<Core.DTO.UseCaseResponses.SignInResponse>()));
+            var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
+            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
             var useCase = new SignInUseCase(mockUserRepository.Object);
 
             // act
@@ -86,8 +86,8 @@ namespace Web.Api.Infrastructure.UnitTests.UseCases
 
             var useCase = new SignInUseCase(mockUserRepository.Object);
 
-            var mockOutputPort = new Mock<IOutputPort<Core.DTO.UseCaseResponses.SignInResponse>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<Core.DTO.UseCaseResponses.SignInResponse>()));
+            var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
+            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
 
             // act
             var response = await useCase.Handle(new SignInRequest("", "password", true, true, false), mockOutputPort.Object);
@@ -113,8 +113,8 @@ namespace Web.Api.Infrastructure.UnitTests.UseCases
 
             var useCase = new SignInUseCase(mockUserRepository.Object);
 
-            var mockOutputPort = new Mock<IOutputPort<Core.DTO.UseCaseResponses.SignInResponse>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<Core.DTO.UseCaseResponses.SignInResponse>()));
+            var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
+            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
 
             // act
             var response = await useCase.Handle(new SignInRequest("", "password", true, true, false), mockOutputPort.Object);

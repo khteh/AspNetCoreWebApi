@@ -12,10 +12,10 @@ namespace Web.Api.Core.UseCases
     {
         private readonly IUserRepository _userRepository;
         public RegisterUserUseCase(IUserRepository userRepository) => _userRepository = userRepository;
-        public async Task<bool> Handle(RegisterUserRequest message, IOutputPort<RegisterUserResponse> outputPort)
+        public async Task<bool> Handle(RegisterUserRequest message, IOutputPort<UseCaseResponseMessage> outputPort)
         {
             var response = await _userRepository.Create(message.FirstName, message.LastName, message.Email, message.UserName, message.Password);
-            outputPort.Handle(response.Success ? new RegisterUserResponse(response.Id, true) : new RegisterUserResponse(response.Errors));
+            outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors));
             return response.Success;
         }
     }

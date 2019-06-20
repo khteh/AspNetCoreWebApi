@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
@@ -46,9 +48,9 @@ namespace Web.Api.Core.UseCases
                     outputPort.Handle(new ExchangeRefreshTokenResponse(jwtToken, refreshToken, true));
                     return true;
                 } else if (user == null)
-                    outputPort.Handle(new ExchangeRefreshTokenResponse(false, "Invalid user!"));
+                    outputPort.Handle(new ExchangeRefreshTokenResponse(new List<Error>() { new Error("InvalidUser", "Invalid user!")}));
             }
-            outputPort.Handle(new ExchangeRefreshTokenResponse(false, "Invalid token."));
+            outputPort.Handle(new ExchangeRefreshTokenResponse(new List<Error>() { new Error("InvalidToken", "Invalid token!") } ));
             return false;
         }
     }

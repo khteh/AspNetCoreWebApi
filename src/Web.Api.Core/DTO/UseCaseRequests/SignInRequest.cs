@@ -4,7 +4,7 @@ using Web.Api.Core.Interfaces;
 
 namespace Web.Api.Core.DTO.UseCaseRequests
 {
-    public class SignInRequest : IUseCaseRequest<SignInResponse>
+    public class SignInRequest : IUseCaseRequest<UseCaseResponseMessage>
     {
         public string UserName { get; set; }
         public string Password { get; set; }

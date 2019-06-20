@@ -5,9 +5,9 @@ using Web.Api.Serialization;
 
 namespace Web.Api.Presenters
 {
-    public sealed class RegisterUserPresenter : PresenterBase<RegisterUserResponse>
+    public sealed class RegisterUserPresenter : PresenterBase<UseCaseResponseMessage>
     {
-        public override void Handle(RegisterUserResponse response)
+        public override void Handle(UseCaseResponseMessage response)
         {
             base.Handle(response);
             ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.Created : HttpStatusCode.BadRequest);

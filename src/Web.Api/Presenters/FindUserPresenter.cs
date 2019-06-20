@@ -5,7 +5,7 @@ using Web.Api.Serialization;
 
 namespace Web.Api.Presenters
 {
-    public sealed class FindUserPresenter : PresenterBase<FindUserResponse>
+    public sealed class FindUserPresenter : PresenterBase<UseCaseResponseMessage>
     {
     }
 }

@@ -12,10 +12,10 @@ namespace Web.Api.Core.UseCases
     {
         private readonly IUserRepository _userRepository;
         public DeleteUserUseCase(IUserRepository userRepository) => _userRepository = userRepository;
-        public async Task<bool> Handle(DeleteUserRequest message, IOutputPort<DeleteUserResponse> outputPort)
+        public async Task<bool> Handle(DeleteUserRequest message, IOutputPort<UseCaseResponseMessage> outputPort)
         {
             var response = await _userRepository.Delete(message.UserName);
-            outputPort.Handle(response.Success ? new DeleteUserResponse(response.Id.ToString(), true) : new DeleteUserResponse(response.Errors));
+            outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id.ToString(), true) : new UseCaseResponseMessage(response.Errors));
             return response.Success;
         }
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
+using Web.Api.Core.Interfaces;
 using Web.Api.Presenters;
 using Web.Api.Serialization;
 using Xunit;
@@ -19,7 +20,7 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new FindUserPresenter();
 
             // act
-            presenter.Handle(new FindUserResponse("", true));
+            presenter.Handle(new UseCaseResponseMessage("", true));
 
             // assert
             Assert.Equal((int)HttpStatusCode.OK, presenter.ContentResult.StatusCode);
@@ -32,7 +33,7 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new FindUserPresenter();
 
             // act
-            presenter.Handle(new FindUserResponse("1234", true));
+            presenter.Handle(new UseCaseResponseMessage("1234", true));
 
             // assert
             dynamic data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
@@ -47,7 +48,7 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new FindUserPresenter();
 
             // act
-            presenter.Handle(new FindUserResponse(new List<Error>() { new Error(null, "missing first name") }));
+            presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(null, "missing first name") }));
 
             // assert
             List<Error> errors = Serialization.JsonSerializer.DeSerializeObject<List<Error>>(presenter.ContentResult.Content);

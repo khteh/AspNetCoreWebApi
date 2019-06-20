@@ -6,7 +6,7 @@ using Web.Api.Core.DTO.UseCaseResponses;
 
 namespace Web.Api.Core.Interfaces.UseCases
 {
-    public interface IDeleteUserUseCase : IUseCaseRequestHandler<DeleteUserRequest, DeleteUserResponse>
+    public interface IDeleteUserUseCase : IUseCaseRequestHandler<DeleteUserRequest, UseCaseResponseMessage>
     {
     }
 }

@@ -6,7 +6,7 @@ using Web.Api.Core.DTO.UseCaseResponses;
 
 namespace Web.Api.Core.Interfaces.UseCases
 {
-    public interface IFindUserUseCase : IUseCaseRequestHandler<FindUserRequest, FindUserResponse>
+    public interface IFindUserUseCase : IUseCaseRequestHandler<FindUserRequest, UseCaseResponseMessage>
     {
     }
 }

@@ -12,10 +12,10 @@ namespace Web.Api.Core.UseCases
     {
         private readonly IUserRepository _userRepository;
         public ChangePasswordUseCase(IUserRepository userRepository) => _userRepository = userRepository;
-        public async Task<bool> Handle(ChangePasswordRequest message, IOutputPort<ChangePasswordResponse> outputPort)
+        public async Task<bool> Handle(ChangePasswordRequest message, IOutputPort<UseCaseResponseMessage> outputPort)
         {
             var response = await _userRepository.ChangePassword(message.IdentityId, message.OldPassword, message.NewPassword);
-            outputPort.Handle(response.Success ? new ChangePasswordResponse(response.Id, true) : new ChangePasswordResponse(response.Errors));
+            outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors));
             return response.Success;
         }
     }
