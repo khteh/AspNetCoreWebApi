@@ -26,8 +26,9 @@ namespace Web.Api.Infrastructure.Shared
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(basePath)
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{environmentName}.json", true)
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{environmentName}.json", true, true)
+                .AddJsonFile($"appsettings.mysql.json", true, true)
                 .AddEnvironmentVariables();
 
             var config = builder.Build();

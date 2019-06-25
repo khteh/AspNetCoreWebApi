@@ -22,7 +22,10 @@ jobs:
       - run: dpkg -i packages-microsoft-prod.deb
       - run: dotnet restore src
       - run: dotnet build -c Release --version-suffix $CIRCLE_BUILD_NUM --no-restore src
-      - run: dotnet test -c Release src
+      - run: dotnet test -c Release src/Tests/Web.Api.Core.UnitTests/
+      - run: dotnet test -c Release src/Tests/Web.Api.UnitTests/
+      - run: dotnet test -c Release src/Tests/Web.Api.Infrastructure.UnitTests/
+      - run: dotnet test -c Release src/Tests/Web.Api.IntegrationTests/
       - run: dotnet publish -c Release --no-restore --no-build src
       - setup_remote_docker:
           docker_layer_caching: true

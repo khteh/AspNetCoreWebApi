@@ -26,8 +26,8 @@ namespace Web.Api.Core.UnitTests.UseCases
 
             // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
             // for final preparation to deliver back to the UI/web page/api response etc.
-            var mockOutputPort = new Mock<IOutputPort<ChangePasswordResponse>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<ChangePasswordResponse>()));
+            var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
+            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
 
             // act
 

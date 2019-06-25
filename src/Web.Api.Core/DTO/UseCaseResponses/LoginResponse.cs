@@ -7,10 +7,8 @@ namespace Web.Api.Core.DTO.UseCaseResponses
     {
         public AccessToken AccessToken { get; }
         public string RefreshToken { get; }
-        public LoginResponse(List<Error> errors, bool success = false, string message = null) : base(success, message, errors)
-        {
-        }
-        public LoginResponse(AccessToken accessToken, string refreshToken, bool success = false, string message = null) : base(success, message)
+        public LoginResponse(List<Error> errors, string message = null) : base(null, false, message, errors) { }
+        public LoginResponse(AccessToken accessToken, string refreshToken, bool success = false, string message = null) : base(null, success, message)
         {
             AccessToken = accessToken;
             RefreshToken = refreshToken;

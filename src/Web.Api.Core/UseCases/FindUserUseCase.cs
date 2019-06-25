@@ -17,7 +17,7 @@ namespace Web.Api.Core.UseCases
     {
         private readonly IUserRepository _userRepository;
         public FindUserUseCase(IUserRepository userRepository) => _userRepository = userRepository;
-        public async Task<bool> Handle(FindUserRequest message, IOutputPort<FindUserResponse> outputPort)
+        public async Task<bool> Handle(FindUserRequest message, IOutputPort<UseCaseResponseMessage> outputPort)
         {
             DTO.GatewayResponses.Repositories.FindUserResponse response = null;
             if (!string.IsNullOrEmpty(message.Id))
@@ -28,11 +28,11 @@ namespace Web.Api.Core.UseCases
                 response = await _userRepository.FindByEmail(message.Email);
             if (response == null)
             {
-                outputPort.Handle(new FindUserResponse(new List<Error>() { new Error(null, "Invalid request input!")}, false, "Invalid request input!"));
+                outputPort.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(null, "Invalid request input!")}));
                 return false;
             } else
-                outputPort.Handle(response.Success ? new FindUserResponse(response.Id.ToString(), true) :
-                                                new FindUserResponse(response.Errors));
+                outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id.ToString(), true) :
+                                                new UseCaseResponseMessage(response.Errors));
             return response.Success;
         }
     }

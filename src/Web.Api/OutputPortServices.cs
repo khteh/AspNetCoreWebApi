@@ -13,8 +13,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddOutputPorts(this IServiceCollection service) =>
             service.AddSingleton<IOutputPort<ExchangeRefreshTokenResponse>, ExchangeRefreshTokenPresenter>()
                 .AddSingleton<IOutputPort<LoginResponse>, LoginPresenter>()
-                .AddSingleton<IOutputPort<RegisterUserResponse>, RegisterUserPresenter>()
-                .AddSingleton<IOutputPort<DeleteUserResponse>, DeleteUserPresenter>()
+                .AddSingleton<IOutputPort<UseCaseResponseMessage>, RegisterUserPresenter>()
+                .AddSingleton<IOutputPort<UseCaseResponseMessage>, DeleteUserPresenter>()
                 .AddSingleton<ExchangeRefreshTokenPresenter>()
                 .AddSingleton<LoginPresenter>()
                 .AddSingleton<RegisterUserPresenter>()

@@ -4,6 +4,7 @@ using System.Net;
 using Newtonsoft.Json;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
+using Web.Api.Core.Interfaces;
 using Web.Api.Presenters;
 using Xunit;
 
@@ -18,7 +19,7 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new DeleteUserPresenter();
 
             // act
-            presenter.Handle(new DeleteUserResponse("", true));
+            presenter.Handle(new UseCaseResponseMessage("", true));
 
             // assert
             Assert.Equal((int)HttpStatusCode.OK, presenter.ContentResult.StatusCode);
@@ -31,7 +32,7 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new DeleteUserPresenter();
 
             // act
-            presenter.Handle(new DeleteUserResponse("1234", true));
+            presenter.Handle(new UseCaseResponseMessage("1234", true));
 
             // assert
             dynamic data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
@@ -46,7 +47,7 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new DeleteUserPresenter();
 
             // act
-            presenter.Handle(new DeleteUserResponse(new List<Error>() { new Error(null, "Invalid user!") }));
+            presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(null, "Invalid user!") }));
 
             // assert
             List<Error> errors = Serialization.JsonSerializer.DeSerializeObject<List<Error>>(presenter.ContentResult.Content);

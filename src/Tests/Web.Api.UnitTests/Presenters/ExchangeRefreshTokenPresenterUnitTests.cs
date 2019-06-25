@@ -1,5 +1,8 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using Newtonsoft.Json;
+using Web.Api.Models.Response;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Presenters;
@@ -17,7 +20,7 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new ExchangeRefreshTokenPresenter();
 
             // act
-            presenter.Handle(new ExchangeRefreshTokenResponse(new AccessToken(token, 0), "", true));
+            presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new AccessToken(token, 0), "", true));
 
             // assert
             dynamic data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
@@ -32,7 +35,7 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new ExchangeRefreshTokenPresenter();
 
             // act
-            presenter.Handle(new ExchangeRefreshTokenResponse(null, token, true));
+            presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(null, token, true));
 
             // assert
             dynamic data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
@@ -46,12 +49,18 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new ExchangeRefreshTokenPresenter();
 
             // act
-            presenter.Handle(new ExchangeRefreshTokenResponse(false,"Invalid Token."));
+            presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error("InvalidToken", "Invalid Token!")}));
 
             // assert
-            var data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
+            Models.Response.ExchangeRefreshTokenResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ExchangeRefreshTokenResponse>(presenter.ContentResult.Content);
             Assert.Equal((int)HttpStatusCode.BadRequest, presenter.ContentResult.StatusCode);
-            Assert.Equal("Invalid Token.", data);
+            Assert.NotNull(response);
+            Assert.Null(response.AccessToken);
+            Assert.True(string.IsNullOrEmpty(response.RefreshToken));
+            Assert.NotNull(response.Errors);
+            Assert.Equal(1, response.Errors.Count);
+            Assert.Equal("InvalidToken", response.Errors.First().Code);
+            Assert.Equal("Invalid Token!", response.Errors.First().Description);
         }
     }
 }

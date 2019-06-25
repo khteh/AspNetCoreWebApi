@@ -11,7 +11,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1"/>
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.4.0"/>
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.5"/>
+    <PackageReference Include="Microsoft.AspNetCore.App"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0"/>
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0"/>

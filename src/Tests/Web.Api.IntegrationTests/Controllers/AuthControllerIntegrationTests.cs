@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -7,23 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
-using Web.Api.Core.DTO.UseCaseResponses;
-using Web.Api.Core.Interfaces;
-using Web.Api.Extensions;
-using Web.Api.Infrastructure.Auth;
-using Web.Api.Infrastructure.Data;
-using Web.Api.Infrastructure.Data.Mapping;
-using Web.Api.Infrastructure.Helpers;
-using Web.Api.Infrastructure.Identity;
-using Web.Api.Models.Settings;
-using Web.Api.Presenters;
-using Microsoft.Extensions.Configuration;
-using Web.Api.Core.Interfaces.UseCases;
-using Microsoft.Extensions.Options;
-using Web.Api.Core.Interfaces.Gateways.Repositories;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using AutoMapper;
 
 namespace Web.Api.IntegrationTests.Controllers
 {
@@ -61,24 +45,43 @@ namespace Web.Api.IntegrationTests.Controllers
         [Fact]
         public async Task CanExchangeValidRefreshToken()
         {
-            var httpResponse = await _client.PostAsync("/api/auth/refreshtoken", new StringContent(JsonConvert.SerializeObject(new Models.Request.ExchangeRefreshTokenRequest {
-                AccessToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtaWNrZXltb3VzZSIsImp0aSI6IjNhM2RiZGRiLTQ3M2ItNGIwYy1hMjkzLTkwOWQ4ZDlkYjkxNSIsImlhdCI6MTU2MDYwNzY3Mywicm9sIjoiYXBpX2FjY2VzcyIsImlkIjoiNDE1MzI5NDUtNTk5ZS00OTEwLTk1OTktMGU3NDAyMDE3ZmJlIiwibmJmIjoxNTYwNjA3NjczLCJleHAiOjE1NjA2MTQ4NzMsImlzcyI6IndlYkFwaSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMC8ifQ.cq55tyu5VQCicZEHu3NbHKmoYKNlbZedJsF8kHhiYpS7BBdCgfztQXGXUO6__aVYAIFK7lxSUlSgjnDHnEWKpg",
-                RefreshToken = "pEMr32xIMB5Riwn5a7PEn8vSDOEECdaqnAjdXoFtAoE="
-            }), Encoding.UTF8, "application/json"));
+            var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
             dynamic result = JObject.Parse(stringResponse);
             Assert.NotNull(result.accessToken.token);
-            Assert.Equal(7200, (int)result.accessToken.expiresIn);
             Assert.NotNull(result.refreshToken);
+            Assert.Equal(7200,(int)result.accessToken.expiresIn);
+
+            var refreshTokenResponse = await _client.PostAsync("/api/auth/refreshtoken", new StringContent(JsonConvert.SerializeObject(new Models.Request.ExchangeRefreshTokenRequest {
+                AccessToken = result.accessToken.token,
+                RefreshToken = result.refreshToken
+            }), Encoding.UTF8, "application/json"));
+            refreshTokenResponse.EnsureSuccessStatusCode();
+            var strRefreshTokenResponse = await refreshTokenResponse.Content.ReadAsStringAsync();
+            Models.Response.ExchangeRefreshTokenResponse response = Web.Api.Serialization.JsonSerializer.DeSerializeObject<Models.Response.ExchangeRefreshTokenResponse>(strRefreshTokenResponse);
+            Assert.NotNull(response);
+            Assert.NotNull(response.AccessToken);
+            Assert.NotNull(response.AccessToken.Token);
+            Assert.False(string.IsNullOrEmpty(response.RefreshToken));
+            Assert.Equal(7200, (int)response.AccessToken.ExpiresIn);
+            Assert.Null(response.Errors);
         }
 
         [Fact]
         public async Task CantExchangeInvalidRefreshToken()
         {
             var httpResponse = await _client.PostAsync("/api/auth/refreshtoken", new StringContent(JsonConvert.SerializeObject(new Models.Request.ExchangeRefreshTokenRequest { AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtbWFjbmVpbCIsImp0aSI6IjA0YjA0N2E4LTViMjMtNDgwNi04M2IyLTg3ODVhYmViM2ZjNyIsImlhdCI6MTUzOTUzNzA4Mywicm9sIjoiYXBpX2FjY2VzcyIsImlkIjoiNDE1MzI5NDUtNTk5ZS00OTEwLTk1OTktMGU3NDAyMDE3ZmJlIiwibmJmIjoxNTM5NTM3MDgyLCJleHAiOjE1Mzk1NDQyODIsImlzcyI6IndlYkFwaSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMC8ifQ.xzDQOKzPZarve68Np8Iu8sh2oqoCpHSmp8fMdYRHC_k", RefreshToken = "unknown" }), Encoding.UTF8, "application/json"));
-            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
-            Assert.Contains("Invalid token.", stringResponse);
+            Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
+            var strResponse = await httpResponse.Content.ReadAsStringAsync();
+            Models.Response.ExchangeRefreshTokenResponse response = Web.Api.Serialization.JsonSerializer.DeSerializeObject<Models.Response.ExchangeRefreshTokenResponse>(strResponse);
+            Assert.NotNull(response);
+            Assert.Null(response.AccessToken);
+            Assert.True(string.IsNullOrEmpty(response.RefreshToken));
+            Assert.NotNull(response.Errors);
+            Assert.NotEmpty(response.Errors);
+            Assert.Equal("InvalidToken", response.Errors.First().Code);
+            Assert.Equal("Invalid token!", response.Errors.First().Description);
         }
     }
 }

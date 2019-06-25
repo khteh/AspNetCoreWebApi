@@ -5,7 +5,7 @@ using Web.Api.Serialization;
 
 namespace Web.Api.Presenters
 {
-    public class DeleteUserPresenter : PresenterBase<DeleteUserResponse>
+    public class DeleteUserPresenter : PresenterBase<UseCaseResponseMessage>
     {
     }
 }

@@ -27,8 +27,9 @@ namespace Web.Api
             bool isDevelopment = environment == EnvironmentName.Development;
             IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile("appsettings.json", false, true)
                 .AddJsonFile($"appsettings.{environment}.json", true, true)
+                .AddJsonFile($"appsettings.mysql.json", true, true)
                 .AddEnvironmentVariables().Build();
             LoggerConfiguration logConfig = new LoggerConfiguration()
                     .MinimumLevel.Debug()
@@ -57,7 +58,8 @@ namespace Web.Api
             WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration((hostingContext, config) => {
                 config.SetBasePath(Directory.GetCurrentDirectory());
                 config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                config.AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", optional: false, reloadOnChange: true);
+                config.AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                config.AddJsonFile($"appsettings.mysql.json", true, true);
                 config.AddEnvironmentVariables();
                 config.AddCommandLine(args);
             }).ConfigureLogging((hostingContext, logging) =>
@@ -72,7 +74,7 @@ namespace Web.Api
             .UseStartup<Startup>()
             .ConfigureKestrel((context, options) =>
             {
-                options.Listen(IPAddress.Loopback, 5000, listenOptions =>
+                options.Listen(IPAddress.Any, 5000, listenOptions =>
                 {
                     listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
                     //listenOptions.UseHttps("testCert.pfx", "testPassword");

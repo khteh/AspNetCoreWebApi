@@ -20,11 +20,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Web.Api.Extensions;
 using Web.Api.Infrastructure.Auth;
-using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Mapping;
 using Web.Api.Infrastructure.Helpers;
 using Web.Api.Infrastructure.Identity;
-using Web.Api.Models.Settings;
 using Web.Api.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -84,7 +82,7 @@ namespace Web.Api
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = signingKey,
 
-                RequireExpirationTime = true,//false,
+                RequireExpirationTime = true,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
             };
@@ -120,10 +118,8 @@ namespace Web.Api
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
-                        {
                             // Read the token out of the query string
                             context.Token = accessToken;
-                        }
                         return Task.CompletedTask;
                     }
                 };
@@ -154,7 +150,7 @@ namespace Web.Api
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "AspNetCoreApiStarter", Version = "v1" });
+                c.SwaggerDoc("v2", new Info { Title = "AspNetCoreApiStarter", Version = "v2" });
                 // Swagger 2.+ support
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
@@ -163,7 +159,6 @@ namespace Web.Api
                     Name = "Authorization",
                     Type = "apiKey"
                 });
-
                 c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
                 {
                     { "Bearer", new string[] { } }
@@ -197,6 +192,21 @@ namespace Web.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
+            #if false
+            app.Use((context, next) =>
+            {
+                context.Request.PathBase = new PathString("/apistarter");
+                return next();
+            });
+            app.Use((context, next) =>
+            {
+                if (context.Request.Path.StartsWithSegments("/apistarter", out var remainder))
+                    context.Request.Path = remainder;
+                return next();
+            });
+            #endif
+            //app.UsePathBase("/apistarter");
             app.UseExceptionHandler(
                 builder =>
                 {
@@ -205,7 +215,6 @@ namespace Web.Api
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-
                             var error = context.Features.Get<IExceptionHandlerFeature>();
                             if (error != null)
                             {
@@ -214,14 +223,12 @@ namespace Web.Api
                             }
                         });
                 });
-
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AspNetCoreApiStarter V1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "AspNetCoreApiStarter V2");
             });
-
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.

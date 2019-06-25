@@ -4,7 +4,7 @@ using Web.Api.Core.DTO.UseCaseResponses;
 
 namespace Web.Api.Core.Interfaces.UseCases
 {
-    public interface IChangePasswordUseCase : IUseCaseRequestHandler<ChangePasswordRequest, ChangePasswordResponse>
+    public interface IChangePasswordUseCase : IUseCaseRequestHandler<ChangePasswordRequest, UseCaseResponseMessage>
     {
     }
 }

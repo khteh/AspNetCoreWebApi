@@ -3,7 +3,7 @@ using Web.Api.Core.DTO.UseCaseResponses;
 
 namespace Web.Api.Core.Interfaces.UseCases
 {
-    public interface ISignInUseCase : IUseCaseRequestHandler<SignInRequest, SignInResponse>
+    public interface ISignInUseCase : IUseCaseRequestHandler<SignInRequest, UseCaseResponseMessage>
     {
     }
 }

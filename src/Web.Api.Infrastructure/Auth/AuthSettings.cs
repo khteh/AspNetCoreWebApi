@@ -1,6 +1,6 @@
-﻿
+using System;
 
-namespace Web.Api.Models.Settings
+namespace Web.Api.Infrastructure.Auth
 {
     public class AuthSettings
     {

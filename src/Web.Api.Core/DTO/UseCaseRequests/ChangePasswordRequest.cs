@@ -1,10 +1,8 @@
-using System;
-using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 
 namespace Web.Api.Core.DTO.UseCaseRequests
 {
-    public class ChangePasswordRequest : IUseCaseRequest<ChangePasswordResponse>
+    public class ChangePasswordRequest : IUseCaseRequest<UseCaseResponseMessage>
     {
         public string IdentityId {get;set;}
         public string OldPassword {get;set;}
