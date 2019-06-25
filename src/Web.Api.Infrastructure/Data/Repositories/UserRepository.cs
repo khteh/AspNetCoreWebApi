@@ -167,8 +167,8 @@ namespace Web.Api.Infrastructure.Data.Repositories
             }
             return new LogInResponse(await FindUserByName(username), true);
             } catch (Exception e) {
-                _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Exception! e.Message");
-                return new LogInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Exception! e.Message")});
+                _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Exception! {e.Message}");
+                return new LogInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Exception! {e.Message}")});
             }
         }
         public async Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword)
