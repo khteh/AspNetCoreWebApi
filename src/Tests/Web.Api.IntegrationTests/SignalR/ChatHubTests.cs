@@ -46,6 +46,7 @@ namespace Web.Api.IntegrationTests.SignalR
             #endif
             connection.On<string>("ReceiveMessage", i => echo = i);
             await connection.StartAsync();
+            Assert.Equal(HubConnectionState.Connected, connection.State);
             await connection.InvokeAsync("ReceiveMessage", message);
             Assert.False(string.IsNullOrEmpty(echo));
             Assert.Equal(message, echo);
@@ -79,6 +80,7 @@ namespace Web.Api.IntegrationTests.SignalR
             #endif
             connection.On<string, string>("ReceiveMessageFromUser", (u, i) => {user = u; echo = i;});
             await connection.StartAsync();
+            Assert.Equal(HubConnectionState.Connected, connection.State);
             await connection.InvokeAsync("ReceiveMessageFromUser", sender, message);
             Assert.False(string.IsNullOrEmpty(user));
             Assert.False(string.IsNullOrEmpty(echo));
