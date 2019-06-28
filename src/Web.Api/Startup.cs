@@ -26,6 +26,8 @@ using Web.Api.Infrastructure.Identity;
 using Web.Api.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http.Connections;
+
 namespace Web.Api
 {
     public class Startup
@@ -235,7 +237,7 @@ namespace Web.Api
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-            app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub"));
+            app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets));
             app.UseMvc();
         }
     }
