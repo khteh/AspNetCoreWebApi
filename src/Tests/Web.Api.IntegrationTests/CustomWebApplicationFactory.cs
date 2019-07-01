@@ -69,7 +69,6 @@ namespace Web.Api.IntegrationTests
                     }
                 }
             });
-            _webHostBuilder = builder;
         }
     }
 }

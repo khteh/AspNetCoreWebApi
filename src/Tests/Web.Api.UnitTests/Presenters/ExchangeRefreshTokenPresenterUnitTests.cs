@@ -58,7 +58,7 @@ namespace Web.Api.UnitTests.Presenters
             Assert.Null(response.AccessToken);
             Assert.True(string.IsNullOrEmpty(response.RefreshToken));
             Assert.NotNull(response.Errors);
-            Assert.Equal(1, response.Errors.Count);
+            Assert.Single(response.Errors);
             Assert.Equal("InvalidToken", response.Errors.First().Code);
             Assert.Equal("Invalid Token!", response.Errors.First().Description);
         }
