@@ -8,10 +8,13 @@ using Microsoft.Extensions.Logging;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.Infrastructure.Data.Repositories;
+using Microsoft.AspNetCore.TestHost;
+
 namespace Web.Api.IntegrationTests
 {
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Startup>
     {
+        public TestServer TestServer { get => TestServer; }
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services =>
@@ -66,6 +69,7 @@ namespace Web.Api.IntegrationTests
                     }
                 }
             });
+            _webHostBuilder = builder;
         }
     }
 }
