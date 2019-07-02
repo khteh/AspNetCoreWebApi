@@ -114,7 +114,7 @@ namespace Web.Api
                     // allow the JWT authentication handler to read the access
                     // token from the query string when a WebSocket or 
                     // Server-Sent Events request comes in.
-                    OnMessageReceived = context =>
+                    OnMessageReceived = async (context) =>
                     {
                         if (context.Request.Path.StartsWithSegments("/chatHub"))
                         {
@@ -127,7 +127,6 @@ namespace Web.Api
                             if (!string.IsNullOrEmpty(accessToken))
                                 context.Token = accessToken;
                         }
-                        return Task.CompletedTask;
                     }
                 };
             });

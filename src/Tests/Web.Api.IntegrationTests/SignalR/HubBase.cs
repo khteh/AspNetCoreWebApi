@@ -106,7 +106,7 @@ namespace Biz4x.Frontend.Web.Integration.Test.SignalR
                                         // allow the JWT authentication handler to read the access
                                         // token from the query string when a WebSocket or 
                                         // Server-Sent Events request comes in.
-                                        OnMessageReceived = context =>
+                                        OnMessageReceived = async (context) =>
                                         {
                                             if (context.Request.Path.StartsWithSegments("/chatHub"))
                                             {
@@ -119,7 +119,6 @@ namespace Biz4x.Frontend.Web.Integration.Test.SignalR
                                                 if (!string.IsNullOrEmpty(accessToken))
                                                     context.Token = accessToken;
                                             }
-                                            return Task.CompletedTask;
                                         }
                                     };
                             });
