@@ -116,12 +116,17 @@ namespace Web.Api
                     // Server-Sent Events request comes in.
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.Request.Query["access_token"];
-                        // If the request is for our hub...
-                        var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
-                            // Read the token out of the query string
-                            context.Token = accessToken;
+                        if (context.Request.Path.StartsWithSegments("/chatHub"))
+                        {
+                            string accessToken = context.Request.Query["access_token"];
+                            if (string.IsNullOrEmpty(accessToken) && context.Request.Headers.ContainsKey("Authorization"))
+                            {
+                                accessToken = context.Request.Headers["Authorization"];
+                                accessToken = accessToken.Split(" ")[1];
+                            }
+                            if (!string.IsNullOrEmpty(accessToken))
+                                context.Token = accessToken;
+                        }
                         return Task.CompletedTask;
                     }
                 };
