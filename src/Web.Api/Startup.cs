@@ -233,6 +233,7 @@ namespace Web.Api
             });
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
+            app.UseWebSockets();
             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
             app.UseHttpsRedirection();
             app.UseStaticFiles();

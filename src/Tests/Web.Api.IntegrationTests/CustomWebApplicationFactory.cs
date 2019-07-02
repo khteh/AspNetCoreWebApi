@@ -41,6 +41,7 @@ namespace Web.Api.IntegrationTests
                     ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
                     return loggerFactory.CreateLogger<UserRepository>();
                 });
+                services.AddDistributedMemoryCache();
                 // Build the service provider.
                 var sp = services.BuildServiceProvider();
 
