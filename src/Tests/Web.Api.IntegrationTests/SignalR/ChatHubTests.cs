@@ -19,7 +19,7 @@ namespace Web.Api.IntegrationTests.SignalR
         public ChatHubTests() : base("/chatHub") { _testServer = TestServer; }
         private async Task<string> AccessTokenProvider()
         {
-            HttpClient client = HttpClient();//_testServer.CreateClient();
+            HttpClient client = HttpClient();
             Assert.NotNull(client);
             var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
