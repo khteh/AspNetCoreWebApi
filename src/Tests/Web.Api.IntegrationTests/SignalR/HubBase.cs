@@ -35,7 +35,7 @@ namespace Biz4x.Frontend.Web.Integration.Test.SignalR
     public abstract class HubBase<THub> : WebApplicationFactory<Startup> where THub : Hub
     {
         protected TestServer TestServer {get; private set;}
-        protected HttpClient HttpClient { get => CreateClient(); }
+        protected HttpClient HttpClient() => CreateClient();
         public HubBase(string url)
         {
             var contentRootFull = Path.GetFullPath(Directory.GetCurrentDirectory());
