@@ -22,13 +22,14 @@ connection.on("ReceiveMessage", function (message) {
     li.textContent = encodedMsg;
     document.getElementById("messageList").appendChild(li);
 });
-connection.start().then(function () {
-    document.getElementById("sendButton").disabled = false;
-}).catch(function (err) {
-    return console.error(err.toString());
-});
+//connection.start().then(function (message) {
+//    console.log("SignalR connection started successfully! "+message);
+//    document.getElementById("sendButton").disabled = false;
+//}).catch(function (err) {
+//    return console.error(err);
+//});
 document.getElementById("sendButton").addEventListener("click", function (event) {
-    var user = document.getElementById("userInput").value;
+    var user = document.getElementById("username").value;
     var message = document.getElementById("messageInput").value;
     if (user)
         connection.invoke("ReceiveMessageFromUser", user, message).catch(function (err) { return console.error(err.toString()); });
@@ -47,11 +48,22 @@ document.getElementById("loginButton").addEventListener("click", function (event
                 type: "POST",
                 contentType: "application/json",
                 dataType: "json",
-                data: { UserName: username, Password: password, RememberMe: true },
+                data: JSON.stringify({ UserName: username, Password: password, RememberMe: true }),
                 processData: false,
-                success: function (blob) {
-                    console.log(data);
-                    token = data.accessToken.token;
+                success: function (data) {
+                    if (data.accessToken.token)
+                    {
+                        console.log("User "+username+" login successfully!");
+                        token = data.accessToken.token;
+                        connection.start().then(function (message) {
+                            console.log("SignalR connection started successfully!");
+                            document.getElementById("sendButton").disabled = false;
+                            document.getElementById("loginButton").value = "Logout";
+                        }).catch(function (err) {
+                            return console.error("Invalid user! "+username+" "+err);
+                        });
+                    } else
+                        console.error("Login failed to get a valid access token!");
                 },
                 error: function (data) {
                     console.error("Login failed!" + JSON.stringify(data));
@@ -59,9 +71,10 @@ document.getElementById("loginButton").addEventListener("click", function (event
             });
         }
     } else if (btn === "Logout") {
-        this.token = null;
+        token = null;
         document.getElementById("sendButton").disabled = true;
         connection.stop().then(function () {
+            document.getElementById("loginButton").value = "Login";
         }).catch(function (err) {
             return console.error(err.toString());
         });
