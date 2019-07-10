@@ -70,7 +70,15 @@ namespace Web.Api
                 logging.AddEventSourceLogger();
                 logging.AddSerilog(dispose: true);
             })
-            .UseSerilog() // Add the Serilog ILoggerFactory to IHostBuilder
+            // Add the Serilog ILoggerFactory to IHostBuilder
+            .UseSerilog((ctx, config) =>
+            {
+                config.MinimumLevel.Information().Enrich.FromLogContext();
+                if (ctx.HostingEnvironment.IsDevelopment())
+                    config.WriteTo.Console();
+                else
+                    config.WriteTo.Console(new ElasticsearchJsonFormatter());
+            })
             .UseStartup<Startup>()
             .ConfigureKestrel((context, options) =>
             {
