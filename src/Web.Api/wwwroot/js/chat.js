@@ -44,7 +44,7 @@ document.getElementById("loginButton").addEventListener("click", function (event
         var password = document.getElementById("password").value;
         if (username && password) {
             $.ajax({
-                url: "/api/auth/login",
+                url: document.baseURI + "api/auth/login",
                 type: "POST",
                 contentType: "application/json",
                 dataType: "json",

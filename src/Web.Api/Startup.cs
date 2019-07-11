@@ -206,7 +206,8 @@ namespace Web.Api
                 //foreach (var header in context.Request.Headers)
                 //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
                 // Connection: RemoteIp
-                context.Request.PathBase = new PathString("/apistarter");
+                if (!env.IsDevelopment())
+                    context.Request.PathBase = new PathString("/apistarter"); // Kubernetes ingress rule
                 await next();
             });
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
