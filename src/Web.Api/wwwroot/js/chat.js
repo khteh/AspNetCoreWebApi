@@ -1,6 +1,38 @@
 "use strict";
 var login = true;
 var token = null;
+console.log("window.location.origin: "+window.location.origin);
+console.log("window.location: "+window.location);
+console.log("document.baseURI: "+document.baseURI);
+// Read the launchSettings.json file into the launch variable.
+//var process = require('process');
+//var launch = require('./Properties/launchSettings.json');
+// Holds information about the hosting environment.
+var environment = {
+    // The names of the different environments.
+    development: "Development",
+    staging: "Staging",
+    production: "Production",
+    // Gets the current hosting environment the application is running under.
+    current: function () { 
+        return process.env.ASPNETCORE_ENVIRONMENT ||
+            (launch && launch.profiles['IIS Express'].environmentVariables.ASPNETCORE_ENVIRONMENT) ||
+            this.development;
+    },
+    // Are we running under the development environment.
+    isDevelopment: function () { return this.current() === this.development; },
+    // Are we running under the staging environment.
+    isStaging: function () { return this.current() === this.staging; },
+    // Are we running under the production environment.
+    isProduction: function () { return this.current() === this.production; },
+    pathBase: function() {
+        console.log("Env: "+ this.current())
+        if (this.isProduction())
+            return document.baseURI + "apistarter/";
+        else
+            return document.baseURI;
+    }
+};
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub", {
     skipNegotiation: true,
     transport: signalR.HttpTransportType.WebSockets,
@@ -44,7 +76,7 @@ document.getElementById("loginButton").addEventListener("click", function (event
         var password = document.getElementById("password").value;
         if (username && password) {
             $.ajax({
-                url: document.baseURI + "api/auth/login",
+                url: environment.pathBase() + "api/auth/login",
                 type: "POST",
                 contentType: "application/json",
                 dataType: "json",
