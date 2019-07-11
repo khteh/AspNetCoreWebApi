@@ -4,35 +4,6 @@ var token = null;
 console.log("window.location.origin: "+window.location.origin);
 console.log("window.location: "+window.location);
 console.log("document.baseURI: "+document.baseURI);
-// Read the launchSettings.json file into the launch variable.
-//var process = require('process');
-//var launch = require('./Properties/launchSettings.json');
-// Holds information about the hosting environment.
-var environment = {
-    // The names of the different environments.
-    development: "Development",
-    staging: "Staging",
-    production: "Production",
-    // Gets the current hosting environment the application is running under.
-    current: function () { 
-        return process.env.ASPNETCORE_ENVIRONMENT ||
-            (launch && launch.profiles['IIS Express'].environmentVariables.ASPNETCORE_ENVIRONMENT) ||
-            this.development;
-    },
-    // Are we running under the development environment.
-    isDevelopment: function () { return this.current() === this.development; },
-    // Are we running under the staging environment.
-    isStaging: function () { return this.current() === this.staging; },
-    // Are we running under the production environment.
-    isProduction: function () { return this.current() === this.production; },
-    pathBase: function() {
-        console.log("Env: "+ this.current())
-        if (this.isProduction())
-            return document.baseURI + "apistarter/";
-        else
-            return document.baseURI;
-    }
-};
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub", {
     skipNegotiation: true,
     transport: signalR.HttpTransportType.WebSockets,
@@ -41,16 +12,16 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub", {
 // Disable send button until connection is established
 document.getElementById("sendButton").disabled = true;
 connection.on("ReceiveMessageFromUser", function (user, message) {
-    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    var encodedMsg = user + " says " + msg;
-    var li = document.createElement("li");
+    let msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    let encodedMsg = user + " says " + msg;
+    let li = document.createElement("li");
     li.textContent = encodedMsg;
     document.getElementById("messageList").appendChild(li);
 });
 connection.on("ReceiveMessage", function (message) {
-    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    var encodedMsg = "[anonymous] says " + msg;
-    var li = document.createElement("li");
+    let msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    let encodedMsg = "[anonymous] says " + msg;
+    let li = document.createElement("li");
     li.textContent = encodedMsg;
     document.getElementById("messageList").appendChild(li);
 });
@@ -61,8 +32,8 @@ connection.on("ReceiveMessage", function (message) {
 //    return console.error(err);
 //});
 document.getElementById("sendButton").addEventListener("click", function (event) {
-    var user = document.getElementById("username").value;
-    var message = document.getElementById("messageInput").value;
+    let user = document.getElementById("username").value;
+    let message = document.getElementById("messageInput").value;
     if (user)
         connection.invoke("ReceiveMessageFromUser", user, message).catch(function (err) { return console.error(err.toString()); });
     else
@@ -70,13 +41,14 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     event.preventDefault();
 });
 document.getElementById("loginButton").addEventListener("click", function (event) {
-    var btn = document.getElementById("loginButton").value;
+    let btn = document.getElementById("loginButton").value;
     if (btn === "Login") {
-        var username = document.getElementById("username").value;
-        var password = document.getElementById("password").value;
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+        let pathBase = document.baseURI.replace(/\/$/, "");
         if (username && password) {
             $.ajax({
-                url: environment.pathBase() + "api/auth/login",
+                url: pathBase + "/api/auth/login",
                 type: "POST",
                 contentType: "application/json",
                 dataType: "json",
