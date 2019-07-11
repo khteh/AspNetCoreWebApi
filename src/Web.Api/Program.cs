@@ -25,12 +25,6 @@ namespace Web.Api
             // What's the diff between env.ContentRootPath and Directory.GetCurrentDirectory()???
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             bool isDevelopment = environment == EnvironmentName.Development;
-            IConfigurationRoot config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", false, true)
-                .AddJsonFile($"appsettings.{environment}.json", true, true)
-                .AddJsonFile($"appsettings.mysql.json", true, true)
-                .AddEnvironmentVariables().Build();
             LoggerConfiguration logConfig = new LoggerConfiguration()
                     .MinimumLevel.Debug()
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -43,7 +37,6 @@ namespace Web.Api
                         "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
             else
                 logConfig.WriteTo.Console(new ElasticsearchJsonFormatter());
-
             // Create the logger
             Log.Logger = logConfig.CreateLogger();
             try {
@@ -75,7 +68,9 @@ namespace Web.Api
             {
                 config.MinimumLevel.Information().Enrich.FromLogContext();
                 if (ctx.HostingEnvironment.IsDevelopment())
-                    config.WriteTo.Console();
+                    config.WriteTo.ColoredConsole(
+                        LogEventLevel.Verbose,
+                        "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
                 else
                     config.WriteTo.Console(new ElasticsearchJsonFormatter());
             })

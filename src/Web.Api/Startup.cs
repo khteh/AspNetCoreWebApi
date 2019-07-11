@@ -198,6 +198,18 @@ namespace Web.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.Use(async (context, next) =>
+            {
+                // Request method, scheme, and path
+                _logger.LogInformation($"Method: {context.Request.Method}, Scheme: {context.Request.Scheme}, Path: {context.Request.Path}, IP: {context.Connection.RemoteIpAddress}");
+                // Headers
+                //foreach (var header in context.Request.Headers)
+                //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
+                // Connection: RemoteIp
+                if (context.Request.Path.StartsWithSegments("/apistarter", out var remainder))
+                    context.Request.Path = remainder;
+                await next();
+            });
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
             #if false
             app.Use((context, next) =>
