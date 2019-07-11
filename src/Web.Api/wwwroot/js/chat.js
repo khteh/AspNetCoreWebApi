@@ -1,7 +1,8 @@
 "use strict";
 var login = true;
 var token = null;
-var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub", {
+var pathBase = document.baseURI.replace(/\/$/, "");
+var connection = new signalR.HubConnectionBuilder().withUrl(pathBase+"/chatHub", {
     skipNegotiation: true,
     transport: signalR.HttpTransportType.WebSockets,
     accessTokenFactory: () => token
@@ -42,7 +43,6 @@ document.getElementById("loginButton").addEventListener("click", function (event
     if (btn === "Login") {
         let username = document.getElementById("username").value;
         let password = document.getElementById("password").value;
-        let pathBase = document.baseURI.replace(/\/$/, "");
         if (username && password) {
             $.ajax({
                 url: pathBase + "/api/auth/login",
