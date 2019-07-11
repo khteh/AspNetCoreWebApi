@@ -206,8 +206,7 @@ namespace Web.Api
                 //foreach (var header in context.Request.Headers)
                 //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
                 // Connection: RemoteIp
-                if (context.Request.Path.StartsWithSegments("/apistarter", out var remainder))
-                    context.Request.Path = remainder;
+                context.Request.PathBase = new PathString("/apistarter");
                 await next();
             });
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
