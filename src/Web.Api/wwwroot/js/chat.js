@@ -1,9 +1,6 @@
 "use strict";
 var login = true;
 var token = null;
-console.log("window.location.origin: "+window.location.origin);
-console.log("window.location: "+window.location);
-console.log("document.baseURI: "+document.baseURI);
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub", {
     skipNegotiation: true,
     transport: signalR.HttpTransportType.WebSockets,
@@ -70,7 +67,9 @@ document.getElementById("loginButton").addEventListener("click", function (event
                         console.error("Login failed to get a valid access token!");
                 },
                 error: function (data) {
-                    console.error("Login failed!" + JSON.stringify(data));
+                    console.error("Login failed! " + data.status + " " + data.statusText);
+                    for (let i = 0; i < data.responseJSON.$values.length; i++)
+                      console.error(data.responseJSON.$values[i].code + " " + data.responseJSON.$values[i].description);
                 }
             });
         }

@@ -245,7 +245,7 @@ namespace Web.Api
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v2/swagger.json", "AspNetCoreApiStarter V2");
+                c.SwaggerEndpoint(env.IsDevelopment() ? "/swagger/v2/swagger.json" : "/apistarter/swagger/v2/swagger.json", "AspNetCoreApiStarter V2");
             });
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();

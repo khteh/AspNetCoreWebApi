@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
@@ -40,7 +41,7 @@ namespace Web.Api.Core.UseCases
                     return true;
                 }
             }
-            outputPort.Handle(new LoginResponse(result != null ? result.Errors : new System.Collections.Generic.List<Error>() { new Error("login_failure", "Invalid username or password.") }));
+            outputPort.Handle(new LoginResponse(result != null ? result.Errors : new System.Collections.Generic.List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username or password!") }));
             return false;
         }
     }
