@@ -182,14 +182,11 @@ namespace Web.Api
 
             // Change to use email as the user identifier for SignalR
             // services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
-            services.AddHealthChecks()
-                    .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>(){"Liveness"})
-                    .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string>{ "Readiness" });
 
             // WARNING: use *either* the NameUserIdProvider *or* the 
             // EmailBasedUserIdProvider, but do not use both. 
             // Register Infrastructure Services
-            services.AddInfrastructure(Configuration).AddCore().AddOutputPorts();
+            services.AddInfrastructure(Configuration).AddCore().AddOutputPorts().AddHealthCheck();
             //services.AddScoped<AuthController>();
             //ServiceProvider provider = services.BuildServiceProvider();
             //Web.Api.Core.Interfaces.Services.ILogger logger = provider.GetRequiredService<Web.Api.Core.Interfaces.Services.ILogger>();
