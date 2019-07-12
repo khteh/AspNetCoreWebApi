@@ -29,6 +29,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http.Connections;
 using Web.Api.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace Web.Api
 {
@@ -90,7 +91,6 @@ namespace Web.Api
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
             };
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -203,6 +203,8 @@ namespace Web.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            string pathBase = Configuration.GetValue<string>("PathBase");
+            _logger.LogInformation($"PathBase: {pathBase}");
             app.Use(async (context, next) =>
             {
                 // Request method, scheme, and path
@@ -212,24 +214,24 @@ namespace Web.Api
                 //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
                 // Connection: RemoteIp
                 if (!env.IsDevelopment())
-                    context.Request.PathBase = new PathString("/apistarter"); // Kubernetes ingress rule
+                    context.Request.PathBase = new PathString(pathBase); // Kubernetes ingress rule
                 await next();
             });
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
             #if false
             app.Use((context, next) =>
             {
-                context.Request.PathBase = new PathString("/apistarter");
+                context.Request.PathBase = new PathString(pathBase);
                 return next();
             });
             app.Use((context, next) =>
             {
-                if (context.Request.Path.StartsWithSegments("/apistarter", out var remainder))
+                if (context.Request.Path.StartsWithSegments(pathBase, out var remainder))
                     context.Request.Path = remainder;
                 return next();
             });
             #endif
-            //app.UsePathBase("/apistarter");
+            //app.UsePathBase(pathBase);
             app.UseExceptionHandler(
                 builder =>
                 {
@@ -246,11 +248,19 @@ namespace Web.Api
                             }
                         });
                 });
+            app.UseHealthChecks($"{pathBase}/health/live", new HealthCheckOptions()
+            {
+                Predicate = check => check.Name == "Liveness"
+            })
+            .UseHealthChecks($"{pathBase}/health/ready", new HealthCheckOptions()
+            {
+                Predicate = check => check.Name == "Readiness",
+            });
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint(env.IsDevelopment() ? "/swagger/v2/swagger.json" : "/apistarter/swagger/v2/swagger.json", "AspNetCoreApiStarter V2");
+                c.SwaggerEndpoint($"{pathBase}/swagger/v2/swagger.json", "AspNetCoreApiStarter V2");
             });
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
