@@ -203,8 +203,7 @@ namespace Web.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            string pathBase = Configuration.GetValue<string>("PathBase");
-            _logger.LogInformation($"PathBase: {pathBase}");
+            string pathBase = env.IsDevelopment() ? string.Empty : "/apistarter";
             app.Use(async (context, next) =>
             {
                 // Request method, scheme, and path
