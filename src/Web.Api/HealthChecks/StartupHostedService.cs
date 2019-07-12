@@ -10,7 +10,7 @@ namespace Web.Api.HealthChecks
 {
     internal class StartupHostedService : IHostedService, IDisposable
     {
-        private readonly int _delaySeconds = 15;
+        private readonly int _delaySeconds = 10;
         private readonly ILogger _logger;
         private readonly ReadinessHealthCheck _healthCheck;
 
@@ -23,7 +23,7 @@ namespace Web.Api.HealthChecks
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            Console.WriteLine("Start task.");
+            _logger.LogInformation("Start task.");
 
             // Simulate the effect of a long-running startup task.
             Task.Run(async () =>
@@ -39,7 +39,6 @@ namespace Web.Api.HealthChecks
         public Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Startup Background Service is stopping.");
-
             return Task.CompletedTask;
         }
 

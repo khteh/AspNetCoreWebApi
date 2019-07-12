@@ -244,11 +244,11 @@ namespace Web.Api
                             }
                         });
                 });
-            app.UseHealthChecks($"{pathBase}/health/live", new HealthCheckOptions()
+            app.UseHealthChecks($"/health/live", new HealthCheckOptions()
             {
                 Predicate = check => check.Name == "Liveness"
             })
-            .UseHealthChecks($"{pathBase}/health/ready", new HealthCheckOptions()
+            .UseHealthChecks($"/health/ready", new HealthCheckOptions()
             {
                 Predicate = check => check.Name == "Readiness",
             });

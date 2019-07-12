@@ -9,10 +9,10 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddHealthCheck(this IServiceCollection service)
         {
-                service.AddHealthChecks()
+            service.AddHealthChecks()
                 .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>(){"Liveness"})
                 .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string>{ "Readiness" });
-                return service.AddHostedService<StartupHostedService>()
+            return service.AddHostedService<StartupHostedService>()
                 .AddSingleton<ReadinessHealthCheck>()
                 .AddSingleton<LivenessHealthCheck>();
         }
