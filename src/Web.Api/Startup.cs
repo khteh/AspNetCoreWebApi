@@ -27,6 +27,8 @@ using Web.Api.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http.Connections;
+using Web.Api.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Web.Api
 {
@@ -180,6 +182,9 @@ namespace Web.Api
 
             // Change to use email as the user identifier for SignalR
             // services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
+            services.AddHealthChecks()
+                    .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>(){"Liveness"})
+                    .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string>{ "Readiness" });
 
             // WARNING: use *either* the NameUserIdProvider *or* the 
             // EmailBasedUserIdProvider, but do not use both. 
