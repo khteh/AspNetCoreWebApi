@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore;
+﻿using System.Security.Cryptography;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 using System;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
-
+using Serilog.Settings.Configuration;
 namespace Web.Api
 {
     public class Program
@@ -25,18 +26,25 @@ namespace Web.Api
             // What's the diff between env.ContentRootPath and Directory.GetCurrentDirectory()???
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             bool isDevelopment = environment == EnvironmentName.Development;
-            LoggerConfiguration logConfig = new LoggerConfiguration()
-                    .MinimumLevel.Debug()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.mysql.json", true, true)
+                .AddEnvironmentVariables()
+                .AddCommandLine(args)
+                .Build();
+            string strFormatter = typeof(Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter).AssemblyQualifiedName;
+            LoggerConfiguration logConfig = new LoggerConfiguration().ReadFrom.Configuration(config);
+                    //.MinimumLevel.Debug()
+                    //.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                     //.WriteTo.RollingFile(config["Logging:LogFile"], fileSizeLimitBytes: 10485760, retainedFileCountLimit: null)
-                    .Enrich.FromLogContext();
+                    //.Enrich.FromLogContext();
             if (isDevelopment)
                 //config.WriteTo.Console(new CompactJsonFormatter())
                 logConfig.WriteTo.ColoredConsole(
                         LogEventLevel.Verbose,
                         "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
-            else
-                logConfig.WriteTo.Console(new ElasticsearchJsonFormatter());
             // Create the logger
             Log.Logger = logConfig.CreateLogger();
             try {
@@ -66,13 +74,11 @@ namespace Web.Api
             // Add the Serilog ILoggerFactory to IHostBuilder
             .UseSerilog((ctx, config) =>
             {
-                config.MinimumLevel.Information().Enrich.FromLogContext();
+                config.ReadFrom.Configuration(ctx.Configuration);
                 if (ctx.HostingEnvironment.IsDevelopment())
                     config.WriteTo.ColoredConsole(
                         LogEventLevel.Verbose,
                         "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
-                else
-                    config.WriteTo.Console(new ElasticsearchJsonFormatter());
             })
             .UseStartup<Startup>()
             .ConfigureKestrel((context, options) =>

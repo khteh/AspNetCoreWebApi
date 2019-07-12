@@ -21,6 +21,9 @@
     <PackageReference Include="serilog.sinks.rollingfile" Version="3.3.0"/>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1"/>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2"/>
+    <PackageReference Include="Serilog.Sinks.File" Version="4.0.0"/>
+    <PackageReference Include="Serilog.Settings.AppSettings" Version="2.2.2"/>
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Web.Api.Core\Web.Api.Core.csproj"/>
