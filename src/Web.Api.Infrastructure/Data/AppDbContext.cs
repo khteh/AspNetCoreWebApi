@@ -34,17 +34,17 @@ namespace Web.Api.Infrastructure.Data
 
         public override int SaveChanges()
         {
-            AddAuitInfo();
+            AddAuditInfo();
             return base.SaveChanges();
         }
 
         public async Task<int> SaveChangesAsync()
         {
-            AddAuitInfo();
+            AddAuditInfo();
             return await base.SaveChangesAsync();
         }
 
-        private void AddAuitInfo()
+        private void AddAuditInfo()
         {
             var entries = ChangeTracker.Entries().Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
             foreach (var entry in entries)
