@@ -17,7 +17,7 @@
             "internalConsoleOptions": "openOnSessionStart",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
-		        "ASPNETCORE_URLS": "http://localhost:5000/swagger"
+		"ASPNETCORE_URLS": "http://localhost:5000"
             },
             "launchBrowser": {
                 "enabled": true,
