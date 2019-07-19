@@ -7,25 +7,14 @@ namespace Web.Api.HealthChecks
 {
     internal class ReadinessHealthCheck : IHealthCheck
     {
-        public ReadinessHealthCheck()
-        {
-        }
-
         public bool StartupTaskCompleted { get; set; } = false;
 
-        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             // Some Readiness check
             Console.WriteLine("Readiness health check executed.");
-
-            if (StartupTaskCompleted)
-            {
-                return Task.FromResult(
-                    HealthCheckResult.Healthy("The startup task is finished."));
-            }
-
-            return Task.FromResult(
-                HealthCheckResult.Unhealthy("The startup task is still running."));
+            return StartupTaskCompleted ? Task.FromResult(HealthCheckResult.Healthy("The startup task is finished.")) :
+                    Task.FromResult(HealthCheckResult.Unhealthy("The startup task is still running."));
         }
     }
 }

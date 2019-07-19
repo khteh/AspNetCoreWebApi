@@ -42,8 +42,6 @@ namespace Web.Api.HealthChecks
             return Task.CompletedTask;
         }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() => GC.SuppressFinalize(this);
     }
 }

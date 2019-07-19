@@ -7,11 +7,7 @@ namespace Web.Api.HealthChecks
 {
     internal class LivenessHealthCheck : IHealthCheck
     {
-        public LivenessHealthCheck()
-        {
-        }
-
-        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             // Some Liveness check
             Console.WriteLine("Liveness Health check executed.");
