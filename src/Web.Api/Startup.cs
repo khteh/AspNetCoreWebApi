@@ -30,6 +30,7 @@ using Microsoft.AspNetCore.Http.Connections;
 using Web.Api.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Web.Api.Infrastructure.Data;
 
 namespace Web.Api
 {
@@ -186,7 +187,16 @@ namespace Web.Api
             // WARNING: use *either* the NameUserIdProvider *or* the 
             // EmailBasedUserIdProvider, but do not use both. 
             // Register Infrastructure Services
-            services.AddInfrastructure(Configuration).AddCore().AddOutputPorts().AddHealthCheck();
+            services.AddInfrastructure(Configuration).AddCore().AddOutputPorts();//.AddHealthCheck();
+            services.AddHealthChecks()
+                .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>(){"Liveness"})
+                .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string>{ "Readiness" })
+                .AddMySql(Configuration["ConnectionStrings:DefaultConnection"])
+                .AddDbContextCheck<AppDbContext>();
+            services.AddHostedService<StartupHostedService>()
+                .AddSingleton<ReadinessHealthCheck>()
+                .AddSingleton<LivenessHealthCheck>();
+
             //services.AddScoped<AuthController>();
             //ServiceProvider provider = services.BuildServiceProvider();
             //Web.Api.Core.Interfaces.Services.ILogger logger = provider.GetRequiredService<Web.Api.Core.Interfaces.Services.ILogger>();

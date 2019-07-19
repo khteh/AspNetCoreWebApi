@@ -7,14 +7,10 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class HealthCheckService
     {
+        #if false
         public static IServiceCollection AddHealthCheck(this IServiceCollection service)
         {
-            service.AddHealthChecks()
-                .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>(){"Liveness"})
-                .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string>{ "Readiness" });
-            return service.AddHostedService<StartupHostedService>()
-                .AddSingleton<ReadinessHealthCheck>()
-                .AddSingleton<LivenessHealthCheck>();
         }
+        #endif
     }
 }
