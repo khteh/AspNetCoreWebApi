@@ -24,7 +24,8 @@ namespace Web.Api.HealthChecks
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Start task.");
-
+            #if false
+            IApplicationLifetime.ApplicationStarted sets _healthCheck.StartupTaskCompleted to true
             // Simulate the effect of a long-running startup task.
             Task.Run(async () =>
             {
@@ -32,7 +33,7 @@ namespace Web.Api.HealthChecks
                 _healthCheck.StartupTaskCompleted = true;
                 _logger.LogInformation($"Startup Background Service has started.");
             });
-
+            #endif
             return Task.CompletedTask;
         }
 

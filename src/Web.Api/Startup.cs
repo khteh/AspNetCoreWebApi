@@ -191,12 +191,11 @@ namespace Web.Api
             services.AddHealthChecks()
                 .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>(){"Liveness"})
                 .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string>{ "Readiness" })
-                .AddMySql(Configuration["ConnectionStrings:DefaultConnection"])
-                .AddDbContextCheck<AppDbContext>();
+                .AddMySql(Configuration["ConnectionStrings:DefaultConnection"], "MySQL", HealthStatus.Unhealthy, new List<string>{ "Services" })
+                .AddDbContextCheck<AppDbContext>("AppDbContext", HealthStatus.Unhealthy, new List<string>{ "Services" });
             services.AddHostedService<StartupHostedService>()
                 .AddSingleton<ReadinessHealthCheck>()
                 .AddSingleton<LivenessHealthCheck>();
-
             //services.AddScoped<AuthController>();
             //ServiceProvider provider = services.BuildServiceProvider();
             //Web.Api.Core.Interfaces.Services.ILogger logger = provider.GetRequiredService<Web.Api.Core.Interfaces.Services.ILogger>();
@@ -208,7 +207,7 @@ namespace Web.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IServiceProvider serviceProvider)
         {
             string pathBase = env.IsDevelopment() ? string.Empty : "/apistarter";
             app.Use(async (context, next) =>
@@ -275,7 +274,22 @@ namespace Web.Api
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets));
+            ReadinessHealthCheck readinessHealthCheck = serviceProvider.GetRequiredService<ReadinessHealthCheck>();
+            lifetime.ApplicationStarted.Register(() =>
+            {
+                AppStarted(_logger, readinessHealthCheck);
+            });
+            lifetime.ApplicationStopping.Register(() =>
+            {
+                _logger.LogInformation("ApplicationStopping");
+            });
+            lifetime.ApplicationStopped.Register(() => { _logger.LogInformation("ApplicationStopped"); });
             app.UseMvc();
+        }
+        private static void AppStarted(ILogger<Startup> logger, ReadinessHealthCheck readinessHealthCheck)
+        {
+			logger.LogInformation($"ApplicationStarted");
+            readinessHealthCheck.StartupTaskCompleted = true;
         }
     }
 }
