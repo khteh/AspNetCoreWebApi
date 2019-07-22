@@ -21,6 +21,7 @@ namespace Web.Api.Models.Logging
         public HostString Host {get; private set;}
         [JsonProperty]
         public long ContentLength {get; private set;}
+        #if false
         public RequestLog(HttpRequest request, IPAddress ip)
         {
             if (request != null)
@@ -33,6 +34,16 @@ namespace Web.Api.Models.Logging
                 ContentLength = request.ContentLength ?? 0;
             }
             IP = ip;
+        }
+        #endif
+        public RequestLog(string method, string scheme, string pathBase, string path, HostString host, long? length, IPAddress ip)
+        {
+            Method = method;
+            Scheme = scheme;
+            PathBase = pathBase;
+            Path = path;
+            Host = host;
+            ContentLength = length ?? 0;
         }
     }
 }
