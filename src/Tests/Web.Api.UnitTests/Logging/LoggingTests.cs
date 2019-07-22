@@ -17,21 +17,19 @@ namespace Web.Api.UnitTests.Logging
 {
     public class LoggingTests
     {
-        #if false
-        [Fact]
+        [Fact(Skip = "System.ArgumentException : The path in 'value' must start with '/'.")]
         public async Task RequestLogSerializationTest()
         {
-            HttpRequest request = new DefaultHttpRequest(new DefaultHttpContext() { Path = "/health/ready"}) {
+            HttpRequest request = new DefaultHttpRequest(new DefaultHttpContext()) {
                 Method = "GET",
                 Scheme = "Http",
                 PathBase = "http://aspnetapistarter.com",
-                Path = "/health/ready",
+                Path = new PathString("/health/ready"),
                 Host = new HostString("localhost")
             };
             RequestLog log = new RequestLog(request, IPAddress.Loopback);
             string strLog = JsonConvert.SerializeObject(log);
             Assert.False(string.IsNullOrEmpty(strLog));
         }
-        #endif
     }
 }
