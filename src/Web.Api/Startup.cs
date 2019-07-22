@@ -31,8 +31,6 @@ using Web.Api.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Web.Api.Infrastructure.Data;
-using Web.Api.Models.Logging;
-using Newtonsoft.Json;
 
 namespace Web.Api
 {
@@ -215,7 +213,7 @@ namespace Web.Api
             app.Use(async (context, next) =>
             {
                 // Request method, scheme, and path
-                _logger.LogInformation(JsonConvert.SerializeObject(new RequestLog(context.Request, context.Connection.RemoteIpAddress)));
+                _logger.LogInformation($"\"{{\"Method\": \"{context.Request.Method}\", \"Scheme\": \"{context.Request.Scheme}\", \"PathBase\": \"{context.Request.PathBase}\", \"Path\": \"{context.Request.Path}\", \"IP\": \"{context.Connection.RemoteIpAddress}\", \"Host\": \"{context.Request.Host}\", \"ContentLength\": {context.Request.ContentLength}}}\"");
                 // Headers
                 //foreach (var header in context.Request.Headers)
                 //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
