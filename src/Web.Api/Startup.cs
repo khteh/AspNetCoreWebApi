@@ -216,7 +216,7 @@ namespace Web.Api
             {
                 // Request method, scheme, and path
                 //_logger.LogInformation($"\"{{\"Method\": \"{context.Request.Method}\", \"Scheme\": \"{context.Request.Scheme}\", \"PathBase\": \"{context.Request.PathBase}\", \"Path\": \"{context.Request.Path}\", \"IP\": \"{context.Connection.RemoteIpAddress}\", \"Host\": \"{context.Request.Host}\", \"ContentLength\": {context.Request.ContentLength}}}\"");
-                if (context != null)
+                if (context != null && context.Request != null && context.Connection != null)
                     //_logger.LogInformation(JsonConvert.SerializeObject(new RequestLog(context.Request, context.Connection.RemoteIpAddress)));
                     _logger.LogInformation(JsonConvert.SerializeObject(new RequestLog(context.Request.Method, context.Request.Scheme, context.Request.PathBase, context.Request.Path, context.Request.Host.ToString(), context.Request.ContentLength, context.Connection.RemoteIpAddress.ToString())));
                 // Headers
