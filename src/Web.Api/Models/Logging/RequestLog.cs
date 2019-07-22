@@ -23,13 +23,16 @@ namespace Web.Api.Models.Logging
         public long ContentLength {get; private set;}
         public RequestLog(HttpRequest request, IPAddress ip)
         {
-            Method = request.Method;
-            Scheme = request.Scheme;
-            PathBase = request.PathBase;
-            Path = request.Path;
+            if (request != null)
+            {
+                Method = request.Method;
+                Scheme = request.Scheme;
+                PathBase = request.PathBase;
+                Path = request.Path;
+                Host = request.Host;
+                ContentLength = request.ContentLength ?? 0;
+            }
             IP = ip;
-            Host = request.Host;
-            ContentLength = request.ContentLength ?? 0;
         }
     }
 }
