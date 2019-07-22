@@ -16,9 +16,9 @@ namespace Web.Api.Models.Logging
         [JsonProperty]
         public string Path {get; private set;}
         [JsonProperty]
-        public IPAddress IP {get; private set;}
+        public string IP {get; private set;}
         [JsonProperty]
-        public HostString Host {get; private set;}
+        public string Host {get; private set;}
         [JsonProperty]
         public long ContentLength {get; private set;}
         #if false
@@ -36,7 +36,7 @@ namespace Web.Api.Models.Logging
             IP = ip;
         }
         #endif
-        public RequestLog(string method, string scheme, string pathBase, string path, HostString host, long? length, IPAddress ip)
+        public RequestLog(string method, string scheme, string pathBase, string path, string host, long? length, string ip)
         {
             Method = method;
             Scheme = scheme;

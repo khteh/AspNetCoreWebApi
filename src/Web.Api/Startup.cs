@@ -218,7 +218,7 @@ namespace Web.Api
                 //_logger.LogInformation($"\"{{\"Method\": \"{context.Request.Method}\", \"Scheme\": \"{context.Request.Scheme}\", \"PathBase\": \"{context.Request.PathBase}\", \"Path\": \"{context.Request.Path}\", \"IP\": \"{context.Connection.RemoteIpAddress}\", \"Host\": \"{context.Request.Host}\", \"ContentLength\": {context.Request.ContentLength}}}\"");
                 if (context != null)
                     //_logger.LogInformation(JsonConvert.SerializeObject(new RequestLog(context.Request, context.Connection.RemoteIpAddress)));
-                    _logger.LogInformation(JsonConvert.SerializeObject(new RequestLog(context.Request.Method, context.Request.Scheme, context.Request.PathBase, context.Request.Path, context.Request.Host, context.Request.ContentLength, context.Connection.RemoteIpAddress)));
+                    _logger.LogInformation(JsonConvert.SerializeObject(new RequestLog(context.Request.Method, context.Request.Scheme, context.Request.PathBase, context.Request.Path, context.Request.Host.ToString(), context.Request.ContentLength, context.Connection.RemoteIpAddress.ToString())));
                 // Headers
                 //foreach (var header in context.Request.Headers)
                 //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
