@@ -36,10 +36,10 @@ namespace Web.Api
                 .Build();
             string strFormatter = typeof(Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter).AssemblyQualifiedName;
             LoggerConfiguration logConfig = new LoggerConfiguration().ReadFrom.Configuration(config);
-                    //.MinimumLevel.Debug()
-                    //.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                    //.WriteTo.RollingFile(config["Logging:LogFile"], fileSizeLimitBytes: 10485760, retainedFileCountLimit: null)
-                    //.Enrich.FromLogContext();
+            //.MinimumLevel.Debug()
+            //.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            //.WriteTo.RollingFile(config["Logging:LogFile"], fileSizeLimitBytes: 10485760, retainedFileCountLimit: null)
+            //.Enrich.FromLogContext();
             if (isDevelopment)
                 //config.WriteTo.Console(new CompactJsonFormatter())
                 logConfig.WriteTo.ColoredConsole(
@@ -65,11 +65,14 @@ namespace Web.Api
                 config.AddCommandLine(args);
             }).ConfigureLogging((hostingContext, logging) =>
             {
+                logging.ClearProviders();
+#if false
                 logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                 logging.AddConsole();
                 logging.AddDebug();
                 logging.AddEventSourceLogger();
                 logging.AddSerilog(dispose: true);
+#endif
             })
             // Add the Serilog ILoggerFactory to IHostBuilder
             .UseSerilog((ctx, config) =>

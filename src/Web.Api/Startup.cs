@@ -33,6 +33,8 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Web.Api.Infrastructure.Data;
 using Newtonsoft.Json;
 using Web.Api.Models.Logging;
+using Microsoft.AspNetCore.HttpOverrides;
+
 namespace Web.Api
 {
     public class Startup
@@ -197,6 +199,10 @@ namespace Web.Api
             services.AddHostedService<StartupHostedService>()
                 .AddSingleton<ReadinessHealthCheck>()
                 .AddSingleton<LivenessHealthCheck>();
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.All;
+            });
             //services.AddScoped<AuthController>();
             //ServiceProvider provider = services.BuildServiceProvider();
             //Web.Api.Core.Interfaces.Services.ILogger logger = provider.GetRequiredService<Web.Api.Core.Interfaces.Services.ILogger>();
@@ -211,11 +217,23 @@ namespace Web.Api
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IServiceProvider serviceProvider)
         {
             string pathBase = env.IsDevelopment() ? string.Empty : "/apistarter";
+            app.UseForwardedHeaders();
             app.Use(async (context, next) =>
             {
                 // Request method, scheme, and path
                 //_logger.LogInformation($"Method: {context.Request.Method}, Scheme: {context.Request.Scheme}, PathBase: {context.Request.PathBase}, Path: {context.Request.Path}, IP: {context.Connection.RemoteIpAddress}, Host: {context.Request.Host}, ContentLength: {context.Request.ContentLength}");
-                _logger.LogInformation(JsonConvert.SerializeObject(new RequestLog(context?.Request?.Method, context?.Request?.Scheme, context?.Request?.PathBase, context?.Request?.Path, context?.Request?.Host.ToString(), context?.Request?.ContentLength, context?.Connection?.RemoteIpAddress?.ToString())));
+                _logger.LogInformation(JsonConvert.SerializeObject(new RequestLog(context?.Request?.Method,
+                                    context?.Request?.Scheme,
+                                    context?.Request?.PathBase,
+                                    context?.Request?.Path,
+                                    context?.Request?.Host.ToString(),
+                                    context?.Request?.ContentLength,
+                                    context?.Connection?.RemoteIpAddress?.ToString(),
+                                    context?.Request?.QueryString.ToString(),
+                                    context?.Request?.ContentType,
+                                    context?.Request?.Protocol,
+                                    context?.Request?.Headers
+                                    )));
                 // Headers
                 //foreach (var header in context.Request.Headers)
                 //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
