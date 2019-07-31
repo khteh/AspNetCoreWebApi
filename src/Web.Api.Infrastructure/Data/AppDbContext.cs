@@ -28,7 +28,6 @@ namespace Web.Api.Infrastructure.Data
             var navigation = builder.Metadata.FindNavigation(nameof(User.RefreshTokens));
             //EF access the RefreshTokens collection property through its backing field
             navigation.SetPropertyAccessMode(PropertyAccessMode.Field);
-
             builder.Ignore(b => b.Email);
         }
 
@@ -56,5 +55,3 @@ namespace Web.Api.Infrastructure.Data
         }
     }
 }
-
-
