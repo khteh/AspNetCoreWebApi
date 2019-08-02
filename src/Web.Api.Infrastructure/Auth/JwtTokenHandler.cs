@@ -26,12 +26,10 @@ namespace Web.Api.Infrastructure.Auth
             try
             {
                 var principal = _jwtSecurityTokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-
                 if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase))
                     throw new SecurityTokenException("Invalid token");
                 return principal;
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 _logger.LogError($"Token validation failed: {e.Message}");
                 return null;

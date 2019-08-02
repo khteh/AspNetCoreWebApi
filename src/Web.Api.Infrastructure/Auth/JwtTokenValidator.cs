@@ -33,8 +33,8 @@ namespace Web.Api.Infrastructure.Auth
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authSettings.SecretKey)),
 
-                RequireExpirationTime = true,//false,
-                ValidateLifetime = true,
+                RequireExpirationTime = true, 
+                ValidateLifetime = false, // This function is called from ExchangeRefreshToken. If set to true, SecurityTokenExpiredException is thrown and there is no way to exchange RefreshToken for a new AccessToken!
                 ClockSkew = TimeSpan.Zero
             };
             return _jwtTokenHandler.ValidateToken(token, tokenValidationParameters);

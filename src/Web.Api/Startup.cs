@@ -49,7 +49,7 @@ namespace Web.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddLogging();
+            services.AddOptions();
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -71,7 +71,7 @@ namespace Web.Api
             // jwt wire up
             // Get options from app settings
             var jwtAppSettingOptions = Configuration.GetSection(nameof(JwtIssuerOptions));
-
+            services.Configure<JwtIssuerOptions>(jwtAppSettingOptions);
             // Configure JwtIssuerOptions
             services.Configure<JwtIssuerOptions>(options =>
             {
