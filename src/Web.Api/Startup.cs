@@ -111,9 +111,7 @@ namespace Web.Api
                     OnAuthenticationFailed = context =>
                     {
                         if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                        {
                             context.Response.Headers.Add("Token-Expired", "true");
-                        }
                         return Task.CompletedTask;
                     },
                     // We have to hook the OnMessageReceived event in order to

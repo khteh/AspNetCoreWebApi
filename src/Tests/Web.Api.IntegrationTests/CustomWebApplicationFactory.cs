@@ -14,7 +14,6 @@ namespace Web.Api.IntegrationTests
 {
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Startup>
     {
-        public TestServer TestServer { get => TestServer; }
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services =>

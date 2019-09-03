@@ -8,7 +8,7 @@ using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases
 {
-    public class ChanagePasswordUseCaseUnitTests
+    public class ChangePasswordUseCaseUnitTests
     {
         [Fact]
         public async void Handle_ChangePassword_ShouldSucceed()
