@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -114,17 +115,22 @@ namespace Web.Api.IntegrationTests.Controllers
             // Change Password
             var pwdResponse = await _client.PostAsync("/api/accounts/changepassword", new StringContent(JsonConvert.SerializeObject(new Models.Request.ChangePasswordRequest((string)result.id, "Pa$$word1", "Pa$$word2")), Encoding.UTF8, "application/json"));
             pwdResponse.EnsureSuccessStatusCode();
-            dynamic pwdResult = JObject.Parse(await pwdResponse.Content.ReadAsStringAsync());
-            Assert.True((bool) pwdResult.success);
+            var strPwdResponse = await pwdResponse.Content.ReadAsStringAsync();
+            //dynamic pwdResult = JObject.Parse(await pwdResponse.Content.ReadAsStringAsync());
+            Models.Response.ChangePasswordResponse pwdResponse1 = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ChangePasswordResponse>(strPwdResponse);
+            Assert.True(pwdResponse1.Success);
             Assert.Equal(HttpStatusCode.OK, pwdResponse.StatusCode);
-            Assert.False(string.IsNullOrEmpty((string)pwdResult.id));
-            Assert.Equal(result.Id, pwdResult.Id);
+            Assert.Null(pwdResponse1.Errors);
 
             // Should fail login with previous password
             var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user1", "Pa$$W0rd1")), Encoding.UTF8, "application/json"));
             var strLoginFailResponse = await loginFailResponse.Content.ReadAsStringAsync();
-            Assert.Contains("Invalid username or password!", strLoginFailResponse);
-            Assert.Equal(HttpStatusCode.Unauthorized, loginFailResponse.StatusCode);
+            Models.Response.LoginResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginFailResponse);
+            Assert.NotNull(response);
+            Assert.NotNull(response.Errors);
+            Assert.NotEmpty(response.Errors);
+            Assert.Contains(HttpStatusCode.Unauthorized.ToString(), response.Errors.First().Code);
+            Assert.Contains("Invalid username", response.Errors.First().Description);
 
             // Login
             var loginSuccessResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user1", "Pa$$W0rd2")), Encoding.UTF8, "application/json"));

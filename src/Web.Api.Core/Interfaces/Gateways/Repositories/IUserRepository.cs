@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
+using Web.Api.Core.DTO.UseCaseRequests;
 
 namespace Web.Api.Core.Interfaces.Gateways.Repositories
 {
@@ -16,5 +17,8 @@ namespace Web.Api.Core.Interfaces.Gateways.Repositories
         Task<SignInResponse> SignIn(string username, string password, bool rememberMe, bool logoutOnFailure);
         Task<SignInResponse> SignInMobile(string username, string password, bool logoutOnFailure);
         Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword);
+        Task<LockUserResponse> LockUser(string id);
+        Task<LockUserResponse> UnLockUser(string id);
+        Task<PasswordResponse> ResetPassword(ResetPasswordRequest request);
     }
 }

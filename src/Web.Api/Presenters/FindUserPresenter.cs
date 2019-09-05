@@ -5,7 +5,12 @@ using Web.Api.Serialization;
 
 namespace Web.Api.Presenters
 {
-    public sealed class FindUserPresenter : PresenterBase<UseCaseResponseMessage>
+    public class FindUserPresenter : PresenterBase<FindUserResponse, Models.Response.FindUserResponse>
     {
+        public override void Handle(FindUserResponse response)
+        {
+            ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
+            ContentResult.Content = JsonSerializer.SerializeObject(new Models.Response.FindUserResponse(response.Id, response.Success, response.User, response.Message, response.Errors));
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IOutputPort<UseCaseResponseMessage>, RegisterUserPresenter>()
                 .AddSingleton<IOutputPort<UseCaseResponseMessage>, DeleteUserPresenter>()
                 .AddSingleton<ExchangeRefreshTokenPresenter>()
+                .AddSingleton<LockUserPresenter>()
                 .AddSingleton<LoginPresenter>()
                 .AddSingleton<RegisterUserPresenter>()
                 .AddSingleton<FindUserPresenter>()

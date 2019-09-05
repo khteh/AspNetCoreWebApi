@@ -1,5 +1,7 @@
+using System;
 using System.Net;
 using Web.Api.Core.Interfaces;
+using Web.Api.Models.Response;
 using Web.Api.Serialization;
 
 namespace Web.Api.Presenters
@@ -10,7 +12,16 @@ namespace Web.Api.Presenters
         public virtual void Handle(T response)
         {
             ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
-            ContentResult.Content = response.Success ? JsonSerializer.SerializeObject(response) : JsonSerializer.SerializeObject(response.Errors);
+            ContentResult.Content = JsonSerializer.SerializeObject(response);
+        }
+    }
+    public abstract class PresenterBase<T, TResponse> : IOutputPort<T> where T : UseCaseResponseMessage where TResponse : ResponseBase
+    {
+        public JsonContentResult ContentResult { get; } = new JsonContentResult();
+        public virtual void Handle(T response)
+        {
+            ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
+            ContentResult.Content = JsonSerializer.SerializeObject((TResponse)Activator.CreateInstance(typeof(TResponse), new object[] { response.Success, response.Errors }));
         }
     }
 }

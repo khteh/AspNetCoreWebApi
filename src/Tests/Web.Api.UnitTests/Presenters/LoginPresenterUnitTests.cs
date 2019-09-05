@@ -46,12 +46,20 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new LoginPresenter();
 
             // act
-            presenter.Handle(new LoginResponse(new List<Error> { new Error("", "Invalid username/password") }));
+            presenter.Handle(new LoginResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
             // assert
-            var data = JsonConvert.DeserializeObject<List<Error>>(presenter.ContentResult.Content);
+            Models.Response.LoginResponse response = JsonConvert.DeserializeObject<Models.Response.LoginResponse>(presenter.ContentResult.Content);
             Assert.Equal((int)HttpStatusCode.Unauthorized, presenter.ContentResult.StatusCode);
-            Assert.Equal("Invalid username/password", data.First().Description);
+            Assert.NotNull(response);
+            Assert.NotNull(response.Errors);
+            Assert.NotEmpty(response.Errors);
+            Assert.False(response.Success);
+            Assert.NotNull(response.Errors);
+            Assert.False(string.IsNullOrEmpty(response.Errors.First().Code));
+            Assert.False(string.IsNullOrEmpty(response.Errors.First().Description));
+            Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Errors.First().Code);
+            Assert.Equal("Invalid username/password", response.Errors.First().Description);
         }
     }
 }

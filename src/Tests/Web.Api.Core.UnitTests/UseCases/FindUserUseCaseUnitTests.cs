@@ -1,4 +1,5 @@
 ﻿using Moq;
+using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.DTO.UseCaseResponses;
@@ -20,7 +21,7 @@ namespace Web.Api.Core.UnitTests.UseCases
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository
               .Setup(repo => repo.FindById(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
 
             // 2. The use case and star of this test
             var useCase = new FindUserUseCase(mockUserRepository.Object);
@@ -49,7 +50,7 @@ namespace Web.Api.Core.UnitTests.UseCases
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository
               .Setup(repo => repo.FindByName(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
 
             // 2. The use case and star of this test
             var useCase = new FindUserUseCase(mockUserRepository.Object);
@@ -78,7 +79,7 @@ namespace Web.Api.Core.UnitTests.UseCases
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository
               .Setup(repo => repo.FindByEmail(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
 
             // 2. The use case and star of this test
             var useCase = new FindUserUseCase(mockUserRepository.Object);
@@ -107,7 +108,7 @@ namespace Web.Api.Core.UnitTests.UseCases
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository
               .Setup(repo => repo.FindById(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
 
             // 2. The use case and star of this test
             var useCase = new FindUserUseCase(mockUserRepository.Object);
@@ -136,7 +137,7 @@ namespace Web.Api.Core.UnitTests.UseCases
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository
               .Setup(repo => repo.FindById(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
 
             // 2. The use case and star of this test
             var useCase = new FindUserUseCase(mockUserRepository.Object);

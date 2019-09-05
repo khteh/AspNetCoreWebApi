@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
+using Web.Api.Models.Response;
 using Web.Api.Presenters;
 using Web.Api.Serialization;
 using Xunit;
@@ -36,9 +37,11 @@ namespace Web.Api.UnitTests.Presenters
             presenter.Handle(new UseCaseResponseMessage("1234", true));
 
             // assert
-            dynamic data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
-            Assert.True(data.success.Value);
-            Assert.Equal("1234", data.id.Value);
+            ChangePasswordResponse response = Serialization.JsonSerializer.DeSerializeObject<ChangePasswordResponse>(presenter.ContentResult.Content);
+            Assert.Equal((int)HttpStatusCode.OK, presenter.ContentResult.StatusCode);
+            Assert.NotNull(response);
+            Assert.Null(response.Errors);
+            Assert.True(response.Success);
         }
 
         [Fact]
@@ -48,14 +51,18 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new ChangePasswordPresenter();
 
             // act
-            presenter.Handle(new UseCaseResponseMessage(new List<Error> { new Error("", "Invalid username/password") }));
+            presenter.Handle(new UseCaseResponseMessage(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
             // assert
-            List<Error> errors = Serialization.JsonSerializer.DeSerializeObject<List<Error>>(presenter.ContentResult.Content);
+            ChangePasswordResponse response = Serialization.JsonSerializer.DeSerializeObject<ChangePasswordResponse>(presenter.ContentResult.Content);
             Assert.Equal((int)HttpStatusCode.BadRequest, presenter.ContentResult.StatusCode);
-            Assert.NotNull(errors);
-            Assert.NotEmpty(errors);
-            Assert.Equal("Invalid username/password", errors.First().Description);
+            Assert.NotNull(response);
+            Assert.NotNull(response.Errors);
+            Assert.NotEmpty(response.Errors);
+            Assert.False(string.IsNullOrEmpty(response.Errors.First().Code));
+            Assert.False(string.IsNullOrEmpty(response.Errors.First().Description));
+            Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Errors.First().Code);
+            Assert.Equal("Invalid username/password", response.Errors.First().Description);
         }
     }
 }

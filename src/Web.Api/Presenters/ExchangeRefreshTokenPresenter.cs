@@ -5,13 +5,13 @@ using Web.Api.Serialization;
 
 namespace Web.Api.Presenters
 {
-    public sealed class ExchangeRefreshTokenPresenter : PresenterBase<ExchangeRefreshTokenResponse>
+    public sealed class ExchangeRefreshTokenPresenter : PresenterBase<ExchangeRefreshTokenResponse, Models.Response.ExchangeRefreshTokenResponse>
     {
         public override void Handle(ExchangeRefreshTokenResponse response)
         {
             ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
-            ContentResult.Content = response.Success ? JsonSerializer.SerializeObject(new Models.Response.ExchangeRefreshTokenResponse(response.AccessToken, response.RefreshToken)) : 
-                                                JsonSerializer.SerializeObject(new Models.Response.ExchangeRefreshTokenResponse(response.Errors));
+            ContentResult.Content = response.Success ? JsonSerializer.SerializeObject(new Models.Response.ExchangeRefreshTokenResponse(response.AccessToken, response.RefreshToken, true, null)) : 
+                                                        JsonSerializer.SerializeObject(new Models.Response.ExchangeRefreshTokenResponse(null, null, false, response.Errors));
         }
     }
 }

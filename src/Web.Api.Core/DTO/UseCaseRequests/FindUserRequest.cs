@@ -6,7 +6,7 @@ using Web.Api.Core.Interfaces;
 
 namespace Web.Api.Core.DTO.UseCaseRequests
 {
-    public class FindUserRequest : IUseCaseRequest<UseCaseResponseMessage>
+    public class FindUserRequest : IUseCaseRequest<FindUserResponse>
     {
         public string Email { get; }
         public string UserName { get; }

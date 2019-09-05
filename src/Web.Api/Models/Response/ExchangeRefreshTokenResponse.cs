@@ -4,20 +4,16 @@ using Web.Api.Core.DTO;
 
 namespace Web.Api.Models.Response
 {
-    public class ExchangeRefreshTokenResponse
+    public class ExchangeRefreshTokenResponse : ResponseBase
     {
         [JsonProperty]
         public AccessToken AccessToken { get; private set; }
         [JsonProperty]
         public string RefreshToken { get; private set; }
-        [JsonProperty]
-        public List<Error> Errors {get; private set; }
-        [JsonConstructor]
-        public ExchangeRefreshTokenResponse(AccessToken accessToken, string refreshToken)
+        public ExchangeRefreshTokenResponse(AccessToken accessToken, string refreshToken, bool success, List<Error> errors) : base(success, errors)
         {
             AccessToken = accessToken;
             RefreshToken = refreshToken;
         }
-        public ExchangeRefreshTokenResponse(List<Error> errors) => Errors = errors;
     }
 }

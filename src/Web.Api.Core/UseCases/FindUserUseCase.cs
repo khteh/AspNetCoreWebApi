@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
@@ -17,7 +18,7 @@ namespace Web.Api.Core.UseCases
     {
         private readonly IUserRepository _userRepository;
         public FindUserUseCase(IUserRepository userRepository) => _userRepository = userRepository;
-        public async Task<bool> Handle(FindUserRequest message, IOutputPort<UseCaseResponseMessage> outputPort)
+        public async Task<bool> Handle(FindUserRequest message, IOutputPort<FindUserResponse> outputPort)
         {
             DTO.GatewayResponses.Repositories.FindUserResponse response = null;
             if (!string.IsNullOrEmpty(message.Id))
@@ -28,11 +29,49 @@ namespace Web.Api.Core.UseCases
                 response = await _userRepository.FindByEmail(message.Email);
             if (response == null)
             {
-                outputPort.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(null, "Invalid request input!")}));
+                outputPort.Handle(new FindUserResponse(null, null, false, "Invalid request input!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!")}));
                 return false;
             } else
-                outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id.ToString(), true) :
-                                                new UseCaseResponseMessage(response.Errors));
+                outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
+                                                new FindUserResponse(null, null, false, response.Errors.First().Description, response.Errors));
+            return response.Success;
+        }
+        public async Task<bool> FindByEmail(string normalizedEmail, IOutputPort<FindUserResponse> outputPort)
+        {
+            DTO.GatewayResponses.Repositories.FindUserResponse response = await _userRepository.FindByEmail(normalizedEmail);
+            if (response == null)
+            {
+                outputPort.Handle(new FindUserResponse(null, null, false, "Invalid request input!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!")}));
+                return false;
+            } else
+                outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
+                                                new FindUserResponse(null, null, false, response.Errors.First().Description, response.Errors));
+            return response.Success;
+        }
+
+        public async Task<bool> FindById(string userId, IOutputPort<FindUserResponse> outputPort)
+        {
+            DTO.GatewayResponses.Repositories.FindUserResponse response = await _userRepository.FindById(userId);
+            if (response == null)
+            {
+                outputPort.Handle(new FindUserResponse(null, null, false, response.Errors.First().Description, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!")}));
+                return false;
+            } else
+                outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
+                                                new FindUserResponse(null, null, false, response.Errors.First().Description, response.Errors));
+            return response.Success;
+        }
+
+        public async Task<bool> FindByName(string userName, IOutputPort<FindUserResponse> outputPort)
+        {
+            DTO.GatewayResponses.Repositories.FindUserResponse response = await _userRepository.FindByName(userName);
+            if (response == null)
+            {
+                outputPort.Handle(new FindUserResponse(null, null, false, response.Errors.First().Description, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!")}));
+                return false;
+            } else
+                outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
+                                                new FindUserResponse(null, null, false, response.Errors.First().Description, response.Errors));
             return response.Success;
         }
     }

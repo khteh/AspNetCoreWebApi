@@ -47,14 +47,18 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new RegisterUserPresenter();
 
             // act
-            presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(null, "missing first name") }));
+            presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
             // assert
-            List<Error> errors = Serialization.JsonSerializer.DeSerializeObject<List<Error>>(presenter.ContentResult.Content);
+            UseCaseResponseMessage response = Serialization.JsonSerializer.DeSerializeObject<UseCaseResponseMessage>(presenter.ContentResult.Content);
             Assert.Equal((int)HttpStatusCode.BadRequest, presenter.ContentResult.StatusCode);
-            Assert.NotNull(errors);
-            Assert.NotEmpty(errors);
-            Assert.Equal("missing first name", errors.First().Description);
+            Assert.NotNull(response);
+            Assert.NotNull(response.Errors);
+            Assert.NotEmpty(response.Errors);
+            Assert.False(string.IsNullOrEmpty(response.Errors.First().Code));
+            Assert.False(string.IsNullOrEmpty(response.Errors.First().Description));
+            Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Errors.First().Code);
+            Assert.Equal("missing first name", response.Errors.First().Description);
         }
     }
 }

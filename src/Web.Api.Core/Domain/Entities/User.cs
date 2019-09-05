@@ -16,8 +16,8 @@ namespace Web.Api.Core.Domain.Entities
         private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
         public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
 
-        internal User() { /* Required by EF */ }
-        internal User(string firstName, string lastName, string identityId, string userName)
+        public User() { /* Required by EF */ }
+        public User(string firstName, string lastName, string identityId, string userName)
         {
             FirstName = firstName;
             LastName = lastName;

@@ -20,7 +20,8 @@ namespace Web.Api.Controllers
         private readonly DeleteUserPresenter _deleteUserPresenter;
         private readonly IChangePasswordUseCase _changePasswordUseCase;
         private readonly ChangePasswordPresenter _changePasswordPresenter;
-
+        private readonly ILockUserUseCase _lockUserUseCase;
+        private readonly LockUserPresenter _lockUserPresenter;
         public AccountsController(IRegisterUserUseCase registerUserUseCase, RegisterUserPresenter registerUserPresenter, IDeleteUserUseCase deleteUserUseCase, DeleteUserPresenter deleteUserPresenter, IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter, IChangePasswordUseCase changePasswordUseCase, ChangePasswordPresenter changePasswordPresenter)
         {
             _registerUserUseCase = registerUserUseCase;
@@ -79,6 +80,21 @@ namespace Web.Api.Controllers
         {
             await _findUserUseCase.Handle(new FindUserRequest(email, string.Empty, string.Empty), _findUserPresenter);
             return _findUserPresenter.ContentResult;
+        }
+        [HttpGet("lock/{id}")]
+        public async Task<ActionResult> Lock(string id)
+        {
+            //=> _service.Lock(id);
+            await _lockUserUseCase.Lock(id, _lockUserPresenter);
+            return _lockUserPresenter.ContentResult;
+        }
+
+        [HttpGet("unlock/{id}")]
+        public async Task<ActionResult> Unlock(string id)
+        {
+            //_service.Unlock(id);
+            await _lockUserUseCase.UnLock(id, _lockUserPresenter);
+            return _lockUserPresenter.ContentResult;
         }
     }
 }
