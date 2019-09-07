@@ -62,4 +62,5 @@ namespace Web.Api.UnitTests.Presenters
             Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Errors.First().Code);
             Assert.Equal("Invalid username/password", response.Errors.First().Description);
         }
-    }}
+    }
+}
