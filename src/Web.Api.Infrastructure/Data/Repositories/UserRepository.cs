@@ -192,12 +192,12 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 return new PasswordResponse(null, false, new List<Error>(){new Error(HttpStatusCode.InternalServerError.ToString(), $"User change password failed! {e.Message}")});
             }
         }
-        public async Task<PasswordResponse> ResetPassword(ResetPasswordRequest request)
+        public async Task<PasswordResponse> ResetPassword(string id, string password)
         {
-            AppUser user = await _userManager.FindByIdAsync(request.Id);
+            AppUser user = await _userManager.FindByIdAsync(id);
             if (user != null)
             {
-                IdentityResult result = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+                IdentityResult result = await _userManager.ResetPasswordAsync(user, await _userManager.GeneratePasswordResetTokenAsync(user), password);
                 if (result.Succeeded)
                 {
                     result = await _userManager.ResetAccessFailedCountAsync(user);
@@ -205,15 +205,6 @@ namespace Web.Api.Infrastructure.Data.Repositories
                     {
                         _logger.LogCritical($"{nameof(ResetPassword)} failed to reset access failed count of user {user.Id}!");
                         return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
-                    }
-                    if (request.CreatePasswordChangeRecord)
-                    {
-                        User u = await getUser(await _userManager.FindByIdAsync(request.Id));
-                        if (u != null) {
-                            // Application-specific logic goes here
-                            //u.IsFirstLogin = request.IsFirstLogin;
-                            //CreatePasswordHistory(u, user.PasswordHash);
-                        }
                     }
                 } else {
                     _logger.LogCritical($"{nameof(ResetPassword)} failed to reset password of user {user.Id}!");
@@ -223,8 +214,8 @@ namespace Web.Api.Infrastructure.Data.Repositories
             }
             else
             {
-                _logger.LogCritical($"Trying to reset password of  invalid user {request.Id}!");
-                return new PasswordResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Trying to reset password of invalid user {request.Id}!") });
+                _logger.LogCritical($"Trying to reset password of  invalid user {id}!");
+                return new PasswordResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Trying to reset password of invalid user {id}!") });
             }
         }
         public async Task<LockUserResponse> LockUser(string id) => await LockUser(await _userManager.FindByIdAsync(id));

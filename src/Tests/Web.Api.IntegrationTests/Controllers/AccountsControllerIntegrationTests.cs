@@ -107,10 +107,13 @@ namespace Web.Api.IntegrationTests.Controllers
             var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user1", "Pa$$word1")), Encoding.UTF8, "application/json"));
             loginResponse.EnsureSuccessStatusCode();
             var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
-            dynamic loginResult = JObject.Parse(strLoginSuccessResponse);
-            Assert.NotNull(loginResult.accessToken.token);
-            Assert.Equal(7200,(int)loginResult.accessToken.expiresIn);
-            Assert.NotNull(loginResult.refreshToken);
+            Models.Response.LoginResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginSuccessResponse);
+            Assert.NotNull(loginResult);
+            Assert.True(loginResult.Success);
+            Assert.Null(loginResult.Errors);
+            Assert.NotNull(loginResult.AccessToken.Token);
+            Assert.Equal(7200,(int)loginResult.AccessToken.ExpiresIn);
+            Assert.NotNull(loginResult.RefreshToken);
 
             // Change Password
             var pwdResponse = await _client.PostAsync("/api/accounts/changepassword", new StringContent(JsonConvert.SerializeObject(new Models.Request.ChangePasswordRequest((string)result.id, "Pa$$word1", "Pa$$word2")), Encoding.UTF8, "application/json"));
@@ -134,6 +137,59 @@ namespace Web.Api.IntegrationTests.Controllers
 
             // Login
             var loginSuccessResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user1", "Pa$$W0rd2")), Encoding.UTF8, "application/json"));
+            loginResponse.EnsureSuccessStatusCode();
+            var strLoginSuccessResponse1 = await loginResponse.Content.ReadAsStringAsync();
+            dynamic loginResult1 = JObject.Parse(strLoginSuccessResponse1);
+            Assert.NotNull(loginResult1.accessToken.token);
+            Assert.Equal(7200,(int)loginResult1.accessToken.expiresIn);
+            Assert.NotNull(loginResult1.refreshToken);
+        }
+        [Fact]
+        public async Task CanResetPasswordWithValidAccountDetails()
+        {
+            // Create User
+            var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonConvert.SerializeObject(new Models.Request.RegisterUserRequest("FirstName", "LastName", "user1@gmail.com", "user2", "Pa$$word1")), Encoding.UTF8, "application/json"));
+            httpResponse.EnsureSuccessStatusCode();
+            dynamic result = JObject.Parse(await httpResponse.Content.ReadAsStringAsync());
+            Assert.True((bool) result.success);
+            Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
+            Assert.False(string.IsNullOrEmpty((string)result.id));
+
+            // Login
+            var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user2", "Pa$$word1")), Encoding.UTF8, "application/json"));
+            loginResponse.EnsureSuccessStatusCode();
+            var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
+            Models.Response.LoginResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginSuccessResponse);
+            Assert.NotNull(loginResult);
+            Assert.True(loginResult.Success);
+            Assert.Null(loginResult.Errors);
+            Assert.NotNull(loginResult.AccessToken);
+            Assert.Equal(7200,(int)loginResult.AccessToken.ExpiresIn);
+            Assert.False(string.IsNullOrEmpty(loginResult.AccessToken.Token));
+            Assert.False(string.IsNullOrEmpty(loginResult.RefreshToken));
+
+            // Change Password
+            var pwdResponse = await _client.PostAsync("/api/accounts/resetpassword", new StringContent(JsonConvert.SerializeObject(new Models.Request.ResetPasswordRequest((string)result.id, "Pa$$word2")), Encoding.UTF8, "application/json"));
+            pwdResponse.EnsureSuccessStatusCode();
+            var strPwdResponse = await pwdResponse.Content.ReadAsStringAsync();
+            //dynamic pwdResult = JObject.Parse(await pwdResponse.Content.ReadAsStringAsync());
+            Models.Response.ResetPasswordResponse pwdResponse1 = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ResetPasswordResponse>(strPwdResponse);
+            Assert.True(pwdResponse1.Success);
+            Assert.Equal(HttpStatusCode.OK, pwdResponse.StatusCode);
+            Assert.Null(pwdResponse1.Errors);
+
+            // Should fail login with previous password
+            var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user2", "Pa$$word1")), Encoding.UTF8, "application/json"));
+            var strLoginFailResponse = await loginFailResponse.Content.ReadAsStringAsync();
+            Models.Response.LoginResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginFailResponse);
+            Assert.NotNull(response);
+            Assert.NotNull(response.Errors);
+            Assert.NotEmpty(response.Errors);
+            Assert.Contains(HttpStatusCode.Unauthorized.ToString(), response.Errors.First().Code);
+            Assert.Contains("Invalid username", response.Errors.First().Description);
+
+            // Login
+            var loginSuccessResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user2", "Pa$$word2")), Encoding.UTF8, "application/json"));
             loginResponse.EnsureSuccessStatusCode();
             var strLoginSuccessResponse1 = await loginResponse.Content.ReadAsStringAsync();
             dynamic loginResult1 = JObject.Parse(strLoginSuccessResponse1);

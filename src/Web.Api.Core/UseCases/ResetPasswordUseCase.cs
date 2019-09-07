@@ -16,7 +16,7 @@ namespace Web.Api.Core.UseCases
         public ResetPasswordUseCase(IUserRepository userRepository) => _userRepository = userRepository;
         public async Task<bool> Handle(ResetPasswordRequest request, IOutputPort<UseCaseResponseMessage> outputPort)
         {
-            DTO.GatewayResponses.Repositories.PasswordResponse response = await _userRepository.ResetPassword(request);
+            DTO.GatewayResponses.Repositories.PasswordResponse response = await _userRepository.ResetPassword(request.Id, request.NewPassword);
             if (response == null)
             {
                 outputPort.Handle(new UseCaseResponseMessage(null, false, $"Failed to reset password of user {request.Id}", new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Failed to reset password of user {request.Id}")}));

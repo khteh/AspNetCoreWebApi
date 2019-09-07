@@ -14,11 +14,11 @@ namespace Web.Api.Core.Interfaces.Gateways.Repositories
         Task<FindUserResponse> FindByName(string userName);
         Task<FindUserResponse> FindByEmail(string email);
         Task<LogInResponse> CheckPassword(string username, string password);
+        Task<PasswordResponse> ResetPassword(string id, string password);
         Task<SignInResponse> SignIn(string username, string password, bool rememberMe, bool logoutOnFailure);
         Task<SignInResponse> SignInMobile(string username, string password, bool logoutOnFailure);
         Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword);
         Task<LockUserResponse> LockUser(string id);
         Task<LockUserResponse> UnLockUser(string id);
-        Task<PasswordResponse> ResetPassword(ResetPasswordRequest request);
     }
 }
