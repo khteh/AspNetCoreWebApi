@@ -307,6 +307,7 @@ namespace Web.Api
             ReadinessHealthCheck readinessHealthCheck = serviceProvider.GetRequiredService<ReadinessHealthCheck>();
             lifetime.ApplicationStarted.Register(() =>
             {
+                _logger.LogInformation("ApplicationStarted");
                 AppStarted(_logger, readinessHealthCheck);
             });
             lifetime.ApplicationStopping.Register(() =>
