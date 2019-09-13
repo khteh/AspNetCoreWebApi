@@ -17,6 +17,8 @@ using System;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
 using Serilog.Settings.Configuration;
+using System.Threading;
+
 namespace Web.Api
 {
     public class Program
@@ -48,6 +50,23 @@ namespace Web.Api
             // Create the logger
             Log.Logger = logConfig.CreateLogger();
             try {
+                int originalMinWorker, originalMinIOC;
+                int minWorker = 1000;
+                string strMinWorkerThreads = Environment.GetEnvironmentVariable("COMPlus_ThreadPool_ForceMinWorkerThreads");
+                if (!string.IsNullOrEmpty(strMinWorkerThreads) && Int32.TryParse(strMinWorkerThreads, out int minWorkerThreads))
+                    minWorker = minWorkerThreads;
+                // Get the current settings.
+                ThreadPool.GetMinThreads(out originalMinWorker, out originalMinIOC);
+                // Change the minimum number of worker threads to four, but
+                // keep the old setting for minimum asynchronous I/O 
+                // completion threads.
+                if (ThreadPool.SetMinThreads(minWorker, originalMinIOC))
+                    // The minimum number of threads was set successfully.
+                    Log.Information($"Using {minWorker} threads");
+                else
+                    // The minimum number of threads was not changed.
+                    Log.Error($"Failed to set {minWorker} threads. Using original {originalMinWorker} threads");
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
                 CreateWebHostBuilder(args).Build().Run();
             } catch (Exception e) {
                 Log.Fatal($"Exception: {e.Message}");
@@ -86,8 +105,10 @@ namespace Web.Api
             .UseStartup<Startup>()
             .ConfigureKestrel((context, options) =>
             {
-                options.Listen(IPAddress.Any, 5000, listenOptions =>
+                options.Listen(IPAddress.Any, 5002, listenOptions =>
                 {
+                    listenOptions.UseHttps("/tmp/localhost.pfx", "4xLabs.com");
+                    listenOptions.UseConnectionLogging();
                     listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
                     //listenOptions.UseHttps("testCert.pfx", "testPassword");
                 });
