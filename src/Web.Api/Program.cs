@@ -105,7 +105,7 @@ namespace Web.Api
             .UseStartup<Startup>()
             .ConfigureKestrel((context, options) =>
             {
-                options.Listen(IPAddress.Any, 5002, listenOptions =>
+                options.Listen(IPAddress.Any, 5000, listenOptions =>
                 {
                     listenOptions.UseHttps("/tmp/localhost.pfx", "4xLabs.com");
                     listenOptions.UseConnectionLogging();
