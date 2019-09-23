@@ -111,7 +111,7 @@ namespace Web.Api
             {
                 options.Listen(IPAddress.Any, 5000, listenOptions =>
                 {
-                    listenOptions.UseHttps("/tmp/localhost.pfx", "AspNetCoreApiStarter");
+                    listenOptions.UseHttps("/tmp/localhost.pfx", "4xLabs.com");
                     listenOptions.UseConnectionLogging();
                     listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
                     //listenOptions.UseHttps("testCert.pfx", "testPassword");
