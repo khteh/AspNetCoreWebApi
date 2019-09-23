@@ -34,6 +34,8 @@ using Web.Api.Infrastructure.Data;
 using Newtonsoft.Json;
 using Web.Api.Models.Logging;
 using Microsoft.AspNetCore.HttpOverrides;
+using System.Linq;
+using Web.Api.Models.Configurations;
 
 namespace Web.Api
 {
@@ -174,6 +176,17 @@ namespace Web.Api
                     { "Bearer", new string[] { } }
                 });
             });
+            services.AddCors(o => {
+                    string domains = Configuration.GetSection(nameof(Cors)).GetSection(nameof(Cors.Domains)).Value;
+                    if (!string.IsNullOrEmpty(domains))
+                    {
+                        o.AddPolicy("ApiUserCors",
+                                builder => builder.WithOrigins(domains.Split(',').ToArray())
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod()
+                                    .AllowCredentials());
+                    }
+                });
             services.AddSignalR();
             // Change to use Name as the user identifier for SignalR
             // WARNING: This requires that the source of your JWT token 
@@ -197,10 +210,7 @@ namespace Web.Api
             services.AddHostedService<StartupHostedService>()
                 .AddSingleton<ReadinessHealthCheck>()
                 .AddSingleton<LivenessHealthCheck>();
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders = ForwardedHeaders.All;
-            });
+            services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.All );
             services.AddHsts(options =>
             {
                 options.Preload = true;
@@ -251,6 +261,7 @@ namespace Web.Api
                 context.Request.PathBase = new PathString(pathBase); // Kubernetes ingress rule
                 await next();
             });
+            app.UseCors("ApiUserCors");
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
             #if false
             app.Use((context, next) =>
