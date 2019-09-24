@@ -32,7 +32,6 @@ namespace Web.Api.Core.UseCases
         public async Task<bool> Handle(ExchangeRefreshTokenRequest message, IOutputPort<ExchangeRefreshTokenResponse> outputPort)
         {
             var cp = _jwtTokenValidator.GetPrincipalFromToken(message.AccessToken, message.SigningKey);
-
             // invalid token/signing key was passed and we can't extract user claims
             if (cp != null)
             {

@@ -129,10 +129,11 @@ namespace Biz4x.Frontend.Web.Integration.Test.SignalR
                         })
                             //.Configure(app => app.UseSignalR(configure => configure.MapHub<BoardRateHub>("/booking", options => options.Transports = HttpTransportType.WebSockets)));
                         .Configure(app => {
+                            app.UseRouting();
                             app.UseWebSockets();
                             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
                             //app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets));
-                            app.UseSignalR(configure => configure.MapHub<THub>(url));
+                            app.UseEndpoints(endpoints  => endpoints.MapHub<THub>(url));
                         });
             ConfigureWebHost(webHostBuilder);
             TestServer = new TestServer(webHostBuilder);

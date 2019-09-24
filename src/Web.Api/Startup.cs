@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
@@ -34,22 +36,15 @@ using Web.Api.Infrastructure.Data;
 using Newtonsoft.Json;
 using Web.Api.Models.Logging;
 using Microsoft.AspNetCore.HttpOverrides;
-using System.Linq;
-using Web.Api.Models.Configurations;
 
 namespace Web.Api
 {
     public class Startup
     {
-        private readonly ILogger<Startup> _logger;
         public IConfiguration Configuration { get; }
-        public Startup(IConfiguration configuration, ILogger<Startup> logger)
-        { 
-            _logger = logger;
-            Configuration = configuration;
-        }
+        public Startup(IConfiguration configuration) => Configuration = configuration;
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
             services.Configure<CookiePolicyOptions>(options =>
@@ -153,40 +148,48 @@ namespace Web.Api
                 o.Password.RequireNonAlphanumeric = false;
                 o.Password.RequiredLength = 6;
             });
-
             identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
             identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+            // https://github.com/JeremySkinner/FluentValidation/issues/975
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+            services.AddControllersWithViews().SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
             services.AddAutoMapper(typeof(DataProfile));
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v2", new Info { Title = "AspNetCoreApiStarter", Version = "v2" });
+                c.SwaggerDoc("v2", new OpenApiInfo { Title = "AspNetCoreApiStarter", Version = "v2" });
                 // Swagger 2.+ support
-                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    In = "header",
+                    Scheme = "Bearer",
+                    In = ParameterLocation.Header,
                     Description = "Please insert JWT with Bearer into field",
                     Name = "Authorization",
-                    Type = "apiKey"
+                    Type = SecuritySchemeType.ApiKey
                 });
-                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                //c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                //{
+                //    { "Bearer", new string[] { } }
+                //});
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
-                    { "Bearer", new string[] { } }
-                });
-            });
-            services.AddCors(o => {
-                    string domains = Configuration.GetSection(nameof(Cors)).GetSection(nameof(Cors.Domains)).Value;
-                    if (!string.IsNullOrEmpty(domains))
                     {
-                        o.AddPolicy("ApiUserCors",
-                                builder => builder.WithOrigins(domains.Split(',').ToArray())
-                                    .AllowAnyHeader()
-                                    .AllowAnyMethod()
-                                    .AllowCredentials());
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                        },
+                        new List<string>()
                     }
                 });
+            });
             services.AddSignalR();
             // Change to use Name as the user identifier for SignalR
             // WARNING: This requires that the source of your JWT token 
@@ -194,7 +197,7 @@ namespace Web.Api
             // If the Name claim isn't unique, users could receive messages 
             // intended for a different user!
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
-
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // Change to use email as the user identifier for SignalR
             // services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
 
@@ -210,18 +213,9 @@ namespace Web.Api
             services.AddHostedService<StartupHostedService>()
                 .AddSingleton<ReadinessHealthCheck>()
                 .AddSingleton<LivenessHealthCheck>();
-            services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.All );
-            services.AddHsts(options =>
+            services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.Preload = true;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(60);
-                //options.ExcludedHosts.Add("example.com");
-                //options.ExcludedHosts.Add("www.example.com");
-            });
-            services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+                options.ForwardedHeaders = ForwardedHeaders.All;
             });
             //services.AddScoped<AuthController>();
             //ServiceProvider provider = services.BuildServiceProvider();
@@ -230,19 +224,20 @@ namespace Web.Api
             //IJwtFactory jwtFactory = provider.GetRequiredService<IJwtFactory>();
             //AuthController auth = provider.GetRequiredService<AuthController>();
             //return provider;
-            return services.BuildServiceProvider();
+            //return services.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, IServiceProvider serviceProvider)
         {
+            ILogger<Startup> logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
             string pathBase = env.IsDevelopment() ? string.Empty : "/apistarter";
             app.UseForwardedHeaders();
             app.Use(async (context, next) =>
             {
                 // Request method, scheme, and path
                 //_logger.LogInformation($"Method: {context.Request.Method}, Scheme: {context.Request.Scheme}, PathBase: {context.Request.PathBase}, Path: {context.Request.Path}, IP: {context.Connection.RemoteIpAddress}, Host: {context.Request.Host}, ContentLength: {context.Request.ContentLength}");
-                _logger.LogInformation(JsonConvert.SerializeObject(new RequestLog(context?.Request?.Method,
+                logger.LogInformation(JsonConvert.SerializeObject(new RequestLog(context?.Request?.Method,
                                     context?.Request?.Scheme,
                                     context?.Request?.PathBase,
                                     context?.Request?.Path,
@@ -261,7 +256,6 @@ namespace Web.Api
                 context.Request.PathBase = new PathString(pathBase); // Kubernetes ingress rule
                 await next();
             });
-            app.UseCors("ApiUserCors");
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
             #if false
             app.Use((context, next) =>
@@ -308,31 +302,41 @@ namespace Web.Api
                 c.SwaggerEndpoint($"{pathBase}/swagger/v2/swagger.json", "AspNetCoreApiStarter V2");
             });
             // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseStaticFiles();
+            //app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets));
+            app.UseRouting();
+            //app.UseCors();
+            app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
+            app.UseCookiePolicy();
             app.UseSwagger();
             app.UseWebSockets();
-            app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseCookiePolicy();
-            app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets));
+            app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();//.RequireAuthorization(); // attribute-routed controllers
+                    //endpoints.MapDefaultControllerRoute().RequireAuthorization(); //conventional route for controllers.
+                    endpoints.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets);
+                    endpoints.MapHealthChecks($"/health/live", new HealthCheckOptions()
+                    {
+                        Predicate = check => check.Name == "Liveness"
+                    });
+                    endpoints.MapHealthChecks($"/health/ready", new HealthCheckOptions()
+                    {
+                        Predicate = check => check.Name == "Readiness"
+                    });
+                    //endpoints.MapControllerRoute("default", "api/{controller=Home}/{action=Index}/{id?}");//.RequireAuthorization();
+                });
             ReadinessHealthCheck readinessHealthCheck = serviceProvider.GetRequiredService<ReadinessHealthCheck>();
-            lifetime.ApplicationStarted.Register(() =>
-            {
-                _logger.LogInformation("ApplicationStarted");
-                AppStarted(_logger, readinessHealthCheck);
-            });
-            lifetime.ApplicationStopping.Register(() =>
-            {
-                _logger.LogInformation("ApplicationStopping");
-            });
-            lifetime.ApplicationStopped.Register(() => { _logger.LogInformation("ApplicationStopped"); });
+            lifetime.ApplicationStarted.Register(() => AppStarted(logger, readinessHealthCheck));
+            lifetime.ApplicationStopping.Register(() => logger.LogInformation("ApplicationStopping"));
+            lifetime.ApplicationStopped.Register(() => logger.LogInformation("ApplicationStopped"));
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
-            else
+            else {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-            app.UseHttpsRedirection();
-            app.UseMvc();
+                app.UseHttpsRedirection();
+            }
+            //app.UseMvc();
         }
         private static void AppStarted(ILogger<Startup> logger, ReadinessHealthCheck readinessHealthCheck)
         {
