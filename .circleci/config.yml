@@ -25,7 +25,7 @@ jobs:
       - run: dotnet test -c Release src/Tests/Web.Api.Core.UnitTests/
       - run: dotnet test -c Release src/Tests/Web.Api.UnitTests/
       - run: dotnet test -c Release src/Tests/Web.Api.Infrastructure.UnitTests/
-      - run: dotnet test -c Release src/Tests/Web.Api.IntegrationTests/
+      #- run: dotnet test -c Release src/Tests/Web.Api.IntegrationTests/
       - run: dotnet publish -c Release --no-restore --no-build src
       - setup_remote_docker:
           docker_layer_caching: true
@@ -34,7 +34,7 @@ jobs:
       - run:
           name: Extract FileVersion from published binary
           command: |
-            exiftool src/Web.Api/bin/Release/netcoreapp2.2/publish/Web.Api.dll | grep "File Version" | awk -F":" '{ print $2 }' | xargs echo -n > version.txt
+            exiftool src/Web.Api/bin/Release/netcoreapp3.0/publish/Web.Api.dll | grep "File Version" | awk -F":" '{ print $2 }' | xargs echo -n > version.txt
       - run:
           name: Build & Push docker image
           command: |
