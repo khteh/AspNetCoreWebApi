@@ -13,6 +13,6 @@ RUN openssl pkcs12 -export -out /tmp/localhost.pfx -inkey server.key -in server.
 #dotnet dev-certs https --clean 
 #dotnet dev-certs https -ep ./localhost.pfx -p AspNetCoreApiStarter -v
 #dotnet dev-certs https --trust 
-ADD Web.Api/bin/Release/netcoreapp2.2/publish/ .
+ADD Web.Api/bin/Release/netcoreapp3.0/publish/ .
 EXPOSE 5000
 ENTRYPOINT ["dotnet", "Web.Api.dll"]
