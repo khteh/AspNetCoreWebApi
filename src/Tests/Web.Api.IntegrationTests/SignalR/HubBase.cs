@@ -132,6 +132,7 @@ namespace Biz4x.Frontend.Web.Integration.Test.SignalR
                             app.UseRouting();
                             app.UseWebSockets();
                             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
+                            app.UseAuthorization();
                             //app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets));
                             app.UseEndpoints(endpoints  => endpoints.MapHub<THub>(url));
                         });

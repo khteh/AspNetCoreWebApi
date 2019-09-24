@@ -46,6 +46,7 @@ namespace Web.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRazorPages();
             services.AddOptions();
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -305,6 +306,7 @@ namespace Web.Api
             app.UseRouting();
             //app.UseCors();
             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
+            app.UseAuthorization();
             app.UseCookiePolicy();
             app.UseSwagger();
             app.UseWebSockets();
@@ -321,6 +323,7 @@ namespace Web.Api
                     {
                         Predicate = check => check.Name == "Readiness"
                     });
+                    endpoints.MapRazorPages();
                     //endpoints.MapControllerRoute("default", "api/{controller=Home}/{action=Index}/{id?}");//.RequireAuthorization();
                 });
             ReadinessHealthCheck readinessHealthCheck = serviceProvider.GetRequiredService<ReadinessHealthCheck>();

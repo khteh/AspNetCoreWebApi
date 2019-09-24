@@ -22,7 +22,7 @@ namespace Web.Api.IntegrationTests.Controllers
         [Fact]
         public async Task CanRegisterUserWithValidAccountDetails()
         {
-            var httpResponse = await _client.PostAsync("/api/Accounts/register", new StringContent(JsonConvert.SerializeObject(new Models.Request.RegisterUserRequest("John", "Doe", "jdoe@gmail.com", "johndoe", "Pa$$word1")), Encoding.UTF8, "application/json"));
+            var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonConvert.SerializeObject(new Models.Request.RegisterUserRequest("John", "Doe", "jdoe@gmail.com", "johndoe", "Pa$$word1")), Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
             dynamic result = JObject.Parse(stringResponse);
