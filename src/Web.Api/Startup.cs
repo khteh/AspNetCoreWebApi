@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Hosting;
@@ -189,6 +190,7 @@ namespace Web.Api
                     }
                 });
             });
+            services.AddGrpc();
             services.AddSignalR();
             // Change to use Name as the user identifier for SignalR
             // WARNING: This requires that the source of your JWT token 
@@ -315,6 +317,7 @@ namespace Web.Api
                     endpoints.MapControllers();//.RequireAuthorization(); // attribute-routed controllers
                     //endpoints.MapDefaultControllerRoute().RequireAuthorization(); //conventional route for controllers.
                     endpoints.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets);
+                    //endpoints.MapGrpcService<GreeterService>("/greet");
                     endpoints.MapHealthChecks($"/health/live", new HealthCheckOptions()
                     {
                         Predicate = check => check.Name == "Liveness"
