@@ -212,9 +212,9 @@ namespace Web.Api
             services.AddHostedService<StartupHostedService>()
                 .AddSingleton<ReadinessHealthCheck>()
                 .AddSingleton<LivenessHealthCheck>();
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
+            services.Configure<ForwardedHeadersOptions>(options => {
                 options.ForwardedHeaders = ForwardedHeaders.All;
+                options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse("10.0.0.0"), 16)); // Load Balancer / VPC Network
             });
             //services.AddScoped<AuthController>();
             //ServiceProvider provider = services.BuildServiceProvider();
