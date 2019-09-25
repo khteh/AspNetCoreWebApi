@@ -75,10 +75,8 @@ namespace Web.Api
                 Log.CloseAndFlush();
             }
         }
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
-        {
-            var contentRootFull = Path.GetFullPath(Directory.GetCurrentDirectory());
-            return WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration((hostingContext, config) => {
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration((hostingContext, config) => {
                 config.SetBasePath(Directory.GetCurrentDirectory());
                 config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
                 config.AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
@@ -96,7 +94,7 @@ namespace Web.Api
                 logging.AddSerilog(dispose: true);
 #endif
             })
-            .UseContentRoot(contentRootFull)
+            .UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory()))
             // Add the Serilog ILoggerFactory to IHostBuilder
             .UseSerilog((ctx, config) =>
             {
@@ -107,6 +105,5 @@ namespace Web.Api
                         "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
             })
             .UseStartup<Startup>();
-        }
     }
 }
