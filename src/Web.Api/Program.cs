@@ -106,17 +106,7 @@ namespace Web.Api
                         LogEventLevel.Verbose,
                         "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
             })
-            .UseStartup<Startup>()
-            .ConfigureKestrel((context, options) =>
-            {
-                options.Listen(IPAddress.Any, 5000, listenOptions =>
-                {
-                    listenOptions.UseHttps("/tmp/localhost.pfx", "4xLabs.com");
-                    listenOptions.UseConnectionLogging();
-                    listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-                    //listenOptions.UseHttps("testCert.pfx", "testPassword");
-                });
-            });
+            .UseStartup<Startup>();
         }
     }
 }
