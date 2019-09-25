@@ -76,51 +76,38 @@ namespace Web.Api
                 Log.CloseAndFlush();
             }
         }
-        public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            var contentRootFull = Path.GetFullPath(Directory.GetCurrentDirectory());
-            return Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder => 
-                webBuilder.UseStartup<Startup>()
-                .ConfigureKestrel((context, options) =>
-                {
-                    options.Listen(IPAddress.Any, 5000, listenOptions =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>()
+                    .ConfigureAppConfiguration((hostingContext, config) => {
+                        config.SetBasePath(Directory.GetCurrentDirectory());
+                        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                        config.AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                        config.AddJsonFile($"appsettings.mysql.json", true, true);
+                        config.AddEnvironmentVariables();
+                        config.AddCommandLine(args);
+                    })
+                    .ConfigureLogging((hostingContext, logging) =>
                     {
-                        listenOptions.UseHttps("/tmp/localhost.pfx", "4xLabs.com");
-                        listenOptions.UseConnectionLogging();
-                        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-                        //listenOptions.UseHttps("testCert.pfx", "testPassword");
-                    });
-                })//)
-            .ConfigureAppConfiguration((hostingContext, config) => {
-                config.SetBasePath(Directory.GetCurrentDirectory());
-                config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                config.AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                config.AddJsonFile($"appsettings.mysql.json", true, true);
-                config.AddEnvironmentVariables();
-                config.AddCommandLine(args);
-            })
-            .ConfigureLogging((hostingContext, logging) =>
-            {
-                logging.ClearProviders();
-#if false
-                logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                logging.AddConsole();
-                logging.AddDebug();
-                logging.AddEventSourceLogger();
-                logging.AddSerilog(dispose: true);
-#endif
-            })
-            .UseContentRoot(contentRootFull)
-            // Add the Serilog ILoggerFactory to IHostBuilder
-            .UseSerilog((ctx, config) =>
-            {
-                config.ReadFrom.Configuration(ctx.Configuration);
-                if (ctx.HostingEnvironment.IsDevelopment())
-                    config.WriteTo.ColoredConsole(
-                        LogEventLevel.Verbose,
-                        "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
-            }));
-        }
+                        logging.ClearProviders();
+        #if false
+                        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                        logging.AddConsole();
+                        logging.AddDebug();
+                        logging.AddEventSourceLogger();
+                        logging.AddSerilog(dispose: true);
+        #endif
+                    })
+                    .UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory()))
+                    // Add the Serilog ILoggerFactory to IHostBuilder
+                    .UseSerilog((ctx, config) =>
+                    {
+                        config.ReadFrom.Configuration(ctx.Configuration);
+                        if (ctx.HostingEnvironment.IsDevelopment())
+                            config.WriteTo.ColoredConsole(
+                                LogEventLevel.Verbose,
+                                "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
+                    })
+                );
     }
 }
