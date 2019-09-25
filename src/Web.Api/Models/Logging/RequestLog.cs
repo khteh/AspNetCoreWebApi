@@ -8,35 +8,43 @@ namespace Web.Api.Models.Logging
     public class RequestLog
     {
         [JsonProperty]
-        public string Method { get; private set; }
+        public string Method {get; private set;}
         [JsonProperty]
-        public string Scheme { get; private set; }
+        public string Scheme {get; private set;}
         [JsonProperty]
-        public string PathBase { get; private set; }
+        public string PathBase {get; private set;}
         [JsonProperty]
-        public string Path { get; private set; }
+        public string Path {get; private set;}
         [JsonProperty]
-        public string LocalIP { get; private set; }
+        public string LocalIP {get; private set;}
 
         [JsonProperty]
-        public string IP { get; private set; }
+        public string IP {get; private set;}
         [JsonProperty]
-        public string Host { get; private set; }
+        public string Host {get; private set;}
         [JsonProperty]
-        public long ContentLength { get; private set; }
+        public long ContentLength {get; private set;}
         [JsonProperty]
-        public string ContentType { get; private set; }
+        public string ContentType {get; private set;}
         [JsonProperty]
-        public string QueryString { get; private set; }
+        public string QueryString {get; private set;}
         [JsonProperty]
-        public string Protocol { get; private set; }
+        public string Protocol {get; private set;}
         [JsonProperty]
-        public string X_Forwarded_Proto { get; private set; }
+        public string X_Forwarded_For {get; private set;}
         [JsonProperty]
-        public string X_Forwarded_Host { get; private set; }
+        public string X_Forwarded_Proto {get; private set;}
+        [JsonProperty]
+        public string X_Forwarded_Host {get; private set;}
+        [JsonProperty]
+        public string X_Original_For {get; private set;}
+        [JsonProperty]
+        public string X_Original_Proto {get; private set;}
+        [JsonProperty]
+        public string X_Original_Host {get; private set;}
         public RequestLog(string method, string scheme, string pathBase, string path, string host, long? length, string ip, string queryString, string contentType, string protocol, IHeaderDictionary headers)
         {
-            LocalIP = ip;
+            IP = ip;
             Method = method;
             Scheme = scheme;
             PathBase = pathBase;
@@ -48,12 +56,21 @@ namespace Web.Api.Models.Logging
             Protocol = protocol;
             if (headers != null)
                 foreach (var header in headers)
-                    if (header.Key.Equals("X-Forwarded-For") || header.Key.Equals("X-Original-For"))
-                        IP = header.Value;
-                    else if (header.Key.Equals("X-Forwarded-Proto") || header.Key.Equals("X-Original-Proto"))
+                    if (header.Key.Equals("X-Forwarded-For"))
+                        X_Forwarded_For = header.Value;
+                    else if (header.Key.Equals("X-Original-For"))
+                    {
+                        X_Original_For = header.Value;
+                        LocalIP = header.Value;
+                    }
+                    else if (header.Key.Equals("X-Forwarded-Proto"))
                         X_Forwarded_Proto = header.Value;
-                    else if (header.Key.Equals("X-Forwarded-Host") || header.Key.Equals("X-Original-Host"))
+                    else if (header.Key.Equals("X-Original-Proto"))
+                        X_Original_Proto = header.Value;
+                    else if (header.Key.Equals("X-Forwarded-Host"))
                         X_Forwarded_Host = header.Value;
+                    else if (header.Key.Equals("X-Original-Host"))
+                        X_Original_Host = header.Value;
             //if (string.IsNullOrEmpty(IP) && !string.IsNullOrEmpty(X_Forwarded_For))
             //    IP = X_Forwarded_For;
         }
