@@ -6,9 +6,9 @@
   <ItemGroup>
     <PackageReference Include="automapper" Version="8.1.0"/>
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0"/>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6"/>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0"/>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.6"/>
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.2.4"/>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0"/>
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="2.2.0"/>
