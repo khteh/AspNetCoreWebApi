@@ -9,5 +9,5 @@ message User {
     string identityId = 4;
     string userName = 5;
     string email = 6;
-    repeated Web.Api.Core.Grpc.RefreshToken refreshToken = 7;
+    repeated Web.Api.Core.Grpc.RefreshToken refreshTokens = 7;
 }

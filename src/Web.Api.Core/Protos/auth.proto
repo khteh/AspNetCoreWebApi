@@ -22,13 +22,9 @@ message LoginRequest {
     repeated string roles = 11;
 }
 message LoginResponse {
-    string userId = 1;
-    Web.Api.Core.Grpc.AccessToken AccessToken = 2;
-    string RefreshToken = 3;
-    string SessionId = 4;
-    google.protobuf.Duration CookieExpireTimeSpan = 5;
-    repeated google.protobuf.Any Claims = 6;
-    Web.Api.Core.Grpc.Response response = 7;
+    Web.Api.Core.Grpc.AccessToken AccessToken = 1;
+    string RefreshToken = 2;
+    Web.Api.Core.Grpc.Response response = 3;
 }
 message ExchangeRefreshTokenRequest {
     string accessToken = 1;

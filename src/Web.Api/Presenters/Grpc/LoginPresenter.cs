@@ -5,12 +5,19 @@ using Web.Api.Serialization;
 
 namespace Web.Api.Presenters.Grpc
 {
-    public sealed class LoginPresenter : PresenterBase<LoginResponse, Models.Response.LoginResponse>
+    public sealed class LoginPresenter : PresenterBase<LoginResponse, Web.Api.Core.Auth.LoginResponse>
     {
-        public override void Handle(LoginResponse response)
-        {
-            ContentResult.Content = response.Success ? JsonSerializer.SerializeObject(new Models.Response.LoginResponse(response.AccessToken, response.RefreshToken, true, null))
-                                            : JsonSerializer.SerializeObject(new Models.Response.LoginResponse(null, null, false, response.Errors));
-        }
+        public override void Handle(LoginResponse response) =>
+            Response = new Web.Api.Core.Auth.LoginResponse()
+            {
+                UserId = response.Id,
+                AccessToken = response.AccessToken,
+                RefreshToken = response.RefreshToken,
+                Response = new Web.Api.Grpc.Response()
+                {
+                    Success = response.Success,
+                    Errors = response.Errors
+                }
+            };
     }
 }
