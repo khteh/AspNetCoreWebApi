@@ -11,7 +11,7 @@ namespace Web.Api.Core.Domain.Entities
         public int UserId { get; private set; }
         public bool Active => DateTimeOffset.UtcNow <= Expires;
         public string RemoteIpAddress { get; private set; }
-         public RefreshToken(string token, DateTimeOffset expires, int userId,string remoteIpAddress)
+        public RefreshToken(string token, DateTimeOffset expires, int userId,string remoteIpAddress)
         {
             Token = token;
             Expires = expires;

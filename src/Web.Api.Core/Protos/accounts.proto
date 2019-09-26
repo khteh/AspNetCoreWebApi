@@ -1,0 +1,53 @@
+syntax = "proto3";
+option csharp_namespace = "Web.Api.Core.Accounts";
+package Web.Api.Core.Accounts;
+import "Protos/response.proto";
+import "Protos/user.proto";
+service Accounts {
+    rpc Register (RegisterUserRequest) returns (Web.Api.Core.Grpc.Response);
+    rpc ChangePassword (ChangePasswordRequest) returns (Web.Api.Core.Grpc.Response);
+    rpc ResetPassword (ResetPasswordRequest) returns (Web.Api.Core.Grpc.Response);
+    rpc Lock (StringInputParameter) returns (Web.Api.Core.Grpc.Response);
+    rpc UnLock (StringInputParameter) returns (Web.Api.Core.Grpc.Response);
+    rpc Delete (StringInputParameter) returns (DeleteUserResponse);
+    rpc FindById (StringInputParameter) returns (FindUserResponse);
+    rpc FindByUserName (StringInputParameter) returns (FindUserResponse);
+    rpc FindByEmail (StringInputParameter) returns (FindUserResponse);
+}
+message StringInputParameter {
+    string value = 1;
+}
+message RegisterUserRequest {
+    string firstName = 1;
+    string lastName = 2;
+    string email = 3;
+    string userName = 4;
+    string password = 5;
+    string phoneNumber = 6;
+    string roleId = 7;
+    int32 outletId = 8;
+    int32 mcId = 9;
+    bool isFirstLogin = 10;
+    bool lockoutEnabled = 11;
+    bool isSystem = 12;
+    string createdBy = 13;
+}
+message ChangePasswordRequest {
+    string id = 1;
+    string password = 2;
+    string newPassword = 3;
+}
+message ResetPasswordRequest {
+    string id = 1;
+    string newPassword = 2;
+    bool isFirstLogin = 3;
+}
+message DeleteUserResponse {
+    Web.Api.Core.Grpc.User user = 1;
+    Web.Api.Core.Grpc.Response response = 2;
+}
+message FindUserResponse {
+    string id = 1;
+    Web.Api.Core.Grpc.User user = 2;
+    Web.Api.Core.Grpc.Response response = 3;
+}

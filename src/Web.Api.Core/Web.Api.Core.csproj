@@ -3,7 +3,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Server"/>
+    <Protobuf Include="Protos\*.proto" GrpcServices="Server"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.0.0"/>
