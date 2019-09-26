@@ -5,10 +5,10 @@ using Web.Api.Serialization;
 
 namespace Web.Api.Presenters.Grpc
 {
-    public sealed class ExchangeRefreshTokenPresenter : PresenterBase<ExchangeRefreshTokenResponse, Web.Api.Core.Grpc.Response.ExchangeRefreshTokenResponse>
+    public sealed class ExchangeRefreshTokenPresenter : PresenterBase<ExchangeRefreshTokenResponse, Web.Api.Core.Auth.ExchangeRefreshTokenResponse>
     {
         public override void Handle(ExchangeRefreshTokenResponse response) =>
-            Response = new Web.Api.Core.Grpc.ExchangeRefreshTokenResponse()
+            Response = new Web.Api.Core.Auth.ExchangeRefreshTokenResponse()
             {
                 AccessToken = response.AccessToken,
                 RefreshToken = response.RefreshToken,
