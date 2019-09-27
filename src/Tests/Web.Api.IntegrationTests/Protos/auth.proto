@@ -3,6 +3,7 @@ option csharp_namespace = "Web.Api.Core.Auth";
 package Web.Api.Core.Auth;
 import "Protos/response.proto";
 import "Protos/accessToken.proto";
+import "google/protobuf/duration.proto";
 service Auth {
     rpc Login(LoginRequest) returns (LoginResponse);
     rpc RefreshToken(ExchangeRefreshTokenRequest) returns (ExchangeRefreshTokenResponse);

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Grpc.Core;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
@@ -24,7 +25,12 @@ namespace Web.Api.Services
         private readonly ResetPasswordPresenter _resetPasswordPresenter;
         private readonly ILockUserUseCase _lockUserUseCase;
         private readonly LockUserPresenter _lockUserPresenter;
-        public AccountsService(ILogger<AccountsService> logger, IRegisterUserUseCase registerUserUseCase, RegisterUserPresenter registerUserPresenter, IDeleteUserUseCase deleteUserUseCase, DeleteUserPresenter deleteUserPresenter, IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter, IChangePasswordUseCase changePasswordUseCase, ChangePasswordPresenter changePasswordPresenter, IResetPasswordUseCase resetPasswordUseCase, ResetPasswordPresenter resetPasswordPresenter)
+        public AccountsService(ILogger<AccountsService> logger, IRegisterUserUseCase registerUserUseCase, RegisterUserPresenter registerUserPresenter, 
+            IDeleteUserUseCase deleteUserUseCase, DeleteUserPresenter deleteUserPresenter, 
+            IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter, 
+            IChangePasswordUseCase changePasswordUseCase, ChangePasswordPresenter changePasswordPresenter, 
+            IResetPasswordUseCase resetPasswordUseCase, ResetPasswordPresenter resetPasswordPresenter,
+            ILockUserUseCase lockUserUseCase, LockUserPresenter lockUserPresenter)
         {
             _logger = logger;
             _registerUserUseCase = registerUserUseCase;
@@ -37,54 +43,56 @@ namespace Web.Api.Services
             _changePasswordPresenter = changePasswordPresenter;
             _resetPasswordUseCase = resetPasswordUseCase;
             _resetPasswordPresenter = resetPasswordPresenter;
+            _lockUserUseCase = lockUserUseCase;
+            _lockUserPresenter = lockUserPresenter;
         }
-        public async Task<Web.Api.Core.Accounts.RegisterUserResponse> Register(Web.Api.Core.Accounts.RegisterUserRequest request)
+        public async override Task<Web.Api.Core.Accounts.RegisterUserResponse> Register(Web.Api.Core.Accounts.RegisterUserRequest request, ServerCallContext context)
         {
             await _registerUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.RegisterUserRequest(request.FirstName, request.LastName, request.Email, request.UserName, request.Password), _registerUserPresenter);
             return _registerUserPresenter.Response;
         }
         // POST api/accounts
-        public async Task<Web.Api.Core.Grpc.Response> ChangePassword(Web.Api.Core.Accounts.ChangePasswordRequest request)
+        public async override Task<Web.Api.Core.Grpc.Response> ChangePassword(Web.Api.Core.Accounts.ChangePasswordRequest request, ServerCallContext context)
         {
             await _changePasswordUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.ChangePasswordRequest(request.Id, request.Password, request.NewPassword), _changePasswordPresenter);
             return _changePasswordPresenter.Response;
         }
-        public async Task<Web.Api.Core.Grpc.Response> ResetPassword(Web.Api.Core.Accounts.ResetPasswordRequest request)
+        public async override Task<Web.Api.Core.Grpc.Response> ResetPassword(Web.Api.Core.Accounts.ResetPasswordRequest request, ServerCallContext context)
         {
             await _resetPasswordUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.ResetPasswordRequest(request.Id, request.NewPassword), _resetPasswordPresenter);
             return _resetPasswordPresenter.Response;
         }
 
         // POST api/accounts
-        public async Task<Web.Api.Core.Accounts.DeleteUserResponse> Delete(StringInputParameter id)
+        public async override Task<Web.Api.Core.Accounts.DeleteUserResponse> Delete(StringInputParameter id, ServerCallContext context)
         {
             await _deleteUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.DeleteUserRequest(id.Value), _deleteUserPresenter);
             return _deleteUserPresenter.Response;
         }
         // POST api/accounts/FindById
-        public async Task<Web.Api.Core.Accounts.FindUserResponse> FindById(StringInputParameter id)
+        public async override Task<Web.Api.Core.Accounts.FindUserResponse> FindById(StringInputParameter id, ServerCallContext context)
         {
             await _findUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.FindUserRequest(string.Empty, string.Empty, id.Value), _findUserPresenter);
             return _findUserPresenter.Response;
         }
         // POST api/accounts/FindByUserName
-        public async Task<Web.Api.Core.Accounts.FindUserResponse> FindByUserName(StringInputParameter username)
+        public async override Task<Web.Api.Core.Accounts.FindUserResponse> FindByUserName(StringInputParameter username, ServerCallContext context)
         {
             await _findUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.FindUserRequest(string.Empty, username.Value, string.Empty), _findUserPresenter);
             return _findUserPresenter.Response;
         }
         // POST api/accounts/FindByEmail
-        public async Task<Web.Api.Core.Accounts.FindUserResponse> FindByEmail(StringInputParameter email)
+        public async override Task<Web.Api.Core.Accounts.FindUserResponse> FindByEmail(StringInputParameter email, ServerCallContext context)
         {
             await _findUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.FindUserRequest(email.Value, string.Empty, string.Empty), _findUserPresenter);
             return _findUserPresenter.Response;
         }
-        public async Task<Web.Api.Core.Grpc.Response> Lock(StringInputParameter id)
+        public async override Task<Web.Api.Core.Grpc.Response> Lock(StringInputParameter id, ServerCallContext context)
         {
              await _lockUserUseCase.Lock(id.Value, _lockUserPresenter);
              return _lockUserPresenter.Response;
         }
-        public async Task<Web.Api.Core.Grpc.Response> Unlock(StringInputParameter id)
+        public async override Task<Web.Api.Core.Grpc.Response> UnLock(StringInputParameter id, ServerCallContext context)
         {
             await _lockUserUseCase.UnLock(id.Value, _lockUserPresenter);
             return _lockUserPresenter.Response;

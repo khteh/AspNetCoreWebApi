@@ -14,10 +14,7 @@ namespace Web.Api.IntegrationTests.Controllers
     {
         private readonly HttpClient _client;
 
-        public AccountsControllerIntegrationTests(CustomWebApplicationFactory<Startup> factory)
-        {
-            _client = factory.CreateClient();
-        }
+        public AccountsControllerIntegrationTests(CustomWebApplicationFactory<Startup> factory) => _client = factory.CreateClient();
 
         [Fact]
         public async Task CanRegisterUserWithValidAccountDetails()

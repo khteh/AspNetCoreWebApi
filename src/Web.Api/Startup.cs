@@ -20,6 +20,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Web.Api.Services;
 using Web.Api.Extensions;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Infrastructure.Data.Mapping;
@@ -317,6 +318,8 @@ namespace Web.Api
                     //endpoints.MapDefaultControllerRoute().RequireAuthorization(); //conventional route for controllers.
                     endpoints.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets);
                     //endpoints.MapGrpcService<GreeterService>("/greet");
+                    endpoints.MapGrpcService<AccountsService>();
+                    endpoints.MapGrpcService<AccountsService>();
                     endpoints.MapHealthChecks($"/health/live", new HealthCheckOptions()
                     {
                         Predicate = check => check.Name == "Liveness"
