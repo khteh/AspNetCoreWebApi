@@ -1,36 +1,38 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Xunit;
 using System.Security.Cryptography.X509Certificates;
 using Web.Api.Core.Accounts;
-using Web.Api.Core.Accounts;
+using Web.Api.Core.Auth;
 using Grpc.Net.Client;
 
 namespace Web.Api.IntegrationTests.Services
 {
-    #if false
-    public class AccountsServiceIntegrationTests : IClassFixture<CustomGrpcServerFactory<Accounts.AccountsClient, Startup>>
+    public class AccountsServiceIntegrationTests : IClassFixture<CustomGrpcServerFactory<Startup>>
     {
-        private Accounts.AccountsClient _client;
-        public AccountsServiceIntegrationTests(CustomGrpcServerFactory<Accounts.AccountsClient, Startup> factory)
+        private ServiceProvider _serviceProvider;
+        public AccountsServiceIntegrationTests(CustomGrpcServerFactory<Startup> factory)
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
-            _client = factory.Client;
-            // The port number(5001) must match the port of the gRPC server.
+            _serviceProvider = factory.ServiceProvider;
         }
 
         [Fact]
         public async Task CanRegisterUserWithValidAccountDetails()
         {
+            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Assert.NotNull(client);
             // Act
-            RegisterUserResponse response = await _client.RegisterAsync(new RegisterUserRequest() {
+            RegisterUserResponse response = await client.RegisterAsync(new RegisterUserRequest() {
                 FirstName = "John",
                 LastName = "Doe",
                 Email = "jdoe@gmail.com",
@@ -50,7 +52,9 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanDeleteUserWithValidAccountDetails()
         {
-            DeleteUserResponse response = await _client.DeleteAsync(new StringInputParameter() { Value = "deleteme"});
+            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Assert.NotNull(client);
+            DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "deleteme"});
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
@@ -61,8 +65,10 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CantRegisterUserWithInvalidAccountDetails()
         {
+            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Assert.NotNull(client);
             // Act
-            RegisterUserResponse response = await _client.RegisterAsync(new RegisterUserRequest() {
+            RegisterUserResponse response = await client.RegisterAsync(new RegisterUserRequest() {
                 FirstName = "John",
                 LastName = "Doe",
                 Email = string.Empty,
@@ -85,7 +91,9 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CantDeleteUserWithInvalidAccountDetails()
         {
-            DeleteUserResponse response = await _client.DeleteAsync(new StringInputParameter() { Value = "DeleteMeNot"});
+            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Assert.NotNull(client);
+            DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "DeleteMeNot"});
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.False(response.Response.Success);
@@ -98,7 +106,9 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanFindById()
         {
-            FindUserResponse response = await _client.FindByIdAsync(new StringInputParameter() { Value = "41532945-599e-4910-9599-0e7402017fbe"});
+            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Assert.NotNull(client);
+            FindUserResponse response = await client.FindByIdAsync(new StringInputParameter() { Value = "41532945-599e-4910-9599-0e7402017fbe"});
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
@@ -109,7 +119,9 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanFindByUsername()
         {
-            FindUserResponse response = await _client.FindByUserNameAsync(new StringInputParameter() { Value = "mickeymouse"}); // UserManager is NOT case sensitive!
+            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Assert.NotNull(client);
+            FindUserResponse response = await client.FindByUserNameAsync(new StringInputParameter() { Value = "mickeymouse"}); // UserManager is NOT case sensitive!
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
@@ -120,8 +132,10 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanFindByEmail()
         {
+            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Assert.NotNull(client);
             //var httpResponse = await _client.GetAsync(WebUtility.UrlEncode("/accounts/email/mickey@mouse.com")); // UserManager is NOT case sensitive!
-            FindUserResponse response = await _client.FindByEmailAsync(new StringInputParameter() { Value = "mickey@mouse.com"}); // UserManager is NOT case sensitive!
+            FindUserResponse response = await client.FindByEmailAsync(new StringInputParameter() { Value = "mickey@mouse.com"}); // UserManager is NOT case sensitive!
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
@@ -132,8 +146,12 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanChangePasswordWithValidAccountDetails()
         {
+            Accounts.AccountsClient accountsClient = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Auth.AuthClient authClient = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Assert.NotNull(accountsClient);
+            Assert.NotNull(authClient);
             // Create User
-            RegisterUserResponse response = await _client.RegisterAsync(new RegisterUserRequest() {
+            RegisterUserResponse response = await accountsClient.RegisterAsync(new RegisterUserRequest() {
                 FirstName = "FirstName",
                 LastName = "LastName",
                 Email = "user@gmail.com",
@@ -147,99 +165,132 @@ namespace Web.Api.IntegrationTests.Services
             Assert.False(string.IsNullOrEmpty(response.Id));
 
             // Login
-            var loginResponse = await _client.PostAsync("/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user1", "Pa$$word1")), Encoding.UTF8, "application/json"));
-            loginResponse.EnsureSuccessStatusCode();
-            var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
-            Models.Response.LoginResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginSuccessResponse);
-            Assert.NotNull(loginResult);
-            Assert.True(loginResult.Success);
-            Assert.Null(loginResult.Errors);
-            Assert.NotNull(loginResult.AccessToken.Token);
-            Assert.Equal(7200,(int)loginResult.AccessToken.ExpiresIn);
-            Assert.NotNull(loginResult.RefreshToken);
+            LoginResponse loginResponse = await authClient.LoginAsync(new LoginRequest() {
+                UserName = "user1",
+                Password = "P@$$w0rd1"
+            });
+            Assert.NotNull(loginResponse);
+            Assert.NotNull(loginResponse.Response);
+            Assert.True(loginResponse.Response.Success);
+            Assert.Null(loginResponse.Response.Errors);
+            Assert.NotNull(loginResponse.AccessToken);
+            Assert.NotNull(loginResponse.AccessToken.Token);
+            Assert.False(string.IsNullOrEmpty(loginResponse.RefreshToken));
+            Assert.Equal(7200, loginResponse.AccessToken.ExpiresIn);
 
             // Change Password
-            var pwdResponse = await _client.PostAsync("/accounts/changepassword", new StringContent(JsonConvert.SerializeObject(new Models.Request.ChangePasswordRequest((string)result.id, "Pa$$word1", "Pa$$word2")), Encoding.UTF8, "application/json"));
-            pwdResponse.EnsureSuccessStatusCode();
-            var strPwdResponse = await pwdResponse.Content.ReadAsStringAsync();
-            //dynamic pwdResult = JObject.Parse(await pwdResponse.Content.ReadAsStringAsync());
-            Models.Response.ChangePasswordResponse pwdResponse1 = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ChangePasswordResponse>(strPwdResponse);
-            Assert.True(pwdResponse1.Success);
-            Assert.Equal(HttpStatusCode.OK, pwdResponse.StatusCode);
-            Assert.Null(pwdResponse1.Errors);
+            Web.Api.Core.Grpc.Response pwdResponse = await accountsClient.ChangePasswordAsync(new ChangePasswordRequest() {
+                Id = response.Id,
+                Password = "P@$$w0rd1",
+                NewPassword = "P@$$w0rd2",
+            });
+            Assert.NotNull(pwdResponse);
+            Assert.NotNull(pwdResponse);
+            Assert.True(pwdResponse.Success);
+            Assert.Null(pwdResponse.Errors);
 
             // Should fail login with previous password
-            var loginFailResponse = await _client.PostAsync("/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user1", "Pa$$W0rd1")), Encoding.UTF8, "application/json"));
-            var strLoginFailResponse = await loginFailResponse.Content.ReadAsStringAsync();
-            Models.Response.LoginResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginFailResponse);
-            Assert.NotNull(response);
-            Assert.NotNull(response.Errors);
-            Assert.NotEmpty(response.Errors);
-            Assert.Contains(HttpStatusCode.Unauthorized.ToString(), response.Errors.First().Code);
-            Assert.Contains("Invalid username", response.Errors.First().Description);
+            LoginResponse loginResponse1 = await authClient.LoginAsync(new LoginRequest() {
+                UserName = "user1",
+                Password = "P@$$w0rd1"
+            });
+            Assert.NotNull(loginResponse1);
+            Assert.NotNull(loginResponse1.Response);
+            Assert.False(loginResponse1.Response.Success);
+            Assert.NotNull(loginResponse1.Response.Errors);
+            Assert.Single(loginResponse1.Response.Errors);
+            Assert.Null(loginResponse1.AccessToken);
+            Assert.True(string.IsNullOrEmpty(loginResponse1.RefreshToken));
+            Assert.Equal(HttpStatusCode.Unauthorized.ToString(), loginResponse1.Response.Errors.First().Code);
+            Assert.Equal("Invalid username or password!", loginResponse1.Response.Errors.First().Description);
 
             // Login
-            var loginSuccessResponse = await _client.PostAsync("/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user1", "Pa$$W0rd2")), Encoding.UTF8, "application/json"));
-            loginResponse.EnsureSuccessStatusCode();
-            var strLoginSuccessResponse1 = await loginResponse.Content.ReadAsStringAsync();
-            dynamic loginResult1 = JObject.Parse(strLoginSuccessResponse1);
-            Assert.NotNull(loginResult1.accessToken.token);
-            Assert.Equal(7200,(int)loginResult1.accessToken.expiresIn);
-            Assert.NotNull(loginResult1.refreshToken);
+            LoginResponse loginResponse2 = await authClient.LoginAsync(new LoginRequest() {
+                UserName = "user1",
+                Password = "P@$$w0rd2"
+            });
+            Assert.NotNull(loginResponse2);
+            Assert.NotNull(loginResponse2.Response);
+            Assert.True(loginResponse2.Response.Success);
+            Assert.Null(loginResponse2.Response.Errors);
+            Assert.NotNull(loginResponse2.AccessToken);
+            Assert.NotNull(loginResponse2.AccessToken.Token);
+            Assert.False(string.IsNullOrEmpty(loginResponse2.RefreshToken));
+            Assert.Equal(7200, loginResponse2.AccessToken.ExpiresIn);
         }
         [Fact]
         public async Task CanResetPasswordWithValidAccountDetails()
         {
+            Accounts.AccountsClient accountsClient = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Auth.AuthClient authClient = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Assert.NotNull(accountsClient);
+            Assert.NotNull(authClient);
             // Create User
-            var httpResponse = await _client.PostAsync("/accounts/register", new StringContent(JsonConvert.SerializeObject(new Models.Request.RegisterUserRequest("FirstName", "LastName", "user1@gmail.com", "user2", "Pa$$word1")), Encoding.UTF8, "application/json"));
-            httpResponse.EnsureSuccessStatusCode();
-            dynamic result = JObject.Parse(await httpResponse.Content.ReadAsStringAsync());
-            Assert.True((bool) result.success);
-            Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
-            Assert.False(string.IsNullOrEmpty((string)result.id));
+            RegisterUserResponse response = await accountsClient.RegisterAsync(new RegisterUserRequest() {
+                FirstName = "FirstName",
+                LastName = "LastName",
+                Email = "user@gmail.com",
+                UserName = "user1",
+                Password = "P@$$w0rd1"
+            });//.ResponseAsync.DefaultTimeout();
+            Assert.NotNull(response);
+            Assert.NotNull(response.Response);
+            Assert.True(response.Response.Success);
+            Assert.Null(response.Response.Errors);
+            Assert.False(string.IsNullOrEmpty(response.Id));
 
             // Login
-            var loginResponse = await _client.PostAsync("/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user2", "Pa$$word1")), Encoding.UTF8, "application/json"));
-            loginResponse.EnsureSuccessStatusCode();
-            var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
-            Models.Response.LoginResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginSuccessResponse);
-            Assert.NotNull(loginResult);
-            Assert.True(loginResult.Success);
-            Assert.Null(loginResult.Errors);
-            Assert.NotNull(loginResult.AccessToken);
-            Assert.Equal(7200,(int)loginResult.AccessToken.ExpiresIn);
-            Assert.False(string.IsNullOrEmpty(loginResult.AccessToken.Token));
-            Assert.False(string.IsNullOrEmpty(loginResult.RefreshToken));
+            LoginResponse loginResponse = await authClient.LoginAsync(new LoginRequest() {
+                UserName = "user2",
+                Password = "P@$$w0rd1"
+            });
+            Assert.NotNull(loginResponse);
+            Assert.NotNull(loginResponse.Response);
+            Assert.True(loginResponse.Response.Success);
+            Assert.Null(loginResponse.Response.Errors);
+            Assert.NotNull(loginResponse.AccessToken);
+            Assert.NotNull(loginResponse.AccessToken.Token);
+            Assert.False(string.IsNullOrEmpty(loginResponse.RefreshToken));
+            Assert.Equal(7200, loginResponse.AccessToken.ExpiresIn);
 
-            // Change Password
-            var pwdResponse = await _client.PostAsync("/accounts/resetpassword", new StringContent(JsonConvert.SerializeObject(new Models.Request.ResetPasswordRequest((string)result.id, "Pa$$word2")), Encoding.UTF8, "application/json"));
-            pwdResponse.EnsureSuccessStatusCode();
-            var strPwdResponse = await pwdResponse.Content.ReadAsStringAsync();
-            //dynamic pwdResult = JObject.Parse(await pwdResponse.Content.ReadAsStringAsync());
-            Models.Response.ResetPasswordResponse pwdResponse1 = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ResetPasswordResponse>(strPwdResponse);
-            Assert.True(pwdResponse1.Success);
-            Assert.Equal(HttpStatusCode.OK, pwdResponse.StatusCode);
-            Assert.Null(pwdResponse1.Errors);
+            // Reset Password
+            Web.Api.Core.Grpc.Response pwdResponse = await accountsClient.ResetPasswordAsync(new ResetPasswordRequest() {
+                Id = response.Id,
+                NewPassword = "P@$$w0rd1",
+            });
+            Assert.NotNull(pwdResponse);
+            Assert.NotNull(pwdResponse);
+            Assert.True(pwdResponse.Success);
+            Assert.Null(pwdResponse.Errors);
 
             // Should fail login with previous password
-            var loginFailResponse = await _client.PostAsync("/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user2", "Pa$$word1")), Encoding.UTF8, "application/json"));
-            var strLoginFailResponse = await loginFailResponse.Content.ReadAsStringAsync();
-            Models.Response.LoginResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginFailResponse);
-            Assert.NotNull(response);
-            Assert.NotNull(response.Errors);
-            Assert.NotEmpty(response.Errors);
-            Assert.Contains(HttpStatusCode.Unauthorized.ToString(), response.Errors.First().Code);
-            Assert.Contains("Invalid username", response.Errors.First().Description);
+            LoginResponse loginResponse1 = await authClient.LoginAsync(new LoginRequest() {
+                UserName = "user2",
+                Password = "P@$$w0rd1"
+            });
+            Assert.NotNull(loginResponse1);
+            Assert.NotNull(loginResponse1.Response);
+            Assert.False(loginResponse1.Response.Success);
+            Assert.NotNull(loginResponse1.Response.Errors);
+            Assert.Single(loginResponse1.Response.Errors);
+            Assert.Null(loginResponse1.AccessToken);
+            Assert.True(string.IsNullOrEmpty(loginResponse1.RefreshToken));
+            Assert.Equal(HttpStatusCode.Unauthorized.ToString(), loginResponse1.Response.Errors.First().Code);
+            Assert.Equal("Invalid username or password!", loginResponse1.Response.Errors.First().Description);
 
             // Login
-            var loginSuccessResponse = await _client.PostAsync("/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("user2", "Pa$$word2")), Encoding.UTF8, "application/json"));
-            loginResponse.EnsureSuccessStatusCode();
-            var strLoginSuccessResponse1 = await loginResponse.Content.ReadAsStringAsync();
-            dynamic loginResult1 = JObject.Parse(strLoginSuccessResponse1);
-            Assert.NotNull(loginResult1.accessToken.token);
-            Assert.Equal(7200,(int)loginResult1.accessToken.expiresIn);
-            Assert.NotNull(loginResult1.refreshToken);
+            LoginResponse loginResponse2 = await authClient.LoginAsync(new LoginRequest() {
+                UserName = "user2",
+                Password = "P@$$w0rd2"
+            });
+            Assert.NotNull(loginResponse2);
+            Assert.NotNull(loginResponse2.Response);
+            Assert.True(loginResponse2.Response.Success);
+            Assert.Null(loginResponse2.Response.Errors);
+            Assert.NotNull(loginResponse2.AccessToken);
+            Assert.NotNull(loginResponse2.AccessToken.Token);
+            Assert.False(string.IsNullOrEmpty(loginResponse2.RefreshToken));
+            Assert.Equal(7200, loginResponse2.AccessToken.ExpiresIn);
         }
     }
-    #endif
 }

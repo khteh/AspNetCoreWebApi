@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Reflection;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,78 +15,105 @@ using Grpc.Net.Client;
 
 namespace Web.Api.IntegrationTests.Services
 {
-    #if false
-    public class AuthServiceIntegrationTests : IClassFixture<CustomGrpcServerFactory<Auth.AuthClient, Startup>>
+    public class AuthServiceIntegrationTests : IClassFixture<CustomGrpcServerFactory<Startup>>
     {
+        private ServiceProvider _serviceProvider;
         Auth.AuthClient _client;
-        public AuthServiceIntegrationTests(CustomGrpcServerFactory<Auth.AuthClient, Startup> factory)
+        public AuthServiceIntegrationTests(CustomGrpcServerFactory<Startup> factory)
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
-            _client = factory.Client;
+            _serviceProvider = factory.ServiceProvider;
         }
 
         [Fact]
         public async Task CanLoginWithValidCredentials()
         {
-            var httpResponse = await _client.PostAsync("/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
-            httpResponse.EnsureSuccessStatusCode();
-            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
-            dynamic result = JObject.Parse(stringResponse);
-            Assert.NotNull(result.accessToken.token);
-            Assert.NotNull(result.refreshToken);
-            Assert.Equal(7200,(int)result.accessToken.expiresIn);
+            Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Assert.NotNull(client);
+            LoginResponse response = await client.LoginAsync(new LoginRequest() {
+                UserName = "mickeymouse",
+                Password = "P@$$w0rd"
+            });
+            Assert.NotNull(response);
+            Assert.NotNull(response.Response);
+            Assert.True(response.Response.Success);
+            Assert.Null(response.Response.Errors);
+            Assert.NotNull(response.AccessToken);
+            Assert.NotNull(response.AccessToken.Token);
+            Assert.False(string.IsNullOrEmpty(response.RefreshToken));
+            Assert.Equal(7200, response.AccessToken.ExpiresIn);
         }
 
         [Fact]
         public async Task CantLoginWithInvalidCredentials()
         {
-            var httpResponse = await _client.PostAsync("/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("unknown", "Rhcp1234")), Encoding.UTF8, "application/json"));
-            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
-            Assert.Contains("Invalid username or password!", stringResponse);
-            Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
+            Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Assert.NotNull(client);
+            LoginResponse response = await client.LoginAsync(new LoginRequest() {
+                UserName = "unknown",
+                Password = "ShouldFail"
+            });
+            Assert.NotNull(response);
+            Assert.NotNull(response.Response);
+            Assert.False(response.Response.Success);
+            Assert.NotNull(response.Response.Errors);
+            Assert.Single(response.Response.Errors);
+            Assert.Null(response.AccessToken);
+            Assert.True(string.IsNullOrEmpty(response.RefreshToken));
+            Assert.Equal(HttpStatusCode.Unauthorized.ToString(), response.Response.Errors.First().Code);
+            Assert.Equal("Invalid username or password!", response.Response.Errors.First().Description);
         }
 
         [Fact]
         public async Task CanExchangeValidRefreshToken()
         {
-            var httpResponse = await _client.PostAsync("/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
-            httpResponse.EnsureSuccessStatusCode();
-            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
-            dynamic result = JObject.Parse(stringResponse);
-            Assert.NotNull(result.accessToken.token);
-            Assert.NotNull(result.refreshToken);
-            Assert.Equal(7200,(int)result.accessToken.expiresIn);
-
-            var refreshTokenResponse = await _client.PostAsync("/auth/refreshtoken", new StringContent(JsonConvert.SerializeObject(new Models.Request.ExchangeRefreshTokenRequest {
-                AccessToken = result.accessToken.token,
-                RefreshToken = result.refreshToken
-            }), Encoding.UTF8, "application/json"));
-            refreshTokenResponse.EnsureSuccessStatusCode();
-            var strRefreshTokenResponse = await refreshTokenResponse.Content.ReadAsStringAsync();
-            Models.Response.ExchangeRefreshTokenResponse response = Web.Api.Serialization.JsonSerializer.DeSerializeObject<Models.Response.ExchangeRefreshTokenResponse>(strRefreshTokenResponse);
+            Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Assert.NotNull(client);
+            LoginResponse response = await client.LoginAsync(new LoginRequest() {
+                UserName = "mickeymouse",
+                Password = "P@$$w0rd"
+            });
             Assert.NotNull(response);
+            Assert.NotNull(response.Response);
+            Assert.True(response.Response.Success);
+            Assert.Null(response.Response.Errors);
             Assert.NotNull(response.AccessToken);
             Assert.NotNull(response.AccessToken.Token);
             Assert.False(string.IsNullOrEmpty(response.RefreshToken));
-            Assert.Equal(7200, (int)response.AccessToken.ExpiresIn);
-            Assert.Null(response.Errors);
+            Assert.Equal(7200, response.AccessToken.ExpiresIn);
+
+            ExchangeRefreshTokenResponse response1 = await client.RefreshTokenAsync(new ExchangeRefreshTokenRequest() {
+                AccessToken = response.AccessToken.Token,
+                RefreshToken = response.RefreshToken
+            });
+            Assert.NotNull(response1);
+            Assert.NotNull(response1.Response);
+            Assert.True(response1.Response.Success);
+            Assert.Null(response1.Response.Errors);
+            Assert.NotNull(response1.AccessToken);
+            Assert.NotNull(response1.AccessToken.Token);
+            Assert.False(string.IsNullOrEmpty(response1.RefreshToken));
+            Assert.Equal(7200, response1.AccessToken.ExpiresIn);
         }
 
         [Fact]
         public async Task CantExchangeInvalidRefreshToken()
         {
-            var httpResponse = await _client.PostAsync("/auth/refreshtoken", new StringContent(JsonConvert.SerializeObject(new Models.Request.ExchangeRefreshTokenRequest { AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtbWFjbmVpbCIsImp0aSI6IjA0YjA0N2E4LTViMjMtNDgwNi04M2IyLTg3ODVhYmViM2ZjNyIsImlhdCI6MTUzOTUzNzA4Mywicm9sIjoiYXBpX2FjY2VzcyIsImlkIjoiNDE1MzI5NDUtNTk5ZS00OTEwLTk1OTktMGU3NDAyMDE3ZmJlIiwibmJmIjoxNTM5NTM3MDgyLCJleHAiOjE1Mzk1NDQyODIsImlzcyI6IndlYkFwaSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMC8ifQ.xzDQOKzPZarve68Np8Iu8sh2oqoCpHSmp8fMdYRHC_k", RefreshToken = "unknown" }), Encoding.UTF8, "application/json"));
-            Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
-            var strResponse = await httpResponse.Content.ReadAsStringAsync();
-            Models.Response.ExchangeRefreshTokenResponse response = Web.Api.Serialization.JsonSerializer.DeSerializeObject<Models.Response.ExchangeRefreshTokenResponse>(strResponse);
+            Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Assert.NotNull(client);
+            ExchangeRefreshTokenResponse response = await client.RefreshTokenAsync(new ExchangeRefreshTokenRequest() {
+                AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtbWFjbmVpbCIsImp0aSI6IjA0YjA0N2E4LTViMjMtNDgwNi04M2IyLTg3ODVhYmViM2ZjNyIsImlhdCI6MTUzOTUzNzA4Mywicm9sIjoiYXBpX2FjY2VzcyIsImlkIjoiNDE1MzI5NDUtNTk5ZS00OTEwLTk1OTktMGU3NDAyMDE3ZmJlIiwibmJmIjoxNTM5NTM3MDgyLCJleHAiOjE1Mzk1NDQyODIsImlzcyI6IndlYkFwaSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMC8ifQ.xzDQOKzPZarve68Np8Iu8sh2oqoCpHSmp8fMdYRHC_k",
+                RefreshToken = "ShouldFail"
+            });
             Assert.NotNull(response);
+            Assert.NotNull(response.Response);
+            Assert.False(response.Response.Success);
+            Assert.NotNull(response.Response.Errors);
+            Assert.Single(response.Response.Errors);
             Assert.Null(response.AccessToken);
             Assert.True(string.IsNullOrEmpty(response.RefreshToken));
-            Assert.NotNull(response.Errors);
-            Assert.NotEmpty(response.Errors);
-            Assert.Equal("InvalidToken", response.Errors.First().Code);
-            Assert.Equal("Invalid token!", response.Errors.First().Description);
+            Assert.Equal("InvalidToken", response.Response.Errors.First().Code);
+            Assert.Equal("Invalid token!", response.Response.Errors.First().Description);
         }
     }
-    #endif
 }

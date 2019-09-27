@@ -11,12 +11,13 @@ using Web.Api.Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.TestHost;
 using Grpc.Net.ClientFactory;
 using Grpc.Net.ClientFactory.Internal;
+using Web.Api.Core.Accounts;
+using Web.Api.Core.Auth;
 namespace Web.Api.IntegrationTests
 {
-    #if false
-    public class CustomGrpcServerFactory<TClient, TStartup> : WebApplicationFactory<Startup>
+    public class CustomGrpcServerFactory<TStartup> : WebApplicationFactory<Startup>
     {
-        public TClient Client {get; private set;}
+        public ServiceProvider ServiceProvider {get; private set;}
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services =>
@@ -25,10 +26,13 @@ namespace Web.Api.IntegrationTests
                 var serviceProvider = new ServiceCollection()
                     .AddEntityFrameworkInMemoryDatabase().AddLogging()
                     .BuildServiceProvider();
-                services.AddGrpcClient<TClient>(o => { o.Address = new Uri("http://localhost");})
-                    .EnableCallContextPropagation()
-                    .AddInterceptor(() => new CallbackInterceptor(o => options = o));
+                services.AddGrpcClient<Accounts.AccountsClient>(o => { o.Address = new Uri("http://localhost");})
+                    .EnableCallContextPropagation();
+                    //.AddInterceptor(() => new LoggingInterceptor());
                     //.AddHttpMessageHandler(() => ClientTestHelpers.CreateTestMessageHandler(new HelloReply()));
+                services.AddGrpcClient<Auth.AuthClient>(o => { o.Address = new Uri("http://localhost");})
+                    .EnableCallContextPropagation();
+                    //.AddInterceptor(() => new LoggingInterceptor());
 
                 // Add a database context (AppDbContext) using an in-memory database for testing.
                 services.AddDbContext<AppDbContext>(options =>
@@ -49,17 +53,15 @@ namespace Web.Api.IntegrationTests
                 });
                 services.AddDistributedMemoryCache();
                 // Build the service provider.
-                var sp = services.BuildServiceProvider();
-                var clientFactory = new DefaultGrpcClientFactory(sp, sp.GetRequiredService<IHttpClientFactory>());
-                Client = clientFactory.CreateClient<TClient>(nameof(TClient));
-
+                ServiceProvider sp = services.BuildServiceProvider();
+                ServiceProvider = sp;
                 // Create a scope to obtain a reference to the database contexts
                 using (var scope = sp.CreateScope())
                 {
                     var scopedServices = scope.ServiceProvider;
                     var appDb = scopedServices.GetRequiredService<AppDbContext>();
                     var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
-                    var logger = scopedServices.GetRequiredService<ILogger<CustomGrpcServerFactory<TClient, TStartup>>>();
+                    var logger = scopedServices.GetRequiredService<ILogger<CustomGrpcServerFactory<TStartup>>>();
 
                     // Ensure the database is created.
                     appDb.Database.EnsureCreated();
@@ -80,5 +82,4 @@ namespace Web.Api.IntegrationTests
             });
         }
     }
-    #endif
 }
