@@ -38,7 +38,7 @@ namespace Web.Api.Services
             _resetPasswordUseCase = resetPasswordUseCase;
             _resetPasswordPresenter = resetPasswordPresenter;
         }
-        public async Task<Web.Api.Core.Grpc.Response> Register(Web.Api.Core.Accounts.RegisterUserRequest request)
+        public async Task<Web.Api.Core.Accounts.RegisterUserResponse> Register(Web.Api.Core.Accounts.RegisterUserRequest request)
         {
             await _registerUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.RegisterUserRequest(request.FirstName, request.LastName, request.Email, request.UserName, request.Password), _registerUserPresenter);
             return _registerUserPresenter.Response;
@@ -81,13 +81,11 @@ namespace Web.Api.Services
         }
         public async Task<Web.Api.Core.Grpc.Response> Lock(StringInputParameter id)
         {
-            //=> _service.Lock(id);
-            await _lockUserUseCase.Lock(id.Value, _lockUserPresenter);
-            return _lockUserPresenter.Response;
+             await _lockUserUseCase.Lock(id.Value, _lockUserPresenter);
+             return _lockUserPresenter.Response;
         }
         public async Task<Web.Api.Core.Grpc.Response> Unlock(StringInputParameter id)
         {
-            //_service.Unlock(id);
             await _lockUserUseCase.UnLock(id.Value, _lockUserPresenter);
             return _lockUserPresenter.Response;
         }

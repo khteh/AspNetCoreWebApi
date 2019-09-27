@@ -4,7 +4,7 @@ package Web.Api.Core.Accounts;
 import "Protos/response.proto";
 import "Protos/user.proto";
 service Accounts {
-    rpc Register (RegisterUserRequest) returns (Web.Api.Core.Grpc.Response);
+    rpc Register (RegisterUserRequest) returns (RegisterUserResponse);
     rpc ChangePassword (ChangePasswordRequest) returns (Web.Api.Core.Grpc.Response);
     rpc ResetPassword (ResetPasswordRequest) returns (Web.Api.Core.Grpc.Response);
     rpc Lock (StringInputParameter) returns (Web.Api.Core.Grpc.Response);
@@ -42,8 +42,12 @@ message ResetPasswordRequest {
     string newPassword = 2;
     bool isFirstLogin = 3;
 }
+message RegisterUserResponse {
+    string id = 1;
+    Web.Api.Core.Grpc.Response response = 2;
+}
 message DeleteUserResponse {
-    Web.Api.Core.Grpc.User user = 1;
+    string id = 1;
     Web.Api.Core.Grpc.Response response = 2;
 }
 message FindUserResponse {

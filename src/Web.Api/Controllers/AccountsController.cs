@@ -24,7 +24,12 @@ namespace Web.Api.Controllers
         private readonly ResetPasswordPresenter _resetPasswordPresenter;
         private readonly ILockUserUseCase _lockUserUseCase;
         private readonly LockUserPresenter _lockUserPresenter;
-        public AccountsController(IRegisterUserUseCase registerUserUseCase, RegisterUserPresenter registerUserPresenter, IDeleteUserUseCase deleteUserUseCase, DeleteUserPresenter deleteUserPresenter, IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter, IChangePasswordUseCase changePasswordUseCase, ChangePasswordPresenter changePasswordPresenter, IResetPasswordUseCase resetPasswordUseCase, ResetPasswordPresenter resetPasswordPresenter)
+        public AccountsController(IRegisterUserUseCase registerUserUseCase, RegisterUserPresenter registerUserPresenter, 
+            IDeleteUserUseCase deleteUserUseCase, DeleteUserPresenter deleteUserPresenter, 
+            IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter, 
+            IChangePasswordUseCase changePasswordUseCase, ChangePasswordPresenter changePasswordPresenter, 
+            IResetPasswordUseCase resetPasswordUseCase, ResetPasswordPresenter resetPasswordPresenter,
+            ILockUserUseCase lockUserUseCase, LockUserPresenter lockUserPresenter)
         {
             _registerUserUseCase = registerUserUseCase;
             _registerUserPresenter = registerUserPresenter;
@@ -36,6 +41,8 @@ namespace Web.Api.Controllers
             _changePasswordPresenter = changePasswordPresenter;
             _resetPasswordUseCase = resetPasswordUseCase;
             _resetPasswordPresenter = resetPasswordPresenter;
+            _lockUserUseCase = lockUserUseCase;
+            _lockUserPresenter = lockUserPresenter;
         }
 
         // POST api/accounts/register
