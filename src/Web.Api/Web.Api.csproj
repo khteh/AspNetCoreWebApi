@@ -11,7 +11,7 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1"/>
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.5.0-preview5"/>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.7.9"/>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3"/>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0"/>
     <PackageReference Include="serilog.sinks.coloredconsole" Version="3.0.1"/>
     <PackageReference Include="serilog.sinks.rollingfile" Version="3.3.0"/>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc3"/>
@@ -20,7 +20,7 @@
     <PackageReference Include="Serilog.Settings.AppSettings" Version="2.2.2"/>
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0"/>
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="3.0"/>
-    <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="2.2.0"/>
+    <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="3.0.0"/>
     <PackageReference Include="Microsoft.OpenApi" Version="1.1.4"/>
     <PackageReference Include="Serilog.Extensions.Hosting" Version="3.0.0"/>
     <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="3.0.0"/>
