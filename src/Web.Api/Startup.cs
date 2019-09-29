@@ -319,7 +319,7 @@ namespace Web.Api
                     endpoints.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets);
                     //endpoints.MapGrpcService<GreeterService>("/greet");
                     endpoints.MapGrpcService<AccountsService>();
-                    endpoints.MapGrpcService<AccountsService>();
+                    endpoints.MapGrpcService<AuthService>();
                     endpoints.MapHealthChecks($"/health/live", new HealthCheckOptions()
                     {
                         Predicate = check => check.Name == "Liveness"
