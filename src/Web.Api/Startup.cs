@@ -218,6 +218,18 @@ namespace Web.Api
                 options.ForwardedHeaders = ForwardedHeaders.All;
                 options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse("10.0.0.0"), 16)); // Load Balancer / VPC Network
             });
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(60);
+                //options.ExcludedHosts.Add("example.com");
+                //options.ExcludedHosts.Add("www.example.com");
+            });
+            services.AddHttpsRedirection(options =>
+            {
+                options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+            });
             //services.AddScoped<AuthController>();
             //ServiceProvider provider = services.BuildServiceProvider();
             //Web.Api.Core.Interfaces.Services.ILogger logger = provider.GetRequiredService<Web.Api.Core.Interfaces.Services.ILogger>();
