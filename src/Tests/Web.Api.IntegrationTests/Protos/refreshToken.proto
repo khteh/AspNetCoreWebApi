@@ -1,6 +1,6 @@
 syntax = "proto3";
-option csharp_namespace = "Web.Api.Core.Grpc";
-package Web.Api.Core.Grpc;
+option csharp_namespace = "Web.Api.IntegrationTests.Grpc";
+package Web.Api.IntegrationTests.Grpc;
 import "google/protobuf/timestamp.proto";
 message RefreshToken {
     string Token = 1;

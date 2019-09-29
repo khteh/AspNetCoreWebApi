@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using System.Security.Cryptography.X509Certificates;
-using Web.Api.Core.Auth;
+using Web.Api.IntegrationTests.Auth;
 using Grpc.Net.Client;
 
 namespace Web.Api.IntegrationTests.Services
@@ -18,7 +18,6 @@ namespace Web.Api.IntegrationTests.Services
     public class AuthServiceIntegrationTests : IClassFixture<CustomGrpcServerFactory<Startup>>
     {
         private ServiceProvider _serviceProvider;
-        Auth.AuthClient _client;
         public AuthServiceIntegrationTests(CustomGrpcServerFactory<Startup> factory)
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
@@ -28,7 +27,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanLoginWithValidCredentials()
         {
-            Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Auth.Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.Auth.AuthClient>();
             Assert.NotNull(client);
             LoginResponse response = await client.LoginAsync(new LoginRequest() {
                 UserName = "mickeymouse",
@@ -47,7 +46,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CantLoginWithInvalidCredentials()
         {
-            Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Auth.Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.Auth.AuthClient>();
             Assert.NotNull(client);
             LoginResponse response = await client.LoginAsync(new LoginRequest() {
                 UserName = "unknown",
@@ -67,7 +66,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanExchangeValidRefreshToken()
         {
-            Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Auth.Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.Auth.AuthClient>();
             Assert.NotNull(client);
             LoginResponse response = await client.LoginAsync(new LoginRequest() {
                 UserName = "mickeymouse",
@@ -99,7 +98,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CantExchangeInvalidRefreshToken()
         {
-            Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Auth.Auth.AuthClient client = _serviceProvider.GetRequiredService<Auth.Auth.AuthClient>();
             Assert.NotNull(client);
             ExchangeRefreshTokenResponse response = await client.RefreshTokenAsync(new ExchangeRefreshTokenRequest() {
                 AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtbWFjbmVpbCIsImp0aSI6IjA0YjA0N2E4LTViMjMtNDgwNi04M2IyLTg3ODVhYmViM2ZjNyIsImlhdCI6MTUzOTUzNzA4Mywicm9sIjoiYXBpX2FjY2VzcyIsImlkIjoiNDE1MzI5NDUtNTk5ZS00OTEwLTk1OTktMGU3NDAyMDE3ZmJlIiwibmJmIjoxNTM5NTM3MDgyLCJleHAiOjE1Mzk1NDQyODIsImlzcyI6IndlYkFwaSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMC8ifQ.xzDQOKzPZarve68Np8Iu8sh2oqoCpHSmp8fMdYRHC_k",

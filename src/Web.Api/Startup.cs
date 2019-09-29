@@ -329,7 +329,6 @@ namespace Web.Api
                         Predicate = check => check.Name == "Readiness"
                     });
                     endpoints.MapRazorPages();
-                    //endpoints.MapControllerRoute("default", "api/{controller=Home}/{action=Index}/{id?}");//.RequireAuthorization();
                 });
             ReadinessHealthCheck readinessHealthCheck = serviceProvider.GetRequiredService<ReadinessHealthCheck>();
             lifetime.ApplicationStarted.Register(() => AppStarted(logger, readinessHealthCheck));

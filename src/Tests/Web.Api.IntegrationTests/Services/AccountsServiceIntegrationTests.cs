@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Web.Api.Core.DTO.UseCaseRequests;
 using Xunit;
 using System.Security.Cryptography.X509Certificates;
-using Web.Api.Core.Accounts;
-using Web.Api.Core.Auth;
+using Web.Api.IntegrationTests.Accounts;
+using Web.Api.IntegrationTests.Auth;
 using Grpc.Net.Client;
 
 namespace Web.Api.IntegrationTests.Services
@@ -29,7 +28,8 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanRegisterUserWithValidAccountDetails()
         {
-            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Assert.NotNull(_serviceProvider);
+            Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
             Assert.NotNull(client);
             // Act
             RegisterUserResponse response = await client.RegisterAsync(new RegisterUserRequest() {
@@ -52,7 +52,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanDeleteUserWithValidAccountDetails()
         {
-            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
             Assert.NotNull(client);
             DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "deleteme"});
             Assert.NotNull(response);
@@ -65,7 +65,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CantRegisterUserWithInvalidAccountDetails()
         {
-            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
             Assert.NotNull(client);
             // Act
             RegisterUserResponse response = await client.RegisterAsync(new RegisterUserRequest() {
@@ -91,7 +91,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CantDeleteUserWithInvalidAccountDetails()
         {
-            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
             Assert.NotNull(client);
             DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "DeleteMeNot"});
             Assert.NotNull(response);
@@ -106,7 +106,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanFindById()
         {
-            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
             Assert.NotNull(client);
             FindUserResponse response = await client.FindByIdAsync(new StringInputParameter() { Value = "41532945-599e-4910-9599-0e7402017fbe"});
             Assert.NotNull(response);
@@ -119,7 +119,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanFindByUsername()
         {
-            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
             Assert.NotNull(client);
             FindUserResponse response = await client.FindByUserNameAsync(new StringInputParameter() { Value = "mickeymouse"}); // UserManager is NOT case sensitive!
             Assert.NotNull(response);
@@ -132,7 +132,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanFindByEmail()
         {
-            Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
+            Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
             Assert.NotNull(client);
             //var httpResponse = await _client.GetAsync(WebUtility.UrlEncode("/accounts/email/mickey@mouse.com")); // UserManager is NOT case sensitive!
             FindUserResponse response = await client.FindByEmailAsync(new StringInputParameter() { Value = "mickey@mouse.com"}); // UserManager is NOT case sensitive!
@@ -146,8 +146,8 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanChangePasswordWithValidAccountDetails()
         {
-            Accounts.AccountsClient accountsClient = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
-            Auth.AuthClient authClient = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Accounts.Accounts.AccountsClient accountsClient = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
+            Auth.Auth.AuthClient authClient = _serviceProvider.GetRequiredService<Auth.Auth.AuthClient>();
             Assert.NotNull(accountsClient);
             Assert.NotNull(authClient);
             // Create User
@@ -179,7 +179,7 @@ namespace Web.Api.IntegrationTests.Services
             Assert.Equal(7200, loginResponse.AccessToken.ExpiresIn);
 
             // Change Password
-            Web.Api.Core.Grpc.Response pwdResponse = await accountsClient.ChangePasswordAsync(new ChangePasswordRequest() {
+            Web.Api.IntegrationTests.Grpc.Response pwdResponse = await accountsClient.ChangePasswordAsync(new ChangePasswordRequest() {
                 Id = response.Id,
                 Password = "P@$$w0rd1",
                 NewPassword = "P@$$w0rd2",
@@ -221,8 +221,8 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanResetPasswordWithValidAccountDetails()
         {
-            Accounts.AccountsClient accountsClient = _serviceProvider.GetRequiredService<Accounts.AccountsClient>();
-            Auth.AuthClient authClient = _serviceProvider.GetRequiredService<Auth.AuthClient>();
+            Accounts.Accounts.AccountsClient accountsClient = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
+            Auth.Auth.AuthClient authClient = _serviceProvider.GetRequiredService<Auth.Auth.AuthClient>();
             Assert.NotNull(accountsClient);
             Assert.NotNull(authClient);
             // Create User
@@ -254,7 +254,7 @@ namespace Web.Api.IntegrationTests.Services
             Assert.Equal(7200, loginResponse.AccessToken.ExpiresIn);
 
             // Reset Password
-            Web.Api.Core.Grpc.Response pwdResponse = await accountsClient.ResetPasswordAsync(new ResetPasswordRequest() {
+            Web.Api.IntegrationTests.Grpc.Response pwdResponse = await accountsClient.ResetPasswordAsync(new ResetPasswordRequest() {
                 Id = response.Id,
                 NewPassword = "P@$$w0rd1",
             });

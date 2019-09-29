@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "Web.Api.Core.GrpcGreeter";
+option csharp_namespace = "Web.Api.IntegrationTests.GrpcGreeter";
 
 package Greet;
 

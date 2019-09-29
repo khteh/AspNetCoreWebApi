@@ -1,9 +1,8 @@
 syntax = "proto3";
-option csharp_namespace = "Web.Api.Core.Auth";
-package Web.Api.Core.Auth;
+option csharp_namespace = "Web.Api.IntegrationTests.Auth";
+package Web.Api.IntegrationTests.Auth;
 import "Protos/response.proto";
 import "Protos/accessToken.proto";
-import "google/protobuf/duration.proto";
 service Auth {
     rpc Login(LoginRequest) returns (LoginResponse);
     rpc RefreshToken(ExchangeRefreshTokenRequest) returns (ExchangeRefreshTokenResponse);
@@ -22,16 +21,16 @@ message LoginRequest {
     repeated string roles = 11;
 }
 message LoginResponse {
-    Web.Api.Core.Grpc.AccessToken AccessToken = 1;
+    Web.Api.IntegrationTests.Grpc.AccessToken AccessToken = 1;
     string RefreshToken = 2;
-    Web.Api.Core.Grpc.Response response = 3;
+    Web.Api.IntegrationTests.Grpc.Response response = 3;
 }
 message ExchangeRefreshTokenRequest {
     string accessToken = 1;
     string refreshToken = 2;
 }
 message ExchangeRefreshTokenResponse {
-    Web.Api.Core.Grpc.AccessToken AccessToken = 1;
+    Web.Api.IntegrationTests.Grpc.AccessToken AccessToken = 1;
     string refreshToken = 2;
-    Web.Api.Core.Grpc.Response response = 3;
+    Web.Api.IntegrationTests.Grpc.Response response = 3;
 }

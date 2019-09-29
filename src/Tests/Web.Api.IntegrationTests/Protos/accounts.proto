@@ -1,14 +1,14 @@
 syntax = "proto3";
-option csharp_namespace = "Web.Api.Core.Accounts";
-package Web.Api.Core.Accounts;
+option csharp_namespace = "Web.Api.IntegrationTests.Accounts";
+package Web.Api.IntegrationTests.Accounts;
 import "Protos/response.proto";
 import "Protos/user.proto";
 service Accounts {
     rpc Register (RegisterUserRequest) returns (RegisterUserResponse);
-    rpc ChangePassword (ChangePasswordRequest) returns (Web.Api.Core.Grpc.Response);
-    rpc ResetPassword (ResetPasswordRequest) returns (Web.Api.Core.Grpc.Response);
-    rpc Lock (StringInputParameter) returns (Web.Api.Core.Grpc.Response);
-    rpc UnLock (StringInputParameter) returns (Web.Api.Core.Grpc.Response);
+    rpc ChangePassword (ChangePasswordRequest) returns (Web.Api.IntegrationTests.Grpc.Response);
+    rpc ResetPassword (ResetPasswordRequest) returns (Web.Api.IntegrationTests.Grpc.Response);
+    rpc Lock (StringInputParameter) returns (Web.Api.IntegrationTests.Grpc.Response);
+    rpc UnLock (StringInputParameter) returns (Web.Api.IntegrationTests.Grpc.Response);
     rpc Delete (StringInputParameter) returns (DeleteUserResponse);
     rpc FindById (StringInputParameter) returns (FindUserResponse);
     rpc FindByUserName (StringInputParameter) returns (FindUserResponse);
@@ -44,14 +44,14 @@ message ResetPasswordRequest {
 }
 message RegisterUserResponse {
     string id = 1;
-    Web.Api.Core.Grpc.Response response = 2;
+    Web.Api.IntegrationTests.Grpc.Response response = 2;
 }
 message DeleteUserResponse {
     string id = 1;
-    Web.Api.Core.Grpc.Response response = 2;
+    Web.Api.IntegrationTests.Grpc.Response response = 2;
 }
 message FindUserResponse {
     string id = 1;
-    Web.Api.Core.Grpc.User user = 2;
-    Web.Api.Core.Grpc.Response response = 3;
+    Web.Api.IntegrationTests.Grpc.User user = 2;
+    Web.Api.IntegrationTests.Grpc.Response response = 3;
 }

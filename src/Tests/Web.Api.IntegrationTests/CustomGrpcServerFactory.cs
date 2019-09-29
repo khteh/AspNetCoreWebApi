@@ -26,11 +26,11 @@ namespace Web.Api.IntegrationTests
                 var serviceProvider = new ServiceCollection()
                     .AddEntityFrameworkInMemoryDatabase().AddLogging()
                     .BuildServiceProvider();
-                services.AddGrpcClient<Accounts.AccountsClient>(o => { o.Address = new Uri("http://localhost");})
+                services.AddGrpcClient<Accounts.Accounts.AccountsClient>(o => { o.Address = new Uri("http://localhost");})
                     .EnableCallContextPropagation();
                     //.AddInterceptor(() => new LoggingInterceptor());
                     //.AddHttpMessageHandler(() => ClientTestHelpers.CreateTestMessageHandler(new HelloReply()));
-                services.AddGrpcClient<Auth.AuthClient>(o => { o.Address = new Uri("http://localhost");})
+                services.AddGrpcClient<Auth.Auth.AuthClient>(o => { o.Address = new Uri("http://localhost");})
                     .EnableCallContextPropagation();
                     //.AddInterceptor(() => new LoggingInterceptor());
 
@@ -53,10 +53,9 @@ namespace Web.Api.IntegrationTests
                 });
                 services.AddDistributedMemoryCache();
                 // Build the service provider.
-                ServiceProvider sp = services.BuildServiceProvider();
-                ServiceProvider = sp;
+                ServiceProvider = services.BuildServiceProvider();
                 // Create a scope to obtain a reference to the database contexts
-                using (var scope = sp.CreateScope())
+                using (var scope = ServiceProvider.CreateScope())
                 {
                     var scopedServices = scope.ServiceProvider;
                     var appDb = scopedServices.GetRequiredService<AppDbContext>();
