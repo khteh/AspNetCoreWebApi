@@ -8,17 +8,26 @@ using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Presenters.Grpc;
 using Web.Api.Serialization;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-
-namespace Web.Api.UnitTests.Presenters
+using Moq;
+using AutoMapper;
+namespace Web.Api.UnitTests.Presenters.Grpc
 {
     public class GRPCFindUserPresenterUnitTests
     {
+        private readonly IMapper _mapper;
+        public GRPCFindUserPresenterUnitTests()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddAutoMapper(typeof(UnitTestProfile));
+            _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
+        }
         [Fact]
         public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
         {
             // arrange
-            var presenter = new FindUserPresenter();
+            var presenter = new FindUserPresenter(_mapper);
 
             // act
             presenter.Handle(new FindUserResponse(new User(), "", true, null, null));
@@ -34,7 +43,7 @@ namespace Web.Api.UnitTests.Presenters
         public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
         {
             // arrange
-            var presenter = new FindUserPresenter();
+            var presenter = new FindUserPresenter(_mapper);
 
             // act
             presenter.Handle(new FindUserResponse(new User(), "1234", true));
@@ -51,7 +60,7 @@ namespace Web.Api.UnitTests.Presenters
         public void Handle_GivenFailedUseCaseResponse_SetsErrors()
         {
             // arrange
-            var presenter = new FindUserPresenter();
+            var presenter = new FindUserPresenter(_mapper);
 
             // act
             presenter.Handle(new FindUserResponse(null, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));

@@ -6,14 +6,17 @@ using Web.Api.Serialization;
 using Web.Api.Core.Grpc;
 using Google.Protobuf.WellKnownTypes;
 using Web.Api.Core.DTO;
+using AutoMapper;
 namespace Web.Api.Presenters.Grpc
 {
-    public class FindUserPresenter : IOutputPort<FindUserResponse>
+    public class FindUserPresenter  : PresenterBase<FindUserResponse>
     {
         public Web.Api.Core.Accounts.FindUserResponse Response {get; private set;}
-        public void Handle(FindUserResponse response)
+        public FindUserPresenter(IMapper mapper) : base(mapper) {}
+        public override void Handle(FindUserResponse response)
         {
-            Response = new Web.Api.Core.Accounts.FindUserResponse();
+            base.Handle(response);
+            Response = new Web.Api.Core.Accounts.FindUserResponse() { Response = base.Response };
             if (response.Id != null)
                 Response.Id = response.Id;
             if (response.User != null && !string.IsNullOrEmpty(response.User.IdentityId))
@@ -36,11 +39,6 @@ namespace Web.Api.Presenters.Grpc
                             UserId = refreshToken.UserId, 
                             RemoteIpAddress = refreshToken.RemoteIpAddress});
             }
-            Response.Response = new Web.Api.Core.Grpc.Response();
-            Response.Response.Success = response.Success;
-            if (response.Errors != null && response.Errors.Any())
-                foreach (Web.Api.Core.DTO.Error error in response.Errors)
-                    Response.Response.Errors.Add(new Web.Api.Core.Grpc.Error() {Code = error.Code, Description = error.Description});
         }
     }
 }

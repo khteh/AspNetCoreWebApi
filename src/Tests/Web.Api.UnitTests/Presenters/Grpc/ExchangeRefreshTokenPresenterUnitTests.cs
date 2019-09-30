@@ -2,23 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Web.Api.Models.Response;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Presenters.Grpc;
 using Xunit;
-
-namespace Web.Api.UnitTests.Presenters
+using Moq;
+using AutoMapper;
+namespace Web.Api.UnitTests.Presenters.Grpc
 {
     public class GRPCExchangeRefreshTokenPresenterUnitTests
     {
+        private readonly IMapper _mapper;
+        public GRPCExchangeRefreshTokenPresenterUnitTests()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddAutoMapper(typeof(UnitTestProfile));
+            _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
+        }
         [Fact]
         public void Handle_GivenSuccessfulUseCaseResponse_SetsAccessToken()
         {
             // arrange
             const string token = "777888AAABBB";
-            var presenter = new ExchangeRefreshTokenPresenter();
+            var presenter = new ExchangeRefreshTokenPresenter(_mapper);
 
             // act
             presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new AccessToken(token, 0), "", true));
@@ -37,7 +46,7 @@ namespace Web.Api.UnitTests.Presenters
         {
             // arrange
             const string token = "777888AAABBB";
-            var presenter = new ExchangeRefreshTokenPresenter();
+            var presenter = new ExchangeRefreshTokenPresenter(_mapper);
 
             // act
             presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(null, token, true));
@@ -54,7 +63,7 @@ namespace Web.Api.UnitTests.Presenters
         public void Handle_GivenFailedUseCaseResponse_SetsError()
         {
             // arrange
-            var presenter = new ExchangeRefreshTokenPresenter();
+            var presenter = new ExchangeRefreshTokenPresenter(_mapper);
 
             // act
             presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error("InvalidToken", "Invalid Token!")}));

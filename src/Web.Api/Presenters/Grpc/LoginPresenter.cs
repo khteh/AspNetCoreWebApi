@@ -4,14 +4,17 @@ using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Serialization;
 using Web.Api.Core.DTO;
+using AutoMapper;
 namespace Web.Api.Presenters.Grpc
 {
-    public sealed class LoginPresenter : IOutputPort<LoginResponse>
+    public sealed class LoginPresenter : PresenterBase<LoginResponse>
     {
         public Web.Api.Core.Auth.LoginResponse Response {get; private set;}
-        public void Handle(LoginResponse response)
+        public LoginPresenter(IMapper mapper) : base(mapper) {}
+        public override void Handle(LoginResponse response)
         {
-            Response = new Web.Api.Core.Auth.LoginResponse();
+            base.Handle(response);
+            Response = new Web.Api.Core.Auth.LoginResponse() { Response = base.Response };
             if (response.AccessToken != null)
                 Response.AccessToken = new Web.Api.Core.Grpc.AccessToken() {
                     Token = response.AccessToken.Token,
@@ -19,11 +22,6 @@ namespace Web.Api.Presenters.Grpc
                 };
             if (response.RefreshToken != null)
                 Response.RefreshToken = response.RefreshToken;
-            Response.Response = new Web.Api.Core.Grpc.Response();
-            Response.Response.Success = response.Success;
-            if (response.Errors != null && response.Errors.Any())
-                foreach (Error error in response.Errors)
-                    Response.Response.Errors.Add(new Web.Api.Core.Grpc.Error() {Code = error.Code, Description = error.Description});
         }
     }
 }

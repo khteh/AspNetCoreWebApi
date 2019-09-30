@@ -5,18 +5,27 @@ using System.Net;
 using Web.Api.Core.DTO;
 using Web.Api.Core.Interfaces;
 using Web.Api.Models.Response;
+using Microsoft.Extensions.DependencyInjection;
 using Web.Api.Presenters.Grpc;
 using Xunit;
-
-namespace Web.Api.UnitTests.Presenters
+using Moq;
+using AutoMapper;
+namespace Web.Api.UnitTests.Presenters.Grpc
 {
     public class GRPCResetPasswordPresenterUnitTests
     {
+        private readonly IMapper _mapper;
+        public GRPCResetPasswordPresenterUnitTests()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddAutoMapper(typeof(UnitTestProfile));
+            _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
+        }
         [Fact]
         public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
         {
             // arrange
-            var presenter = new ResetPasswordPresenter();
+            var presenter = new ResetPasswordPresenter(_mapper);
 
             // act
             presenter.Handle(new UseCaseResponseMessage("", true));
@@ -32,7 +41,7 @@ namespace Web.Api.UnitTests.Presenters
         public void Handle_GivenFailedUseCaseResponse_SetsErrors()
         {
             // arrange
-            var presenter = new ResetPasswordPresenter();
+            var presenter = new ResetPasswordPresenter(_mapper);
 
             // act
             presenter.Handle(new UseCaseResponseMessage(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));

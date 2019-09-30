@@ -5,17 +5,26 @@ using Newtonsoft.Json;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Presenters.Grpc;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-
-namespace Web.Api.UnitTests.Presenters
+using Moq;
+using AutoMapper;
+namespace Web.Api.UnitTests.Presenters.Grpc
 {
     public class GRPCLoginPresenterUnitTests
     {
+        private readonly IMapper _mapper;
+        public GRPCLoginPresenterUnitTests()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddAutoMapper(typeof(UnitTestProfile));
+            _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
+        }
         [Fact]
         public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
         {
             // arrange
-            var presenter = new LoginPresenter();
+            var presenter = new LoginPresenter(_mapper);
 
             // act
             presenter.Handle(new LoginResponse(new AccessToken("", 0),"", true));
@@ -32,7 +41,7 @@ namespace Web.Api.UnitTests.Presenters
         {
             // arrange
             const string token = "777888AAABBB";
-            var presenter = new LoginPresenter();
+            var presenter = new LoginPresenter(_mapper);
 
             // act
             presenter.Handle(new LoginResponse(new AccessToken(token, 0),"", true));
@@ -49,7 +58,7 @@ namespace Web.Api.UnitTests.Presenters
         public void Handle_GivenFailedUseCaseResponse_SetsErrors()
         {
             // arrange
-            var presenter = new LoginPresenter();
+            var presenter = new LoginPresenter(_mapper);
 
             // act
             presenter.Handle(new LoginResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
