@@ -8,7 +8,7 @@ namespace Web.Api.Presenters.Grpc
 {
     public class LockUserPresenter : PresenterBase<UseCaseResponseMessage>
     {
-        public Web.Api.Core.Grpc.Response Response {get => base.Response; }
+        public Web.Api.Core.Grpc.Response Response {get => base.BaseResponse; }
         public LockUserPresenter(IMapper mapper) : base(mapper) {}
     }
 }

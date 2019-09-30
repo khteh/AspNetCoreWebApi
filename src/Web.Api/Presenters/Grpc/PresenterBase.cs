@@ -11,17 +11,17 @@ namespace Web.Api.Presenters.Grpc
     public abstract class PresenterBase<T> : IOutputPort<T> where T : UseCaseResponseMessage
     {
         protected readonly IMapper _mapper;
-        protected Web.Api.Core.Grpc.Response Response {get; private set;}
+        protected Web.Api.Core.Grpc.Response BaseResponse {get; private set;}
         public PresenterBase(IMapper mapper)
         {
             _mapper = mapper;
-            Response = new Web.Api.Core.Grpc.Response();
+            BaseResponse = new Web.Api.Core.Grpc.Response();
         }
         public virtual void Handle(T response)
         {
-            Response.Success = response.Success;
+            BaseResponse.Success = response.Success;
             if (response.Errors != null && response.Errors.Any())
-                Response.Errors.AddRange(_mapper.Map<List<Web.Api.Core.Grpc.Error>>(response.Errors));
+                BaseResponse.Errors.AddRange(_mapper.Map<List<Web.Api.Core.Grpc.Error>>(response.Errors));
         }
     }
 }

@@ -58,7 +58,7 @@ namespace Biz4x.Frontend.Web.Integration.Test.SignalR
                             logging.AddSerilog(dispose: true);
                         })
                         .ConfigureServices(services => {
-                            services.AddAutoMapper(typeof(DataProfile));
+                            services.AddAutoMapper(typeof(IdentityProfile));
                             services.AddSingleton(UrlEncoder.Default);
                             services.AddSignalR();
                             // Configure JwtIssuerOptions

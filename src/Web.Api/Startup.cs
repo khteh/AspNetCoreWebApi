@@ -154,7 +154,7 @@ namespace Web.Api
             identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
             identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
             services.AddControllersWithViews().SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
-            services.AddAutoMapper(new [] {typeof(DataProfile), typeof(GrpcProfile)});
+            services.AddAutoMapper(new [] {typeof(IdentityProfile), typeof(GrpcProfile)});
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
