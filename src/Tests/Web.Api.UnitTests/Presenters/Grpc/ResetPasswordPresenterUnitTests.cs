@@ -18,7 +18,7 @@ namespace Web.Api.UnitTests.Presenters.Grpc
         public GRPCResetPasswordPresenterUnitTests()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddAutoMapper(typeof(UnitTestProfile));
+            services.AddAutoMapper(typeof(GrpcProfile));
             _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
         }
         [Fact]

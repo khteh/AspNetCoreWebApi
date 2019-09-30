@@ -19,7 +19,7 @@ namespace Web.Api.UnitTests.Presenters.Grpc
         public GRPCExchangeRefreshTokenPresenterUnitTests()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddAutoMapper(typeof(UnitTestProfile));
+            services.AddAutoMapper(typeof(GrpcProfile));
             _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
         }
         [Fact]

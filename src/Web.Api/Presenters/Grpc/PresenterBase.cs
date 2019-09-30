@@ -10,7 +10,7 @@ namespace Web.Api.Presenters.Grpc
 {
     public abstract class PresenterBase<T> : IOutputPort<T> where T : UseCaseResponseMessage
     {
-        private readonly IMapper _mapper;
+        protected readonly IMapper _mapper;
         protected Web.Api.Core.Grpc.Response Response {get; private set;}
         public PresenterBase(IMapper mapper)
         {

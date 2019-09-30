@@ -19,7 +19,6 @@ namespace Web.Api.Infrastructure.Data.Mapping
                 .ForMember(dest => dest.FirstName, o => o.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.LastName, o => o.MapFrom(src => src.LastName))
                 .ForAllOtherMembers(opt => opt.Ignore());
-            CreateMap<Error, Web.Api.Core.Grpc.Error>().ConstructUsing(i => new Web.Api.Core.Grpc.Error() {Code = i.Code, Description = i.Description});
         }
     }
 }

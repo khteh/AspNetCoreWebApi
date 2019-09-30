@@ -20,6 +20,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Web.Api.Presenters.Grpc;
 using Web.Api.Services;
 using Web.Api.Extensions;
 using Web.Api.Infrastructure.Auth;
@@ -153,7 +154,7 @@ namespace Web.Api
             identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
             identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
             services.AddControllersWithViews().SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
-            services.AddAutoMapper(typeof(DataProfile));
+            services.AddAutoMapper(new [] {typeof(DataProfile), typeof(GrpcProfile)});
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>

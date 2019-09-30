@@ -20,25 +20,7 @@ namespace Web.Api.Presenters.Grpc
             if (response.Id != null)
                 Response.Id = response.Id;
             if (response.User != null && !string.IsNullOrEmpty(response.User.IdentityId))
-            {
-                Response.User = new Web.Api.Core.Grpc.User() {
-                        Id = response.User.Id,
-                        FirstName = response.User.FirstName,
-                        LastName = response.User.LastName,
-                        IdentityId = response.User.IdentityId,
-                        UserName = response.User.UserName,
-                        Email = response.User.Email,
-                        //RefreshTokens = response.User.RefreshTokens
-                    };
-                if (response.User.RefreshTokens != null && response.User.RefreshTokens.Any())
-                    foreach (Web.Api.Core.Domain.Entities.RefreshToken refreshToken in response.User.RefreshTokens)
-                    // public RefreshToken(string token, DateTimeOffset expires, int userId,string remoteIpAddress)
-                        Response.User.RefreshTokens.Add(new Web.Api.Core.Grpc.RefreshToken() {
-                            Token = refreshToken.Token, 
-                            Expires = Timestamp.FromDateTimeOffset(refreshToken.Expires), 
-                            UserId = refreshToken.UserId, 
-                            RemoteIpAddress = refreshToken.RemoteIpAddress});
-            }
+                Response.User = _mapper.Map<Web.Api.Core.Grpc.User>(response.User);
         }
     }
 }
