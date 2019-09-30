@@ -13,15 +13,22 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddOutputPorts(this IServiceCollection service) =>
             service.AddSingleton<IOutputPort<ExchangeRefreshTokenResponse>, ExchangeRefreshTokenPresenter>()
                 .AddSingleton<IOutputPort<LoginResponse>, LoginPresenter>()
-                .AddSingleton<IOutputPort<UseCaseResponseMessage>, RegisterUserPresenter>()
-                .AddSingleton<IOutputPort<UseCaseResponseMessage>, DeleteUserPresenter>()
-                .AddSingleton<ExchangeRefreshTokenPresenter>()
-                .AddSingleton<LockUserPresenter>()
-                .AddSingleton<LoginPresenter>()
+                .AddSingleton<ChangePasswordPresenter>()
+                .AddSingleton<Web.Api.Presenters.Grpc.ChangePasswordPresenter>()
                 .AddSingleton<RegisterUserPresenter>()
-                .AddSingleton<ResetPasswordPresenter>()
-                .AddSingleton<FindUserPresenter>()
                 .AddSingleton<DeleteUserPresenter>()
-                .AddSingleton<ChangePasswordPresenter>();
+                .AddSingleton<Web.Api.Presenters.Grpc.DeleteUserPresenter>()
+                .AddSingleton<ExchangeRefreshTokenPresenter>()
+                .AddSingleton<Web.Api.Presenters.Grpc.ExchangeRefreshTokenPresenter>()
+                .AddSingleton<FindUserPresenter>()
+                .AddSingleton<Web.Api.Presenters.Grpc.FindUserPresenter>()
+                .AddSingleton<LockUserPresenter>()
+                .AddSingleton<Web.Api.Presenters.Grpc.LockUserPresenter>()
+                .AddSingleton<LoginPresenter>()
+                .AddSingleton<Web.Api.Presenters.Grpc.LoginPresenter>()
+                .AddSingleton<RegisterUserPresenter>()
+                .AddSingleton<Web.Api.Presenters.Grpc.RegisterUserPresenter>()
+                .AddSingleton<ResetPasswordPresenter>()
+                .AddSingleton<Web.Api.Presenters.Grpc.ResetPasswordPresenter>();
     }
 }
