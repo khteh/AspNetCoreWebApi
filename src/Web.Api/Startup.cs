@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.CookiePolicy;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
@@ -268,6 +269,13 @@ namespace Web.Api
                 //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
                 // Connection: RemoteIp
                 context.Request.PathBase = new PathString(pathBase); // Kubernetes ingress rule
+                context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+                context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                                    {
+                                        Public = true,
+                                        MaxAge = TimeSpan.FromSeconds(10)
+                                    };
+                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] = new string[] { "Accept-Encoding" };
                 await next();
             });
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
@@ -322,7 +330,7 @@ namespace Web.Api
             //app.UseCors();
             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
             app.UseAuthorization();
-            app.UseCookiePolicy();
+            app.UseCookiePolicy(new CookiePolicyOptions() {HttpOnly = HttpOnlyPolicy.Always, Secure = CookieSecurePolicy.Always });
             app.UseSwagger();
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>
