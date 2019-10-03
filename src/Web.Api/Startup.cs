@@ -278,13 +278,13 @@ namespace Web.Api
                 // Connection: RemoteIp
                 context.Request.PathBase = new PathString(pathBase); // Kubernetes ingress rule
                 context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
                 context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
                                     {
                                         Public = true,
                                         MaxAge = TimeSpan.FromSeconds(10)
                                     };
                 context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] = new string[] { "Accept-Encoding" };
-                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
                 if (string.Equals(context.Request.Path.Value, "/", StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(context.Request.Path.Value, "/index.html", StringComparison.OrdinalIgnoreCase))
                 {
