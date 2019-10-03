@@ -284,6 +284,7 @@ namespace Web.Api
                                         MaxAge = TimeSpan.FromSeconds(10)
                                     };
                 context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] = new string[] { "Accept-Encoding" };
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
                 if (string.Equals(context.Request.Path.Value, "/", StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(context.Request.Path.Value, "/index.html", StringComparison.OrdinalIgnoreCase))
                 {
