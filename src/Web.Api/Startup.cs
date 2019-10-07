@@ -40,13 +40,22 @@ using Web.Api.Infrastructure.Data;
 using Newtonsoft.Json;
 using Web.Api.Models.Logging;
 using Microsoft.AspNetCore.HttpOverrides;
+using System.Net.WebSockets;
 
 namespace Web.Api
 {
     public class Startup
     {
+        private readonly bool _isIntegrationTests;
+        private readonly IWebHostEnvironment _env;
         public IConfiguration Configuration { get; }
-        public Startup(IConfiguration configuration) => Configuration = configuration;
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
+        {
+            _env = env;
+            Configuration = configuration;
+            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            _isIntegrationTests = !string.IsNullOrEmpty(environment) && environment.Equals("IntegrationTests");
+        }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -61,8 +70,8 @@ namespace Web.Api
 
             // Add framework services.
             // The following are done in services.AddInfrastructure()
-            //services.AddDbContext<AppIdentityDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
-            //services.AddDbContext<AppDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
+            //services.AddDbContextPool<AppIdentityDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
+            //services.AddDbContextPool<AppDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
 
             // Register the ConfigurationBuilder instance of AuthSettings
             var authSettings = Configuration.GetSection(nameof(AuthSettings));
@@ -215,11 +224,11 @@ namespace Web.Api
             // WARNING: use *either* the NameUserIdProvider *or* the 
             // EmailBasedUserIdProvider, but do not use both. 
             // Register Infrastructure Services
-            services.AddInfrastructure(Configuration).AddCore().AddOutputPorts();//.AddHealthCheck();
+            services.AddInfrastructure(Configuration, _isIntegrationTests).AddCore().AddOutputPorts();//.AddHealthCheck();
             services.AddHealthChecks()
                 .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>(){"Liveness"})
                 .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string>{ "Readiness" })
-                .AddMySql(Configuration["ConnectionStrings:DefaultConnection"], "MySQL", HealthStatus.Unhealthy, new List<string>{ "Services" })
+                .AddMySql(Configuration["ConnectionStrings:Default"], "MySQL", HealthStatus.Unhealthy, new List<string>{ "Services" })
                 .AddDbContextCheck<AppDbContext>("AppDbContext", HealthStatus.Unhealthy, new List<string>{ "Services" });
             services.AddHostedService<StartupHostedService>()
                 .AddSingleton<ReadinessHealthCheck>()

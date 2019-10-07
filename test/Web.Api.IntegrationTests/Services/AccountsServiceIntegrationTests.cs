@@ -29,7 +29,7 @@ namespace Web.Api.IntegrationTests.Services
         public async Task CanRegisterUserWithValidAccountDetails()
         {
             Assert.NotNull(_serviceProvider);
-            Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
+            AccountsClient<Accounts.RegisterUserRequest> client = _serviceProvider.GetRequiredService<AccountsClient<Accounts.RegisterUserRequest>>();
             Assert.NotNull(client);
             // Act
             RegisterUserResponse response = await client.RegisterAsync(new RegisterUserRequest() {
@@ -37,7 +37,7 @@ namespace Web.Api.IntegrationTests.Services
                 LastName = "Doe",
                 Email = "jdoe@gmail.com",
                 UserName = "johndoe",
-                Password = "P@$$w0rd1"
+                Password = "4xLabs.com1"
             });//.ResponseAsync.DefaultTimeout();
 
             // Assert
@@ -73,7 +73,7 @@ namespace Web.Api.IntegrationTests.Services
                 LastName = "Doe",
                 Email = string.Empty,
                 UserName = "johndoe",
-                Password = "P@$$w0rd1"
+                Password = "4xLabs.com1"
             });//.ResponseAsync.DefaultTimeout();
 
             // Assert
@@ -156,7 +156,7 @@ namespace Web.Api.IntegrationTests.Services
                 LastName = "LastName",
                 Email = "user@gmail.com",
                 UserName = "user1",
-                Password = "P@$$w0rd1"
+                Password = "4xLabs.com1"
             });//.ResponseAsync.DefaultTimeout();
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
@@ -167,7 +167,7 @@ namespace Web.Api.IntegrationTests.Services
             // Login
             LoginResponse loginResponse = await authClient.LoginAsync(new LoginRequest() {
                 UserName = "user1",
-                Password = "P@$$w0rd1"
+                Password = "4xLabs.com1"
             });
             Assert.NotNull(loginResponse);
             Assert.NotNull(loginResponse.Response);
@@ -181,8 +181,8 @@ namespace Web.Api.IntegrationTests.Services
             // Change Password
             Web.Api.IntegrationTests.Grpc.Response pwdResponse = await accountsClient.ChangePasswordAsync(new ChangePasswordRequest() {
                 Id = response.Id,
-                Password = "P@$$w0rd1",
-                NewPassword = "P@$$w0rd2",
+                Password = "4xLabs.com1",
+                NewPassword = "4xLabs.com2",
             });
             Assert.NotNull(pwdResponse);
             Assert.NotNull(pwdResponse);
@@ -192,7 +192,7 @@ namespace Web.Api.IntegrationTests.Services
             // Should fail login with previous password
             LoginResponse loginResponse1 = await authClient.LoginAsync(new LoginRequest() {
                 UserName = "user1",
-                Password = "P@$$w0rd1"
+                Password = "4xLabs.com1"
             });
             Assert.NotNull(loginResponse1);
             Assert.NotNull(loginResponse1.Response);
@@ -207,7 +207,7 @@ namespace Web.Api.IntegrationTests.Services
             // Login
             LoginResponse loginResponse2 = await authClient.LoginAsync(new LoginRequest() {
                 UserName = "user1",
-                Password = "P@$$w0rd2"
+                Password = "4xLabs.com2"
             });
             Assert.NotNull(loginResponse2);
             Assert.NotNull(loginResponse2.Response);
@@ -231,7 +231,7 @@ namespace Web.Api.IntegrationTests.Services
                 LastName = "LastName",
                 Email = "user@gmail.com",
                 UserName = "user1",
-                Password = "P@$$w0rd1"
+                Password = "4xLabs.com1"
             });//.ResponseAsync.DefaultTimeout();
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
@@ -242,7 +242,7 @@ namespace Web.Api.IntegrationTests.Services
             // Login
             LoginResponse loginResponse = await authClient.LoginAsync(new LoginRequest() {
                 UserName = "user2",
-                Password = "P@$$w0rd1"
+                Password = "4xLabs.com1"
             });
             Assert.NotNull(loginResponse);
             Assert.NotNull(loginResponse.Response);
@@ -256,7 +256,7 @@ namespace Web.Api.IntegrationTests.Services
             // Reset Password
             Web.Api.IntegrationTests.Grpc.Response pwdResponse = await accountsClient.ResetPasswordAsync(new ResetPasswordRequest() {
                 Id = response.Id,
-                NewPassword = "P@$$w0rd1",
+                NewPassword = "4xLabs.com1",
             });
             Assert.NotNull(pwdResponse);
             Assert.NotNull(pwdResponse);
@@ -266,7 +266,7 @@ namespace Web.Api.IntegrationTests.Services
             // Should fail login with previous password
             LoginResponse loginResponse1 = await authClient.LoginAsync(new LoginRequest() {
                 UserName = "user2",
-                Password = "P@$$w0rd1"
+                Password = "4xLabs.com1"
             });
             Assert.NotNull(loginResponse1);
             Assert.NotNull(loginResponse1.Response);
@@ -281,7 +281,7 @@ namespace Web.Api.IntegrationTests.Services
             // Login
             LoginResponse loginResponse2 = await authClient.LoginAsync(new LoginRequest() {
                 UserName = "user2",
-                Password = "P@$$w0rd2"
+                Password = "4xLabs.com2"
             });
             Assert.NotNull(loginResponse2);
             Assert.NotNull(loginResponse2.Response);

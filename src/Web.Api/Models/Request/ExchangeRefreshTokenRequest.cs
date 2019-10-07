@@ -8,4 +8,3 @@ namespace Web.Api.Models.Request
         public string RefreshToken { get; set; }
     }
 }
-

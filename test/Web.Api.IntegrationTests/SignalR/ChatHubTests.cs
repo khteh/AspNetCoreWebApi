@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Xunit;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Net.Http;
-using Biz4x.Frontend.Web.Integration.Test.SignalR;
 using Web.Api.Hubs;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;

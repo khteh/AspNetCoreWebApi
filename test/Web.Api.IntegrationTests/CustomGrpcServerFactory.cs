@@ -13,6 +13,11 @@ using Grpc.Net.ClientFactory;
 using Grpc.Net.ClientFactory.Internal;
 using Web.Api.Core.Accounts;
 using Web.Api.Core.Auth;
+using Web.Api.Core.Configuration;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using Web.Api.IntegrationTests.Services;
+
 namespace Web.Api.IntegrationTests
 {
     public class CustomGrpcServerFactory<TStartup> : WebApplicationFactory<Startup>
@@ -20,6 +25,14 @@ namespace Web.Api.IntegrationTests
         public ServiceProvider ServiceProvider {get; private set;}
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "IntegrationTests");
+            var contentRootFull = Path.GetFullPath(Directory.GetCurrentDirectory());
+            IConfigurationRoot config = new ConfigurationBuilder()
+                .SetBasePath(contentRootFull)
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.Development.json", true, true)
+                .AddJsonFile($"appsettings.local.json", true, true)
+                .AddEnvironmentVariables().Build();
             builder.ConfigureServices(services =>
             {
                 // Create a new service provider.
@@ -35,15 +48,15 @@ namespace Web.Api.IntegrationTests
                     //.AddInterceptor(() => new LoggingInterceptor());
 
                 // Add a database context (AppDbContext) using an in-memory database for testing.
-                services.AddDbContext<AppDbContext>(options =>
+                services.AddDbContextPool<AppDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryAppDb");
+                    options.UseInMemoryDatabase("GrpcInMemoryAppDb");
                     options.UseInternalServiceProvider(serviceProvider);
                 });
 
-                services.AddDbContext<AppIdentityDbContext>(options =>
+                services.AddDbContextPool<AppIdentityDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryIdentityDb");
+                    options.UseInMemoryDatabase("GrpcInMemoryIdentityDb");
                     options.UseInternalServiceProvider(serviceProvider);
                 });
                 services.AddScoped<SignInManager<AppUser>>();
@@ -52,6 +65,13 @@ namespace Web.Api.IntegrationTests
                     return loggerFactory.CreateLogger<UserRepository>();
                 });
                 services.AddDistributedMemoryCache();
+                services.AddOptions();
+                services.Configure<GrpcConfig>(config.GetSection(nameof(GrpcConfig)));
+                services.AddTransient<IGrpcClient<Accounts.RegisterUserRequest, Accounts.RegisterUserResponse>, AccountsClient<Accounts.RegisterUserRequest, Accounts.RegisterUserResponse>>();
+                services.AddTransient<IGrpcClient<Accounts.ChangePasswordRequest, Grpc.Response>, AccountsClient<Accounts.ChangePasswordRequest, Grpc.Response>>();
+                services.AddTransient<IGrpcClient<Accounts.ResetPasswordRequest, Grpc.Response>, AccountsClient<Accounts.ResetPasswordRequest, Grpc.Response>>();
+                services.AddTransient<IGrpcClient<Accounts.ResetPasswordRequest, Grpc.Response>, AccountsClient<Accounts.ResetPasswordRequest, Grpc.Response>>();
+
                 // Build the service provider.
                 ServiceProvider = services.BuildServiceProvider();
                 // Create a scope to obtain a reference to the database contexts

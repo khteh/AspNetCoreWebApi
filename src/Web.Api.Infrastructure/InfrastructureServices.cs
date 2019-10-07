@@ -15,14 +15,22 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class InfrastructureServices
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection service, IConfiguration configuration) =>
+        public static IServiceCollection AddInfrastructure(this IServiceCollection service, IConfiguration configuration, bool useInMemoryDatabase = false)
+        {
             service.AddScoped<IUserRepository, UserRepository>()
-            .AddSingleton<IJwtFactory, JwtFactory>()
-            .AddSingleton<IJwtTokenHandler, JwtTokenHandler>()
-            .AddSingleton<ITokenFactory, TokenFactory>()
-            .AddSingleton<IJwtTokenValidator, JwtTokenValidator>()
-            .AddScoped<SignInManager<AppUser>>()
-            .AddDbContext<AppIdentityDbContext>(options => options.UseMySQL(configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")))
-            .AddDbContext<AppDbContext>(options => options.UseMySQL(configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
+                .AddSingleton<IJwtFactory, JwtFactory>()
+                .AddSingleton<IJwtTokenHandler, JwtTokenHandler>()
+                .AddSingleton<ITokenFactory, TokenFactory>()
+                .AddSingleton<IJwtTokenValidator, JwtTokenValidator>()
+                .AddScoped<SignInManager<AppUser>>();
+            if (!useInMemoryDatabase)
+                service.AddDbContextPool<AppIdentityDbContext>(options => options.UseMySql(configuration.GetConnectionString("Default"), b => {
+                    b.ServerVersion(new Version(8, 0, 17), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql);
+                    b.MigrationsAssembly("Web.Api.Infrastructure");}))
+                .AddDbContextPool<AppDbContext>(options => options.UseMySql(configuration.GetConnectionString("Default"), b => {
+                    b.ServerVersion(new Version(8, 0, 17), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql);
+                    b.MigrationsAssembly("Web.Api.Infrastructure");}));
+            return service;
+        }
     }
 }

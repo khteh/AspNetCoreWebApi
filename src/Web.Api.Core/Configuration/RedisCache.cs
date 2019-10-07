@@ -1,4 +1,6 @@
-namespace Web.Api.Core.DTO
+using System;
+
+namespace Web.Api.Core.Configuration
 {
     public class RedisCache
     {

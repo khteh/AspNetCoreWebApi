@@ -22,6 +22,7 @@ namespace Web.Api.IntegrationTests.Services
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
             _serviceProvider = factory.ServiceProvider;
+            Assert.NotNull(_serviceProvider);
         }
 
         [Fact]
@@ -31,7 +32,7 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(client);
             LoginResponse response = await client.LoginAsync(new LoginRequest() {
                 UserName = "mickeymouse",
-                Password = "P@$$w0rd"
+                Password = "4xLabs.com"
             });
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
@@ -70,7 +71,7 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(client);
             LoginResponse response = await client.LoginAsync(new LoginRequest() {
                 UserName = "mickeymouse",
-                Password = "P@$$w0rd"
+                Password = "4xLabs.com"
             });
             Assert.NotNull(response);
             Assert.NotNull(response.Response);

@@ -4,5 +4,5 @@
     "window.zoomLevel": 0,
     "dotnet-test-explorer.autoExpandTree": true,
     "dotnet-test-explorer.autoWatch": true,
-    "dotnet-test-explorer.testProjectPath": "src/Tests/*/*.csproj"
+    "dotnet-test-explorer.testProjectPath": "test/*/*.csproj"
 }

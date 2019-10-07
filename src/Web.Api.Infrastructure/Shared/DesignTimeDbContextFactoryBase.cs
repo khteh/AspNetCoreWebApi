@@ -30,36 +30,22 @@ namespace Web.Api.Infrastructure.Shared
                 .AddJsonFile($"appsettings.{environmentName}.json", true, true)
                 .AddJsonFile($"appsettings.mysql.json", true, true)
                 .AddEnvironmentVariables();
-
             var config = builder.Build();
-
             var connstr = config.GetConnectionString("Default");
-
             if (string.IsNullOrWhiteSpace(connstr))
-            {
-                throw new InvalidOperationException(
-                    "Could not find a connection string named 'Default'.");
-            }
+                throw new InvalidOperationException("Could not find a connection string named 'Default'.");
             return Create(connstr);
         }
 
         private TContext Create(string connectionString)
         {
             if (string.IsNullOrEmpty(connectionString))
-                throw new ArgumentException(
-             $"{nameof(connectionString)} is null or empty.",
-             nameof(connectionString));
-
+                throw new ArgumentException($"{nameof(connectionString)} is null or empty.", nameof(connectionString));
             var optionsBuilder = new DbContextOptionsBuilder<TContext>();
-
             Console.WriteLine("DesignTimeDbContextFactory.Create(string): Connection string: {0}", connectionString);
-
-            optionsBuilder.UseMySQL(connectionString);
-
+            optionsBuilder.UseMySql(connectionString, o => o.ServerVersion(new Version(8, 0, 17), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql));
             var options = optionsBuilder.Options;
             return CreateNewInstance(options);
         }
     }
 }
-
-
