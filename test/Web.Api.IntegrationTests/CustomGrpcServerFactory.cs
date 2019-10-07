@@ -11,12 +11,13 @@ using Web.Api.Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.TestHost;
 using Grpc.Net.ClientFactory;
 using Grpc.Net.ClientFactory.Internal;
-using Web.Api.Core.Accounts;
+using Web.Api.IntegrationTests.Accounts;
 using Web.Api.Core.Auth;
 using Web.Api.Core.Configuration;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using Web.Api.IntegrationTests.Services;
+using Web.Api.IntegrationTests.Grpc;
 
 namespace Web.Api.IntegrationTests
 {
@@ -39,11 +40,11 @@ namespace Web.Api.IntegrationTests
                 var serviceProvider = new ServiceCollection()
                     .AddEntityFrameworkInMemoryDatabase().AddLogging()
                     .BuildServiceProvider();
-                services.AddGrpcClient<Accounts.Accounts.AccountsClient>(o => { o.Address = new Uri("http://localhost");})
+                services.AddGrpcClient<AccountsGrpcClient>(o => { o.Address = new Uri("http://localhost");})
                     .EnableCallContextPropagation();
                     //.AddInterceptor(() => new LoggingInterceptor());
                     //.AddHttpMessageHandler(() => ClientTestHelpers.CreateTestMessageHandler(new HelloReply()));
-                services.AddGrpcClient<Auth.Auth.AuthClient>(o => { o.Address = new Uri("http://localhost");})
+                services.AddGrpcClient<AuthClient>(o => { o.Address = new Uri("http://localhost");})
                     .EnableCallContextPropagation();
                     //.AddInterceptor(() => new LoggingInterceptor());
 
@@ -67,10 +68,10 @@ namespace Web.Api.IntegrationTests
                 services.AddDistributedMemoryCache();
                 services.AddOptions();
                 services.Configure<GrpcConfig>(config.GetSection(nameof(GrpcConfig)));
-                services.AddTransient<IGrpcClient<Accounts.RegisterUserRequest, Accounts.RegisterUserResponse>, AccountsClient<Accounts.RegisterUserRequest, Accounts.RegisterUserResponse>>();
-                services.AddTransient<IGrpcClient<Accounts.ChangePasswordRequest, Grpc.Response>, AccountsClient<Accounts.ChangePasswordRequest, Grpc.Response>>();
-                services.AddTransient<IGrpcClient<Accounts.ResetPasswordRequest, Grpc.Response>, AccountsClient<Accounts.ResetPasswordRequest, Grpc.Response>>();
-                services.AddTransient<IGrpcClient<Accounts.ResetPasswordRequest, Grpc.Response>, AccountsClient<Accounts.ResetPasswordRequest, Grpc.Response>>();
+                services.AddTransient<IAccountsGrpcClient<RegisterUserRequest, RegisterUserResponse>, AccountsGrpcClient<RegisterUserRequest, RegisterUserResponse>>();
+                services.AddTransient<IAccountsGrpcClient<ChangePasswordRequest, Response>, AccountsGrpcClient<ChangePasswordRequest, Response>>();
+                services.AddTransient<IAccountsGrpcClient<ResetPasswordRequest, Response>, AccountsGrpcClient<ResetPasswordRequest, Response>>();
+                services.AddTransient<IAccountsGrpcClient<ResetPasswordRequest, Response>, AccountsGrpcClient<ResetPasswordRequest, Response>>();
 
                 // Build the service provider.
                 ServiceProvider = services.BuildServiceProvider();

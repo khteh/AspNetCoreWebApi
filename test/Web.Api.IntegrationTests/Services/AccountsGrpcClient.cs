@@ -9,6 +9,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Web.Api.Core.Grpc;
 using Response = Web.Api.IntegrationTests.Grpc.Response;
+using static Web.Api.IntegrationTests.Accounts.Accounts;
+
 namespace Web.Api.IntegrationTests.Services
 {
     class AccountsGrpcClient<TMessage, TResponse> : IAccountsGrpcClient<TMessage, TResponse> where TResponse : class
@@ -26,24 +28,14 @@ namespace Web.Api.IntegrationTests.Services
                 });
             _client = new AccountsClient(channel);
         }
-    //rpc Register (RegisterUserRequest) returns (RegisterUserResponse);
-    //rpc ChangePassword (ChangePasswordRequest) returns (Web.Api.Core.Grpc.Response);
-    //rpc ResetPassword (ResetPasswordRequest) returns (Web.Api.Core.Grpc.Response);
-    //rpc Lock (StringInputParameter) returns (Web.Api.Core.Grpc.Response);
-    //rpc UnLock (StringInputParameter) returns (Web.Api.Core.Grpc.Response);
-    //rpc Delete (StringInputParameter) returns (DeleteUserResponse);
-    //rpc FindById (StringInputParameter) returns (FindUserResponse);
-    //rpc FindByUserName (StringInputParameter) returns (FindUserResponse);
-    //rpc FindByEmail (StringInputParameter) returns (FindUserResponse);
         public async Task<RegisterUserResponse> Register(RegisterUserRequest request) => await _client.RegisterAsync(request);
         public async Task<Response> ChangePassword(ChangePasswordRequest request) => await _client.ChangePasswordAsync(request);
         public async Task<Response> ResetPassword(ResetPasswordRequest request) => await _client.ResetPasswordAsync(request);
         public async Task<Response> Lock(StringInputParameter request) => await _client.LockAsync(request);
         public async Task<Response> UnLock(StringInputParameter request) => await _client.UnLockAsync(request);
-        public async Task<DeleteUserResponse> Delete(StringInputParameter request) => await _client.Delete(request);
-        public async Task<FindUserResponse> FindById (StringInputParameter request) => await _client.FindById(request);
-        public async Task<FindUserResponse> FindByUserName (StringInputParameter request) => await _client.FindByUserName(request);
-        public async Task<FindUserResponse> FindByEmail (StringInputParameter request) => await _client.FindByEmail(request);
-
+        public async Task<DeleteUserResponse> Delete(StringInputParameter request) => await _client.DeleteAsync(request);
+        public async Task<FindUserResponse> FindById (StringInputParameter request) => await _client.FindByIdAsync(request);
+        public async Task<FindUserResponse> FindByUserName (StringInputParameter request) => await _client.FindByUserNameAsync(request);
+        public async Task<FindUserResponse> FindByEmail (StringInputParameter request) => await _client.FindByEmailAsync(request);
     }
 }
