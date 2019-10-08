@@ -17,6 +17,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.0.0"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.0.0"/>
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.23.2"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Web.Api\Web.Api.csproj"/>

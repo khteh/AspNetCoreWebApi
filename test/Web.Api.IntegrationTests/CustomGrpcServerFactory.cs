@@ -18,6 +18,10 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using Web.Api.IntegrationTests.Services;
 using Web.Api.IntegrationTests.Grpc;
+using static Web.Api.IntegrationTests.Accounts.Accounts;
+using static Web.Api.IntegrationTests.Auth.Auth;
+using System.Net;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace Web.Api.IntegrationTests
 {
@@ -27,25 +31,32 @@ namespace Web.Api.IntegrationTests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "IntegrationTests");
-            var contentRootFull = Path.GetFullPath(Directory.GetCurrentDirectory());
+            string contentRootFull = Path.GetFullPath(Directory.GetCurrentDirectory());
             IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(contentRootFull)
                 .AddJsonFile("appsettings.json", false, true)
                 .AddJsonFile($"appsettings.Development.json", true, true)
-                .AddJsonFile($"appsettings.local.json", true, true)
                 .AddEnvironmentVariables().Build();
+            GrpcConfig grpcConfig = config.GetSection(nameof(GrpcConfig)).Get<GrpcConfig>();
+            builder.ConfigureKestrel(options =>
+            {
+                options.Listen(IPAddress.Any, 5000, listenOptions =>
+                {
+                    listenOptions.Protocols = HttpProtocols.Http2;
+                    listenOptions.UseHttps("/tmp/localhost.pfx", "4xLabs.com");
+                });
+            });
             builder.ConfigureServices(services =>
             {
                 // Create a new service provider.
                 var serviceProvider = new ServiceCollection()
                     .AddEntityFrameworkInMemoryDatabase().AddLogging()
                     .BuildServiceProvider();
-                services.AddGrpcClient<AccountsGrpcClient>(o => { o.Address = new Uri("http://localhost");})
-                    .EnableCallContextPropagation();
+                services.AddGrpcClient<AccountsClient>(new Uri(grpcConfig.Endpoint));
                     //.AddInterceptor(() => new LoggingInterceptor());
                     //.AddHttpMessageHandler(() => ClientTestHelpers.CreateTestMessageHandler(new HelloReply()));
-                services.AddGrpcClient<AuthClient>(o => { o.Address = new Uri("http://localhost");})
-                    .EnableCallContextPropagation();
+                services.AddGrpcClient<AuthClient>(new Uri(grpcConfig.Endpoint));
+                    //.EnableCallContextPropagation();
                     //.AddInterceptor(() => new LoggingInterceptor());
 
                 // Add a database context (AppDbContext) using an in-memory database for testing.
@@ -68,6 +79,7 @@ namespace Web.Api.IntegrationTests
                 services.AddDistributedMemoryCache();
                 services.AddOptions();
                 services.Configure<GrpcConfig>(config.GetSection(nameof(GrpcConfig)));
+                #if false
                 services.AddTransient<IAccountsGrpcClient<RegisterUserRequest, RegisterUserResponse>, AccountsGrpcClient<RegisterUserRequest, RegisterUserResponse>>();
                 services.AddTransient<IAccountsGrpcClient<ChangePasswordRequest, Response>, AccountsGrpcClient<ChangePasswordRequest, Response>>();
                 services.AddTransient<IAccountsGrpcClient<ResetPasswordRequest, Response>, AccountsGrpcClient<ResetPasswordRequest, Response>>();
@@ -85,7 +97,7 @@ namespace Web.Api.IntegrationTests
                 services.AddTransient<IAccountsGrpcClient<ExchangeRefreshTokenResponse, ExchangeRefreshTokenRequest>, AccountsGrpcClient<ExchangeRefreshTokenResponse, ExchangeRefreshTokenRequest>>();
                 services.AddHttpsClient<IAccountsGrpcClient<LoginRequest, LoginResponse>, AccountsGrpcClient<LoginRequest, LoginResponse>>();
                 services.AddHttpsClient<IAccountsGrpcClient<ExchangeRefreshTokenResponse, ExchangeRefreshTokenRequest>, AccountsGrpcClient<ExchangeRefreshTokenResponse, ExchangeRefreshTokenRequest>>();
-
+                #endif
                 // Build the service provider.
                 ServiceProvider = services.BuildServiceProvider();
                 // Create a scope to obtain a reference to the database contexts
