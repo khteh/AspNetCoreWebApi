@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Threading;
 using Xunit;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Net.Http;
@@ -33,6 +34,7 @@ namespace Web.Api.IntegrationTests.SignalR
         [Fact]
         public async Task ReceiveMessageTest()
         {
+            AutoResetEvent messageReceivedEvent = new AutoResetEvent(false);
             string echo = string.Empty;
             string message = "Integration Testing in Microsoft AspNetCore SignalR";
             HubConnection connection = new HubConnectionBuilder()
@@ -42,16 +44,21 @@ namespace Web.Api.IntegrationTests.SignalR
                                 //o.Transports = HttpTransportType.WebSockets;
                                 //o.SkipNegotiation = true;
                             }).Build();
-            connection.On<string>("ReceiveMessage", i => echo = i);
+            connection.On<string>("ReceiveMessage", i => {
+                echo = i;
+                messageReceivedEvent.Set();
+            });
             await connection.StartAsync();
             Assert.Equal(HubConnectionState.Connected, connection.State);
             await connection.InvokeAsync("ReceiveMessage", message);
+            messageReceivedEvent.WaitOne();
             Assert.False(string.IsNullOrEmpty(echo));
             Assert.Equal(message, echo);
         }
         [Fact]
         public async Task ReceiveMessageFromUserTest()
         {
+            AutoResetEvent messageReceivedEvent = new AutoResetEvent(false);
             string user = string.Empty;
             string echo = string.Empty;
             string sender = "Mickey Mouse";
@@ -63,10 +70,15 @@ namespace Web.Api.IntegrationTests.SignalR
                                 //o.Transports = HttpTransportType.WebSockets;
                                 //o.SkipNegotiation = true;
                             }).Build();
-            connection.On<string, string>("ReceiveMessageFromUser", (u, i) => {user = u; echo = i;});
+            connection.On<string, string>("ReceiveMessageFromUser", (u, i) => {
+                user = u;
+                echo = i;
+                messageReceivedEvent.Set();
+            });
             await connection.StartAsync();
             Assert.Equal(HubConnectionState.Connected, connection.State);
             await connection.InvokeAsync("ReceiveMessageFromUser", sender, message);
+            messageReceivedEvent.WaitOne();
             Assert.False(string.IsNullOrEmpty(user));
             Assert.False(string.IsNullOrEmpty(echo));
             Assert.Equal(message, echo);
