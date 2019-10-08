@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout
       - run: dotnet restore
-      - run: dotnet build -c Release --version-suffix $CIRCLE_BUILD_NUM --no-restore /p:Version:3.0
+      - run: dotnet build -c Release --version-suffix $CIRCLE_BUILD_NUM --no-restore /p:Version=3.0
       - run: dotnet test -c Release test/Web.Api.Core.UnitTests/ --no-restore --no-build
       - run: dotnet test -c Release test/Web.Api.UnitTests/ --no-restore --no-build
       - run: dotnet test -c Release test/Web.Api.Infrastructure.UnitTests/ --no-restore --no-build
