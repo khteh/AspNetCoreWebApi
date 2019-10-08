@@ -1,5 +1,5 @@
 # AspNetCoreApiStarter
-An ASP.NET Core (v2.2) Web API project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.
+An ASP.NET Core 3.0 Web API and GRPC project to quickly bootstrap new projects. Includes Identity, JWT authentication w/ refresh tokens. The application is designed and layered based on Clean Architecture: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 
 # Database Setup
 - Uses MySQL.
@@ -20,6 +20,10 @@ The available APIs include:
 - POST `/api/accounts` - Creates a new user.
 - POST `/api/auth/login` - Authenticates a user.
 - POST `/api/auth/refreshtoken` - Refreshes expired access tokens.
+- POST `/api/accounts/changepassword` - Change password.
+- POST `/api/accounts/resetpassword` - Reset password.
+- GET `/api/accounts/lock/{id}` - Locks a user account id.
+- GET `/api/accounts/unlock/{id}` - Unlocks a user account id.
 - DELETE `/api/accounts/{username}` - Delete a user using username.
 - GET `/api/protected` - Protected controller for testing role-based authorization.
 
