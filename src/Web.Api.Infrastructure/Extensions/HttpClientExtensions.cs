@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using Grpc.Net.Client;
 using Polly;
 using Polly.Extensions.Http;
 
@@ -17,6 +18,12 @@ namespace Microsoft.Extensions.DependencyInjection
             }).AddPolicyHandler(GetRetryPolicy());
         public static IHttpClientBuilder AddHttpsClient<TClient>(this IServiceCollection services) where TClient : class 
             => services.AddHttpClient<TClient>().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+                ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
+            }).AddPolicyHandler(GetRetryPolicy());
+        public static IHttpClientBuilder AddGrpcClient<TClient>(this IServiceCollection services, Uri uri) where TClient : Grpc.Core.ClientBase 
+            => services.AddGrpcClient<TClient>(o => {o.Address = uri;}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {
                 ClientCertificateOptions = ClientCertificateOption.Manual,
                 ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
