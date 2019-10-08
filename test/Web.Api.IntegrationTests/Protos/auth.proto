@@ -1,0 +1,36 @@
+syntax = "proto3";
+option csharp_namespace = "Web.Api.IntegrationTests.Auth";
+package Web.Api.IntegrationTests.Auth;
+import "Protos/response.proto";
+import "Protos/accessToken.proto";
+service Auth {
+    rpc Login(LoginRequest) returns (LoginResponse);
+    rpc RefreshToken(ExchangeRefreshTokenRequest) returns (ExchangeRefreshTokenResponse);
+}
+message LoginRequest {
+    string userName = 1;
+    string password = 2;
+    string previousSessionId = 3;
+    string sessionId = 4;
+    string userAgent = 5;
+    string ipAddress = 6;
+    bool rememberMe = 7;
+    bool isMobile = 8;
+    bool isSys = 9;
+    bool lockOutOnFailure = 10;
+    repeated string roles = 11;
+}
+message LoginResponse {
+    Web.Api.IntegrationTests.Grpc.AccessToken AccessToken = 1;
+    string RefreshToken = 2;
+    Web.Api.IntegrationTests.Grpc.Response response = 3;
+}
+message ExchangeRefreshTokenRequest {
+    string accessToken = 1;
+    string refreshToken = 2;
+}
+message ExchangeRefreshTokenResponse {
+    Web.Api.IntegrationTests.Grpc.AccessToken AccessToken = 1;
+    string refreshToken = 2;
+    Web.Api.IntegrationTests.Grpc.Response response = 3;
+}

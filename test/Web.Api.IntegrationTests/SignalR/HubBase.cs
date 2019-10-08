@@ -30,7 +30,7 @@ using Web.Api;
 using Web.Api.Hubs;
 using Microsoft.AspNetCore.Http.Connections;
 
-namespace Biz4x.Frontend.Web.Integration.Test.SignalR
+namespace Web.Api.IntegrationTests.SignalR
 {
     public abstract class HubBase<THub> : WebApplicationFactory<Startup> where THub : Hub
     {
@@ -38,12 +38,12 @@ namespace Biz4x.Frontend.Web.Integration.Test.SignalR
         protected HttpClient HttpClient() => CreateClient();
         public HubBase(string url)
         {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "IntegrationTests");
             var contentRootFull = Path.GetFullPath(Directory.GetCurrentDirectory());
             IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(contentRootFull)
                 .AddJsonFile("appsettings.json", false, true)
                 .AddJsonFile($"appsettings.Development.json", true, true)
-                .AddJsonFile($"appsettings.local.json", true, true)
                 .AddEnvironmentVariables().Build();
             IConfigurationSection jwtAppSettingOptions = config.GetSection(nameof(JwtIssuerOptions));
             var authSettings = config.GetSection(nameof(AuthSettings));
@@ -58,7 +58,7 @@ namespace Biz4x.Frontend.Web.Integration.Test.SignalR
                             logging.AddSerilog(dispose: true);
                         })
                         .ConfigureServices(services => {
-                            services.AddAutoMapper(typeof(DataProfile));
+                            services.AddAutoMapper(typeof(IdentityProfile));
                             services.AddSingleton(UrlEncoder.Default);
                             services.AddSignalR();
                             // Configure JwtIssuerOptions
@@ -129,10 +129,12 @@ namespace Biz4x.Frontend.Web.Integration.Test.SignalR
                         })
                             //.Configure(app => app.UseSignalR(configure => configure.MapHub<BoardRateHub>("/booking", options => options.Transports = HttpTransportType.WebSockets)));
                         .Configure(app => {
+                            app.UseRouting();
                             app.UseWebSockets();
                             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
+                            app.UseAuthorization();
                             //app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets));
-                            app.UseSignalR(configure => configure.MapHub<THub>(url));
+                            app.UseEndpoints(endpoints  => endpoints.MapHub<THub>(url));
                         });
             ConfigureWebHost(webHostBuilder);
             TestServer = new TestServer(webHostBuilder);
@@ -147,15 +149,15 @@ namespace Biz4x.Frontend.Web.Integration.Test.SignalR
                     .BuildServiceProvider();
 
                 // Add a database context (AppDbContext) using an in-memory database for testing.
-                services.AddDbContext<AppDbContext>(options =>
+                services.AddDbContextPool<AppDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryAppDb");
+                    options.UseInMemoryDatabase("SignalRInMemoryAppDb");
                     options.UseInternalServiceProvider(serviceProvider);
                 });
 
-                services.AddDbContext<AppIdentityDbContext>(options =>
+                services.AddDbContextPool<AppIdentityDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryIdentityDb");
+                    options.UseInMemoryDatabase("SignalRInMemoryIdentityDb");
                     options.UseInternalServiceProvider(serviceProvider);
                 });
 
@@ -169,7 +171,6 @@ namespace Biz4x.Frontend.Web.Integration.Test.SignalR
                     var scopedServices = scope.ServiceProvider;
                     var appDb = scopedServices.GetRequiredService<AppDbContext>();
                     var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
-
                     var logger = scopedServices.GetRequiredService<ILogger<HubBase<THub>>>();
 
                     // Ensure the database is created.

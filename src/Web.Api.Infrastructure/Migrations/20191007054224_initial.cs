@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Web.Api.Infrastructure.Migrations
@@ -78,7 +79,7 @@ namespace Web.Api.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(maxLength: 85, nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     RoleId = table.Column<string>(maxLength: 85, nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -99,7 +100,7 @@ namespace Web.Api.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(maxLength: 85, nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<string>(maxLength: 85, nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)

@@ -1,0 +1,13 @@
+syntax = "proto3";
+option csharp_namespace = "Web.Api.Core.Grpc";
+package Web.Api.Core.Grpc;
+import "Protos/refreshToken.proto";
+message User {
+    int32 id = 1;
+    string firstName = 2;
+    string lastName = 3;
+    string identityId = 4;
+    string userName = 5;
+    string email = 6;
+    repeated Web.Api.Core.Grpc.RefreshToken refreshTokens = 7;
+}

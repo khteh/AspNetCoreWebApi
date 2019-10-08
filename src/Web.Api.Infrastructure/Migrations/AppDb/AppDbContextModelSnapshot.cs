@@ -14,24 +14,32 @@ namespace Web.Api.Infrastructure.Migrations.AppDb
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
+                .HasAnnotation("ProductVersion", "3.0.0")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Web.Api.Core.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("Created");
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<DateTimeOffset>("Expires");
+                    b.Property<DateTimeOffset>("Expires")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<DateTimeOffset>("Modified");
+                    b.Property<DateTimeOffset>("Modified")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<string>("RemoteIpAddress");
+                    b.Property<string>("RemoteIpAddress")
+                        .HasColumnType("longtext");
 
-                    b.Property<string>("Token");
+                    b.Property<string>("Token")
+                        .HasColumnType("longtext");
 
-                    b.Property<int>("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -43,19 +51,26 @@ namespace Web.Api.Infrastructure.Migrations.AppDb
             modelBuilder.Entity("Web.Api.Core.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("Created");
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<string>("FirstName");
+                    b.Property<string>("FirstName")
+                        .HasColumnType("longtext");
 
-                    b.Property<string>("IdentityId");
+                    b.Property<string>("IdentityId")
+                        .HasColumnType("longtext");
 
-                    b.Property<string>("LastName");
+                    b.Property<string>("LastName")
+                        .HasColumnType("longtext");
 
-                    b.Property<DateTimeOffset>("Modified");
+                    b.Property<DateTimeOffset>("Modified")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<string>("UserName");
+                    b.Property<string>("UserName")
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -64,10 +79,11 @@ namespace Web.Api.Infrastructure.Migrations.AppDb
 
             modelBuilder.Entity("Web.Api.Core.Domain.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("Web.Api.Core.Domain.Entities.User")
+                    b.HasOne("Web.Api.Core.Domain.Entities.User", null)
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

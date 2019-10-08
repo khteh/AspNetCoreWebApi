@@ -16,6 +16,7 @@ namespace Web.Api.IntegrationTests
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "IntegrationTests");
             builder.ConfigureServices(services =>
             {
                 // Create a new service provider.
@@ -24,13 +25,13 @@ namespace Web.Api.IntegrationTests
                     .BuildServiceProvider();
 
                 // Add a database context (AppDbContext) using an in-memory database for testing.
-                services.AddDbContext<AppDbContext>(options =>
+                services.AddDbContextPool<AppDbContext>(options =>
                 {
                     options.UseInMemoryDatabase("InMemoryAppDb");
                     options.UseInternalServiceProvider(serviceProvider);
                 });
 
-                services.AddDbContext<AppIdentityDbContext>(options =>
+                services.AddDbContextPool<AppIdentityDbContext>(options =>
                 {
                     options.UseInMemoryDatabase("InMemoryIdentityDb");
                     options.UseInternalServiceProvider(serviceProvider);

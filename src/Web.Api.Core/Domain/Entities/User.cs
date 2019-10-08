@@ -5,6 +5,7 @@ using Web.Api.Core.Shared;
 
 namespace Web.Api.Core.Domain.Entities
 {
+    [Serializable]
     public class User : BaseEntity
     {
         public string FirstName { get; private set; } // EF migrations require at least private setter - won't work on auto-property

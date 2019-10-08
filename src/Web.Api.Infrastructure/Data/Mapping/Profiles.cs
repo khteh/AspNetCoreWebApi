@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Infrastructure.Identity;
-
+using Web.Api.Core.DTO;
 namespace Web.Api.Infrastructure.Data.Mapping
 {
-    public class DataProfile : Profile
+    public class IdentityProfile : Profile
     {
-        public DataProfile()
+        public IdentityProfile()
         {
             CreateMap<User, AppUser>().ConstructUsing(u => new AppUser(u.UserName, u.Email, u.FirstName, u.LastName))
                                         .ForMember(au => au.Id, opt => opt.Ignore())

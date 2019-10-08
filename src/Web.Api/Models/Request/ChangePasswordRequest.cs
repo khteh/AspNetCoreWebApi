@@ -7,6 +7,7 @@ namespace Web.Api.Models.Request
         public string Id { get; set; }
         public string Password { get; set; }
         public string NewPassword { get; set; }
+        public ChangePasswordRequest() {}
         public ChangePasswordRequest(string id, string oldPassword, string newPassword)
         {
             Id = id;

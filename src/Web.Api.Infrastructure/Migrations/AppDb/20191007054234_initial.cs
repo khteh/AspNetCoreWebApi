@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Web.Api.Infrastructure.Migrations.AppDb
@@ -12,7 +13,7 @@ namespace Web.Api.Infrastructure.Migrations.AppDb
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Created = table.Column<DateTimeOffset>(nullable: false),
                     Modified = table.Column<DateTimeOffset>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
@@ -30,7 +31,7 @@ namespace Web.Api.Infrastructure.Migrations.AppDb
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Created = table.Column<DateTimeOffset>(nullable: false),
                     Modified = table.Column<DateTimeOffset>(nullable: false),
                     Token = table.Column<string>(nullable: true),
