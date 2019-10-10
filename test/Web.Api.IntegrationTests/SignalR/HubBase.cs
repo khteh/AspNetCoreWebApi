@@ -133,8 +133,7 @@ namespace Web.Api.IntegrationTests.SignalR
                             app.UseWebSockets();
                             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
                             app.UseAuthorization();
-                            //app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets));
-                            app.UseEndpoints(endpoints  => endpoints.MapHub<THub>(url));
+                            app.UseEndpoints(endpoints => endpoints.MapHub<THub>(url));//, options => options.Transports = HttpTransportType.WebSockets));
                         });
             ConfigureWebHost(webHostBuilder);
             TestServer = new TestServer(webHostBuilder);

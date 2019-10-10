@@ -42,7 +42,7 @@ namespace Web.Api.IntegrationTests.SignalR
                                 o.HttpMessageHandlerFactory = _ =>  _testServer.CreateHandler();
                                 o.AccessTokenProvider = async () => await AccessTokenProvider(); 
                                 //o.Transports = HttpTransportType.WebSockets;
-                                //o.SkipNegotiation = true;
+                                //o.SkipNegotiation = false;
                             }).Build();
             connection.On<string>("ReceiveMessage", i => {
                 echo = i;
@@ -68,7 +68,7 @@ namespace Web.Api.IntegrationTests.SignalR
                                 o.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
                                 o.AccessTokenProvider = async () => await AccessTokenProvider(); 
                                 //o.Transports = HttpTransportType.WebSockets;
-                                //o.SkipNegotiation = true;
+                                //o.SkipNegotiation = false;
                             }).Build();
             connection.On<string, string>("ReceiveMessageFromUser", (u, i) => {
                 user = u;

@@ -41,6 +41,7 @@ using Newtonsoft.Json;
 using Web.Api.Models.Logging;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Net.WebSockets;
+using Web.Api.Serialization;
 
 namespace Web.Api
 {
@@ -171,7 +172,10 @@ namespace Web.Api
             });
             identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
             identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
-            services.AddControllersWithViews().SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+            services.AddControllersWithViews()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
+                .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter()));
             services.AddAutoMapper(new [] {typeof(IdentityProfile), typeof(GrpcProfile)});
 
             // Register the Swagger generator, defining 1 or more Swagger documents
