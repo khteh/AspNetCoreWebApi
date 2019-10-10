@@ -339,14 +339,6 @@ namespace Web.Api
                             }
                         });
                 });
-            app.UseHealthChecks($"/health/live", new HealthCheckOptions()
-            {
-                Predicate = check => check.Name == "Liveness"
-            })
-            .UseHealthChecks($"/health/ready", new HealthCheckOptions()
-            {
-                Predicate = check => check.Name == "Readiness",
-            });
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
