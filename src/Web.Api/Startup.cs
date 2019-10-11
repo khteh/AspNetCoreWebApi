@@ -359,10 +359,7 @@ namespace Web.Api
                 {
                     endpoints.MapControllers();//.RequireAuthorization(); // attribute-routed controllers
                     //endpoints.MapDefaultControllerRoute().RequireAuthorization(); //conventional route for controllers.
-                    if (_isIntegrationTests)
-                        endpoints.MapHub<ChatHub>("/chatHub");
-                    else
-                        endpoints.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets);
+                    endpoints.MapHub<ChatHub>("/chatHub", options => { if (!_isIntegrationTests) options.Transports =  HttpTransportType.WebSockets;});
                     //endpoints.MapGrpcService<GreeterService>("/greet");
                     endpoints.MapGrpcService<AccountsService>();
                     endpoints.MapGrpcService<AuthService>();
