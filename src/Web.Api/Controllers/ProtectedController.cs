@@ -9,7 +9,7 @@ namespace Web.Api.Controllers
     public class ProtectedController : ControllerBase
     {
         // GET api/protected/home
-        [HttpGet]
+        [HttpGet("home")]
         public IActionResult Home()
         {
             return new OkObjectResult(new { result = true });
