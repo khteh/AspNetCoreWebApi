@@ -38,7 +38,7 @@ namespace Web.Api.IntegrationTests.SignalR
             string echo = string.Empty;
             string message = "Integration Testing in Microsoft AspNetCore SignalR";
             HubConnection connection = new HubConnectionBuilder()
-                            .WithUrl("http://localhost/chatHub", o => {
+                            .WithUrl("https://localhost/chatHub", o => {
                                 o.HttpMessageHandlerFactory = _ =>  _testServer.CreateHandler();
                                 o.AccessTokenProvider = async () => await AccessTokenProvider(); 
                                 //o.Transports = HttpTransportType.WebSockets;
@@ -64,7 +64,7 @@ namespace Web.Api.IntegrationTests.SignalR
             string sender = "Mickey Mouse";
             string message = "Integration Testing in Microsoft AspNetCore SignalR";
             HubConnection connection = new HubConnectionBuilder()
-                            .WithUrl("http://localhost/chatHub", o => {
+                            .WithUrl("https://localhost/chatHub", o => {
                                 o.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
                                 o.AccessTokenProvider = async () => await AccessTokenProvider(); 
                                 //o.Transports = HttpTransportType.WebSockets;
