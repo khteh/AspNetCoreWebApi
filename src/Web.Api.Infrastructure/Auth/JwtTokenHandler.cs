@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Web.Api.Core.Interfaces.Services;
+using Web.Api.Infrastructure.Extensions;
 using Web.Api.Infrastructure.Interfaces;
 
 namespace Web.Api.Infrastructure.Auth
@@ -31,7 +32,7 @@ namespace Web.Api.Infrastructure.Auth
                 return principal;
             } catch (Exception e)
             {
-                _logger.LogError($"Token validation failed: {e.Message}");
+                _logger.LogError($"Token validation failed: {e.Message} {e.GetInnerMessage()} {e.StackTrace}");
                 return null;
             }
         }

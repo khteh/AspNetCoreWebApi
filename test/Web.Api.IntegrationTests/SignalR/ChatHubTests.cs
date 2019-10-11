@@ -13,13 +13,13 @@ using Microsoft.AspNetCore.Http.Connections;
 
 namespace Web.Api.IntegrationTests.SignalR
 {
-    public class ChatHubTests : HubBase<ChatHub>
+    public class ChatHubTests : IClassFixture<CustomWebApplicationFactory<Startup>>
     {
         private readonly TestServer _testServer;
-        public ChatHubTests() : base("/chatHub") { _testServer = TestServer; }
+        public ChatHubTests(CustomWebApplicationFactory<Startup> factory) => _testServer = factory.Server;
         private async Task<string> AccessTokenProvider()
         {
-            HttpClient client = HttpClient();
+            HttpClient client = _testServer.CreateClient();
             Assert.NotNull(client);
             var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
