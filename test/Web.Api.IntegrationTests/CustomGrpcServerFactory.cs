@@ -11,18 +11,22 @@ using Web.Api.Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.TestHost;
 using Grpc.Net.ClientFactory;
 using Grpc.Net.ClientFactory.Internal;
-using Web.Api.IntegrationTests.Accounts;
+using Web.Api.Core.Accounts;
 using Web.Api.Core.Auth;
 using Web.Api.Core.Configuration;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using Web.Api.IntegrationTests.Services;
-using Web.Api.IntegrationTests.Grpc;
-using static Web.Api.IntegrationTests.Accounts.Accounts;
-using static Web.Api.IntegrationTests.Auth.Auth;
+using Web.Api.Core.Grpc;
+using static Web.Api.Core.Accounts.Accounts;
+using static Web.Api.Core.Auth.Auth;
 using System.Net;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Hosting;
+using System.Net.Http;
+using Grpc.Net.Client;
+using Polly;
+using Polly.Extensions.Http;
 
 namespace Web.Api.IntegrationTests
 {
@@ -51,10 +55,10 @@ namespace Web.Api.IntegrationTests
                                 var serviceProvider = new ServiceCollection()
                                     .AddEntityFrameworkInMemoryDatabase().AddLogging()
                                     .BuildServiceProvider();
-                                services.AddGrpcClient<AccountsClient>(new Uri(grpcConfig.Endpoint));
+                                AddGrpcClient<AccountsClient>(services, new Uri(grpcConfig.Endpoint));
                                     //.AddInterceptor(() => new LoggingInterceptor());
                                     //.AddHttpMessageHandler(() => ClientTestHelpers.CreateTestMessageHandler(new HelloReply()));
-                                services.AddGrpcClient<AuthClient>(new Uri(grpcConfig.Endpoint));
+                                AddGrpcClient<AuthClient>(services, new Uri(grpcConfig.Endpoint));
                                     //.EnableCallContextPropagation();
                                     //.AddInterceptor(() => new LoggingInterceptor());
 
@@ -126,5 +130,17 @@ namespace Web.Api.IntegrationTests
                             });
                     });
         }
+        public IHttpClientBuilder AddGrpcClient<TClient>(IServiceCollection services, Uri uri) where TClient : global::Grpc.Core.ClientBase
+        {
+            //HttpMessageHandler handler = Server.CreateHandler();
+            return services.AddGrpcClient<TClient>(o => {o.Address = uri;})
+                .ConfigurePrimaryHttpMessageHandler(() => Server.CreateHandler())
+                .AddPolicyHandler(GetRetryPolicy());
+        }
+        private IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
+            HttpPolicyExtensions.HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) + TimeSpan.FromMilliseconds(new Random().Next(0, 100)));
+
     }
 }

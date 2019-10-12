@@ -12,6 +12,8 @@ using Web.Api.Presenters.Grpc;
 using Web.Api.Core.Accounts;
 using Web.Api.Core.Auth;
 using Web.Api.Infrastructure.Auth;
+using System;
+
 namespace Web.Api.Services
 {
     public class AuthService : Auth.AuthBase

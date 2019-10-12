@@ -12,10 +12,9 @@ namespace Web.Api.Presenters.Grpc
             CreateMap<Error, Web.Api.Core.Grpc.Error>().ConstructUsing(i => new Web.Api.Core.Grpc.Error() {Code = i.Code, Description = i.Description});
             CreateMap<RefreshToken, Web.Api.Core.Grpc.RefreshToken>().ConstructUsing(i => new Web.Api.Core.Grpc.RefreshToken() {
                 Token = i.Token, 
-                Expires = Timestamp.FromDateTimeOffset(i.Expires),
                 UserId = i.UserId, 
                 RemoteIpAddress = i.RemoteIpAddress
-            });
+            }).ForMember(i => i.Expires, o => o.MapFrom(src => Timestamp.FromDateTimeOffset(src.Expires)));
             CreateMap<User, Web.Api.Core.Grpc.User>()
                 .ForMember(i => i.Id, o => o.MapFrom(src => src.Id))
                 .ForMember(i => i.IdentityId, o => o.MapFrom(src => !string.IsNullOrEmpty(src.IdentityId) ? src.IdentityId : string.Empty))

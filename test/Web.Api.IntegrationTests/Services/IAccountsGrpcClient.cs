@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Web.Api.IntegrationTests.Accounts;
-using Web.Api.IntegrationTests.Grpc;
+using Web.Api.Core.Accounts;
+using Web.Api.Core.Grpc;
 namespace Web.Api.IntegrationTests.Services
 {
     interface IAccountsGrpcClient<TMessage, TResponse> where TResponse : class

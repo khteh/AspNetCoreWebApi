@@ -10,9 +10,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using System.Security.Cryptography.X509Certificates;
-using Web.Api.IntegrationTests.Auth;
+using Web.Api.Core.Auth;
 using Grpc.Net.Client;
-using static Web.Api.IntegrationTests.Auth.Auth;
+using static Web.Api.Core.Auth.Auth;
 
 namespace Web.Api.IntegrationTests.Services
 {
@@ -27,26 +27,26 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(_serviceProvider);
         }
 
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CanLoginWithValidCredentials()
         {
             AuthClient client = _serviceProvider.GetRequiredService<AuthClient>();
             Assert.NotNull(client);
             LoginResponse response = await client.LoginAsync(new LoginRequest() {
                 UserName = "mickeymouse",
-                Password = "4xLabs.com"
+                Password = "P@$$w0rd"
             });
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
-            Assert.Null(response.Response.Errors);
+            Assert.Empty(response.Response.Errors);
             Assert.NotNull(response.AccessToken);
             Assert.NotNull(response.AccessToken.Token);
             Assert.False(string.IsNullOrEmpty(response.RefreshToken));
             Assert.Equal(7200, response.AccessToken.ExpiresIn);
         }
 
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CantLoginWithInvalidCredentials()
         {
             AuthClient client = _serviceProvider.GetRequiredService<AuthClient>();
@@ -58,7 +58,6 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.False(response.Response.Success);
-            Assert.NotNull(response.Response.Errors);
             Assert.Single(response.Response.Errors);
             Assert.Null(response.AccessToken);
             Assert.True(string.IsNullOrEmpty(response.RefreshToken));
@@ -66,19 +65,19 @@ namespace Web.Api.IntegrationTests.Services
             Assert.Equal("Invalid username or password!", response.Response.Errors.First().Description);
         }
 
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CanExchangeValidRefreshToken()
         {
             AuthClient client = _serviceProvider.GetRequiredService<AuthClient>();
             Assert.NotNull(client);
             LoginResponse response = await client.LoginAsync(new LoginRequest() {
                 UserName = "mickeymouse",
-                Password = "4xLabs.com"
+                Password = "P@$$w0rd"
             });
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
-            Assert.Null(response.Response.Errors);
+            Assert.Empty(response.Response.Errors);
             Assert.NotNull(response.AccessToken);
             Assert.NotNull(response.AccessToken.Token);
             Assert.False(string.IsNullOrEmpty(response.RefreshToken));
@@ -91,14 +90,14 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(response1);
             Assert.NotNull(response1.Response);
             Assert.True(response1.Response.Success);
-            Assert.Null(response1.Response.Errors);
+            Assert.Empty(response1.Response.Errors);
             Assert.NotNull(response1.AccessToken);
             Assert.NotNull(response1.AccessToken.Token);
             Assert.False(string.IsNullOrEmpty(response1.RefreshToken));
             Assert.Equal(7200, response1.AccessToken.ExpiresIn);
         }
 
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CantExchangeInvalidRefreshToken()
         {
             AuthClient client = _serviceProvider.GetRequiredService<AuthClient>();
@@ -110,7 +109,6 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.False(response.Response.Success);
-            Assert.NotNull(response.Response.Errors);
             Assert.Single(response.Response.Errors);
             Assert.Null(response.AccessToken);
             Assert.True(string.IsNullOrEmpty(response.RefreshToken));

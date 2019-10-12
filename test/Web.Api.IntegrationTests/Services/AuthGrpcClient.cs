@@ -1,12 +1,14 @@
 using System;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
-using Web.Api.Core.Configuration;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
 using System.Threading.Tasks;
-using static Web.Api.IntegrationTests.Auth.Auth;
-using Web.Api.IntegrationTests.Auth;
+using Web.Api.Core.Configuration;
+using Web.Api.Core.Auth;
+using static Web.Api.Core.Auth.Auth;
+//using static Web.Api.Core.Auth.Auth;
+//using Web.Api.Core.Auth;
 
 namespace Web.Api.IntegrationTests.Services
 {

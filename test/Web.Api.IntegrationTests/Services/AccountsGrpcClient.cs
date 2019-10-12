@@ -2,14 +2,12 @@ using System;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 using Web.Api.Core.Configuration;
-using Web.Api.IntegrationTests.Accounts;
-using Web.Api.IntegrationTests.Grpc;
+using Web.Api.Core.Accounts;
+using Web.Api.Core.Grpc;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Web.Api.Core.Grpc;
-using Response = Web.Api.IntegrationTests.Grpc.Response;
-using static Web.Api.IntegrationTests.Accounts.Accounts;
+using static Web.Api.Core.Accounts.Accounts;
 
 namespace Web.Api.IntegrationTests.Services
 {

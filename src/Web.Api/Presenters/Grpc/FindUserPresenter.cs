@@ -16,7 +16,7 @@ namespace Web.Api.Presenters.Grpc
         public override void Handle(FindUserResponse response)
         {
             base.Handle(response);
-            Response = new Web.Api.Core.Accounts.FindUserResponse() { Response = base.BaseResponse };
+            Response = new Web.Api.Core.Accounts.FindUserResponse() { Response = BaseResponse };
             if (response.Id != null)
                 Response.Id = response.Id;
             if (response.User != null && !string.IsNullOrEmpty(response.User.IdentityId))

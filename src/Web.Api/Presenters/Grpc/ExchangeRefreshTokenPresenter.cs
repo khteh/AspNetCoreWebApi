@@ -14,7 +14,7 @@ namespace Web.Api.Presenters.Grpc
         public override void Handle(ExchangeRefreshTokenResponse response)
         {
             base.Handle(response);
-            Response = new Web.Api.Core.Auth.ExchangeRefreshTokenResponse() { Response = base.BaseResponse };
+            Response = new Web.Api.Core.Auth.ExchangeRefreshTokenResponse() { Response = BaseResponse };
             if (response.AccessToken != null)
                 Response.AccessToken = new Web.Api.Core.Grpc.AccessToken() {
                         Token = response.AccessToken.Token,

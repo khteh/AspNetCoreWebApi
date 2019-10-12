@@ -11,24 +11,24 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class OutputPortServices
     {
         public static IServiceCollection AddOutputPorts(this IServiceCollection service) =>
-            service.AddSingleton<IOutputPort<ExchangeRefreshTokenResponse>, ExchangeRefreshTokenPresenter>()
-                .AddSingleton<IOutputPort<LoginResponse>, LoginPresenter>()
-                .AddSingleton<ChangePasswordPresenter>()
-                .AddSingleton<Web.Api.Presenters.Grpc.ChangePasswordPresenter>()
-                .AddSingleton<RegisterUserPresenter>()
-                .AddSingleton<DeleteUserPresenter>()
-                .AddSingleton<Web.Api.Presenters.Grpc.DeleteUserPresenter>()
-                .AddSingleton<ExchangeRefreshTokenPresenter>()
-                .AddSingleton<Web.Api.Presenters.Grpc.ExchangeRefreshTokenPresenter>()
-                .AddSingleton<FindUserPresenter>()
-                .AddSingleton<Web.Api.Presenters.Grpc.FindUserPresenter>()
-                .AddSingleton<LockUserPresenter>()
-                .AddSingleton<Web.Api.Presenters.Grpc.LockUserPresenter>()
-                .AddSingleton<LoginPresenter>()
-                .AddSingleton<Web.Api.Presenters.Grpc.LoginPresenter>()
-                .AddSingleton<RegisterUserPresenter>()
-                .AddSingleton<Web.Api.Presenters.Grpc.RegisterUserPresenter>()
-                .AddSingleton<ResetPasswordPresenter>()
-                .AddSingleton<Web.Api.Presenters.Grpc.ResetPasswordPresenter>();
+            service.AddScoped<IOutputPort<ExchangeRefreshTokenResponse>, ExchangeRefreshTokenPresenter>()
+                .AddScoped<IOutputPort<LoginResponse>, LoginPresenter>()
+                .AddScoped<ChangePasswordPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.ChangePasswordPresenter>()
+                .AddScoped<RegisterUserPresenter>()
+                .AddScoped<DeleteUserPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.DeleteUserPresenter>()
+                .AddScoped<ExchangeRefreshTokenPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.ExchangeRefreshTokenPresenter>()
+                .AddScoped<FindUserPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.FindUserPresenter>()
+                .AddScoped<LockUserPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.LockUserPresenter>()
+                .AddScoped<LoginPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.LoginPresenter>()
+                .AddScoped<RegisterUserPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.RegisterUserPresenter>()
+                .AddScoped<ResetPasswordPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.ResetPasswordPresenter>();
     }
 }

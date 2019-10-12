@@ -48,7 +48,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 return new CreateUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
             } catch (Exception e) {
                 _logger.LogCritical($"{nameof(UserRepository)}.{nameof(Create)} Exception! {e.Message}");
-                return new CreateUserResponse(null, false, new List<Error>() { new Error(null, e.Message) });
+                return new CreateUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
             }
         }
         public async Task<DeleteUserResponse> Delete(string userName)
@@ -67,15 +67,15 @@ namespace Web.Api.Infrastructure.Data.Repositories
                         _appDbContext.Users.Remove(user);
                         await _appDbContext.SaveChangesAsync();
                     } else
-                        return new DeleteUserResponse(null, false, new List<Error>() { new Error(null, "Failed to remove user from app DB! This is result in inconsistency between application Users table and Identity framework!") });
+                        return new DeleteUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), "Failed to remove user from app DB! This is result in inconsistency between application Users table and Identity framework!") });
                     return new DeleteUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                 } else
-                    return new DeleteUserResponse(null, false, new List<Error>() { new Error(null, "Invalid user!") });
+                    return new DeleteUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid user!") });
             }
             catch (Exception e)
             {
                 _logger.LogCritical($"{nameof(UserRepository)}.{nameof(Delete)} Exception! {e.Message}");
-                return new DeleteUserResponse(null, false, new List<Error>() { new Error(null, e.Message) });
+                return new DeleteUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
             }
         }
         public async Task<User> FindUserByName(string userName) => await getUser(await _userManager.FindByNameAsync(userName));
@@ -179,7 +179,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
             try {
                 AppUser appUser = await _userManager.FindByIdAsync(id);
                 if (appUser == null)
-                    return new PasswordResponse(null, false, new List<Error>(){new Error(null, "User not found!")});
+                    return new PasswordResponse(null, false, new List<Error>(){new Error(HttpStatusCode.BadRequest.ToString(), "User not found!")});
                 IdentityResult identityResult = await _userManager.ChangePasswordAsync(appUser, oldPassword, newPassword);
                 if (identityResult.Succeeded)
                     return new PasswordResponse(appUser.Id, true, null);
@@ -279,7 +279,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
         private async Task<Core.DTO.GatewayResponses.Repositories.FindUserResponse> getFindUserResponse(AppUser appUser)
         {
             User user = await getUser(appUser);
-            return user == null ? new Core.DTO.GatewayResponses.Repositories.FindUserResponse(null, null, false, new List<Error>() { new Error(null, "User not found!") }) :
+            return user == null ? new Core.DTO.GatewayResponses.Repositories.FindUserResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "User not found!") }) :
                 new Core.DTO.GatewayResponses.Repositories.FindUserResponse(appUser.Id, user, true, null);
         }
     }

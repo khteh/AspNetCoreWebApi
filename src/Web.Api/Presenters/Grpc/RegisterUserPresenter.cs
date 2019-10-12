@@ -14,7 +14,7 @@ namespace Web.Api.Presenters.Grpc
         public override void Handle(UseCaseResponseMessage response)
         {
             base.Handle(response);
-            Response = new Web.Api.Core.Accounts.RegisterUserResponse() { Id = response.Id, Response = base.BaseResponse };
+            Response = new Web.Api.Core.Accounts.RegisterUserResponse() { Id = response.Id, Response = BaseResponse };
         }
     }
 }

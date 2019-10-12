@@ -10,14 +10,16 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using System.Security.Cryptography.X509Certificates;
-using Web.Api.IntegrationTests.Accounts;
-using Web.Api.IntegrationTests.Auth;
+using Web.Api.Core.Accounts;
+using Web.Api.Core.Auth;
 using Grpc.Net.Client;
-using static Web.Api.IntegrationTests.Accounts.Accounts;
-using static Web.Api.IntegrationTests.Auth.Auth;
+//using static Web.Api.Core.Accounts.Accounts;
+//using static Web.Api.IntegrationTests.Auth.Auth;
 using Microsoft.Extensions.Configuration;
 using Web.Api.Core.Configuration;
 using System.IO;
+using static Web.Api.Core.Accounts.Accounts;
+using static Web.Api.Core.Auth.Auth;
 
 namespace Web.Api.IntegrationTests.Services
 {
@@ -31,7 +33,7 @@ namespace Web.Api.IntegrationTests.Services
             _serviceProvider = factory.ServiceProvider;
         }
 
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CanRegisterUserWithValidAccountDetails()
         {
             //AccountsClient<Accounts.RegisterUserRequest> client = _serviceProvider.GetRequiredService<AccountsClient<Accounts.RegisterUserRequest>>();
@@ -43,7 +45,7 @@ namespace Web.Api.IntegrationTests.Services
                 LastName = "Doe",
                 Email = "jdoe@gmail.com",
                 UserName = "johndoe",
-                Password = "4xLabs.com1"
+                Password = "P@$$w0rd"
             });//.ResponseAsync.DefaultTimeout();
 
             // Assert
@@ -52,10 +54,10 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
-            Assert.Null(response.Response.Errors);
+            Assert.Empty(response.Response.Errors);
             Assert.False(string.IsNullOrEmpty(response.Id));
         }
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CanDeleteUserWithValidAccountDetails()
         {
             //Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
@@ -65,11 +67,11 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
-            Assert.Null(response.Response.Errors);
+            Assert.Empty(response.Response.Errors);
             Assert.False(string.IsNullOrEmpty(response.Id));
         }
 
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CantRegisterUserWithInvalidAccountDetails()
         {
             //Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
@@ -80,7 +82,7 @@ namespace Web.Api.IntegrationTests.Services
                 FirstName = "John",
                 LastName = "Doe",
                 Email = string.Empty,
-                UserName = "johndoe",
+                UserName = string.Empty,
                 Password = "4xLabs.com1"
             });//.ResponseAsync.DefaultTimeout();
 
@@ -90,13 +92,12 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.False(response.Response.Success);
-            Assert.NotNull(response.Response.Errors);
             Assert.Single(response.Response.Errors);
             Assert.True(string.IsNullOrEmpty(response.Id));
-            Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Response.Errors.First().Code);
-            Assert.Equal("'Email' is not a valid email address.", response.Response.Errors.First().Description);
+            Assert.Equal("InvalidUserName", response.Response.Errors.First().Code);
+            //Assert.Equal("User name '' is invalid, can only contain", response.Response.Errors.First().Description);
         }
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CantDeleteUserWithInvalidAccountDetails()
         {
             //Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
@@ -106,13 +107,12 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.False(response.Response.Success);
-            Assert.NotNull(response.Response.Errors);
             Assert.Single(response.Response.Errors);
             Assert.True(string.IsNullOrEmpty(response.Id));
             Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Response.Errors.First().Code);
             Assert.Equal("Invalid user!", response.Response.Errors.First().Description);
         }
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CanFindById()
         {
             //Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
@@ -122,11 +122,11 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
-            Assert.Null(response.Response.Errors);
+            Assert.Empty(response.Response.Errors);
             Assert.False(string.IsNullOrEmpty(response.Id));
             Assert.Equal("41532945-599e-4910-9599-0e7402017fbe", response.Id);
         }
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CanFindByUsername()
         {
             //Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
@@ -136,11 +136,11 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
-            Assert.Null(response.Response.Errors);
+            Assert.Empty(response.Response.Errors);
             Assert.False(string.IsNullOrEmpty(response.Id));
             Assert.Equal("41532945-599e-4910-9599-0e7402017fbe", response.Id);
         }
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CanFindByEmail()
         {
             //Accounts.Accounts.AccountsClient client = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
@@ -151,11 +151,11 @@ namespace Web.Api.IntegrationTests.Services
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
-            Assert.Null(response.Response.Errors);
+            Assert.Empty(response.Response.Errors);
             Assert.False(string.IsNullOrEmpty(response.Id));
             Assert.Equal("41532945-599e-4910-9599-0e7402017fbe", response.Id);
         }
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CanChangePasswordWithValidAccountDetails()
         {
             //Accounts.Accounts.AccountsClient accountsClient = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
@@ -168,50 +168,49 @@ namespace Web.Api.IntegrationTests.Services
             RegisterUserResponse response = await accountsClient.RegisterAsync(new RegisterUserRequest() {
                 FirstName = "FirstName",
                 LastName = "LastName",
-                Email = "user@gmail.com",
-                UserName = "user1",
-                Password = "4xLabs.com1"
+                Email = "hello@gmail.com",
+                UserName = "hello",
+                Password = "P@$$w0rd"
             });//.ResponseAsync.DefaultTimeout();
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
-            Assert.Null(response.Response.Errors);
+            Assert.Empty(response.Response.Errors);
             Assert.False(string.IsNullOrEmpty(response.Id));
 
             // Login
             LoginResponse loginResponse = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user1",
-                Password = "4xLabs.com1"
+                UserName = "hello",
+                Password = "P@$$w0rd"
             });
             Assert.NotNull(loginResponse);
             Assert.NotNull(loginResponse.Response);
             Assert.True(loginResponse.Response.Success);
-            Assert.Null(loginResponse.Response.Errors);
+            Assert.Empty(loginResponse.Response.Errors);
             Assert.NotNull(loginResponse.AccessToken);
             Assert.NotNull(loginResponse.AccessToken.Token);
             Assert.False(string.IsNullOrEmpty(loginResponse.RefreshToken));
             Assert.Equal(7200, loginResponse.AccessToken.ExpiresIn);
 
             // Change Password
-            Web.Api.IntegrationTests.Grpc.Response pwdResponse = await accountsClient.ChangePasswordAsync(new ChangePasswordRequest() {
+            Web.Api.Core.Grpc.Response pwdResponse = await accountsClient.ChangePasswordAsync(new ChangePasswordRequest() {
                 Id = response.Id,
-                Password = "4xLabs.com1",
-                NewPassword = "4xLabs.com2",
+                Password = "P@$$w0rd",
+                NewPassword = "P@$$w0rd1",
             });
             Assert.NotNull(pwdResponse);
             Assert.NotNull(pwdResponse);
             Assert.True(pwdResponse.Success);
-            Assert.Null(pwdResponse.Errors);
+            Assert.Empty(pwdResponse.Errors);
 
             // Should fail login with previous password
             LoginResponse loginResponse1 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user1",
-                Password = "4xLabs.com1"
+                UserName = "hello",
+                Password = "P@$$w0rd"
             });
             Assert.NotNull(loginResponse1);
             Assert.NotNull(loginResponse1.Response);
             Assert.False(loginResponse1.Response.Success);
-            Assert.NotNull(loginResponse1.Response.Errors);
             Assert.Single(loginResponse1.Response.Errors);
             Assert.Null(loginResponse1.AccessToken);
             Assert.True(string.IsNullOrEmpty(loginResponse1.RefreshToken));
@@ -220,19 +219,19 @@ namespace Web.Api.IntegrationTests.Services
 
             // Login
             LoginResponse loginResponse2 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user1",
-                Password = "4xLabs.com2"
+                UserName = "hello",
+                Password = "P@$$w0rd1"
             });
             Assert.NotNull(loginResponse2);
             Assert.NotNull(loginResponse2.Response);
             Assert.True(loginResponse2.Response.Success);
-            Assert.Null(loginResponse2.Response.Errors);
+            Assert.Empty(loginResponse2.Response.Errors);
             Assert.NotNull(loginResponse2.AccessToken);
             Assert.NotNull(loginResponse2.AccessToken.Token);
             Assert.False(string.IsNullOrEmpty(loginResponse2.RefreshToken));
             Assert.Equal(7200, loginResponse2.AccessToken.ExpiresIn);
         }
-        [Fact (Skip = "Pending investigation: https://github.com/aspnet/AspNetCore.Docs/issues/14905")]
+        [Fact]
         public async Task CanResetPasswordWithValidAccountDetails()
         {
             //Accounts.Accounts.AccountsClient accountsClient = _serviceProvider.GetRequiredService<Accounts.Accounts.AccountsClient>();
@@ -245,49 +244,48 @@ namespace Web.Api.IntegrationTests.Services
             RegisterUserResponse response = await accountsClient.RegisterAsync(new RegisterUserRequest() {
                 FirstName = "FirstName",
                 LastName = "LastName",
-                Email = "user@gmail.com",
-                UserName = "user1",
-                Password = "4xLabs.com1"
+                Email = "username@gmail.com",
+                UserName = "username",
+                Password = "P@$$w0rd"
             });//.ResponseAsync.DefaultTimeout();
             Assert.NotNull(response);
             Assert.NotNull(response.Response);
             Assert.True(response.Response.Success);
-            Assert.Null(response.Response.Errors);
+            Assert.Empty(response.Response.Errors);
             Assert.False(string.IsNullOrEmpty(response.Id));
 
             // Login
             LoginResponse loginResponse = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user2",
-                Password = "4xLabs.com1"
+                UserName = "username",
+                Password = "P@$$w0rd"
             });
             Assert.NotNull(loginResponse);
             Assert.NotNull(loginResponse.Response);
             Assert.True(loginResponse.Response.Success);
-            Assert.Null(loginResponse.Response.Errors);
+            Assert.Empty(loginResponse.Response.Errors);
             Assert.NotNull(loginResponse.AccessToken);
             Assert.NotNull(loginResponse.AccessToken.Token);
             Assert.False(string.IsNullOrEmpty(loginResponse.RefreshToken));
             Assert.Equal(7200, loginResponse.AccessToken.ExpiresIn);
 
             // Reset Password
-            Web.Api.IntegrationTests.Grpc.Response pwdResponse = await accountsClient.ResetPasswordAsync(new ResetPasswordRequest() {
+            Web.Api.Core.Grpc.Response pwdResponse = await accountsClient.ResetPasswordAsync(new ResetPasswordRequest() {
                 Id = response.Id,
-                NewPassword = "4xLabs.com1",
+                NewPassword = "P@$$w0rd1",
             });
             Assert.NotNull(pwdResponse);
             Assert.NotNull(pwdResponse);
             Assert.True(pwdResponse.Success);
-            Assert.Null(pwdResponse.Errors);
+            Assert.Empty(pwdResponse.Errors);
 
             // Should fail login with previous password
             LoginResponse loginResponse1 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user2",
-                Password = "4xLabs.com1"
+                UserName = "username",
+                Password = "P@$$w0rd"
             });
             Assert.NotNull(loginResponse1);
             Assert.NotNull(loginResponse1.Response);
             Assert.False(loginResponse1.Response.Success);
-            Assert.NotNull(loginResponse1.Response.Errors);
             Assert.Single(loginResponse1.Response.Errors);
             Assert.Null(loginResponse1.AccessToken);
             Assert.True(string.IsNullOrEmpty(loginResponse1.RefreshToken));
@@ -296,13 +294,13 @@ namespace Web.Api.IntegrationTests.Services
 
             // Login
             LoginResponse loginResponse2 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user2",
-                Password = "4xLabs.com2"
+                UserName = "username",
+                Password = "P@$$w0rd1"
             });
             Assert.NotNull(loginResponse2);
             Assert.NotNull(loginResponse2.Response);
             Assert.True(loginResponse2.Response.Success);
-            Assert.Null(loginResponse2.Response.Errors);
+            Assert.Empty(loginResponse2.Response.Errors);
             Assert.NotNull(loginResponse2.AccessToken);
             Assert.NotNull(loginResponse2.AccessToken.Token);
             Assert.False(string.IsNullOrEmpty(loginResponse2.RefreshToken));

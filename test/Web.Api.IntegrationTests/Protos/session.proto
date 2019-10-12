@@ -1,9 +1,9 @@
 syntax = "proto3";
-option csharp_namespace = "Web.Api.IntegrationTests.Session";
-package Web.Api.IntegrationTests.Session;
+option csharp_namespace = "Web.Api.Core.Session";
+package Web.Api.Core.Session;
 import "Protos/response.proto";
 service Session {
-    rpc SessionRemove(SessionRemoveRequest) returns (Web.Api.IntegrationTests.Grpc.Response);
+    rpc SessionRemove(SessionRemoveRequest) returns (Web.Api.Core.Grpc.Response);
     rpc SessionValidate(SessionValidateRequest) returns (SessionValidateResponse);
 }
 message SessionRemoveRequest {
@@ -18,5 +18,5 @@ message SessionValidateRequest {
 message SessionValidateResponse {
     bool isSys = 1;
     bool isValid = 2;
-    Web.Api.IntegrationTests.Grpc.Response response = 3;
+    Web.Api.Core.Grpc.Response response = 3;
 }

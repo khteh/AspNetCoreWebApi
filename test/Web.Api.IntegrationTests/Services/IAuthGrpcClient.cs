@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Web.Api.IntegrationTests.Auth;
+using Web.Api.Core.Auth;
 
 namespace Web.Api.IntegrationTests.Services
 {
