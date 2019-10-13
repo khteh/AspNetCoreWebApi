@@ -7,6 +7,7 @@ using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Presenters;
 using Xunit;
 using Web.Api.Core.Interfaces;
+using Web.Api.Models.Response;
 
 namespace Web.Api.UnitTests.Presenters
 {
@@ -50,7 +51,7 @@ namespace Web.Api.UnitTests.Presenters
             presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
             // assert
-            UseCaseResponseMessage response = Serialization.JsonSerializer.DeSerializeObject<UseCaseResponseMessage>(presenter.ContentResult.Content);
+            RegisterUserResponse response = Serialization.JsonSerializer.DeSerializeObject<RegisterUserResponse>(presenter.ContentResult.Content);
             Assert.Equal((int)HttpStatusCode.BadRequest, presenter.ContentResult.StatusCode);
             Assert.NotNull(response);
             Assert.NotNull(response.Errors);

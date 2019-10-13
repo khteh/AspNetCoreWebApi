@@ -83,7 +83,7 @@ namespace Web.Api.IntegrationTests.Services
                 LastName = "Doe",
                 Email = string.Empty,
                 UserName = string.Empty,
-                Password = "4xLabs.com1"
+                Password = "P@$$w0rd"
             });//.ResponseAsync.DefaultTimeout();
 
             // Assert
@@ -95,7 +95,7 @@ namespace Web.Api.IntegrationTests.Services
             Assert.Single(response.Response.Errors);
             Assert.True(string.IsNullOrEmpty(response.Id));
             Assert.Equal("InvalidUserName", response.Response.Errors.First().Code);
-            //Assert.Equal("User name '' is invalid, can only contain", response.Response.Errors.First().Description);
+            //Assert.Equal("'Email' is not a valid email address.", response.Response.Errors.First().Description);
         }
         [Fact]
         public async Task CantDeleteUserWithInvalidAccountDetails()
@@ -168,8 +168,8 @@ namespace Web.Api.IntegrationTests.Services
             RegisterUserResponse response = await accountsClient.RegisterAsync(new RegisterUserRequest() {
                 FirstName = "FirstName",
                 LastName = "LastName",
-                Email = "hello@gmail.com",
-                UserName = "hello",
+                Email = "user@gmail.com",
+                UserName = "user1",
                 Password = "P@$$w0rd"
             });//.ResponseAsync.DefaultTimeout();
             Assert.NotNull(response);
@@ -180,7 +180,7 @@ namespace Web.Api.IntegrationTests.Services
 
             // Login
             LoginResponse loginResponse = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "hello",
+                UserName = "user1",
                 Password = "P@$$w0rd"
             });
             Assert.NotNull(loginResponse);
@@ -205,7 +205,7 @@ namespace Web.Api.IntegrationTests.Services
 
             // Should fail login with previous password
             LoginResponse loginResponse1 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "hello",
+                UserName = "user1",
                 Password = "P@$$w0rd"
             });
             Assert.NotNull(loginResponse1);
@@ -219,7 +219,7 @@ namespace Web.Api.IntegrationTests.Services
 
             // Login
             LoginResponse loginResponse2 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "hello",
+                UserName = "user1",
                 Password = "P@$$w0rd1"
             });
             Assert.NotNull(loginResponse2);
@@ -244,8 +244,8 @@ namespace Web.Api.IntegrationTests.Services
             RegisterUserResponse response = await accountsClient.RegisterAsync(new RegisterUserRequest() {
                 FirstName = "FirstName",
                 LastName = "LastName",
-                Email = "username@gmail.com",
-                UserName = "username",
+                Email = "user1@gmail.com",
+                UserName = "user2",
                 Password = "P@$$w0rd"
             });//.ResponseAsync.DefaultTimeout();
             Assert.NotNull(response);
@@ -256,7 +256,7 @@ namespace Web.Api.IntegrationTests.Services
 
             // Login
             LoginResponse loginResponse = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "username",
+                UserName = "user2",
                 Password = "P@$$w0rd"
             });
             Assert.NotNull(loginResponse);
@@ -280,7 +280,7 @@ namespace Web.Api.IntegrationTests.Services
 
             // Should fail login with previous password
             LoginResponse loginResponse1 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "username",
+                UserName = "user2",
                 Password = "P@$$w0rd"
             });
             Assert.NotNull(loginResponse1);
@@ -294,7 +294,7 @@ namespace Web.Api.IntegrationTests.Services
 
             // Login
             LoginResponse loginResponse2 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "username",
+                UserName = "user2",
                 Password = "P@$$w0rd1"
             });
             Assert.NotNull(loginResponse2);

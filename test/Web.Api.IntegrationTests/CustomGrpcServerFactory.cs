@@ -82,25 +82,6 @@ namespace Web.Api.IntegrationTests
                                 services.AddDistributedMemoryCache();
                                 services.AddOptions();
                                 services.Configure<GrpcConfig>(config.GetSection(nameof(GrpcConfig)));
-                                #if false
-                                services.AddTransient<IAccountsGrpcClient<RegisterUserRequest, RegisterUserResponse>, AccountsGrpcClient<RegisterUserRequest, RegisterUserResponse>>();
-                                services.AddTransient<IAccountsGrpcClient<ChangePasswordRequest, Response>, AccountsGrpcClient<ChangePasswordRequest, Response>>();
-                                services.AddTransient<IAccountsGrpcClient<ResetPasswordRequest, Response>, AccountsGrpcClient<ResetPasswordRequest, Response>>();
-                                services.AddTransient<IAccountsGrpcClient<StringInputParameter, Response>, AccountsGrpcClient<StringInputParameter, Response>>();
-                                services.AddTransient<IAccountsGrpcClient<StringInputParameter, DeleteUserResponse>, AccountsGrpcClient<StringInputParameter, DeleteUserResponse>>();
-                                services.AddTransient<IAccountsGrpcClient<StringInputParameter, FindUserResponse>, AccountsGrpcClient<StringInputParameter, FindUserResponse>>();
-                                services.AddHttpsClient<IAccountsGrpcClient<RegisterUserRequest, RegisterUserResponse>, AccountsGrpcClient<RegisterUserRequest, RegisterUserResponse>>();
-                                services.AddHttpsClient<IAccountsGrpcClient<ChangePasswordRequest, Response>, AccountsGrpcClient<ChangePasswordRequest, Response>>();
-                                services.AddHttpsClient<IAccountsGrpcClient<ResetPasswordRequest, Response>, AccountsGrpcClient<ResetPasswordRequest, Response>>();
-                                services.AddHttpsClient<IAccountsGrpcClient<StringInputParameter, Response>, AccountsGrpcClient<StringInputParameter, Response>>();
-                                services.AddHttpsClient<IAccountsGrpcClient<StringInputParameter, DeleteUserResponse>, AccountsGrpcClient<StringInputParameter, DeleteUserResponse>>();
-                                services.AddHttpsClient<IAccountsGrpcClient<StringInputParameter, FindUserResponse>, AccountsGrpcClient<StringInputParameter, FindUserResponse>>();
-
-                                services.AddTransient<IAccountsGrpcClient<LoginRequest, LoginResponse>, AccountsGrpcClient<LoginRequest, LoginResponse>>();
-                                services.AddTransient<IAccountsGrpcClient<ExchangeRefreshTokenResponse, ExchangeRefreshTokenRequest>, AccountsGrpcClient<ExchangeRefreshTokenResponse, ExchangeRefreshTokenRequest>>();
-                                services.AddHttpsClient<IAccountsGrpcClient<LoginRequest, LoginResponse>, AccountsGrpcClient<LoginRequest, LoginResponse>>();
-                                services.AddHttpsClient<IAccountsGrpcClient<ExchangeRefreshTokenResponse, ExchangeRefreshTokenRequest>, AccountsGrpcClient<ExchangeRefreshTokenResponse, ExchangeRefreshTokenRequest>>();
-                                #endif
                                 // Build the service provider.
                                 ServiceProvider = services.BuildServiceProvider();
                                 // Create a scope to obtain a reference to the database contexts

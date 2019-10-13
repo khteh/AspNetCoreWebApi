@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Web.Api.Core.DTO.UseCaseRequests;
+using Web.Api.Models.Response;
+using Web.Api.Serialization;
 using Xunit;
 
 namespace Web.Api.IntegrationTests.Controllers
@@ -40,12 +42,21 @@ namespace Web.Api.IntegrationTests.Controllers
         }
 
         [Fact]
-        public async Task CantRegisterUserWithInvalidAccountDetails()
+        public async Task CantRegisterUserWithInvalidAccountDetailsAndFailsFluentValidation()
         {
-            var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonConvert.SerializeObject(new Models.Request.RegisterUserRequest("John", "Doe", "", "johndoe", "Pa$$word1")), Encoding.UTF8, "application/json"));
-            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
-            Assert.Contains("'Email' is not a valid email address.", stringResponse);
+            var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonConvert.SerializeObject(new Models.Request.RegisterUserRequest("John", "Doe", string.Empty, string.Empty, "Pa$$word")), Encoding.UTF8, "application/json"));
             Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
+            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+            dynamic result = JObject.Parse(stringResponse);
+            Assert.Equal((int)HttpStatusCode.BadRequest, (int)result.status);
+            Assert.Equal("One or more validation errors occurred.", (string)result.title);
+            Assert.NotNull(result.errors);
+            Assert.NotNull(result.errors.Email);
+            Assert.Single(result.errors.Email);
+            Assert.Equal("'Email' is not a valid email address.", (string)result.errors.Email[0]);
+            Assert.NotNull(result.errors.UserName);
+            Assert.Single(result.errors.UserName);
+            Assert.Equal("'User Name' must be between 3 and 255 characters. You entered 0 characters.", (string)result.errors.UserName[0]);
         }
         [Fact]
         public async Task CantDeleteUserWithInvalidAccountDetails()
