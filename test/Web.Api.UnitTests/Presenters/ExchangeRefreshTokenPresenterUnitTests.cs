@@ -49,7 +49,7 @@ namespace Web.Api.UnitTests.Presenters
             var presenter = new ExchangeRefreshTokenPresenter();
 
             // act
-            presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error("InvalidToken", "Invalid Token!")}));
+            presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Token!")}));
 
             // assert
             Models.Response.ExchangeRefreshTokenResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ExchangeRefreshTokenResponse>(presenter.ContentResult.Content);
@@ -59,7 +59,7 @@ namespace Web.Api.UnitTests.Presenters
             Assert.True(string.IsNullOrEmpty(response.RefreshToken));
             Assert.NotNull(response.Errors);
             Assert.Single(response.Errors);
-            Assert.Equal("InvalidToken", response.Errors.First().Code);
+            Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Errors.First().Code);
             Assert.Equal("Invalid Token!", response.Errors.First().Description);
         }
     }

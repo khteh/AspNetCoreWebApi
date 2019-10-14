@@ -75,7 +75,7 @@ namespace Web.Api.IntegrationTests.Controllers
             Assert.True(string.IsNullOrEmpty(response.RefreshToken));
             Assert.NotNull(response.Errors);
             Assert.NotEmpty(response.Errors);
-            Assert.Equal("InvalidToken", response.Errors.First().Code);
+            Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Errors.First().Code);
             Assert.Equal("Invalid token!", response.Errors.First().Description);
         }
     }

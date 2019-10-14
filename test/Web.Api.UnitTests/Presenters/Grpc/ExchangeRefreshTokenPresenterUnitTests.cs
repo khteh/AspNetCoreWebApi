@@ -66,7 +66,7 @@ namespace Web.Api.UnitTests.Presenters.Grpc
             var presenter = new ExchangeRefreshTokenPresenter(_mapper);
 
             // act
-            presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error("InvalidToken", "Invalid Token!")}));
+            presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Token!")}));
 
             // assert
             Assert.NotNull(presenter.Response);
@@ -74,7 +74,7 @@ namespace Web.Api.UnitTests.Presenters.Grpc
             Assert.True(string.IsNullOrEmpty(presenter.Response.RefreshToken));
             Assert.NotNull(presenter.Response.Response.Errors);
             Assert.Single(presenter.Response.Response.Errors);
-            Assert.Equal("InvalidToken", presenter.Response.Response.Errors.First().Code);
+            Assert.Equal(HttpStatusCode.BadRequest.ToString(), presenter.Response.Response.Errors.First().Code);
             Assert.Equal("Invalid Token!", presenter.Response.Response.Errors.First().Description);
         }
     }

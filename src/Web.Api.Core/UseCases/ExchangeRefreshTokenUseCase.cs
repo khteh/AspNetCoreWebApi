@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Web.Api.Core.DTO;
@@ -47,9 +48,9 @@ namespace Web.Api.Core.UseCases
                     outputPort.Handle(new ExchangeRefreshTokenResponse(jwtToken, refreshToken, true));
                     return true;
                 } else if (user == null)
-                    outputPort.Handle(new ExchangeRefreshTokenResponse(new List<Error>() { new Error("InvalidUser", "Invalid user!")}));
+                    outputPort.Handle(new ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid user!")}));
             }
-            outputPort.Handle(new ExchangeRefreshTokenResponse(new List<Error>() { new Error("InvalidToken", "Invalid token!") } ));
+            outputPort.Handle(new ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid token!") } ));
             return false;
         }
     }
