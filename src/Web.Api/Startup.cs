@@ -181,7 +181,17 @@ namespace Web.Api
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v2", new OpenApiInfo { Title = "AspNetCoreApiStarter", Version = "v2" });
+                c.SwaggerDoc("v3", new OpenApiInfo { 
+                    Title = "ASP.Net Core RESTful, SignalR and GRPC service", 
+                    Version = "v3",
+                    Description = "An ASP.NET Core 3.0 Web API and GRPC project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Teh Kok How",
+                        Email = "funcoolgeek@gmail.com",
+                        Url = new Uri("https://github.com/khteh/AspNetCoreApiStarter"),
+                    },
+                });
                 // Swagger 2.+ support
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -212,6 +222,7 @@ namespace Web.Api
                         new List<string>()
                     }
                 });
+                c.CustomSchemaIds(i => i.FullName);
             });
             services.AddGrpc();
             services.AddSignalR();
@@ -343,12 +354,12 @@ namespace Web.Api
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"{pathBase}/swagger/v2/swagger.json", "AspNetCoreApiStarter V2");
+                c.SwaggerEndpoint($"{pathBase}/swagger/v3/swagger.json", "AspNetCoreApiStarter V3");
             });
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseStaticFiles();
             //app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets));
-            app.UseRouting();
+            app.UseRouting(); // The order in which you register the ASP.NET Core authentication middleware matters. Always call UseAuthentication and UseAuthorization after UseRouting and before UseEndpoints.
             //app.UseCors();
             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
             app.UseAuthorization();

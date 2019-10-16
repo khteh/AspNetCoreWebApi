@@ -59,7 +59,7 @@ namespace Web.Api.IntegrationTests
                                     //.AddInterceptor(() => new LoggingInterceptor());
                                     //.AddHttpMessageHandler(() => ClientTestHelpers.CreateTestMessageHandler(new HelloReply()));
                                 AddGrpcClient<AuthClient>(services, new Uri(grpcConfig.Endpoint));
-                                    //.EnableCallContextPropagation();
+                                    //.EnableCallContextPropagation(); Only use this in gRPC service, not client.
                                     //.AddInterceptor(() => new LoggingInterceptor());
 
                                 // Add a database context (AppDbContext) using an in-memory database for testing.
