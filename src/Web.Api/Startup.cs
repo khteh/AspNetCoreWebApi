@@ -273,13 +273,11 @@ namespace Web.Api
             //return provider;
             //return services.BuildServiceProvider();
         }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, IServiceProvider serviceProvider, IAntiforgery antiforgery)
         {
             ILogger<Startup> logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
             string pathBase = env.IsDevelopment() ? string.Empty : "/apistarter";
-            app.UseForwardedHeaders();
             app.Use(async (context, next) =>
             {
                 // Request method, scheme, and path
@@ -320,19 +318,6 @@ namespace Web.Api
                 await next();
             });
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
-            #if false
-            app.Use((context, next) =>
-            {
-                context.Request.PathBase = new PathString(pathBase);
-                return next();
-            });
-            app.Use((context, next) =>
-            {
-                if (context.Request.Path.StartsWithSegments(pathBase, out var remainder))
-                    context.Request.Path = remainder;
-                return next();
-            });
-            #endif
             //app.UsePathBase(pathBase);
             app.UseExceptionHandler(
                 builder =>
@@ -356,14 +341,21 @@ namespace Web.Api
             {
                 c.SwaggerEndpoint($"{pathBase}/swagger/v3/swagger.json", "AspNetCoreApiStarter V3");
             });
+            if (env.IsDevelopment())
+                app.UseDeveloperExceptionPage();
+            else
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseForwardedHeaders();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCookiePolicy(new CookiePolicyOptions() {HttpOnly = HttpOnlyPolicy.Always, Secure = CookieSecurePolicy.Always });
             //app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets));
             app.UseRouting(); // The order in which you register the ASP.NET Core authentication middleware matters. Always call UseAuthentication and UseAuthorization after UseRouting and before UseEndpoints.
             //app.UseCors();
             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
             app.UseAuthorization();
-            app.UseCookiePolicy(new CookiePolicyOptions() {HttpOnly = HttpOnlyPolicy.Always, Secure = CookieSecurePolicy.Always });
             app.UseSwagger();
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>
@@ -388,14 +380,6 @@ namespace Web.Api
             lifetime.ApplicationStarted.Register(() => AppStarted(logger, readinessHealthCheck));
             lifetime.ApplicationStopping.Register(() => logger.LogInformation("ApplicationStopping"));
             lifetime.ApplicationStopped.Register(() => logger.LogInformation("ApplicationStopped"));
-            if (env.IsDevelopment())
-                app.UseDeveloperExceptionPage();
-            else {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-                app.UseHttpsRedirection();
-            }
-            //app.UseMvc();
         }
         private static void AppStarted(ILogger<Startup> logger, ReadinessHealthCheck readinessHealthCheck)
         {
