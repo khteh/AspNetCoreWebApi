@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Web.Api.IntegrationTests
 {
-    public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Startup>
+    public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
         protected override IHostBuilder CreateHostBuilder()
         {

@@ -30,7 +30,7 @@ using Polly.Extensions.Http;
 
 namespace Web.Api.IntegrationTests
 {
-    public class CustomGrpcServerFactory<TStartup> : WebApplicationFactory<Startup>
+    public class CustomGrpcServerFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
         public ServiceProvider ServiceProvider {get; private set;}
         protected override IHostBuilder CreateHostBuilder()
@@ -112,16 +112,13 @@ namespace Web.Api.IntegrationTests
                     });
         }
         public IHttpClientBuilder AddGrpcClient<TClient>(IServiceCollection services, Uri uri) where TClient : global::Grpc.Core.ClientBase
-        {
             //HttpMessageHandler handler = Server.CreateHandler();
-            return services.AddGrpcClient<TClient>(o => {o.Address = uri;})
+            => services.AddGrpcClient<TClient>(o => {o.Address = uri;})
                 .ConfigurePrimaryHttpMessageHandler(() => Server.CreateHandler())
                 .AddPolicyHandler(GetRetryPolicy());
-        }
         private IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
             HttpPolicyExtensions.HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                 .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) + TimeSpan.FromMilliseconds(new Random().Next(0, 100)));
-
     }
 }
