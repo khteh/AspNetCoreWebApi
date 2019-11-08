@@ -31,6 +31,8 @@ namespace Web.Api.Models.Logging
         [JsonProperty]
         public string Protocol {get; private set;}
         [JsonProperty]
+        public string UserAgent {get; private set;}
+        [JsonProperty]
         public string X_Forwarded_For {get; private set;}
         [JsonProperty]
         public string X_Forwarded_Proto {get; private set;}
@@ -56,7 +58,9 @@ namespace Web.Api.Models.Logging
             Protocol = protocol;
             if (headers != null)
                 foreach (var header in headers)
-                    if (header.Key.Equals("X-Forwarded-For"))
+                    if (header.Key.Equals("User-Agent"))
+                        UserAgent = header.Value;
+                    else if (header.Key.Equals("X-Forwarded-For"))
                         X_Forwarded_For = header.Value;
                     else if (header.Key.Equals("X-Original-For"))
                     {
