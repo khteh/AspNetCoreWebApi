@@ -10,12 +10,12 @@ namespace Web.Api.Presenters.Grpc
 {
     public class DeleteUserPresenter : PresenterBase<UseCaseResponseMessage>
     {
-        public Web.Api.Core.Accounts.DeleteUserResponse Response {get; private set; }
+        public Web.Api.Identity.Accounts.DeleteUserResponse Response {get; private set; }
         public DeleteUserPresenter(IMapper mapper) : base(mapper) {}
         public override void Handle(UseCaseResponseMessage response)
         {
             base.Handle(response);
-            Response = new Web.Api.Core.Accounts.DeleteUserResponse() { Id = response.Id, Response = BaseResponse };
+            Response = new Web.Api.Identity.Accounts.DeleteUserResponse() { Id = response.Id, Response = BaseResponse };
         }
     }
 }

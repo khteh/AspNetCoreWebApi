@@ -48,7 +48,7 @@ jobs:
   deploy-eks:
     working_directory: /tmp
     docker: 
-      - image: khteh/circleci-openjdk:latest
+      - image: khteh/ubuntu:latest
     steps:  
       - attach_workspace:
           at: /tmp

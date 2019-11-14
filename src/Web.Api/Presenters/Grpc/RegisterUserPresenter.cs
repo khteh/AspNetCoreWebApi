@@ -9,12 +9,12 @@ namespace Web.Api.Presenters.Grpc
 {
     public sealed class RegisterUserPresenter : PresenterBase<UseCaseResponseMessage>
     {
-        public Web.Api.Core.Accounts.RegisterUserResponse Response {get; private set;}
+        public Web.Api.Identity.Accounts.RegisterUserResponse Response {get; private set;}
         public RegisterUserPresenter(IMapper mapper) : base(mapper) {}
         public override void Handle(UseCaseResponseMessage response)
         {
             base.Handle(response);
-            Response = new Web.Api.Core.Accounts.RegisterUserResponse() { Id = response.Id, Response = BaseResponse };
+            Response = new Web.Api.Identity.Accounts.RegisterUserResponse() { Id = response.Id, Response = BaseResponse };
         }
     }
 }

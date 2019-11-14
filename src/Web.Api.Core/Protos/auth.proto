@@ -1,6 +1,6 @@
 syntax = "proto3";
-option csharp_namespace = "Web.Api.Core.Auth";
-package Web.Api.Core.Auth;
+option csharp_namespace = "Web.Api.Identity.Auth";
+package Web.Api.Identity.Auth;
 import "Protos/response.proto";
 import "Protos/accessToken.proto";
 service Auth {
@@ -21,16 +21,16 @@ message LoginRequest {
     repeated string roles = 11;
 }
 message LoginResponse {
-    Web.Api.Core.Grpc.AccessToken AccessToken = 1;
+    Web.Api.Identity.AccessToken AccessToken = 1;
     string RefreshToken = 2;
-    Web.Api.Core.Grpc.Response response = 3;
+    Web.Api.Identity.Response response = 3;
 }
 message ExchangeRefreshTokenRequest {
     string accessToken = 1;
     string refreshToken = 2;
 }
 message ExchangeRefreshTokenResponse {
-    Web.Api.Core.Grpc.AccessToken AccessToken = 1;
+    Web.Api.Identity.AccessToken AccessToken = 1;
     string refreshToken = 2;
-    Web.Api.Core.Grpc.Response response = 3;
+    Web.Api.Identity.Response response = 3;
 }

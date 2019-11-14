@@ -8,7 +8,7 @@ namespace Web.Api.Presenters.Grpc
 {
     public class ResetPasswordPresenter : PresenterBase<UseCaseResponseMessage>
     {
-        public Web.Api.Core.Grpc.Response Response {get => BaseResponse; }
+        public Web.Api.Identity.Response Response {get => BaseResponse; }
         public ResetPasswordPresenter(IMapper mapper) : base(mapper) {}
     }
 }

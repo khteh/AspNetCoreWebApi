@@ -1,6 +1,6 @@
 syntax = "proto3";
-option csharp_namespace = "Web.Api.Core.Grpc";
-package Web.Api.Core.Grpc;
+option csharp_namespace = "Web.Api.Identity";
+package Web.Api.Identity;
 message AccessToken {
     string token = 1;
     int32 expiresIn = 2;

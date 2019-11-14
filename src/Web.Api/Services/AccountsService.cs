@@ -8,7 +8,7 @@ using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Presenters.Grpc;
-using Web.Api.Core.Accounts;
+using Web.Api.Identity.Accounts;
 namespace Web.Api.Services
 {
     public class AccountsService : Accounts.AccountsBase
@@ -47,53 +47,53 @@ namespace Web.Api.Services
             _lockUserUseCase = lockUserUseCase;
             _lockUserPresenter = lockUserPresenter;
         }
-        public async override Task<Web.Api.Core.Accounts.RegisterUserResponse> Register(Web.Api.Core.Accounts.RegisterUserRequest request, ServerCallContext context)
+        public async override Task<Web.Api.Identity.Accounts.RegisterUserResponse> Register(Web.Api.Identity.Accounts.RegisterUserRequest request, ServerCallContext context)
         {
             await _registerUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.RegisterUserRequest(request.FirstName, request.LastName, request.Email, request.UserName, request.Password), _registerUserPresenter);
             return _registerUserPresenter.Response;
         }
         // POST api/accounts
-        public async override Task<Web.Api.Core.Grpc.Response> ChangePassword(Web.Api.Core.Accounts.ChangePasswordRequest request, ServerCallContext context)
+        public async override Task<Web.Api.Identity.Response> ChangePassword(Web.Api.Identity.Accounts.ChangePasswordRequest request, ServerCallContext context)
         {
             await _changePasswordUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.ChangePasswordRequest(request.Id, request.Password, request.NewPassword), _changePasswordPresenter);
             return _changePasswordPresenter.Response;
         }
-        public async override Task<Web.Api.Core.Grpc.Response> ResetPassword(Web.Api.Core.Accounts.ResetPasswordRequest request, ServerCallContext context)
+        public async override Task<Web.Api.Identity.Response> ResetPassword(Web.Api.Identity.Accounts.ResetPasswordRequest request, ServerCallContext context)
         {
             await _resetPasswordUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.ResetPasswordRequest(request.Id, request.NewPassword), _resetPasswordPresenter);
             return _resetPasswordPresenter.Response;
         }
 
         // POST api/accounts
-        public async override Task<Web.Api.Core.Accounts.DeleteUserResponse> Delete(StringInputParameter id, ServerCallContext context)
+        public async override Task<Web.Api.Identity.Accounts.DeleteUserResponse> Delete(StringInputParameter id, ServerCallContext context)
         {
             await _deleteUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.DeleteUserRequest(id.Value), _deleteUserPresenter);
             return _deleteUserPresenter.Response;
         }
         // POST api/accounts/FindById
-        public async override Task<Web.Api.Core.Accounts.FindUserResponse> FindById(StringInputParameter id, ServerCallContext context)
+        public async override Task<Web.Api.Identity.Accounts.FindUserResponse> FindById(StringInputParameter id, ServerCallContext context)
         {
             await _findUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.FindUserRequest(string.Empty, string.Empty, id.Value), _findUserPresenter);
             return _findUserPresenter.Response;
         }
         // POST api/accounts/FindByUserName
-        public async override Task<Web.Api.Core.Accounts.FindUserResponse> FindByUserName(StringInputParameter username, ServerCallContext context)
+        public async override Task<Web.Api.Identity.Accounts.FindUserResponse> FindByUserName(StringInputParameter username, ServerCallContext context)
         {
             await _findUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.FindUserRequest(string.Empty, username.Value, string.Empty), _findUserPresenter);
             return _findUserPresenter.Response;
         }
         // POST api/accounts/FindByEmail
-        public async override Task<Web.Api.Core.Accounts.FindUserResponse> FindByEmail(StringInputParameter email, ServerCallContext context)
+        public async override Task<Web.Api.Identity.Accounts.FindUserResponse> FindByEmail(StringInputParameter email, ServerCallContext context)
         {
             await _findUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.FindUserRequest(email.Value, string.Empty, string.Empty), _findUserPresenter);
             return _findUserPresenter.Response;
         }
-        public async override Task<Web.Api.Core.Grpc.Response> Lock(StringInputParameter id, ServerCallContext context)
+        public async override Task<Web.Api.Identity.Response> Lock(StringInputParameter id, ServerCallContext context)
         {
              await _lockUserUseCase.Lock(id.Value, _lockUserPresenter);
              return _lockUserPresenter.Response;
         }
-        public async override Task<Web.Api.Core.Grpc.Response> UnLock(StringInputParameter id, ServerCallContext context)
+        public async override Task<Web.Api.Identity.Response> UnLock(StringInputParameter id, ServerCallContext context)
         {
             await _lockUserUseCase.UnLock(id.Value, _lockUserPresenter);
             return _lockUserPresenter.Response;

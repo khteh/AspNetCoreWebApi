@@ -9,8 +9,8 @@ using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Presenters.Grpc;
-using Web.Api.Core.Accounts;
-using Web.Api.Core.Auth;
+using Web.Api.Identity.Accounts;
+using Web.Api.Identity.Auth;
 using Web.Api.Infrastructure.Auth;
 using System;
 
@@ -34,14 +34,14 @@ namespace Web.Api.Services
             _authSettings = authSettings.Value;
         }
 
-        public async override Task<Web.Api.Core.Auth.LoginResponse> Login(Web.Api.Core.Auth.LoginRequest request, ServerCallContext context)
+        public async override Task<Web.Api.Identity.Auth.LoginResponse> Login(Web.Api.Identity.Auth.LoginRequest request, ServerCallContext context)
         {
             await _loginUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.LoginRequest(request.UserName, request.Password, context.GetHttpContext().Request.HttpContext.Connection.RemoteIpAddress?.ToString()), _loginPresenter);
             return _loginPresenter.Response;
         }
 
         // POST api/auth/refreshtoken
-        public async override Task<Web.Api.Core.Auth.ExchangeRefreshTokenResponse> RefreshToken(Web.Api.Core.Auth.ExchangeRefreshTokenRequest request, ServerCallContext context)
+        public async override Task<Web.Api.Identity.Auth.ExchangeRefreshTokenResponse> RefreshToken(Web.Api.Identity.Auth.ExchangeRefreshTokenRequest request, ServerCallContext context)
         {
             await _exchangeRefreshTokenUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.ExchangeRefreshTokenRequest(request.AccessToken, request.RefreshToken, _authSettings.SecretKey), _exchangeRefreshTokenPresenter);
             return _exchangeRefreshTokenPresenter.Response;

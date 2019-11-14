@@ -9,14 +9,14 @@ namespace Web.Api.Presenters.Grpc
 {
     public sealed class LoginPresenter : PresenterBase<LoginResponse>
     {
-        public Web.Api.Core.Auth.LoginResponse Response {get; private set;}
+        public Web.Api.Identity.Auth.LoginResponse Response {get; private set;}
         public LoginPresenter(IMapper mapper) : base(mapper) {}
         public override void Handle(LoginResponse response)
         {
             base.Handle(response);
-            Response = new Web.Api.Core.Auth.LoginResponse() { Response = BaseResponse };
+            Response = new Web.Api.Identity.Auth.LoginResponse() { Response = BaseResponse };
             if (response.AccessToken != null)
-                Response.AccessToken = new Web.Api.Core.Grpc.AccessToken() {
+                Response.AccessToken = new Web.Api.Identity.AccessToken() {
                     Token = response.AccessToken.Token,
                     ExpiresIn = response.AccessToken.ExpiresIn
                 };

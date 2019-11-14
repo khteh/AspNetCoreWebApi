@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Web.Api.Core.GrpcGreeter;
+using Web.Api.IdentityGreeter;
 namespace Web.Api.Services
 {
     public class GreeterService : Greeter.GreeterBase

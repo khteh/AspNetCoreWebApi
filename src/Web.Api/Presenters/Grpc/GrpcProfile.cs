@@ -9,13 +9,13 @@ namespace Web.Api.Presenters.Grpc
     {
         public GrpcProfile()
         {
-            CreateMap<Error, Web.Api.Core.Grpc.Error>().ConstructUsing(i => new Web.Api.Core.Grpc.Error() {Code = i.Code, Description = i.Description});
-            CreateMap<RefreshToken, Web.Api.Core.Grpc.RefreshToken>().ConstructUsing(i => new Web.Api.Core.Grpc.RefreshToken() {
+            CreateMap<Error, Web.Api.Identity.Error>().ConstructUsing(i => new Web.Api.Identity.Error() {Code = i.Code, Description = i.Description});
+            CreateMap<RefreshToken, Web.Api.Identity.RefreshToken>().ConstructUsing(i => new Web.Api.Identity.RefreshToken() {
                 Token = i.Token, 
                 UserId = i.UserId, 
                 RemoteIpAddress = i.RemoteIpAddress
             }).ForMember(i => i.Expires, o => o.MapFrom(src => Timestamp.FromDateTimeOffset(src.Expires)));
-            CreateMap<User, Web.Api.Core.Grpc.User>()
+            CreateMap<User, Web.Api.Identity.User>()
                 .ForMember(i => i.Id, o => o.MapFrom(src => src.Id))
                 .ForMember(i => i.IdentityId, o => o.MapFrom(src => !string.IsNullOrEmpty(src.IdentityId) ? src.IdentityId : string.Empty))
                 .ForMember(i => i.FirstName, o => o.MapFrom(src => !string.IsNullOrEmpty(src.FirstName) ? src.FirstName : string.Empty))
