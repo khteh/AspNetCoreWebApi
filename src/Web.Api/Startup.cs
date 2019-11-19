@@ -147,7 +147,6 @@ namespace Web.Api
                     }
                 };
             });
-
             // api user claim policy
             services.AddAuthorization(options =>
             {
@@ -160,7 +159,6 @@ namespace Web.Api
                 options.HeaderName = "X-CSRF-TOKEN-HEADERNAME";
                 options.SuppressXFrameOptionsHeader = false;
             });
-
             // add identity
             var identityBuilder = services.AddIdentityCore<AppUser>(o =>
             {
@@ -178,7 +176,6 @@ namespace Web.Api
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
                 .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter()));
             services.AddAutoMapper(new [] {typeof(IdentityProfile), typeof(GrpcProfile)});
-
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
