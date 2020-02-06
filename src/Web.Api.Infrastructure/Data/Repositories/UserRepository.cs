@@ -275,7 +275,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
                 return new LockUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Trying to unlock an invalid user {user.Id}!") });
             }
         }
-        private async Task<User> getUser(AppUser appUser) => appUser == null ? null : _mapper.Map<AppUser, User>(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)));//, opt => opt.ConfigureMap(MemberList.None));
+        private async Task<User> getUser(AppUser appUser) => appUser == null ? null : _mapper.Map<AppUser, User>(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)));
         private async Task<Core.DTO.GatewayResponses.Repositories.FindUserResponse> getFindUserResponse(AppUser appUser)
         {
             User user = await getUser(appUser);
