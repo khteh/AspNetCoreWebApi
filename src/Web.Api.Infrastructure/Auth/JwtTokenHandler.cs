@@ -15,8 +15,7 @@ namespace Web.Api.Infrastructure.Auth
         private readonly ILogger<JwtTokenHandler> _logger;
         public JwtTokenHandler(ILogger<JwtTokenHandler> logger)
         {
-            if (_jwtSecurityTokenHandler == null)
-                _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            _jwtSecurityTokenHandler ??= new JwtSecurityTokenHandler();
             _logger = logger;
         }
 
