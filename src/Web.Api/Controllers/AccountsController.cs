@@ -1,48 +1,33 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Web.Api.Commands;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.UseCases;
+using Web.Api.Models.Response;
 using Web.Api.Presenters;
-
+using Web.Api.Serialization;
+using AutoMapper;
 namespace Web.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : ControllerBase
     {
-        private readonly IRegisterUserUseCase _registerUserUseCase;
-        private readonly RegisterUserPresenter _registerUserPresenter;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
         private readonly IFindUserUseCase _findUserUseCase;
         private readonly FindUserPresenter _findUserPresenter;
-        private readonly IDeleteUserUseCase _deleteUserUseCase;
-        private readonly DeleteUserPresenter _deleteUserPresenter;
-        private readonly IChangePasswordUseCase _changePasswordUseCase;
-        private readonly IResetPasswordUseCase _resetPasswordUseCase;
-        private readonly ChangePasswordPresenter _changePasswordPresenter;
-        private readonly ResetPasswordPresenter _resetPasswordPresenter;
-        private readonly ILockUserUseCase _lockUserUseCase;
-        private readonly LockUserPresenter _lockUserPresenter;
-        public AccountsController(IRegisterUserUseCase registerUserUseCase, RegisterUserPresenter registerUserPresenter, 
-            IDeleteUserUseCase deleteUserUseCase, DeleteUserPresenter deleteUserPresenter, 
-            IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter, 
-            IChangePasswordUseCase changePasswordUseCase, ChangePasswordPresenter changePasswordPresenter, 
-            IResetPasswordUseCase resetPasswordUseCase, ResetPasswordPresenter resetPasswordPresenter,
-            ILockUserUseCase lockUserUseCase, LockUserPresenter lockUserPresenter)
+        public AccountsController(IMediator mediator, IMapper mapper,
+            IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter) 
         {
-            _registerUserUseCase = registerUserUseCase;
-            _registerUserPresenter = registerUserPresenter;
-            _deleteUserUseCase = deleteUserUseCase;
-            _deleteUserPresenter = deleteUserPresenter;
+            _mediator = mediator;
+            _mapper = mapper;
             _findUserUseCase = findUserUseCase;
             _findUserPresenter = findUserPresenter;
-            _changePasswordUseCase = changePasswordUseCase;
-            _changePasswordPresenter = changePasswordPresenter;
-            _resetPasswordUseCase = resetPasswordUseCase;
-            _resetPasswordPresenter = resetPasswordPresenter;
-            _lockUserUseCase = lockUserUseCase;
-            _lockUserPresenter = lockUserPresenter;
         }
 
         // POST api/accounts/register
@@ -51,8 +36,8 @@ namespace Web.Api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            await _registerUserUseCase.Handle(new RegisterUserRequest(request.FirstName, request.LastName, request.Email, request.UserName, request.Password), _registerUserPresenter);
-            return _registerUserPresenter.ContentResult;
+            RegisterUserResponse response = await _mediator.Send(new RegisterUserCommand(request.FirstName, request.LastName, request.Email, request.UserName, request.Password));
+            return _mapper.Map<JsonContentResult>(response);
         }
         // POST api/accounts
         [HttpPost("changepassword")]
@@ -60,24 +45,24 @@ namespace Web.Api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            await _changePasswordUseCase.Handle(new ChangePasswordRequest(request.Id, request.Password, request.NewPassword), _changePasswordPresenter);
-            return _changePasswordPresenter.ContentResult;
+            ChangePasswordResponse response = await _mediator.Send(new ChangePasswordCommand(request.Id, request.Password, request.NewPassword));
+            return _mapper.Map<JsonContentResult>(response);
         }
         [HttpPost("resetpassword")]
         public async Task<ActionResult> ResetPassword([FromBody] Models.Request.ResetPasswordRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            await _resetPasswordUseCase.Handle(new ResetPasswordRequest(request.Id, request.NewPassword), _resetPasswordPresenter);
-            return _resetPasswordPresenter.ContentResult;
+            ResetPasswordResponse response = await _mediator.Send(new ResetPasswordCommand(request.Id, request.NewPassword));
+            return _mapper.Map<JsonContentResult>(response);
         }
 
         // POST api/accounts
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(string id)
         {
-            await _deleteUserUseCase.Handle(new DeleteUserRequest(id), _deleteUserPresenter);
-            return _deleteUserPresenter.ContentResult;
+            DeleteUserResponse response = await _mediator.Send(new DeleteUserCommand(id));
+            return _mapper.Map<JsonContentResult>(response);
         }
         // POST api/accounts/FindById
         [HttpGet("id/{id}")]
@@ -104,16 +89,16 @@ namespace Web.Api.Controllers
         public async Task<ActionResult> Lock(string id)
         {
             //=> _service.Lock(id);
-            await _lockUserUseCase.Lock(id, _lockUserPresenter);
-            return _lockUserPresenter.ContentResult;
+            Models.Response.LockUserResponse response = await _mediator.Send(new LockUserCommand(id));
+            return _mapper.Map<JsonContentResult>(response);
         }
 
         [HttpGet("unlock/{id}")]
         public async Task<ActionResult> Unlock(string id)
         {
             //_service.Unlock(id);
-            await _lockUserUseCase.UnLock(id, _lockUserPresenter);
-            return _lockUserPresenter.ContentResult;
+            Models.Response.LockUserResponse response = await _mediator.Send(new UnlockUserCommand(id));
+            return _mapper.Map<JsonContentResult>(response);
         }
     }
 }

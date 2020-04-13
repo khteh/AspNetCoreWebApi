@@ -51,7 +51,6 @@ namespace Web.Api.Infrastructure.Data.Repositories
                             .ToListAsync();
         }
 
-
         public async Task<T> Add(T entity)
         {
             _appDbContext.Set<T>().Add(entity);

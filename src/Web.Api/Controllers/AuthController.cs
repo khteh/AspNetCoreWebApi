@@ -1,11 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
+using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Web.Api.Commands;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Infrastructure.Auth;
+using Web.Api.Models.Response;
 using Web.Api.Presenters;
+using Web.Api.Serialization;
 
 namespace Web.Api.Controllers
 {
@@ -13,17 +19,13 @@ namespace Web.Api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ILoginUseCase _loginUseCase;
-        private readonly LoginPresenter _loginPresenter;
-        private readonly IExchangeRefreshTokenUseCase _exchangeRefreshTokenUseCase;
-        private readonly ExchangeRefreshTokenPresenter _exchangeRefreshTokenPresenter;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
         private readonly AuthSettings _authSettings;
-        public AuthController(ILoginUseCase loginUseCase, LoginPresenter loginPresenter, IExchangeRefreshTokenUseCase exchangeRefreshTokenUseCase, ExchangeRefreshTokenPresenter exchangeRefreshTokenPresenter, IOptions<AuthSettings> authSettings)
+        public AuthController(IMediator mediator, IOptions<AuthSettings> authSettings, IMapper mapper)
         {
-            _loginUseCase = loginUseCase;
-            _loginPresenter = loginPresenter;
-            _exchangeRefreshTokenUseCase = exchangeRefreshTokenUseCase;
-            _exchangeRefreshTokenPresenter = exchangeRefreshTokenPresenter;
+            _mediator = mediator;
+            _mapper = mapper;
             _authSettings = authSettings.Value;
         }
 
@@ -34,8 +36,8 @@ namespace Web.Api.Controllers
         public async Task<ActionResult> Login([FromBody] Models.Request.LoginRequest request)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
-            await _loginUseCase.Handle(new LoginRequest(request.UserName, request.Password, Request.HttpContext.Connection.RemoteIpAddress?.ToString()), _loginPresenter);
-            return _loginPresenter.ContentResult;
+            LoginResponse response = await _mediator.Send(new LoginCommand(request.UserName, request.Password, Request.HttpContext.Connection.RemoteIpAddress?.ToString()));
+            return _mapper.Map<JsonContentResult>(response);
         }
 
         // POST api/auth/refreshtoken
@@ -43,8 +45,8 @@ namespace Web.Api.Controllers
         public async Task<ActionResult> RefreshToken([FromBody] Models.Request.ExchangeRefreshTokenRequest request)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState);}
-            await _exchangeRefreshTokenUseCase.Handle(new ExchangeRefreshTokenRequest(request.AccessToken, request.RefreshToken, _authSettings.SecretKey), _exchangeRefreshTokenPresenter);
-            return _exchangeRefreshTokenPresenter.ContentResult;
+            ExchangeRefreshTokenResponse response = await _mediator.Send(new ExchangeRefreshTokenCommand(request.AccessToken, request.RefreshToken, _authSettings.SecretKey));
+            return _mapper.Map<JsonContentResult>(response);
         }
     }
 }

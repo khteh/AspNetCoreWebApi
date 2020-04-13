@@ -222,9 +222,9 @@ namespace Web.Api.Infrastructure.Data.Repositories
         public async Task<LockUserResponse> LockUser(int id)
         {
             User user = await _appDbContext.Users.FindAsync(id);
-            if (user == null)
-                return new LockUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid user {id}!") });
-            return await LockUser(await _userManager.FindByIdAsync(user.IdentityId));
+            return user == null ?
+                new LockUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid user {id}!") })
+                : await LockUser(await _userManager.FindByIdAsync(user.IdentityId));
         }
         private async Task<LockUserResponse> LockUser(AppUser user)
         {
@@ -250,9 +250,9 @@ namespace Web.Api.Infrastructure.Data.Repositories
         public async Task<LockUserResponse> UnLockUser(int id)
         {
             User user = await _appDbContext.Users.FindAsync(id);
-            if (user == null)
-                return new LockUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid user {id}!") });
-            return await UnLockUser(await _userManager.FindByIdAsync(user.IdentityId));
+            return user == null ?
+                new LockUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid user {id}!") })
+                : await UnLockUser(await _userManager.FindByIdAsync(user.IdentityId));
         }
         private async Task<LockUserResponse> UnLockUser(AppUser user)
         {

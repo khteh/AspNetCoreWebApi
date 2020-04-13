@@ -10,8 +10,9 @@ namespace Web.Api.Presenters
     {
         public override void Handle(UseCaseResponseMessage response)
         {
+            Response = new Models.Response.RegisterUserResponse(response.Id, response.Success, response.Errors);
             ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.Created : HttpStatusCode.BadRequest);
-            ContentResult.Content = JsonSerializer.SerializeObject(new Models.Response.RegisterUserResponse(response.Id, response.Success, response.Errors));
+            ContentResult.Content = JsonSerializer.SerializeObject(Response);
         }
     }
 }

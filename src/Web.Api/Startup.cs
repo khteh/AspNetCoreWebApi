@@ -42,6 +42,10 @@ using Web.Api.Models.Logging;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Net.WebSockets;
 using Web.Api.Serialization;
+using Web.Api.Commands;
+using MediatR;
+using Web.Api.Behaviours;
+using Web.Api.Models.Response;
 
 namespace Web.Api
 {
@@ -175,7 +179,11 @@ namespace Web.Api
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
                 .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter()));
-            services.AddAutoMapper(new [] {typeof(IdentityProfile), typeof(GrpcProfile)});
+            services.AddAutoMapper(new [] {typeof(IdentityProfile), typeof(GrpcProfile), typeof(ResponseProfile) });
+            services.AddMediatR(typeof(Program));
+            services.AddScoped<IPipelineBehavior<RegisterUserCommand, RegisterUserResponse>, LoggingBehavior<RegisterUserCommand, RegisterUserResponse>>();
+            services.AddScoped<IPipelineBehavior<LoginCommand, LoginResponse>, LoggingBehavior<LoginCommand, LoginResponse>>();
+            services.AddScoped<IPipelineBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>, LoggingBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>>();
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {

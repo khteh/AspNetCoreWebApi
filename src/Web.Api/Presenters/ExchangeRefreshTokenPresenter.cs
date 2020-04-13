@@ -9,9 +9,9 @@ namespace Web.Api.Presenters
     {
         public override void Handle(ExchangeRefreshTokenResponse response)
         {
+            Response = response.Success ? new Models.Response.ExchangeRefreshTokenResponse(response.AccessToken, response.RefreshToken, true, null) : new Models.Response.ExchangeRefreshTokenResponse(null, null, false, response.Errors);
             ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
-            ContentResult.Content = response.Success ? JsonSerializer.SerializeObject(new Models.Response.ExchangeRefreshTokenResponse(response.AccessToken, response.RefreshToken, true, null)) : 
-                                                        JsonSerializer.SerializeObject(new Models.Response.ExchangeRefreshTokenResponse(null, null, false, response.Errors));
+            ContentResult.Content = JsonSerializer.SerializeObject(Response);
         }
     }
 }
