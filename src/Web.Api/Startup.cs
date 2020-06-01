@@ -343,7 +343,7 @@ namespace Web.Api
                 });
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
+            app.UseSwagger().UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint($"{pathBase}/swagger/v3/swagger.json", "AspNetCoreApiStarter V3");
             });
@@ -362,7 +362,6 @@ namespace Web.Api
             //app.UseCors();
             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
             app.UseAuthorization();
-            app.UseSwagger();
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>
                 {
