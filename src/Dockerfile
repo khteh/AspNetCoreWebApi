@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1.3-bionic
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1.5-focal
 MAINTAINER Kok How, Teh <funcoolgeek@gmail.com>
 RUN apt update -y
 RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata
