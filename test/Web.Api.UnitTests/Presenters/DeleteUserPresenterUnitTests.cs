@@ -23,7 +23,7 @@ namespace Web.Api.UnitTests.Presenters
             presenter.Handle(new UseCaseResponseMessage("", true));
 
             // assert
-            Assert.Equal((int)HttpStatusCode.OK, presenter.ContentResult.StatusCode);
+            Assert.Equal((int)HttpStatusCode.NoContent, presenter.ContentResult.StatusCode);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace Web.Api.UnitTests.Presenters
 
             // assert
             DeleteUserResponse response = Serialization.JsonSerializer.DeSerializeObject<DeleteUserResponse>(presenter.ContentResult.Content);
-            Assert.Equal((int)HttpStatusCode.OK, presenter.ContentResult.StatusCode);
+            Assert.Equal((int)HttpStatusCode.NoContent, presenter.ContentResult.StatusCode);
             Assert.NotNull(response);
             Assert.True(response.Success);
             Assert.Null(response.Errors);
