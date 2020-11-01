@@ -57,13 +57,6 @@ namespace Web.Api.Infrastructure.Auth
 
         /// <returns>Date converted to seconds since Unix epoch (Jan 1, 1970, midnight UTC).</returns>
         private static long ToUnixEpochDate(DateTimeOffset date) => date.ToUnixTimeSeconds();
-        //{
-            //DateTimeOffset dto = date.ToUniversalTime();
-            //date.ToUnixTimeSeconds
-          //return (long)Math.Round((date.ToUniversalTime() -
-          //                     new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero))
-          //                    .TotalSeconds);
-        //}
         private static void ThrowIfInvalidOptions(JwtIssuerOptions options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
