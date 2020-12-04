@@ -53,10 +53,7 @@ namespace Web.Api.IntegrationTests.Controllers
             Assert.Equal(7200, expiry.GetInt32());
             Assert.False(string.IsNullOrEmpty(refreshToken.GetString()));
 
-            var refreshTokenResponse = await _client.PostAsync("/api/auth/refreshtoken", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.ExchangeRefreshTokenRequest {
-                AccessToken = token.GetString(),
-                RefreshToken = refreshToken.GetString()
-            }), Encoding.UTF8, "application/json"));
+            var refreshTokenResponse = await _client.PostAsync("/api/auth/refreshtoken", new StringContent(JsonSerializer.Serialize(new Models.Request.ExchangeRefreshTokenRequest(token.GetString(), refreshToken.GetString())), Encoding.UTF8, "application/json"));
             refreshTokenResponse.EnsureSuccessStatusCode();
             var strRefreshTokenResponse = await refreshTokenResponse.Content.ReadAsStringAsync();
             Models.Response.ExchangeRefreshTokenResponse response = Web.Api.Serialization.JsonSerializer.DeSerializeObject<Models.Response.ExchangeRefreshTokenResponse>(strRefreshTokenResponse);
@@ -71,7 +68,7 @@ namespace Web.Api.IntegrationTests.Controllers
         [Fact]
         public async Task CantExchangeInvalidRefreshToken()
         {
-            var httpResponse = await _client.PostAsync("/api/auth/refreshtoken", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.ExchangeRefreshTokenRequest { AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtbWFjbmVpbCIsImp0aSI6IjA0YjA0N2E4LTViMjMtNDgwNi04M2IyLTg3ODVhYmViM2ZjNyIsImlhdCI6MTUzOTUzNzA4Mywicm9sIjoiYXBpX2FjY2VzcyIsImlkIjoiNDE1MzI5NDUtNTk5ZS00OTEwLTk1OTktMGU3NDAyMDE3ZmJlIiwibmJmIjoxNTM5NTM3MDgyLCJleHAiOjE1Mzk1NDQyODIsImlzcyI6IndlYkFwaSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMC8ifQ.xzDQOKzPZarve68Np8Iu8sh2oqoCpHSmp8fMdYRHC_k", RefreshToken = "unknown" }), Encoding.UTF8, "application/json"));
+            var httpResponse = await _client.PostAsync("/api/auth/refreshtoken", new StringContent(JsonSerializer.Serialize(new Models.Request.ExchangeRefreshTokenRequest("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtbWFjbmVpbCIsImp0aSI6IjA0YjA0N2E4LTViMjMtNDgwNi04M2IyLTg3ODVhYmViM2ZjNyIsImlhdCI6MTUzOTUzNzA4Mywicm9sIjoiYXBpX2FjY2VzcyIsImlkIjoiNDE1MzI5NDUtNTk5ZS00OTEwLTk1OTktMGU3NDAyMDE3ZmJlIiwibmJmIjoxNTM5NTM3MDgyLCJleHAiOjE1Mzk1NDQyODIsImlzcyI6IndlYkFwaSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMC8ifQ.xzDQOKzPZarve68Np8Iu8sh2oqoCpHSmp8fMdYRHC_k", "unknown")), Encoding.UTF8, "application/json"));
             Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
             var strResponse = await httpResponse.Content.ReadAsStringAsync();
             Models.Response.ExchangeRefreshTokenResponse response = Web.Api.Serialization.JsonSerializer.DeSerializeObject<Models.Response.ExchangeRefreshTokenResponse>(strResponse);

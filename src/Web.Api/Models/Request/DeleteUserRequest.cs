@@ -1,7 +1,4 @@
 ﻿namespace Web.Api.Models.Request
 {
-    public record DeleteUserRequest
-    {
-        public string UserName { get; init; }
-    }
+    public record DeleteUserRequest(string UserName);
 }
