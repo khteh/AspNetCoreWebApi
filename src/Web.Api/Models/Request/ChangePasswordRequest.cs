@@ -1,18 +1,10 @@
-using System;
-
 namespace Web.Api.Models.Request
 {
-    public class ChangePasswordRequest
+    public record ChangePasswordRequest
     {
-        public string Id { get; set; }
-        public string Password { get; set; }
-        public string NewPassword { get; set; }
-        public ChangePasswordRequest() {}
-        public ChangePasswordRequest(string id, string oldPassword, string newPassword)
-        {
-            Id = id;
-            Password = oldPassword;
-            NewPassword = newPassword;
-        }
+        public string Id { get; init; }
+        public string Password { get; init; }
+        public string NewPassword { get; init; }
+        public ChangePasswordRequest(string id, string password, string newPassword) => (Id, Password, NewPassword) = (id, password, newPassword);
     }
 }

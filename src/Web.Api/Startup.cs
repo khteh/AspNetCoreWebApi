@@ -37,7 +37,7 @@ using Web.Api.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Web.Api.Infrastructure.Data;
-using Newtonsoft.Json;
+using System.Text.Json;
 using Web.Api.Models.Logging;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Net.WebSockets;
@@ -177,8 +177,8 @@ namespace Web.Api
             identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
             services.AddControllersWithViews()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
-                .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter()));
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+                //.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter())); Fixed in .Net Core 5
             services.AddAutoMapper(new [] {typeof(IdentityProfile), typeof(GrpcProfile), typeof(ResponseProfile) });
             services.AddMediatR(typeof(Program));
             services.AddScoped<IPipelineBehavior<RegisterUserCommand, RegisterUserResponse>, LoggingBehavior<RegisterUserCommand, RegisterUserResponse>>();
@@ -283,23 +283,25 @@ namespace Web.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, IServiceProvider serviceProvider, IAntiforgery antiforgery)
         {
             ILogger<Startup> logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
-            string pathBase = env.IsDevelopment() ? string.Empty : "/apistarter";
+            string pathBase = Configuration["PATH_BASE"];
+            logger.LogInformation($"Using PathBase: {pathBase}");
             app.Use(async (context, next) =>
             {
                 // Request method, scheme, and path
                 //_logger.LogInformation($"Method: {context.Request.Method}, Scheme: {context.Request.Scheme}, PathBase: {context.Request.PathBase}, Path: {context.Request.Path}, IP: {context.Connection.RemoteIpAddress}, Host: {context.Request.Host}, ContentLength: {context.Request.ContentLength}");
-                logger.LogInformation(JsonConvert.SerializeObject(new RequestLog(context?.Request?.Method,
-                                    context?.Request?.Scheme,
-                                    context?.Request?.PathBase,
-                                    context?.Request?.Path,
-                                    context?.Request?.Host.ToString(),
-                                    context?.Request?.ContentLength,
-                                    context?.Connection?.RemoteIpAddress?.ToString(),
-                                    context?.Request?.QueryString.ToString(),
-                                    context?.Request?.ContentType,
-                                    context?.Request?.Protocol,
-                                    context?.Request?.Headers
-                                    )));
+                RequestLog requestLog = new RequestLog(context?.Request?.Method,
+                                                    context?.Request?.Scheme,
+                                                    context?.Request?.PathBase,
+                                                    context?.Request?.Path,
+                                                    context?.Request?.Host.ToString(),
+                                                    context?.Request?.ContentLength,
+                                                    context?.Connection?.RemoteIpAddress?.ToString(),
+                                                    context?.Request?.QueryString.ToString(),
+                                                    context?.Request?.ContentType,
+                                                    context?.Request?.Protocol,
+                                                    context?.Request?.Headers
+                                                    );
+                logger.LogInformation(requestLog.ToString());
                 // Headers
                 //foreach (var header in context.Request.Headers)
                 //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
@@ -325,22 +327,17 @@ namespace Web.Api
             });
             // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.1
             //app.UsePathBase(pathBase);
-            app.UseExceptionHandler(
-                builder =>
+            app.UseExceptionHandler(builder => builder.Run(async context =>
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                var error = context.Features.Get<IExceptionHandlerFeature>();
+                if (error != null)
                 {
-                    builder.Run(
-                        async context =>
-                        {
-                            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-                            var error = context.Features.Get<IExceptionHandlerFeature>();
-                            if (error != null)
-                            {
-                                context.Response.AddApplicationError(error.Error.Message);
-                                await context.Response.WriteAsync(error.Error.Message).ConfigureAwait(false);
-                            }
-                        });
-                });
+                    context.Response.AddApplicationError(error.Error.Message);
+                    await context.Response.WriteAsync(error.Error.Message).ConfigureAwait(false);
+                }
+            }));
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
             app.UseSwagger().UseSwaggerUI(c =>
@@ -353,11 +350,11 @@ namespace Web.Api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseResponseCaching();
             app.UseForwardedHeaders();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy(new CookiePolicyOptions() {HttpOnly = HttpOnlyPolicy.Always, Secure = CookieSecurePolicy.Always });
-            //app.UseSignalR(routes => routes.MapHub<ChatHub>("/chatHub", options => options.Transports = HttpTransportType.WebSockets));
             app.UseRouting(); // The order in which you register the ASP.NET Core authentication middleware matters. Always call UseAuthentication and UseAuthorization after UseRouting and before UseEndpoints.
             //app.UseCors();
             app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
@@ -367,7 +364,10 @@ namespace Web.Api
                 {
                     endpoints.MapControllers();//.RequireAuthorization(); // attribute-routed controllers
                     //endpoints.MapDefaultControllerRoute().RequireAuthorization(); //conventional route for controllers.
-                    endpoints.MapHub<ChatHub>("/chatHub", options => { if (!_isIntegrationTests) options.Transports =  HttpTransportType.WebSockets;});
+                    endpoints.MapHub<ChatHub>("/chatHub", options => { 
+                        if (!_isIntegrationTests) // Websockets is currently unmockable. https://github.com/dotnet/aspnetcore/issues/28108
+                            options.Transports =  HttpTransportType.WebSockets;
+                    });
                     //endpoints.MapGrpcService<GreeterService>("/greet");
                     endpoints.MapGrpcService<AccountsService>();
                     endpoints.MapGrpcService<AuthService>();

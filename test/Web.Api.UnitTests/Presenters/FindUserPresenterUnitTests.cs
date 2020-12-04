@@ -1,11 +1,9 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
-using Web.Api.Core.Interfaces;
 using Web.Api.Presenters;
 using Web.Api.Serialization;
 using Xunit;
@@ -37,9 +35,9 @@ namespace Web.Api.UnitTests.Presenters
             presenter.Handle(new FindUserResponse(new User(), "1234", true));
 
             // assert
-            dynamic data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
-            Assert.True(data.success.Value);
-            Assert.Equal("1234", data.id.Value);
+            FindUserResponse data = JsonSerializer.DeSerializeObject<FindUserResponse>(presenter.ContentResult.Content);
+            Assert.True(data.Success);
+            Assert.Equal("1234", data.Id);
         }
 
         [Fact]

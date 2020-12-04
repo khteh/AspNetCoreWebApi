@@ -1,17 +1,8 @@
-﻿using System.Reflection;
-using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Xunit;
-using System.Security.Cryptography.X509Certificates;
 using Web.Api.Identity.Auth;
-using Grpc.Net.Client;
+using Xunit;
 using static Web.Api.Identity.Auth.Auth;
 
 namespace Web.Api.IntegrationTests.Services

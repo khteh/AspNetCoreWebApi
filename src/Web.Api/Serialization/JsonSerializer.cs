@@ -1,23 +1,15 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 namespace Web.Api.Serialization
 {
     public sealed class JsonSerializer
     {
-        private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        private static JsonSerializerOptions Options = new JsonSerializerOptions
         {
-            TypeNameHandling = TypeNameHandling.All,
-            PreserveReferencesHandling = PreserveReferencesHandling.All,
-            ObjectCreationHandling = ObjectCreationHandling.Replace,
-            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-            ContractResolver = new JsonContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         };
-        public static string SerializeObject(object o) => JsonConvert.SerializeObject(o, Formatting.Indented, Settings);
-        public static T DeSerializeObject<T>(string str) => JsonConvert.DeserializeObject<T>(str, Settings);
-        public sealed class JsonContractResolver : CamelCasePropertyNamesContractResolver
-        {
-        }
+        public static string SerializeObject(object o) => System.Text.Json.JsonSerializer.Serialize(o, Options);
+        public static T DeSerializeObject<T>(string str) => System.Text.Json.JsonSerializer.Deserialize<T>(str, Options);
     }
 }

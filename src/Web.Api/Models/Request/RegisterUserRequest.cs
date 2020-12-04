@@ -1,20 +1,12 @@
 ﻿namespace Web.Api.Models.Request
 {
-    public class RegisterUserRequest
+    public record RegisterUserRequest
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public RegisterUserRequest() {}
-        public RegisterUserRequest(string firstName, string lastName, string email, string userName, string password)
-        {
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            UserName = userName;
-            Password = password;
-        }
+        public string FirstName { get; init; }
+        public string LastName { get; init; }
+        public string Email { get; init; }
+        public string UserName { get; init; }
+        public string Password { get; init; }
+        public RegisterUserRequest(string firstName, string lastName, string email, string userName, string password) => (FirstName, LastName, Email, UserName, Password) = (firstName, lastName, email, userName, password);
     }
 }

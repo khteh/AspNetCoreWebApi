@@ -6,11 +6,11 @@ namespace Web.Api.Core.Domain.Entities
 {
     public class RefreshToken : BaseEntity
     {
-        public string Token { get; private set; }
-        public DateTimeOffset Expires { get; private set; }
-        public int UserId { get; private set; }
+        public string Token { get; init; }
+        public DateTimeOffset Expires { get; init; }
+        public int UserId { get; init; }
         public bool Active => DateTimeOffset.UtcNow <= Expires;
-        public string RemoteIpAddress { get; private set; }
+        public string RemoteIpAddress { get; init; }
         public RefreshToken(string token, DateTimeOffset expires, int userId,string remoteIpAddress)
         {
             Token = token;

@@ -8,15 +8,13 @@ namespace Web.Api.Core.Domain.Entities
     [Serializable]
     public class User : BaseEntity
     {
-        public string FirstName { get; private set; } // EF migrations require at least private setter - won't work on auto-property
-        public string LastName { get; private set; }
-        public string IdentityId { get; private set; }
-        public string UserName { get; private set; } // Required by automapper
-        public string Email { get; private set; }
-
+        public string FirstName { get; init; } // EF migrations require at least initter - won't work on auto-property
+        public string LastName { get; init; }
+        public string IdentityId { get; init; }
+        public string UserName { get; init; } // Required by automapper
+        public string Email { get; init; }
         private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
         public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
-
         public User() { /* Required by EF */ }
         public User(string firstName, string lastName, string identityId, string userName)
         {

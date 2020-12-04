@@ -59,22 +59,14 @@ namespace Web.Api.Infrastructure.Auth
         private static long ToUnixEpochDate(DateTimeOffset date) => date.ToUnixTimeSeconds();
         private static void ThrowIfInvalidOptions(JwtIssuerOptions options)
         {
-            if (options == null) throw new ArgumentNullException(nameof(options));
-
+            if (options == null) 
+                throw new ArgumentNullException(nameof(options));
             if (options.ValidFor <= TimeSpan.Zero)
-            {
                 throw new ArgumentException("Must be a non-zero TimeSpan.", nameof(JwtIssuerOptions.ValidFor));
-            }
-
             if (options.SigningCredentials == null)
-            {
                 throw new ArgumentNullException(nameof(JwtIssuerOptions.SigningCredentials));
-            }
-
             if (options.JtiGenerator == null)
-            {
                 throw new ArgumentNullException(nameof(JwtIssuerOptions.JtiGenerator));
-            }
         }
     }
 }

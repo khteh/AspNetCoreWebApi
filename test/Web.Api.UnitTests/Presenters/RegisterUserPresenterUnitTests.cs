@@ -1,13 +1,12 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
-using Newtonsoft.Json;
 using Web.Api.Core.DTO;
-using Web.Api.Core.DTO.UseCaseResponses;
-using Web.Api.Presenters;
-using Xunit;
 using Web.Api.Core.Interfaces;
 using Web.Api.Models.Response;
+using Web.Api.Presenters;
+using Web.Api.Serialization;
+using Xunit;
 
 namespace Web.Api.UnitTests.Presenters
 {
@@ -36,9 +35,9 @@ namespace Web.Api.UnitTests.Presenters
             presenter.Handle(new UseCaseResponseMessage("1234", true));
 
             // assert
-            dynamic data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
-            Assert.True(data.success.Value);
-            Assert.Equal("1234", data.id.Value);
+            UseCaseResponseMessage data = JsonSerializer.DeSerializeObject<UseCaseResponseMessage>(presenter.ContentResult.Content);
+            Assert.True(data.Success);
+            Assert.Equal("1234", data.Id);
         }
 
         [Fact]

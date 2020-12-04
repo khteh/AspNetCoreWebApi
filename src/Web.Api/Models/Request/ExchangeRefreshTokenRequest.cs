@@ -1,10 +1,8 @@
-﻿
-
-namespace Web.Api.Models.Request
+﻿namespace Web.Api.Models.Request
 {
-    public class ExchangeRefreshTokenRequest
+    public record ExchangeRefreshTokenRequest
     {
-        public string AccessToken { get; set; }
-        public string RefreshToken { get; set; }
+        public string AccessToken { get; init; }
+        public string RefreshToken { get; init; }
     }
 }

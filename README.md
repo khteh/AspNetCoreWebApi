@@ -1,5 +1,5 @@
 # AspNetCoreApiStarter
-An ASP.NET Core 3.1 Web API and GRPC project to quickly bootstrap new projects. Includes Identity, JWT authentication w/ refresh tokens. The application is designed and layered based on Clean Architecture (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). In addition, it uses Command and Decorator pattern, and MediatR for in-process synchronous messaging.
+An ASP.NET 5.0 Web API and GRPC project to quickly bootstrap new projects. Includes Identity, JWT authentication w/ refresh tokens. The application is designed and layered based on Clean Architecture (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). In addition, it uses Command and Decorator pattern, and MediatR for in-process synchronous messaging.
 
 # Database Setup
 - Uses MySQL.

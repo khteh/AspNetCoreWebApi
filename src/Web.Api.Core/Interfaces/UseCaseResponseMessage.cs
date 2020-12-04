@@ -1,20 +1,16 @@
 ﻿
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using Web.Api.Core.DTO;
 
 namespace Web.Api.Core.Interfaces
 {
     public class UseCaseResponseMessage
     {
-        [JsonProperty]
-        public string Id { get; private set; } = string.Empty;
-        [JsonProperty]
-        public bool Success { get; private set; } = false;
-        [JsonProperty]
-        public string Message { get; private set; } = string.Empty;
-        [JsonProperty]
-        public List<Error> Errors { get; private set; } = new List<Error>();
+        public string Id { get; init; } = string.Empty;
+        public bool Success { get; init; } = false;
+        public string Message { get; init; } = string.Empty;
+        public List<Error> Errors { get; init; } = new List<Error>();
         [JsonConstructor]
         public UseCaseResponseMessage(string id, bool success = false, string message = null, List<Error> errors = null)
         {

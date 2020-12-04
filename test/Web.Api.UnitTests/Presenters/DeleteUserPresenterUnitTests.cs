@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Newtonsoft.Json;
 using Web.Api.Core.DTO;
-using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Models.Response;
 using Web.Api.Presenters;

@@ -1,18 +1,10 @@
-﻿
-
-namespace Web.Api.Models.Request
+﻿namespace Web.Api.Models.Request
 {
-    public class LoginRequest
+    public record LoginRequest
     {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public bool RememberMe { get; set; }
-        public LoginRequest() {}
-        public LoginRequest(string userName, string password, bool rememberMe = false)
-        {
-            UserName = userName;
-            Password = password;
-            RememberMe = rememberMe;
-        }
+        public string UserName { get; init; }
+        public string Password { get; init; }
+        public bool RememberMe { get; init; }
+        public LoginRequest(string userName, string password, bool rememberMe = false) => (UserName, Password, RememberMe) = (userName, password, rememberMe);
     }
 }

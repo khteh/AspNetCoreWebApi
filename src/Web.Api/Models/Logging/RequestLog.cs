@@ -1,49 +1,28 @@
-using System.Net;
-using System;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 
 namespace Web.Api.Models.Logging
 {
-    public class RequestLog
+    public record RequestLog
     {
-        [JsonProperty]
-        public string Method {get; private set;}
-        [JsonProperty]
-        public string Scheme {get; private set;}
-        [JsonProperty]
-        public string PathBase {get; private set;}
-        [JsonProperty]
-        public string Path {get; private set;}
-        [JsonProperty]
-        public string LocalIP {get; private set;}
+        public string Method {get; init;}
+        public string Scheme {get; init;}
+        public string PathBase {get; init;}
+        public string Path {get; init;}
+        public string LocalIP {get; init;}
 
-        [JsonProperty]
-        public string IP {get; private set;}
-        [JsonProperty]
-        public string Host {get; private set;}
-        [JsonProperty]
-        public long ContentLength {get; private set;}
-        [JsonProperty]
-        public string ContentType {get; private set;}
-        [JsonProperty]
-        public string QueryString {get; private set;}
-        [JsonProperty]
-        public string Protocol {get; private set;}
-        [JsonProperty]
-        public string UserAgent {get; private set;}
-        [JsonProperty]
-        public string X_Forwarded_For {get; private set;}
-        [JsonProperty]
-        public string X_Forwarded_Proto {get; private set;}
-        [JsonProperty]
-        public string X_Forwarded_Host {get; private set;}
-        [JsonProperty]
-        public string X_Original_For {get; private set;}
-        [JsonProperty]
-        public string X_Original_Proto {get; private set;}
-        [JsonProperty]
-        public string X_Original_Host {get; private set;}
+        public string IP {get; init;}
+        public string Host {get; init;}
+        public long ContentLength {get; init;}
+        public string ContentType {get; init;}
+        public string QueryString {get; init;}
+        public string Protocol {get; init;}
+        public string UserAgent {get; init;}
+        public string X_Forwarded_For {get; init;}
+        public string X_Forwarded_Proto {get; init;}
+        public string X_Forwarded_Host {get; init;}
+        public string X_Original_For {get; init;}
+        public string X_Original_Proto {get; init;}
+        public string X_Original_Host {get; init;}
         public RequestLog(string method, string scheme, string pathBase, string path, string host, long? length, string ip, string queryString, string contentType, string protocol, IHeaderDictionary headers)
         {
             IP = ip;

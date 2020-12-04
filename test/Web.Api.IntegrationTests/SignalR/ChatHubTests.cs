@@ -1,15 +1,11 @@
-using System.Threading.Tasks;
-using System.Threading;
-using Xunit;
 using Microsoft.AspNetCore.SignalR.Client;
-using System.Net.Http;
-using Web.Api.Hubs;
 using Microsoft.AspNetCore.TestHost;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Web.Api.Models.Response;
-using Microsoft.AspNetCore.Http.Connections;
+using Xunit;
 
 namespace Web.Api.IntegrationTests.SignalR
 {
@@ -21,7 +17,7 @@ namespace Web.Api.IntegrationTests.SignalR
         {
             HttpClient client = _testServer.CreateClient();
             Assert.NotNull(client);
-            var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(JsonConvert.SerializeObject(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
+            var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
             LoginResponse response = Serialization.JsonSerializer.DeSerializeObject<LoginResponse>(await httpResponse.Content.ReadAsStringAsync());
             Assert.NotNull(response);
@@ -40,9 +36,9 @@ namespace Web.Api.IntegrationTests.SignalR
             HubConnection connection = new HubConnectionBuilder()
                             .WithUrl("https://localhost/chatHub", o => {
                                 o.HttpMessageHandlerFactory = _ =>  _testServer.CreateHandler();
-                                o.AccessTokenProvider = async () => await AccessTokenProvider(); 
-                                //o.Transports = HttpTransportType.WebSockets;
-                                //o.SkipNegotiation = false;
+                                o.AccessTokenProvider = async () => await AccessTokenProvider();
+                                //o.Transports = HttpTransportType.WebSockets; Websockets is currently unmockable. https://github.com/dotnet/aspnetcore/issues/28108
+                                //o.SkipNegotiation = true;
                             }).Build();
             connection.On<string>("ReceiveMessage", i => {
                 echo = i;
@@ -66,9 +62,9 @@ namespace Web.Api.IntegrationTests.SignalR
             HubConnection connection = new HubConnectionBuilder()
                             .WithUrl("https://localhost/chatHub", o => {
                                 o.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
-                                o.AccessTokenProvider = async () => await AccessTokenProvider(); 
-                                //o.Transports = HttpTransportType.WebSockets;
-                                //o.SkipNegotiation = false;
+                                o.AccessTokenProvider = async () => await AccessTokenProvider();
+                                //o.Transports = HttpTransportType.WebSockets; Websockets is currently unmockable. https://github.com/dotnet/aspnetcore/issues/28108
+                                //o.SkipNegotiation = true;
                             }).Build();
             connection.On<string, string>("ReceiveMessageFromUser", (u, i) => {
                 user = u;

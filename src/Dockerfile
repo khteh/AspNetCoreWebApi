@@ -1,7 +1,7 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1.5-focal
+FROM mcr.microsoft.com/dotnet/aspnet:5.0.0-focal
 MAINTAINER Kok How, Teh <funcoolgeek@gmail.com>
 RUN apt update -y
-RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata
+RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata gnupg2 gnupg gnupg1
 WORKDIR /app
 RUN openssl genrsa -aes256 -passout pass:AspNetCoreApiStarter -out server.key 4096
 RUN openssl rsa -in server.key -out server.key.insecure -passin pass:AspNetCoreApiStarter
@@ -13,6 +13,6 @@ RUN openssl pkcs12 -export -out /tmp/localhost.pfx -inkey server.key -in server.
 #dotnet dev-certs https --clean 
 #dotnet dev-certs https -ep ./localhost.pfx -p AspNetCoreApiStarter -v
 #dotnet dev-certs https --trust 
-ADD Web.Api/bin/Release/netcoreapp3.1/publish/ .
+ADD Web.Api/bin/Release/net5.0/publish/ .
 EXPOSE 5000
 ENTRYPOINT ["dotnet", "Web.Api.dll"]

@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Newtonsoft.Json;
-using Web.Api.Models.Response;
 using Web.Api.Core.DTO;
-using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Presenters;
+using Web.Api.Serialization;
 using Xunit;
 
 namespace Web.Api.UnitTests.Presenters
@@ -23,8 +21,11 @@ namespace Web.Api.UnitTests.Presenters
             presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new AccessToken(token, 0), "", true));
 
             // assert
-            dynamic data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
-            Assert.Equal(token, data.accessToken.token.Value);
+            Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse data = JsonSerializer.DeSerializeObject<Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse>(presenter.ContentResult.Content);
+            Assert.NotNull(data);
+            Assert.NotNull(data.AccessToken);
+            Assert.False(string.IsNullOrEmpty(data.AccessToken.Token));
+            Assert.Equal(token, data.AccessToken.Token);
         }
 
         [Fact]
@@ -38,8 +39,8 @@ namespace Web.Api.UnitTests.Presenters
             presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(null, token, true));
 
             // assert
-            dynamic data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
-            Assert.Equal(token, data.refreshToken.Value);
+            Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse data = JsonSerializer.DeSerializeObject<Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse>(presenter.ContentResult.Content);
+            Assert.Equal(token, data.RefreshToken);
         }
 
         [Fact]

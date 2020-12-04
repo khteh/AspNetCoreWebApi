@@ -1,15 +1,12 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using System.Net;
-using Newtonsoft.Json;
-using Web.Api.Core.DTO;
-using Web.Api.Core.DTO.UseCaseResponses;
+﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using Web.Api.Core.DTO;
+using Web.Api.Core.Interfaces;
 using Web.Api.Presenters.Grpc;
 using Xunit;
-using Web.Api.Core.Interfaces;
-using Moq;
-using AutoMapper;
 namespace Web.Api.UnitTests.Presenters.Grpc
 {
     public class GRPCRegisterUserPresenterUnitTests

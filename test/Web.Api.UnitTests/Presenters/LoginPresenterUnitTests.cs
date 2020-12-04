@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Newtonsoft.Json;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Presenters;
+using Web.Api.Serialization;
 using Xunit;
 
 namespace Web.Api.UnitTests.Presenters
@@ -35,8 +35,8 @@ namespace Web.Api.UnitTests.Presenters
             presenter.Handle(new LoginResponse(new AccessToken(token, 0),"", true));
 
             // assert
-            dynamic data = JsonConvert.DeserializeObject(presenter.ContentResult.Content);
-            Assert.Equal(token, data.accessToken.token.Value);
+            LoginResponse data = JsonSerializer.DeSerializeObject<LoginResponse>(presenter.ContentResult.Content);
+            Assert.Equal(token, data.AccessToken.Token);
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace Web.Api.UnitTests.Presenters
             presenter.Handle(new LoginResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
             // assert
-            Models.Response.LoginResponse response = JsonConvert.DeserializeObject<Models.Response.LoginResponse>(presenter.ContentResult.Content);
+            Models.Response.LoginResponse response = JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(presenter.ContentResult.Content);
             Assert.Equal((int)HttpStatusCode.Unauthorized, presenter.ContentResult.StatusCode);
             Assert.NotNull(response);
             Assert.NotNull(response.Errors);

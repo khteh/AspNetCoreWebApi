@@ -35,7 +35,7 @@ namespace Web.Api.IntegrationTests
     {
         IConfigurationRoot _config;
         private GrpcChannel? _channel;
-        protected GrpcTestFixture<Startup> Fixture { get; private set; } = default!;
+        protected GrpcTestFixture<Startup> Fixture { get; init; } = default!;
         protected ILoggerFactory LoggerFactory => Fixture.LoggerFactory;
         protected GrpcChannel Channel => _channel ??= CreateChannel();
         public FunctionalTestBase()

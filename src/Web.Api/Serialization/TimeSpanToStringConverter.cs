@@ -13,6 +13,7 @@ namespace Web.Api.Serialization
     /// The reason for this is that .NET Core 3.0 replaced JSON.NET with a new, bult-in JSON serializer, System.Text.Json. 
     /// This serializer doesn't support TimeSpan. The new serializer is faster, doesn't allocate in most cases, but doesn't cover all the cases JSON.NET did.
     /// https://stackoverflow.com/questions/58283761/net-core-3-0-timespan-deserialization-error#58284103
+    /// Fixed in .Net 5.0
     /// </summary>
     public class TimeSpanToStringConverter : JsonConverter<TimeSpan>
     {
