@@ -5,11 +5,5 @@ using Web.Api.Core.DTO;
 
 namespace Web.Api.Models.Response
 {
-    public class DeleteUserResponse : ResponseBase
-    {
-        [JsonConstructor]
-        public DeleteUserResponse(bool success, List<Error> errors) : base(success, errors)
-        {
-        }
-    }
+    public record DeleteUserResponse(bool Success, List<Error> Errors) : ResponseBase(Success, Errors);
 }

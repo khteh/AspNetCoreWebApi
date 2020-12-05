@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Hosting;
+using System;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.Services;
 using Web.Api.Infrastructure.Auth;
@@ -9,7 +9,6 @@ using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.Infrastructure.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

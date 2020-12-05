@@ -5,7 +5,7 @@ using Web.Api.Core.DTO;
 
 namespace Web.Api.Models.Response
 {
-    public class ResponseBase
+    public record ResponseBase
     {
         public bool Success { get; init; } = false;
         public List<Error> Errors { get; init; } = new List<Error>();

@@ -56,7 +56,6 @@ namespace Web.Api.Controllers
             ResetPasswordResponse response = await _mediator.Send(new ResetPasswordCommand(request.Id, request.NewPassword));
             return _mapper.Map<JsonContentResult>(response);
         }
-
         // POST api/accounts
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(string id)
