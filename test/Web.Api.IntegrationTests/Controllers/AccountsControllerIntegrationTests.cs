@@ -48,7 +48,6 @@ namespace Web.Api.IntegrationTests.Controllers
             Assert.Equal("One or more validation errors occurred.", (string)result.RootElement.GetProperty("title").GetString());
             Assert.True(result.RootElement.TryGetProperty("errors", out JsonElement error));
             Assert.True(error.TryGetProperty("Email", out JsonElement emails));
-            Assert.NotEqual(0, emails.GetArrayLength());
             Assert.Equal(1, emails.GetArrayLength());
             foreach (JsonElement email in emails.EnumerateArray())
             {
@@ -56,7 +55,6 @@ namespace Web.Api.IntegrationTests.Controllers
                 Assert.Equal("'Email' is not a valid email address.", email.GetString());
             }
             Assert.True(error.TryGetProperty("UserName", out JsonElement userNames));
-            Assert.NotEqual(0, userNames.GetArrayLength());
             Assert.Equal(1, userNames.GetArrayLength());
             foreach (JsonElement userName in userNames.EnumerateArray())
             {
