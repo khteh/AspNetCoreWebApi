@@ -1,7 +1,5 @@
 using Moq;
-using Web.Api.Core.DTO.GatewayResponses.Repositories;
 using Web.Api.Core.DTO.UseCaseRequests;
-using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;

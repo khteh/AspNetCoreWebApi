@@ -14,18 +14,15 @@ namespace Web.Api.Infrastructure.Auth
     {
         private readonly IJwtTokenHandler _jwtTokenHandler;
         private readonly JwtIssuerOptions _jwtOptions;
-
         public JwtFactory(IJwtTokenHandler jwtTokenHandler, IOptions<JwtIssuerOptions> jwtOptions)
         {
             _jwtTokenHandler = jwtTokenHandler;
             _jwtOptions = jwtOptions.Value;
             ThrowIfInvalidOptions(_jwtOptions);
         }
-
         public async Task<AccessToken> GenerateEncodedToken(string id, string userName)
         {
             var identity = GenerateClaimsIdentity(id, userName);
-
             var claims = new[]
             {
                  new Claim(JwtRegisteredClaimNames.Sub, userName),
@@ -34,7 +31,6 @@ namespace Web.Api.Infrastructure.Auth
                  identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol),
                  identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Id)
              };
-
             // Create the JWT security token and encode it.
             var jwt = new JwtSecurityToken(
                 _jwtOptions.Issuer,
@@ -45,7 +41,6 @@ namespace Web.Api.Infrastructure.Auth
                 _jwtOptions.SigningCredentials);
             return new AccessToken(_jwtTokenHandler.WriteToken(jwt), (int)_jwtOptions.ValidFor.TotalSeconds);
         }
-
         private static ClaimsIdentity GenerateClaimsIdentity(string id, string userName)
         {
             return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
@@ -54,7 +49,6 @@ namespace Web.Api.Infrastructure.Auth
                 new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol, Helpers.Constants.Strings.JwtClaims.ApiAccess)
             });
         }
-
         /// <returns>Date converted to seconds since Unix epoch (Jan 1, 1970, midnight UTC).</returns>
         private static long ToUnixEpochDate(DateTimeOffset date) => date.ToUnixTimeSeconds();
         private static void ThrowIfInvalidOptions(JwtIssuerOptions options)

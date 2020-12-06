@@ -12,14 +12,11 @@ namespace Web.Api.Infrastructure.Auth
     {
         private readonly IJwtTokenHandler _jwtTokenHandler;
         private readonly JwtIssuerOptions _jwtOptions;
-        private readonly AuthSettings _authSettings;
-        public JwtTokenValidator(IJwtTokenHandler jwtTokenHandler, IOptions<JwtIssuerOptions> jwtOptions, IOptions<AuthSettings> authSettings)
+        public JwtTokenValidator(IJwtTokenHandler jwtTokenHandler, IOptions<JwtIssuerOptions> jwtOptions)
         {
              _jwtTokenHandler = jwtTokenHandler;
              _jwtOptions = jwtOptions.Value;
-             _authSettings = authSettings.Value;
         }
-
         public ClaimsPrincipal GetPrincipalFromToken(string token, string signingKey)
         {
             var tokenValidationParameters = new TokenValidationParameters
@@ -31,7 +28,7 @@ namespace Web.Api.Infrastructure.Auth
                 ValidAudience = _jwtOptions.Audience,
 
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authSettings.SecretKey)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
 
                 RequireExpirationTime = true, 
                 ValidateLifetime = false, // This function is called from ExchangeRefreshToken. If set to true, SecurityTokenExpiredException is thrown and there is no way to exchange RefreshToken for a new AccessToken!

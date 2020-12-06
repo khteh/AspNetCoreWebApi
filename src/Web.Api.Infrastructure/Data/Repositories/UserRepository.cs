@@ -1,20 +1,18 @@
-﻿using System;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
-//using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Specifications;
 using Web.Api.Infrastructure.Identity;
-using Microsoft.Extensions.Logging;
-using Web.Api.Core.DTO.UseCaseRequests;
-using System.Net;
 
 namespace Web.Api.Infrastructure.Data.Repositories
 {
@@ -42,7 +40,7 @@ namespace Web.Api.Infrastructure.Data.Repositories
                     return new CreateUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                 // add the email claim and value for this user
                 await _userManager.AddClaimAsync(appUser, new Claim(ClaimTypes.Name, appUser.UserName));
-                var user = new User(firstName, lastName, appUser.Id.ToString(), appUser.UserName);
+                var user = new User(firstName, lastName, appUser.Id, appUser.UserName);
                 _appDbContext.Users.Add(user);
                 await _appDbContext.SaveChangesAsync();
                 return new CreateUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
@@ -79,9 +77,9 @@ namespace Web.Api.Infrastructure.Data.Repositories
             }
         }
         public async Task<User> FindUserByName(string userName) => await getUser(await _userManager.FindByNameAsync(userName));
-        public async Task<Core.DTO.GatewayResponses.Repositories.FindUserResponse> FindByName(string userName) => await getFindUserResponse(await _userManager.FindByNameAsync(userName));
-        public async Task<Core.DTO.GatewayResponses.Repositories.FindUserResponse> FindById(string id) => await getFindUserResponse(await _userManager.FindByIdAsync(id));
-        public async Task<Core.DTO.GatewayResponses.Repositories.FindUserResponse> FindByEmail(string email) => await getFindUserResponse(await _userManager.FindByEmailAsync(email));
+        public async Task<FindUserResponse> FindByName(string userName) => await getFindUserResponse(await _userManager.FindByNameAsync(userName));
+        public async Task<FindUserResponse> FindById(string id) => await getFindUserResponse(await _userManager.FindByIdAsync(id));
+        public async Task<FindUserResponse> FindByEmail(string email) => await getFindUserResponse(await _userManager.FindByEmailAsync(email));
         /// <summary>
         /// SignIn - Requires AddCookie() in startup.cs
         /// </summary>
@@ -276,11 +274,11 @@ namespace Web.Api.Infrastructure.Data.Repositories
             }
         }
         private async Task<User> getUser(AppUser appUser) => appUser == null ? null : _mapper.Map<AppUser, User>(appUser, await GetSingleBySpec(new UserSpecification(appUser.Id)));
-        private async Task<Core.DTO.GatewayResponses.Repositories.FindUserResponse> getFindUserResponse(AppUser appUser)
+        private async Task<FindUserResponse> getFindUserResponse(AppUser appUser)
         {
             User user = await getUser(appUser);
-            return user == null ? new Core.DTO.GatewayResponses.Repositories.FindUserResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "User not found!") }) :
-                new Core.DTO.GatewayResponses.Repositories.FindUserResponse(appUser.Id, user, true, null);
+            return user == null ? new FindUserResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "User not found!") }) :
+                new FindUserResponse(appUser.Id, user, true, null);
         }
     }
 }

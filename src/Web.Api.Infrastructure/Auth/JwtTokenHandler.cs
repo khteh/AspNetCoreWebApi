@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Web.Api.Core.Interfaces.Services;
 using Web.Api.Infrastructure.Extensions;
 using Web.Api.Infrastructure.Interfaces;
 
@@ -18,9 +17,7 @@ namespace Web.Api.Infrastructure.Auth
             _jwtSecurityTokenHandler ??= new JwtSecurityTokenHandler();
             _logger = logger;
         }
-
         public string WriteToken(JwtSecurityToken jwt) => _jwtSecurityTokenHandler.WriteToken(jwt);
-
         public ClaimsPrincipal ValidateToken(string token, TokenValidationParameters tokenValidationParameters)
         {
             try

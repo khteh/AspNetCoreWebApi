@@ -29,7 +29,6 @@ namespace Web.Api.Core.UseCases
             _jwtFactory = jwtFactory;
             _tokenFactory = tokenFactory;
         }
-
         public async Task<bool> Handle(ExchangeRefreshTokenRequest message, IOutputPort<ExchangeRefreshTokenResponse> outputPort)
         {
             var cp = _jwtTokenValidator.GetPrincipalFromToken(message.AccessToken, message.SigningKey);

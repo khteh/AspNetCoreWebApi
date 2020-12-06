@@ -1,5 +1,5 @@
-﻿using System.Security.Claims;
-using Moq;
+﻿using Moq;
+using System.Security.Claims;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseRequests;

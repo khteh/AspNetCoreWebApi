@@ -1,13 +1,9 @@
-using Moq;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Xunit;
 using Microsoft.AspNetCore.SignalR;
+using Moq;
+using System.Threading.Tasks;
 using Web.Api.Hubs;
 using Web.Api.Hubs.Interfaces;
-using Microsoft.Extensions.Logging;
+using Xunit;
 
 namespace Web.Api.UnitTests.SignalR
 {
