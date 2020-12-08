@@ -10,8 +10,8 @@ namespace Web.Api.Infrastructure.Identity
         // Add additional profile data for application users by adding properties to this class
         [MaxLength(85)]
         public override string Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string FirstName { get; init; }
+        public string LastName { get; init; }
         public AppUser() { }
         public AppUser(string username, string email, string firstName, string lastName)
         {
