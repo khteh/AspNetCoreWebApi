@@ -3,7 +3,7 @@ An ASP.NET 5.0 Web API and GRPC project to quickly bootstrap new projects. Inclu
 
 # Database Setup
 - Uses MySQL.
-- Install dotnet ef tool: `dotnet tool install --global dotnet-ef`
+- Install dotnet ef tool: <code>**dotnet tool install --global dotnet-ef**</code>
 - Apply database migrations to create the db.  From a command line within the *Web.Api.Infrastructure* project folder use the dotnet CLI to run : 
 - <code>Web.Api.Infrastructure>**dotnet ef database update --context AppDbContext**</code>
 - <code>Web.Api.Infrastructure>**dotnet ef database update --context AppIdentityDbContext**</code>
