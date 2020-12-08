@@ -69,11 +69,17 @@ namespace Web.Api.IntegrationTests
                 {
                     options.UseInMemoryDatabase("GrpcInMemoryAppDb");
                     options.UseInternalServiceProvider(serviceProvider);
+                    options.EnableSensitiveDataLogging();
+                    options.EnableDetailedErrors();
+                    options.LogTo(Console.WriteLine);
                 });
             services.AddDbContextPool<AppIdentityDbContext>(options =>
                 {
                     options.UseInMemoryDatabase("GrpcInMemoryIdentityDb");
                     options.UseInternalServiceProvider(serviceProvider);
+                    options.EnableSensitiveDataLogging();
+                    options.EnableDetailedErrors();
+                    options.LogTo(Console.WriteLine);
                 });
             services.AddScoped<SignInManager<AppUser>>();
             services.AddScoped<ILogger<UserRepository>>(provider => {
