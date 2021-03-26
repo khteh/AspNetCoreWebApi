@@ -38,8 +38,9 @@ jobs:
             MINOR=$(cat version.txt | awk -F"." '{ print $2 }')
             VERSION=$MAJOR.$MINOR.$CIRCLE_BUILD_NUM
             echo ${VERSION} > docker-build_number.txt
-            docker push khteh/asp.netcoreapistarter:latest
-            docker push khteh/asp.netcoreapistarter:$VERSION
+            docker push khteh/asp.netcoreapistarter
+            #docker push khteh/asp.netcoreapistarter:latest
+            #docker push khteh/asp.netcoreapistarter:$VERSION
       - persist_to_workspace:  
           name: Save Workspace
           root: .
