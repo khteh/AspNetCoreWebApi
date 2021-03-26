@@ -39,8 +39,6 @@ jobs:
             VERSION=$MAJOR.$MINOR.$CIRCLE_BUILD_NUM
             echo ${VERSION} > docker-build_number.txt
             docker push khteh/asp.netcoreapistarter --all-tags
-            #docker push khteh/asp.netcoreapistarter:latest
-            #docker push khteh/asp.netcoreapistarter:$VERSION
       - persist_to_workspace:  
           name: Save Workspace
           root: .
