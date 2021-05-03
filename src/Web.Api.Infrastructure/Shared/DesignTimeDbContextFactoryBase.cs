@@ -45,7 +45,7 @@ namespace Web.Api.Infrastructure.Shared
                 throw new ArgumentException($"{nameof(connectionString)} is null or empty.", nameof(connectionString));
             var optionsBuilder = new DbContextOptionsBuilder<TContext>();
             Console.WriteLine("DesignTimeDbContextFactory.Create(string): Connection string: {0}", connectionString);
-            optionsBuilder.UseMySql(connectionString, o => o.ServerVersion(new Version(8, 0, 17), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql));
+            optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             var options = optionsBuilder.Options;
             return CreateNewInstance(options);
         }

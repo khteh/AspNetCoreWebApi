@@ -23,12 +23,16 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IJwtTokenValidator, JwtTokenValidator>()
                 .AddScoped<SignInManager<AppUser>>();
             if (!useInMemoryDatabase)
-                service.AddDbContextPool<AppIdentityDbContext>(options => options.UseMySql(configuration.GetConnectionString("Default"), b => {
+                service.AddDbContextPool<AppIdentityDbContext>(options => options.UseMySql(configuration.GetConnectionString("Default"), ServerVersion.AutoDetect(configuration.GetConnectionString("Default")), b => b.MigrationsAssembly("Web.Api.Infrastructure")))
+                    .AddDbContextPool<AppDbContext>(options => options.UseMySql(configuration.GetConnectionString("Default"), ServerVersion.AutoDetect(configuration.GetConnectionString("Default")), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
+#if false
+            service.AddDbContextPool<AppIdentityDbContext>(options => options.UseMySql(configuration.GetConnectionString("Default"), b => {
                     b.ServerVersion(new Version(8, 0, 17), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql);
                     b.MigrationsAssembly("Web.Api.Infrastructure");}))
                 .AddDbContextPool<AppDbContext>(options => options.UseMySql(configuration.GetConnectionString("Default"), b => {
                     b.ServerVersion(new Version(8, 0, 17), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql);
                     b.MigrationsAssembly("Web.Api.Infrastructure");}));
+#endif
             return service;
         }
     }
