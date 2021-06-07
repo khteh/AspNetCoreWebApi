@@ -30,7 +30,3 @@ The available APIs include:
 
 # Continuous Integration:
 * Integrated with CircleCI
-
-# Contact
-mark@fullstackmark.com
-funcoolgeek@gmail.com
