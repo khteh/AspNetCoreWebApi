@@ -1,26 +1,358 @@
-﻿using System.Security.Cryptography;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿using FluentValidation.AspNetCore;
+using MediatR;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Events;
-using Serilog.Formatting.Compact;
-using Serilog.Formatting.Elasticsearch;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
-using Serilog.Settings.Configuration;
-using System.Threading;
+using System.Text;
+using System.Threading.Tasks;
+using Web.Api;
+using Web.Api.Behaviours;
+using Web.Api.Commands;
+using Web.Api.Extensions;
+using Web.Api.HealthChecks;
+using Web.Api.Infrastructure.Auth;
+using Web.Api.Infrastructure.Data;
+using Web.Api.Infrastructure.Data.Mapping;
+using Web.Api.Infrastructure.Helpers;
+using Web.Api.Infrastructure.Identity;
+using Web.Api.Models.Logging;
+using Web.Api.Models.Response;
+using Web.Api.Presenters.Grpc;
 
-namespace Web.Api
+var builder = WebApplication.CreateBuilder(args);
+
+IWebHostEnvironment env = builder.Environment;
+string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+bool _isIntegrationTests = !string.IsNullOrEmpty(environment) && environment.Equals("IntegrationTests");
+
+#if false
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    ApplicationName = typeof(Program).Assembly.FullName,
+    ContentRootPath = Path.GetFullPath(Directory.GetCurrentDirectory()),
+    WebRootPath = "customwwwroot"
+});
+#endif
+
+builder.Configuration.SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
+                .AddEnvironmentVariables();
+builder.WebHost.UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory()));
+// Add services to the container.
+builder.Services.AddRazorPages();
+builder.Services.AddOptions();
+builder.Services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+// Add framework builder.Services.
+// The following are done in builder.Services.AddInfrastructure()
+//builder.Services.AddDbContextPool<AppIdentityDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
+//builder.Services.AddDbContextPool<AppDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
+// Register the ConfigurationBuilder instance of AuthSettings
+var authSettings = builder.Configuration.GetSection(nameof(AuthSettings));
+builder.Services.Configure<AuthSettings>(authSettings);
+var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings[nameof(AuthSettings.SecretKey)]));
+// jwt wire up
+// Get options from app settings
+var jwtAppSettingOptions = builder.Configuration.GetSection(nameof(JwtIssuerOptions));
+builder.Services.Configure<JwtIssuerOptions>(jwtAppSettingOptions);
+// Configure JwtIssuerOptions
+builder.Services.Configure<JwtIssuerOptions>(options =>
+{
+    options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
+    options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
+    options.SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha512);
+});
+
+var tokenValidationParameters = new TokenValidationParameters
+{
+    ValidateIssuer = true,
+    ValidIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)],
+
+    ValidateAudience = true,
+    ValidAudience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)],
+
+    ValidateIssuerSigningKey = true,
+    IssuerSigningKey = signingKey,
+
+    RequireExpirationTime = true,
+    ValidateLifetime = true,
+    ClockSkew = TimeSpan.Zero
+};
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(configureOptions =>
+{
+    configureOptions.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
+    configureOptions.ClaimsIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
+    configureOptions.TokenValidationParameters = tokenValidationParameters;
+    configureOptions.SaveToken = true;
+
+    configureOptions.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                context.Response.Headers.Add("Token-Expired", "true");
+            return Task.CompletedTask;
+        },
+        // We have to hook the OnMessageReceived event in order to
+        // allow the JWT authentication handler to read the access
+        // token from the query string when a WebSocket or 
+        // Server-Sent Events request comes in.
+        OnMessageReceived = async (context) =>
+        {
+            if (context.Request.Path.StartsWithSegments("/chatHub"))
+            {
+                string accessToken = context.Request.Query["access_token"];
+                if (string.IsNullOrEmpty(accessToken) && context.Request.Headers.ContainsKey("Authorization"))
+                {
+                    accessToken = context.Request.Headers["Authorization"];
+                    accessToken = accessToken.Split(" ")[1];
+                }
+                if (!string.IsNullOrEmpty(accessToken))
+                    context.Token = accessToken;
+            }
+        }
+    };
+});
+// api user claim policy
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+});
+builder.Services.AddAntiforgery(options =>
+{
+    // Set Cookie properties using CookieBuilder properties†.
+    options.FormFieldName = "AntiforgeryFieldname";
+    options.HeaderName = "X-CSRF-TOKEN-HEADERNAME";
+    options.SuppressXFrameOptionsHeader = false;
+});
+// add identity
+var identityBuilder = builder.Services.AddIdentityCore<AppUser>(o =>
+{
+    // configure identity options
+    o.Password.RequireDigit = false;
+    o.Password.RequireLowercase = false;
+    o.Password.RequireUppercase = false;
+    o.Password.RequireNonAlphanumeric = false;
+    o.Password.RequiredLength = 6;
+});
+identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
+identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
+builder.Services.AddControllersWithViews().AddFluentValidation();
+//.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter())); Fixed in .Net Core 5
+builder.Services.AddAutoMapper(new[] { typeof(IdentityProfile), typeof(GrpcProfile), typeof(ResponseProfile) });
+builder.Services.AddMediatR(typeof(Program));
+builder.Services.AddScoped<IPipelineBehavior<RegisterUserCommand, RegisterUserResponse>, LoggingBehavior<RegisterUserCommand, RegisterUserResponse>>();
+builder.Services.AddScoped<IPipelineBehavior<LoginCommand, LoginResponse>, LoggingBehavior<LoginCommand, LoginResponse>>();
+builder.Services.AddScoped<IPipelineBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>, LoggingBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>>();
+// Register the Swagger generator, defining 1 or more Swagger documents
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v3", new OpenApiInfo
+    {
+        Title = "ASP.Net Core RESTful, SignalR and GRPC service",
+        Version = "v3",
+        Description = "An ASP.NET Core 3.0 Web API and GRPC project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.",
+        Contact = new OpenApiContact
+        {
+            Name = "Teh Kok How",
+            Email = "funcoolgeek@gmail.com",
+            Url = new Uri("https://github.com/khteh/AspNetCoreApiStarter"),
+        },
+    });
+    // Swagger 2.+ support
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Scheme = "Bearer",
+        In = ParameterLocation.Header,
+        Description = "Please insert JWT with Bearer into field",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+    //c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+    //{
+    //    { "Bearer", new string[] { } }
+    //});
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                        },
+                        new List<string>()
+                    }
+                });
+    c.CustomSchemaIds(i => i.FullName);
+});
+builder.Services.AddGrpc();
+builder.Services.AddSignalR();
+// Change to use Name as the user identifier for SignalR
+// WARNING: This requires that the source of your JWT token 
+// ensures that the Name claim is unique!
+// If the Name claim isn't unique, users could receive messages 
+// intended for a different user!
+builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+// Change to use email as the user identifier for SignalR
+// builder.Services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
+
+// WARNING: use *either* the NameUserIdProvider *or* the 
+// EmailBasedUserIdProvider, but do not use both. 
+// Register Infrastructure Services
+builder.Services.AddInfrastructure(builder.Configuration, _isIntegrationTests).AddCore().AddOutputPorts();//.AddHealthCheck();
+builder.Services.AddHealthChecks()
+    .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>() { "Liveness" })
+    .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string> { "Readiness" })
+    .AddMySql(builder.Configuration["ConnectionStrings:Default"], "MySQL", HealthStatus.Unhealthy, new List<string> { "Services" })
+    .AddDbContextCheck<AppDbContext>("AppDbContext", HealthStatus.Unhealthy, new List<string> { "Services" });
+builder.Services.AddHostedService<StartupHostedService>()
+    .AddSingleton<ReadinessHealthCheck>()
+    .AddSingleton<LivenessHealthCheck>();
+builder.Services.Configure<ForwardedHeadersOptions>(options => {
+    options.ForwardedHeaders = ForwardedHeaders.All;
+    options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse("10.0.0.0"), 16)); // Load Balancer / VPC Network
+});
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(60);
+    //options.ExcludedHosts.Add("example.com");
+    //options.ExcludedHosts.Add("www.example.com");
+});
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseMigrationsEndPoint();
+}
+else
+{
+    app.UseExceptionHandler(builder => builder.Run(async context =>
+        {
+            context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            var error = context.Features.Get<IExceptionHandlerFeature>();
+            if (error != null)
+            {
+                context.Response.AddApplicationError(error.Error.Message);
+                await context.Response.WriteAsync(error.Error.Message).ConfigureAwait(false);
+            }
+        }));
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages();
+string pathBase = app.Configuration["PATH_BASE"];
+app.Logger.LogInformation($"Using PathBase: {pathBase}");
+app.Use(async (context, next) =>
+{
+    // Request method, scheme, and path
+    //_logger.LogInformation($"Method: {context.Request.Method}, Scheme: {context.Request.Scheme}, PathBase: {context.Request.PathBase}, Path: {context.Request.Path}, IP: {context.Connection.RemoteIpAddress}, Host: {context.Request.Host}, ContentLength: {context.Request.ContentLength}");
+    RequestLog requestLog = new RequestLog(context?.Request?.Method,
+                                        context?.Request?.Scheme,
+                                        context?.Request?.PathBase,
+                                        context?.Request?.Path,
+                                        context?.Request?.Host.ToString(),
+                                        context?.Request?.ContentLength,
+                                        context?.Connection?.RemoteIpAddress?.ToString(),
+                                        context?.Request?.QueryString.ToString(),
+                                        context?.Request?.ContentType,
+                                        context?.Request?.Protocol,
+                                        context?.Request?.Headers
+                                        );
+    app.Logger.LogInformation(requestLog.ToString());
+    // Headers
+    //foreach (var header in context.Request.Headers)
+    //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
+    // Connection: RemoteIp
+    context.Request.PathBase = new PathString(pathBase); // Kubernetes ingress rule
+    context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+    {
+        Public = true,
+        MaxAge = TimeSpan.FromSeconds(10)
+    };
+    context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] = new string[] { "Accept-Encoding" };
+    if (string.Equals(context.Request.Path.Value, "/", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(context.Request.Path.Value, "/index.html", StringComparison.OrdinalIgnoreCase))
+    {
+        // The request token can be sent as a JavaScript-readable cookie, 
+        // and Angular uses it by default.
+        IAntiforgery antiforgery = app.Services.GetRequiredService<IAntiforgery>();
+        var tokens = antiforgery.GetAndStoreTokens(context);
+        context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions() { HttpOnly = false });
+    }
+    await next();
+});
+
+IHostApplicationLifetime lifetime = app.Lifetime;
+ReadinessHealthCheck readinessHealthCheck = app.Services.GetRequiredService<ReadinessHealthCheck>();
+lifetime.ApplicationStarted.Register(() => AppStarted(app.Logger, readinessHealthCheck));
+lifetime.ApplicationStopping.Register(() => app.Logger.LogInformation("ApplicationStopping"));
+lifetime.ApplicationStopped.Register(() => app.Logger.LogInformation("ApplicationStopped"));
+
+app.Run();
+
+static void AppStarted(ILogger logger, ReadinessHealthCheck readinessHealthCheck)
+{
+    logger.LogInformation($"ApplicationStarted");
+    readinessHealthCheck.StartupTaskCompleted = true;
+}
+public partial class Program { } // so you can reference it from tests
+
+#if false
 {
     public class Program
     {
@@ -78,7 +410,7 @@ namespace Web.Api
         }
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>()
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Program>()
                     .ConfigureAppConfiguration((hostingContext, config) => {
                         config.SetBasePath(Directory.GetCurrentDirectory());
                         config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -90,13 +422,13 @@ namespace Web.Api
                     .ConfigureLogging((hostingContext, logging) =>
                     {
                         logging.ClearProviders();
-        #if false
+#if false
                         logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                         logging.AddConsole();
                         logging.AddDebug();
                         logging.AddEventSourceLogger();
                         logging.AddSerilog(dispose: true);
-        #endif
+#endif
                     })
                     .UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory()))
                     // Add the Serilog ILoggerFactory to IHostBuilder
@@ -111,3 +443,4 @@ namespace Web.Api
                 );
     }
 }
+#endif

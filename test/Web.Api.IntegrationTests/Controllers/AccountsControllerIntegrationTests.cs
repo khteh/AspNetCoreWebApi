@@ -8,11 +8,11 @@ using Xunit;
 
 namespace Web.Api.IntegrationTests.Controllers
 {
-    public class AccountsControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory<Startup>>
+    public class AccountsControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
 
-        public AccountsControllerIntegrationTests(CustomWebApplicationFactory<Startup> factory) => _client = factory.CreateClient();
+        public AccountsControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) => _client = factory.CreateClient();
 
         [Fact]
         public async Task CanRegisterUserWithValidAccountDetails()

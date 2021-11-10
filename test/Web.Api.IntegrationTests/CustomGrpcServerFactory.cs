@@ -47,7 +47,7 @@ namespace Web.Api.IntegrationTests
                     .ConfigureWebHostDefaults(webBuilder =>
                     {
                         // use whatever config you want here
-                        webBuilder.UseStartup<Startup>()
+                        webBuilder.UseStartup<Program>()
                             .UseTestServer()
                             .ConfigureServices(services =>
                             {

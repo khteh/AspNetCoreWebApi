@@ -9,10 +9,10 @@ using Xunit;
 
 namespace Web.Api.IntegrationTests.Controllers
 {
-    public class ProtectedControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory<Startup>>
+    public class ProtectedControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
-        public ProtectedControllerIntegrationTests(CustomWebApplicationFactory<Startup> factory) => _client = factory.CreateClient();
+        public ProtectedControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) => _client = factory.CreateClient();
         [Fact]
         public async Task CantAccessProtectedResourceWithoutLogin()
         {

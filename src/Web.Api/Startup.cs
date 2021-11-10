@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿#if false
+using AutoMapper;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -177,7 +178,7 @@ namespace Web.Api
             identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
             services.AddControllersWithViews()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
                 //.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter())); Fixed in .Net Core 5
             services.AddAutoMapper(new [] {typeof(IdentityProfile), typeof(GrpcProfile), typeof(ResponseProfile) });
             services.AddMediatR(typeof(Program));
@@ -282,7 +283,7 @@ namespace Web.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, IServiceProvider serviceProvider, IAntiforgery antiforgery)
         {
-            ILogger<Startup> logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
+            ILogger<Program> logger = serviceProvider.GetRequiredService<ILogger<Program>>();
             string pathBase = Configuration["PATH_BASE"];
             logger.LogInformation($"Using PathBase: {pathBase}");
             app.Use(async (context, next) =>
@@ -386,10 +387,11 @@ namespace Web.Api
             lifetime.ApplicationStopping.Register(() => logger.LogInformation("ApplicationStopping"));
             lifetime.ApplicationStopped.Register(() => logger.LogInformation("ApplicationStopped"));
         }
-        private static void AppStarted(ILogger<Startup> logger, ReadinessHealthCheck readinessHealthCheck)
+        private static void AppStarted(ILogger<Program> logger, ReadinessHealthCheck readinessHealthCheck)
         {
 			logger.LogInformation($"ApplicationStarted");
             readinessHealthCheck.StartupTaskCompleted = true;
         }
     }
 }
+#endif

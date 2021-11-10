@@ -35,7 +35,7 @@ namespace Web.Api.IntegrationTests
     {
         IConfigurationRoot _config;
         private GrpcChannel? _channel;
-        protected GrpcTestFixture<Startup> Fixture { get; init; } = default!;
+        protected GrpcTestFixture<Program> Fixture { get; init; } = default!;
         protected ILoggerFactory LoggerFactory => Fixture.LoggerFactory;
         protected GrpcChannel Channel => _channel ??= CreateChannel();
         public FunctionalTestBase()
@@ -47,7 +47,7 @@ namespace Web.Api.IntegrationTests
                 .AddJsonFile("appsettings.json", false, true)
                 .AddJsonFile($"appsettings.Development.json", true, true)
                 .AddEnvironmentVariables().Build();
-            Fixture = new GrpcTestFixture<Startup>(ConfigureServices);
+            Fixture = new GrpcTestFixture<Program>(ConfigureServices);
         }
         protected GrpcChannel CreateChannel()
         {

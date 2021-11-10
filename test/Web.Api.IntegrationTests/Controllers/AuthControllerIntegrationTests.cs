@@ -8,10 +8,10 @@ using Xunit;
 
 namespace Web.Api.IntegrationTests.Controllers
 {
-    public class AuthControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory<Startup>>
+    public class AuthControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
-        public AuthControllerIntegrationTests(CustomWebApplicationFactory<Startup> factory) => _client = factory.CreateClient();
+        public AuthControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) => _client = factory.CreateClient();
 
         [Fact]
         public async Task CanLoginWithValidCredentials()

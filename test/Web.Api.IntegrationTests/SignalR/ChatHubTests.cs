@@ -9,10 +9,10 @@ using Xunit;
 
 namespace Web.Api.IntegrationTests.SignalR
 {
-    public class ChatHubTests : IClassFixture<CustomWebApplicationFactory<Startup>>
+    public class ChatHubTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly TestServer _testServer;
-        public ChatHubTests(CustomWebApplicationFactory<Startup> factory) => _testServer = factory.Server;
+        public ChatHubTests(CustomWebApplicationFactory<Program> factory) => _testServer = factory.Server;
         private async Task<string> AccessTokenProvider()
         {
             HttpClient client = _testServer.CreateClient();

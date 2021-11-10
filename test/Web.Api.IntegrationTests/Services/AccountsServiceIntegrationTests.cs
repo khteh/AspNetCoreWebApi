@@ -9,11 +9,11 @@ using static Web.Api.Identity.Auth.Auth;
 
 namespace Web.Api.IntegrationTests.Services
 {
-    public class AccountsServiceIntegrationTests : FunctionalTestBase//IClassFixture<CustomGrpcServerFactory<Startup>>
+    public class AccountsServiceIntegrationTests : FunctionalTestBase//IClassFixture<CustomGrpcServerFactory<Program>>
     {
         #if false
         private ServiceProvider _serviceProvider;
-        public AccountsServiceIntegrationTests(CustomGrpcServerFactory<Startup> factory)
+        public AccountsServiceIntegrationTests(CustomGrpcServerFactory<Program> factory)
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
             factory.CreateClient();
