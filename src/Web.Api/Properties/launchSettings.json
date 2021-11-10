@@ -12,7 +12,10 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_TC_QuickJitForLoops": "1",
+        "DOTNET_TieredPGO": "1",
+        "DOTNET_ReadyToRun": "0"
       }
     },
     "Web.Api": {

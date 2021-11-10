@@ -16,11 +16,15 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Elasticsearch;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Web.Api;
 using Web.Api.Behaviours;
@@ -37,11 +41,6 @@ using Web.Api.Models.Response;
 using Web.Api.Presenters.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
-
-IWebHostEnvironment env = builder.Environment;
-string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-bool _isIntegrationTests = !string.IsNullOrEmpty(environment) && environment.Equals("IntegrationTests");
-
 #if false
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -50,12 +49,62 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     WebRootPath = "customwwwroot"
 });
 #endif
-
-builder.Configuration.SetBasePath(env.ContentRootPath)
+IWebHostEnvironment env = builder.Environment;
+string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+bool _isIntegrationTests = !string.IsNullOrEmpty(environment) && environment.Equals("IntegrationTests");
+builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", false, true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
-                .AddEnvironmentVariables();
+                .AddJsonFile($"appsettings.mysql.json", true, true)
+                .AddEnvironmentVariables()
+                .AddCommandLine(args);
 builder.WebHost.UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory()));
+LoggerConfiguration logConfig = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration);
+//.MinimumLevel.Debug()
+//.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+//.WriteTo.RollingFile(config["Logging:LogFile"], fileSizeLimitBytes: 10485760, retainedFileCountLimit: null)
+//.Enrich.FromLogContext();
+if (env.IsDevelopment())
+    //config.WriteTo.Console(new CompactJsonFormatter())
+    logConfig.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
+else
+    logConfig.WriteTo.Console(new ElasticsearchJsonFormatter());
+// Create the logger
+Log.Logger = logConfig.CreateLogger();
+try
+{
+    int originalMinWorker, originalMinIOC;
+    int minWorker = 1000;
+    string strMinWorkerThreads = Environment.GetEnvironmentVariable("COMPlus_ThreadPool_ForceMinWorkerThreads");
+    if (!string.IsNullOrEmpty(strMinWorkerThreads) && Int32.TryParse(strMinWorkerThreads, out int minWorkerThreads))
+        minWorker = minWorkerThreads;
+    // Get the current settings.
+    ThreadPool.GetMinThreads(out originalMinWorker, out originalMinIOC);
+    // Change the minimum number of worker threads to four, but
+    // keep the old setting for minimum asynchronous I/O 
+    // completion threads.
+    if (ThreadPool.SetMinThreads(minWorker, originalMinIOC))
+        // The minimum number of threads was set successfully.
+        Log.Information($"Using {minWorker} threads");
+    else
+        // The minimum number of threads was not changed.
+        Log.Error($"Failed to set {minWorker} threads. Using original {originalMinWorker} threads");
+    System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
+}
+catch (Exception e)
+{
+    Log.Fatal($"Exception: {e.Message}");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+builder.WebHost.UseSerilog((ctx, config) =>
+                     {
+                         config.ReadFrom.Configuration(ctx.Configuration);
+                         if (ctx.HostingEnvironment.IsDevelopment())
+                             config.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
+                     });
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddOptions();
@@ -345,7 +394,7 @@ lifetime.ApplicationStopped.Register(() => app.Logger.LogInformation("Applicatio
 
 app.Run();
 
-static void AppStarted(ILogger logger, ReadinessHealthCheck readinessHealthCheck)
+static void AppStarted(Microsoft.Extensions.Logging.ILogger logger, ReadinessHealthCheck readinessHealthCheck)
 {
     logger.LogInformation($"ApplicationStarted");
     readinessHealthCheck.StartupTaskCompleted = true;
