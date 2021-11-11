@@ -46,7 +46,7 @@ namespace Web.Api.IntegrationTests.SignalR
                                 {
                                     var wsClient = _testServer.CreateWebSocketClient();
                                     var url = $"{context.Uri}?access_token={token}";
-                                    return wsClient.ConnectAsync(new Uri(url), token).GetAwaiter().GetResult();
+                                    return await wsClient.ConnectAsync(new Uri(url), token);
                                 };
                                 //o.Headers.Add(IntegrationTestConstants.CorrTokenHeaderKey, IntegrationTestConstants.CorrTokenHeaderValue);
                             }).Build();
@@ -79,7 +79,7 @@ namespace Web.Api.IntegrationTests.SignalR
                                 {
                                     var wsClient = _testServer.CreateWebSocketClient();
                                     var url = $"{context.Uri}?access_token={token}";
-                                    return wsClient.ConnectAsync(new Uri(url), token).GetAwaiter().GetResult();
+                                    return await wsClient.ConnectAsync(new Uri(url), token);
                                 };
                                 //o.SkipNegotiation = true;
                             }).Build();
