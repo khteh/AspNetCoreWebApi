@@ -45,15 +45,13 @@ using Web.Api.Models.Response;
 using Web.Api.Presenters.Grpc;
 using Web.Api.Services;
 
-var builder = WebApplication.CreateBuilder(args);
-#if false
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
     ApplicationName = typeof(Program).Assembly.FullName,
     ContentRootPath = Path.GetFullPath(Directory.GetCurrentDirectory()),
-    WebRootPath = "wwwroot"
+    WebRootPath = "wwwroot",
+    Args = args
 });
-#endif
 IWebHostEnvironment env = builder.Environment;
 string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 bool _isIntegrationTests = !string.IsNullOrEmpty(environment) && environment.Equals("IntegrationTests");
