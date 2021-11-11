@@ -29,7 +29,6 @@ namespace Web.Api.Infrastructure.Data.Repositories
             _mapper = mapper;
             _logger = logger;
         }
-
         public async Task<CreateUserResponse> Create(string firstName, string lastName, string email, string userName, string password)
         {
             try
