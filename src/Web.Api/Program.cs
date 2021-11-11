@@ -230,7 +230,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "ASP.Net Core RESTful, SignalR and GRPC service",
         Version = "v3",
-        Description = "An ASP.NET Core 3.0 Web API and GRPC project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.",
+        Description = "An ASP.NET Core 6.0 Web API and GRPC project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.",
         Contact = new OpenApiContact
         {
             Name = "Teh Kok How",
@@ -403,7 +403,7 @@ app.Use(async (context, next) =>
         var tokens = antiforgery.GetAndStoreTokens(context);
         context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions() { HttpOnly = false });
     }
-    await next();
+    await next(context);
 });
 
 IHostApplicationLifetime lifetime = app.Lifetime;
