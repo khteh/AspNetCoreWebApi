@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -40,26 +41,20 @@ namespace Web.Api.IntegrationTests.Controllers
         [Fact]
         public async Task CantRegisterUserWithInvalidAccountDetailsAndFailsFluentValidation()
         {
-            var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("John", "Doe", string.Empty, string.Empty, "Pa$$word")), Encoding.UTF8, "application/json"));
+            var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("John", "Doe", string.Empty, string.Empty, "Pa$$word")), Encoding.UTF8, "application/json"));
             Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
-            JsonDocument result = JsonDocument.Parse(stringResponse);
-            Assert.Equal((int)HttpStatusCode.BadRequest, (int)result.RootElement.GetProperty("status").GetInt32());
-            Assert.Equal("One or more validation errors occurred.", (string)result.RootElement.GetProperty("title").GetString());
-            Assert.True(result.RootElement.TryGetProperty("errors", out JsonElement error));
-            Assert.True(error.TryGetProperty("Email", out JsonElement emails));
-            Assert.Equal(1, emails.GetArrayLength());
-            foreach (JsonElement email in emails.EnumerateArray())
+            JsonNode result = JsonNode.Parse(stringResponse);
+            Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
+            Assert.False((bool)result["success"]);
+            Assert.NotNull(result["errors"]);
+            Assert.Single(result["errors"].AsArray());
+            foreach (JsonNode error in result["errors"].AsArray())
             {
-                Assert.False(string.IsNullOrEmpty(email.GetString()));
-                Assert.Equal("'Email' is not a valid email address.", email.GetString());
-            }
-            Assert.True(error.TryGetProperty("UserName", out JsonElement userNames));
-            Assert.Equal(1, userNames.GetArrayLength());
-            foreach (JsonElement userName in userNames.EnumerateArray())
-            {
-                Assert.False(string.IsNullOrEmpty(userName.GetString()));
-                Assert.Equal("'User Name' must be between 3 and 255 characters. You entered 0 characters.", userName.GetString());
+                Assert.False(string.IsNullOrEmpty((string)error["code"]));
+                Assert.Equal("InvalidUserName", (string)error["code"]);
+                Assert.False(string.IsNullOrEmpty((string)error["description"]));
+                Assert.Equal("Username '' is invalid, can only contain letters or digits.", (string)error["description"]);
             }
         }
         [Fact]

@@ -3,9 +3,12 @@ using MediatR;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -31,6 +34,7 @@ using Web.Api.Behaviours;
 using Web.Api.Commands;
 using Web.Api.Extensions;
 using Web.Api.HealthChecks;
+using Web.Api.Hubs;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Mapping;
@@ -39,6 +43,7 @@ using Web.Api.Infrastructure.Identity;
 using Web.Api.Models.Logging;
 using Web.Api.Models.Response;
 using Web.Api.Presenters.Grpc;
+using Web.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 #if false
@@ -46,7 +51,7 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
     ApplicationName = typeof(Program).Assembly.FullName,
     ContentRootPath = Path.GetFullPath(Directory.GetCurrentDirectory()),
-    WebRootPath = "customwwwroot"
+    WebRootPath = "wwwroot"
 });
 #endif
 IWebHostEnvironment env = builder.Environment;
@@ -58,7 +63,7 @@ builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile($"appsettings.mysql.json", true, true)
                 .AddEnvironmentVariables()
                 .AddCommandLine(args);
-builder.WebHost.UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory()));
+//builder.WebHost.UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory())); Changing the host configuration using WebApplicationBuilder.Host is not supported. Use WebApplication.CreateBuilder(WebApplicationOptions) instead.
 LoggerConfiguration logConfig = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration);
 //.MinimumLevel.Debug()
 //.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -219,6 +224,7 @@ builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddScoped<IPipelineBehavior<RegisterUserCommand, RegisterUserResponse>, LoggingBehavior<RegisterUserCommand, RegisterUserResponse>>();
 builder.Services.AddScoped<IPipelineBehavior<LoginCommand, LoginResponse>, LoggingBehavior<LoginCommand, LoginResponse>>();
 builder.Services.AddScoped<IPipelineBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>, LoggingBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>>();
+builder.Services.AddEndpointsApiExplorer();
 // Register the Swagger generator, defining 1 or more Swagger documents
 builder.Services.AddSwaggerGen(c =>
 {
@@ -312,7 +318,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseMigrationsEndPoint();
+    app.UseDeveloperExceptionPage();
 }
 else
 {
@@ -330,19 +336,38 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
+app.UseResponseCaching();
+app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseCookiePolicy(new CookiePolicyOptions() { HttpOnly = HttpOnlyPolicy.Always, Secure = CookieSecurePolicy.Always });
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseWebSockets();
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapHub<ChatHub>("/chatHub", options => {
+    if (!_isIntegrationTests) // Websockets is currently unmockable. https://github.com/dotnet/aspnetcore/issues/28108
+        options.Transports = HttpTransportType.WebSockets;
+});
+//endpoints.MapGrpcService<GreeterService>("/greet");
+app.MapGrpcService<AccountsService>();
+app.MapGrpcService<AuthService>();
+app.MapHealthChecks($"/health/live", new HealthCheckOptions()
+{
+    Predicate = check => check.Name == "Liveness"
+});
+app.MapHealthChecks($"/health/ready", new HealthCheckOptions()
+{
+    Predicate = check => check.Name == "Readiness"
+});
 
 app.MapRazorPages();
 string pathBase = app.Configuration["PATH_BASE"];
+app.UseSwagger().UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint($"{pathBase}/swagger/v3/swagger.json", "AspNetCoreApiStarter V3");
+});
 app.Logger.LogInformation($"Using PathBase: {pathBase}");
 app.Use(async (context, next) =>
 {

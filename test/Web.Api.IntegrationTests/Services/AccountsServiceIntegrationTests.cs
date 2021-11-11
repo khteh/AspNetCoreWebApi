@@ -9,7 +9,7 @@ using static Web.Api.Identity.Auth.Auth;
 
 namespace Web.Api.IntegrationTests.Services
 {
-    public class AccountsServiceIntegrationTests : FunctionalTestBase//IClassFixture<CustomGrpcServerFactory<Program>>
+    public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//FunctionalTestBase//IClassFixture<CustomGrpcServerFactory<Program>>
     {
         #if false
         private ServiceProvider _serviceProvider;
@@ -23,7 +23,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanRegisterUserWithValidAccountDetails()
         {
-            AccountsClient client = new AccountsClient(Channel);//_serviceProvider.GetRequiredService<AccountsClient>();
+            AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
             Assert.NotNull(client);
             // Act
             RegisterUserResponse response = await client.RegisterAsync(new RegisterUserRequest() {
@@ -46,7 +46,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanDeleteUserWithValidAccountDetails()
         {
-            AccountsClient client = new AccountsClient(Channel);//_serviceProvider.GetRequiredService<AccountsClient>();
+            AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
             Assert.NotNull(client);
             DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "deleteme"});
             Assert.NotNull(response);
@@ -59,7 +59,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CantRegisterUserWithInvalidAccountDetails()
         {
-            AccountsClient client = new AccountsClient(Channel);//_serviceProvider.GetRequiredService<AccountsClient>();
+            AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
             Assert.NotNull(client);
             // Act
             RegisterUserResponse response = await client.RegisterAsync(new RegisterUserRequest() {
@@ -84,7 +84,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CantDeleteUserWithInvalidAccountDetails()
         {
-            AccountsClient client = new AccountsClient(Channel);//_serviceProvider.GetRequiredService<AccountsClient>();
+            AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
             Assert.NotNull(client);
             DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "DeleteMeNot"});
             Assert.NotNull(response);
@@ -100,7 +100,7 @@ namespace Web.Api.IntegrationTests.Services
         [InlineData("7B697F98-AE31-41E7-BE13-20C63314ABF9")]
         public async Task CanFindById(string id)
         {
-            AccountsClient client = new AccountsClient(Channel);//_serviceProvider.GetRequiredService<AccountsClient>();
+            AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
             Assert.NotNull(client);
             FindUserResponse response = await client.FindByIdAsync(new StringInputParameter() { Value = id});
             Assert.NotNull(response);
@@ -113,7 +113,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanFindByUsername()
         {
-            AccountsClient client = new AccountsClient(Channel);//_serviceProvider.GetRequiredService<AccountsClient>();
+            AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
             Assert.NotNull(client);
             FindUserResponse response = await client.FindByUserNameAsync(new StringInputParameter() { Value = "mickeymouse"}); // UserManager is NOT case sensitive!
             Assert.NotNull(response);
@@ -126,7 +126,7 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanFindByEmail()
         {
-            AccountsClient client = new AccountsClient(Channel);//_serviceProvider.GetRequiredService<AccountsClient>();
+            AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
             Assert.NotNull(client);
             FindUserResponse response = await client.FindByEmailAsync(new StringInputParameter() { Value = "mickey@mouse.com"}); // UserManager is NOT case sensitive!
             Assert.NotNull(response);
@@ -139,8 +139,8 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanChangePasswordWithValidAccountDetails()
         {
-            AccountsClient accountsClient = new AccountsClient(Channel);//_serviceProvider.GetRequiredService<AccountsClient>();
-            AuthClient authClient = new AuthClient(Channel);//_serviceProvider.GetRequiredService<AuthClient>();
+            AccountsClient accountsClient = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
+            AuthClient authClient = new AuthClient(GrpcChannel);//_serviceProvider.GetRequiredService<AuthClient>();
             Assert.NotNull(accountsClient);
             Assert.NotNull(authClient);
             // Create User
@@ -213,8 +213,8 @@ namespace Web.Api.IntegrationTests.Services
         [Fact]
         public async Task CanResetPasswordWithValidAccountDetails()
         {
-            AccountsClient accountsClient = new AccountsClient(Channel);//_serviceProvider.GetRequiredService<AccountsClient>();
-            AuthClient authClient = new AuthClient(Channel);//_serviceProvider.GetRequiredService<AuthClient>();
+            AccountsClient accountsClient = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
+            AuthClient authClient = new AuthClient(GrpcChannel);//_serviceProvider.GetRequiredService<AuthClient>();
             Assert.NotNull(accountsClient);
             Assert.NotNull(authClient);
             // Create User

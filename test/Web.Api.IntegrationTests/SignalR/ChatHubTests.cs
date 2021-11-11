@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.TestHost;
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -17,7 +20,7 @@ namespace Web.Api.IntegrationTests.SignalR
         {
             HttpClient client = _testServer.CreateClient();
             Assert.NotNull(client);
-            var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
+            var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LoginRequest("mickey", "P@$$w0rd")), Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
             LoginResponse response = Serialization.JsonSerializer.DeSerializeObject<LoginResponse>(await httpResponse.Content.ReadAsStringAsync());
             Assert.NotNull(response);
@@ -35,10 +38,17 @@ namespace Web.Api.IntegrationTests.SignalR
             string message = "Integration Testing in Microsoft AspNetCore SignalR";
             HubConnection connection = new HubConnectionBuilder()
                             .WithUrl("https://localhost/chatHub", o => {
-                                o.HttpMessageHandlerFactory = _ =>  _testServer.CreateHandler();
+                                o.Transports = HttpTransportType.WebSockets;
                                 o.AccessTokenProvider = async () => await AccessTokenProvider();
-                                //o.Transports = HttpTransportType.WebSockets; Websockets is currently unmockable. https://github.com/dotnet/aspnetcore/issues/28108
-                                //o.SkipNegotiation = true;
+                                o.SkipNegotiation = true;
+                                o.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
+                                o.WebSocketFactory = async (context, token) =>
+                                {
+                                    var wsClient = _testServer.CreateWebSocketClient();
+                                    var url = $"{context.Uri}?access_token={token}";
+                                    return wsClient.ConnectAsync(new Uri(url), token).GetAwaiter().GetResult();
+                                };
+                                //o.Headers.Add(IntegrationTestConstants.CorrTokenHeaderKey, IntegrationTestConstants.CorrTokenHeaderValue);
                             }).Build();
             connection.On<string>("ReceiveMessage", i => {
                 echo = i;
@@ -61,9 +71,16 @@ namespace Web.Api.IntegrationTests.SignalR
             string message = "Integration Testing in Microsoft AspNetCore SignalR";
             HubConnection connection = new HubConnectionBuilder()
                             .WithUrl("https://localhost/chatHub", o => {
-                                o.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
+                                o.Transports = HttpTransportType.WebSockets;
                                 o.AccessTokenProvider = async () => await AccessTokenProvider();
-                                //o.Transports = HttpTransportType.WebSockets; Websockets is currently unmockable. https://github.com/dotnet/aspnetcore/issues/28108
+                                o.SkipNegotiation = true;
+                                o.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
+                                o.WebSocketFactory = async (context, token) =>
+                                {
+                                    var wsClient = _testServer.CreateWebSocketClient();
+                                    var url = $"{context.Uri}?access_token={token}";
+                                    return wsClient.ConnectAsync(new Uri(url), token).GetAwaiter().GetResult();
+                                };
                                 //o.SkipNegotiation = true;
                             }).Build();
             connection.On<string, string>("ReceiveMessageFromUser", (u, i) => {
