@@ -344,9 +344,7 @@ app.UseAuthentication(); // The order in which you register the SignalR and ASP.
 app.UseAuthorization();
 app.UseWebSockets();
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapHub<ChatHub>("/chatHub", options => {
-    options.Transports = HttpTransportType.WebSockets;
-});
+app.MapHub<ChatHub>("/chatHub", o => o.Transports = HttpTransportType.WebSockets);
 //endpoints.MapGrpcService<GreeterService>("/greet");
 app.MapGrpcService<AccountsService>();
 app.MapGrpcService<AuthService>();
