@@ -340,13 +340,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCookiePolicy(new CookiePolicyOptions() { HttpOnly = HttpOnlyPolicy.Always, Secure = CookieSecurePolicy.Always });
 app.UseRouting();
-app.UseAuthentication();
+app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
 app.UseAuthorization();
 app.UseWebSockets();
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapHub<ChatHub>("/chatHub", options => {
-    if (!_isIntegrationTests) // Websockets is currently unmockable. https://github.com/dotnet/aspnetcore/issues/28108
-        options.Transports = HttpTransportType.WebSockets;
+    options.Transports = HttpTransportType.WebSockets;
 });
 //endpoints.MapGrpcService<GreeterService>("/greet");
 app.MapGrpcService<AccountsService>();
@@ -423,96 +422,3 @@ static void AppStarted(Microsoft.Extensions.Logging.ILogger logger, ReadinessHea
     readinessHealthCheck.StartupTaskCompleted = true;
 }
 public partial class Program { } // so you can reference it from tests
-
-#if false
-{
-    public class Program
-    {
-        public static void Main(string[] args) 
-        {
-            // What's the diff between env.ContentRootPath and Directory.GetCurrentDirectory()???
-            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            bool isDevelopment = environment == Environments.Development;
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.mysql.json", true, true)
-                .AddEnvironmentVariables()
-                .AddCommandLine(args)
-                .Build();
-            LoggerConfiguration logConfig = new LoggerConfiguration().ReadFrom.Configuration(config);
-            //.MinimumLevel.Debug()
-            //.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            //.WriteTo.RollingFile(config["Logging:LogFile"], fileSizeLimitBytes: 10485760, retainedFileCountLimit: null)
-            //.Enrich.FromLogContext();
-            if (isDevelopment)
-                //config.WriteTo.Console(new CompactJsonFormatter())
-                logConfig.WriteTo.ColoredConsole(
-                        LogEventLevel.Verbose,
-                        "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
-            else
-                logConfig.WriteTo.Console(new ElasticsearchJsonFormatter());
-            // Create the logger
-            Log.Logger = logConfig.CreateLogger();
-            try {
-                int originalMinWorker, originalMinIOC;
-                int minWorker = 1000;
-                string strMinWorkerThreads = Environment.GetEnvironmentVariable("COMPlus_ThreadPool_ForceMinWorkerThreads");
-                if (!string.IsNullOrEmpty(strMinWorkerThreads) && Int32.TryParse(strMinWorkerThreads, out int minWorkerThreads))
-                    minWorker = minWorkerThreads;
-                // Get the current settings.
-                ThreadPool.GetMinThreads(out originalMinWorker, out originalMinIOC);
-                // Change the minimum number of worker threads to four, but
-                // keep the old setting for minimum asynchronous I/O 
-                // completion threads.
-                if (ThreadPool.SetMinThreads(minWorker, originalMinIOC))
-                    // The minimum number of threads was set successfully.
-                    Log.Information($"Using {minWorker} threads");
-                else
-                    // The minimum number of threads was not changed.
-                    Log.Error($"Failed to set {minWorker} threads. Using original {originalMinWorker} threads");
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
-                CreateHostBuilder(args).Build().Run();
-            } catch (Exception e) {
-                Log.Fatal($"Exception: {e.Message}");
-            } finally {
-                Log.CloseAndFlush();
-            }
-        }
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Program>()
-                    .ConfigureAppConfiguration((hostingContext, config) => {
-                        config.SetBasePath(Directory.GetCurrentDirectory());
-                        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                        config.AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                        config.AddJsonFile($"appsettings.mysql.json", true, true);
-                        config.AddEnvironmentVariables();
-                        config.AddCommandLine(args);
-                    })
-                    .ConfigureLogging((hostingContext, logging) =>
-                    {
-                        logging.ClearProviders();
-#if false
-                        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                        logging.AddConsole();
-                        logging.AddDebug();
-                        logging.AddEventSourceLogger();
-                        logging.AddSerilog(dispose: true);
-#endif
-                    })
-                    .UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory()))
-                    // Add the Serilog ILoggerFactory to IHostBuilder
-                    .UseSerilog((ctx, config) =>
-                    {
-                        config.ReadFrom.Configuration(ctx.Configuration);
-                        if (ctx.HostingEnvironment.IsDevelopment())
-                            config.WriteTo.ColoredConsole(
-                                LogEventLevel.Verbose,
-                                "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
-                    })
-                );
-    }
-}
-#endif
