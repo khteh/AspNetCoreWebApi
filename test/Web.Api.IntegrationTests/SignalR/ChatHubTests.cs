@@ -41,11 +41,11 @@ namespace Web.Api.IntegrationTests.SignalR
                                 o.AccessTokenProvider = async () => await AccessTokenProvider();
                                 o.SkipNegotiation = true;
                                 o.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
-                                o.WebSocketFactory = async (context, token) =>
+                                o.WebSocketFactory = async (context, cancellationToken) =>
                                 {
                                     var wsClient = _testServer.CreateWebSocketClient();
-                                    var url = $"{context.Uri}?access_token={token}";
-                                    return await wsClient.ConnectAsync(new Uri(url), token);
+                                    var url = $"{context.Uri}?access_token={await AccessTokenProvider()}";
+                                    return await wsClient.ConnectAsync(new Uri(url), cancellationToken);
                                 };
                                 //o.Headers.Add(IntegrationTestConstants.CorrTokenHeaderKey, IntegrationTestConstants.CorrTokenHeaderValue);
                             }).Build();
@@ -74,11 +74,11 @@ namespace Web.Api.IntegrationTests.SignalR
                                 o.AccessTokenProvider = async () => await AccessTokenProvider();
                                 o.SkipNegotiation = true;
                                 o.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
-                                o.WebSocketFactory = async (context, token) =>
+                                o.WebSocketFactory = async (context, cancellationToken) =>
                                 {
                                     var wsClient = _testServer.CreateWebSocketClient();
-                                    var url = $"{context.Uri}?access_token={token}";
-                                    return await wsClient.ConnectAsync(new Uri(url), token);
+                                    var url = $"{context.Uri}?access_token={await AccessTokenProvider()}";
+                                    return await wsClient.ConnectAsync(new Uri(url), cancellationToken);
                                 };
                                 //o.SkipNegotiation = true;
                             }).Build();
