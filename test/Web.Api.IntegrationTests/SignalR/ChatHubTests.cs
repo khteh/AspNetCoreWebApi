@@ -19,7 +19,7 @@ namespace Web.Api.IntegrationTests.SignalR
         {
             HttpClient client = _testServer.CreateClient();
             Assert.NotNull(client);
-            var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LoginRequest("mickey", "P@$$w0rd")), Encoding.UTF8, "application/json"));
+            var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
             httpResponse.EnsureSuccessStatusCode();
             LoginResponse response = Serialization.JsonSerializer.DeSerializeObject<LoginResponse>(await httpResponse.Content.ReadAsStringAsync());
             Assert.NotNull(response);
@@ -47,7 +47,6 @@ namespace Web.Api.IntegrationTests.SignalR
                                     var url = $"{context.Uri}?access_token={await AccessTokenProvider()}";
                                     return await wsClient.ConnectAsync(new Uri(url), cancellationToken);
                                 };
-                                //o.Headers.Add(IntegrationTestConstants.CorrTokenHeaderKey, IntegrationTestConstants.CorrTokenHeaderValue);
                             }).Build();
             connection.On<string>("ReceiveMessage", i => {
                 echo = i;
@@ -80,7 +79,6 @@ namespace Web.Api.IntegrationTests.SignalR
                                     var url = $"{context.Uri}?access_token={await AccessTokenProvider()}";
                                     return await wsClient.ConnectAsync(new Uri(url), cancellationToken);
                                 };
-                                //o.SkipNegotiation = true;
                             }).Build();
             connection.On<string, string>("ReceiveMessageFromUser", (u, i) => {
                 user = u;
