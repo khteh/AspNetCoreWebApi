@@ -1,21 +1,19 @@
-using System;
 using AutoMapper;
-using Web.Api.Core.DTO;
-using Web.Api.Core.Domain.Entities;
 using Google.Protobuf.WellKnownTypes;
-namespace Web.Api.Presenters.Grpc
+using Web.Api.Core.Domain.Entities;
+using Web.Api.Core.DTO;
+namespace Web.Api.Presenters.Grpc;
+public class GrpcProfile : Profile
 {
-    public class GrpcProfile : Profile
+    public GrpcProfile()
     {
-        public GrpcProfile()
-        {
-            CreateMap<Error, Web.Api.Identity.Error>().ConstructUsing(i => new Web.Api.Identity.Error() {Code = i.Code, Description = i.Description});
-            CreateMap<RefreshToken, Web.Api.Identity.RefreshToken>().ConstructUsing(i => new Web.Api.Identity.RefreshToken() {
+        CreateMap<Error, Identity.Error>().ConstructUsing(i => new Identity.Error() {Code = i.Code, Description = i.Description});
+        CreateMap<RefreshToken, Identity.RefreshToken>().ConstructUsing(i => new Identity.RefreshToken() {
                 Token = i.Token, 
                 UserId = i.UserId, 
                 RemoteIpAddress = i.RemoteIpAddress
             }).ForMember(i => i.Expires, o => o.MapFrom(src => Timestamp.FromDateTimeOffset(src.Expires)));
-            CreateMap<User, Web.Api.Identity.User>()
+        CreateMap<User, Identity.User>()
                 .ForMember(i => i.Id, o => o.MapFrom(src => src.Id))
                 .ForMember(i => i.IdentityId, o => o.MapFrom(src => !string.IsNullOrEmpty(src.IdentityId) ? src.IdentityId : string.Empty))
                 .ForMember(i => i.FirstName, o => o.MapFrom(src => !string.IsNullOrEmpty(src.FirstName) ? src.FirstName : string.Empty))
@@ -23,6 +21,5 @@ namespace Web.Api.Presenters.Grpc
                 .ForMember(i => i.UserName, o => o.MapFrom(src => !string.IsNullOrEmpty(src.UserName) ? src.UserName : string.Empty))
                 .ForMember(i => i.Email, o => o.MapFrom(src => !string.IsNullOrEmpty(src.Email) ? src.Email : string.Empty))
                 .ForMember(i => i.RefreshTokens, o => o.MapFrom(src => src.RefreshTokens));
-        }
     }
 }

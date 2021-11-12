@@ -1,18 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-namespace Web.Api.Controllers
+namespace Web.Api.Controllers;
+[Authorize(Policy = "ApiUser")]
+[Route("api/[controller]")]
+[ApiController]
+public class ProtectedController : ControllerBase
 {
-    [Authorize(Policy = "ApiUser")]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ProtectedController : ControllerBase
-    {
-        // GET api/protected/home
-        [HttpGet("home")]
-        public IActionResult Home()
-        {
-            return new OkObjectResult(new { result = true });
-        }
-    }
+    // GET api/protected/home
+    [HttpGet("home")]
+    public IActionResult Home() => new OkObjectResult(new { result = true });
 }

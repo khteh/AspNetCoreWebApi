@@ -1,14 +1,8 @@
-using System;
-using System.Linq;
-using Web.Api.Core.Interfaces;
-using Web.Api.Models.Response;
-using Web.Api.Core.DTO;
 using AutoMapper;
-namespace Web.Api.Presenters.Grpc
+using Web.Api.Core.Interfaces;
+namespace Web.Api.Presenters.Grpc;
+public class LockUserPresenter : PresenterBase<UseCaseResponseMessage>
 {
-    public class LockUserPresenter : PresenterBase<UseCaseResponseMessage>
-    {
-        public Web.Api.Identity.Response Response {get => BaseResponse; }
-        public LockUserPresenter(IMapper mapper) : base(mapper) {}
-    }
+    public Identity.Response Response {get => BaseResponse; }
+    public LockUserPresenter(IMapper mapper) : base(mapper) {}
 }

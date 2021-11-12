@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Web.Api.Core.DTO.UseCaseResponses;
+﻿using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Presenters;
-
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+public static class OutputPortServices
 {
-    public static class OutputPortServices
-    {
-        public static IServiceCollection AddOutputPorts(this IServiceCollection service) =>
-            service.AddScoped<IOutputPort<ExchangeRefreshTokenResponse>, ExchangeRefreshTokenPresenter>()
+    public static IServiceCollection AddOutputPorts(this IServiceCollection service) =>
+        service.AddScoped<IOutputPort<ExchangeRefreshTokenResponse>, ExchangeRefreshTokenPresenter>()
                 .AddScoped<IOutputPort<LoginResponse>, LoginPresenter>()
                 .AddScoped<ChangePasswordPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.ChangePasswordPresenter>()
@@ -30,5 +24,4 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<Web.Api.Presenters.Grpc.RegisterUserPresenter>()
                 .AddScoped<ResetPasswordPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.ResetPasswordPresenter>();
-    }
 }
