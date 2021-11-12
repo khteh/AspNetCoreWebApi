@@ -226,10 +226,10 @@ builder.Services.AddEndpointsApiExplorer();
 // Register the Swagger generator, defining 1 or more Swagger documents
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v3", new OpenApiInfo
+    c.SwaggerDoc("v6.0", new OpenApiInfo
     {
         Title = "ASP.Net Core RESTful, SignalR and GRPC service",
-        Version = "v3",
+        Version = "v6.0",
         Description = "An ASP.NET Core 6.0 Web API and GRPC project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.",
         Contact = new OpenApiContact
         {
@@ -361,7 +361,7 @@ app.MapRazorPages();
 string pathBase = app.Configuration["PATH_BASE"];
 app.UseSwagger().UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint($"{pathBase}/swagger/v3/swagger.json", "AspNetCoreApiStarter V3");
+    c.SwaggerEndpoint($"{pathBase}/swagger/v6.0/swagger.json", "AspNetCoreApiStarter V6.0");
 });
 app.Logger.LogInformation($"Using PathBase: {pathBase}");
 app.Use(async (context, next) =>
