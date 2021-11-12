@@ -230,7 +230,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "ASP.Net Core RESTful, SignalR and GRPC service",
         Version = "v6.0",
-        Description = "An ASP.NET Core 6.0 Web API and GRPC project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.",
+        Description = "An ASP.NET Core 6.0 Web API, SignalR and GRPC project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.",
         Contact = new OpenApiContact
         {
             Name = "Teh Kok How",
