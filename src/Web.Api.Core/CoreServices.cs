@@ -1,11 +1,9 @@
 ﻿using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Core.UseCases;
-
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+public static class InfrastructureServices
 {
-    public static class InfrastructureServices
-    {
-        public static IServiceCollection AddCore(this IServiceCollection service) =>
+    public static IServiceCollection AddCore(this IServiceCollection service) =>
             service.AddScoped<IChangePasswordUseCase, ChangePasswordUseCase>()
             .AddScoped<IDeleteUserUseCase, DeleteUserUseCase>()
             .AddScoped<IExchangeRefreshTokenUseCase, ExchangeRefreshTokenUseCase>()
@@ -15,5 +13,4 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddScoped<IRegisterUserUseCase, RegisterUserUseCase>()
             .AddScoped<IResetPasswordUseCase, ResetPasswordUseCase>()
             .AddScoped<ISignInUseCase, SignInUseCase>();
-    }
 }

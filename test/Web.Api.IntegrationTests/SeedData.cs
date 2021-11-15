@@ -1,15 +1,12 @@
-using System;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Identity;
-
-namespace Web.Api.IntegrationTests
+namespace Web.Api.IntegrationTests;
+public static class SeedData
 {
-    public static class SeedData
+    public static void PopulateTestData(AppIdentityDbContext dbContext)
     {
-        public static void PopulateTestData(AppIdentityDbContext dbContext)
-        {
-            dbContext.Users.Add(new AppUser
+        dbContext.Users.Add(new AppUser
             {
                 Id = "41532945-599e-4910-9599-0e7402017fbe",
                 UserName = "mickeymouse",
@@ -22,7 +19,7 @@ namespace Web.Api.IntegrationTests
                 FirstName = "Micky",
                 LastName = "Mouse"
             });
-            dbContext.Users.Add(new AppUser
+        dbContext.Users.Add(new AppUser
             {
                 Id = "7B697F98-AE31-41E7-BE13-20C63314ABF9",
                 UserName = "deleteme",
@@ -36,21 +33,19 @@ namespace Web.Api.IntegrationTests
                 LastName = "Me"
             });
             dbContext.SaveChanges();
-        }
+    }
+    public static void PopulateTestData(AppDbContext dbContext)
+    {
+        var user = new User("Mickey", "Mouse", "41532945-599e-4910-9599-0e7402017fbe", "mickeymouse");
+        //user.Id = 1;
+        user.AddRefreshToken("cvVsJXuuvb+gTyz+Rk0mBbitkw3AaLgsLecU3cwsUXU=", "127.0.0.1");
+        dbContext.Users.Add(user);
 
-        public static void PopulateTestData(AppDbContext dbContext)
-        {
-            var user = new User("Mickey", "Mouse", "41532945-599e-4910-9599-0e7402017fbe", "mickeymouse");
-            //user.Id = 1;
-            user.AddRefreshToken("cvVsJXuuvb+gTyz+Rk0mBbitkw3AaLgsLecU3cwsUXU=", "127.0.0.1");
-            dbContext.Users.Add(user);
+        var user1 = new User("Delete", "Me", "7B697F98-AE31-41E7-BE13-20C63314ABF9", "deleteme");
+        //user1.Id = 2;
+        user1.AddRefreshToken("whatever", "127.0.0.1");
 
-            var user1 = new User("Delete", "Me", "7B697F98-AE31-41E7-BE13-20C63314ABF9", "deleteme");
-            //user1.Id = 2;
-            user1.AddRefreshToken("whatever", "127.0.0.1");
-
-            dbContext.Users.Add(user1);
-            dbContext.SaveChanges();
-        }
+        dbContext.Users.Add(user1);
+        dbContext.SaveChanges();
     }
 }

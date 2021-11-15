@@ -1,9 +1,5 @@
-using System;
-
-namespace Web.Api.Core.Configuration
+namespace Web.Api.Core.Configuration;
+public class GrpcConfig
 {
-    public class GrpcConfig
-    {
-        public string Endpoint {get; set;}
-    }
+    public string Endpoint {get; set;}
 }

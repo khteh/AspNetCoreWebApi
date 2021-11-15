@@ -7,67 +7,63 @@ using Web.Api.Core.DTO;
 using Web.Api.Core.Interfaces;
 using Web.Api.Presenters.Grpc;
 using Xunit;
-namespace Web.Api.UnitTests.Presenters.Grpc
+namespace Web.Api.UnitTests.Presenters.Grpc;
+public class GRPCRegisterUserPresenterUnitTests
 {
-    public class GRPCRegisterUserPresenterUnitTests
+    private readonly IMapper _mapper;
+    public GRPCRegisterUserPresenterUnitTests()
     {
-        private readonly IMapper _mapper;
-        public GRPCRegisterUserPresenterUnitTests()
-        {
-            IServiceCollection services = new ServiceCollection();
-            services.AddAutoMapper(typeof(GrpcProfile));
-            _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
-        }
-        [Fact]
-        public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
-        {
-            // arrange
-            var presenter = new RegisterUserPresenter(_mapper);
+        IServiceCollection services = new ServiceCollection();
+        services.AddAutoMapper(typeof(GrpcProfile));
+        _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
+    }
+    [Fact]
+    public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
+    {
+        // arrange
+        var presenter = new RegisterUserPresenter(_mapper);
 
-            // act
-            presenter.Handle(new UseCaseResponseMessage("", true));
+        // act
+        presenter.Handle(new UseCaseResponseMessage("", true));
 
-            // assert
-            Assert.NotNull(presenter.Response);
-            Assert.NotNull(presenter.Response.Response);
-            Assert.True(presenter.Response.Response.Success);
-            Assert.False(presenter.Response.Response.Errors.Any());
-        }
+        // assert
+        Assert.NotNull(presenter.Response);
+        Assert.NotNull(presenter.Response.Response);
+        Assert.True(presenter.Response.Response.Success);
+        Assert.False(presenter.Response.Response.Errors.Any());
+    }
+    [Fact]
+    public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
+    {
+        // arrange
+        var presenter = new RegisterUserPresenter(_mapper);
 
-        [Fact]
-        public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
-        {
-            // arrange
-            var presenter = new RegisterUserPresenter(_mapper);
+        // act
+        presenter.Handle(new UseCaseResponseMessage("1234", true));
 
-            // act
-            presenter.Handle(new UseCaseResponseMessage("1234", true));
+        // assert
+        Assert.NotNull(presenter.Response);
+        Assert.NotNull(presenter.Response.Response);
+        Assert.True(presenter.Response.Response.Success);
+        Assert.False(presenter.Response.Response.Errors.Any());
+        Assert.Equal("1234", presenter.Response.Id);
+    }
+    [Fact]
+    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    {
+        // arrange
+        var presenter = new RegisterUserPresenter(_mapper);
 
-            // assert
-            Assert.NotNull(presenter.Response);
-            Assert.NotNull(presenter.Response.Response);
-            Assert.True(presenter.Response.Response.Success);
-            Assert.False(presenter.Response.Response.Errors.Any());
-            Assert.Equal("1234", presenter.Response.Id);
-        }
+        // act
+        presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
-        [Fact]
-        public void Handle_GivenFailedUseCaseResponse_SetsErrors()
-        {
-            // arrange
-            var presenter = new RegisterUserPresenter(_mapper);
-
-            // act
-            presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
-
-            // assert
-            Assert.NotNull(presenter.Response);
-            Assert.NotNull(presenter.Response.Response.Errors);
-            Assert.NotEmpty(presenter.Response.Response.Errors);
-            Assert.False(string.IsNullOrEmpty(presenter.Response.Response.Errors.First().Code));
-            Assert.False(string.IsNullOrEmpty(presenter.Response.Response.Errors.First().Description));
-            Assert.Equal(HttpStatusCode.BadRequest.ToString(), presenter.Response.Response.Errors.First().Code);
-            Assert.Equal("missing first name", presenter.Response.Response.Errors.First().Description);
-        }
+        // assert
+        Assert.NotNull(presenter.Response);
+        Assert.NotNull(presenter.Response.Response.Errors);
+        Assert.NotEmpty(presenter.Response.Response.Errors);
+        Assert.False(string.IsNullOrEmpty(presenter.Response.Response.Errors.First().Code));
+        Assert.False(string.IsNullOrEmpty(presenter.Response.Response.Errors.First().Description));
+        Assert.Equal(HttpStatusCode.BadRequest.ToString(), presenter.Response.Response.Errors.First().Code);
+        Assert.Equal("missing first name", presenter.Response.Response.Errors.First().Description);
     }
 }

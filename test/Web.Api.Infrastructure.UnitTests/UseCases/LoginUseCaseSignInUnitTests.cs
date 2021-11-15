@@ -8,117 +8,108 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
-
-namespace Web.Api.Infrastructure.UnitTests.UseCases
+namespace Web.Api.Infrastructure.UnitTests.UseCases;
+public class SignInUseCaseSignInUnitTests
 {
-    public class SignInUseCaseSignInUnitTests
+    [Fact]
+    public async void Handle_GivenValidCredentials_ShouldSucceed()
     {
-        [Fact]
-        public async void Handle_GivenValidCredentials_ShouldSucceed()
-        {
-            // arrange
-            AppUser appUser = new AppUser("","","","");
-            List<Claim> claims = new List<Claim>();
-            Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();
-            userManager.Setup(i => i.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(appUser);
-            var mockUserRepository = new Mock<IUserRepository>();
-            mockUserRepository.Setup(repo => repo.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.SignInResponse(appUser.Id, true));
+        // arrange
+        AppUser appUser = new AppUser("","","","");
+        List<Claim> claims = new List<Claim>();
+        Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();
+        userManager.Setup(i => i.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(appUser);
+        var mockUserRepository = new Mock<IUserRepository>();
+        mockUserRepository.Setup(repo => repo.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.SignInResponse(appUser.Id, true));
 
-            var useCase = new SignInUseCase(mockUserRepository.Object);
+        var useCase = new SignInUseCase(mockUserRepository.Object);
+        var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
 
-            var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
+        // act
+        var response = await useCase.Handle(new SignInRequest("userName", "password", true, true, false), mockOutputPort.Object);
 
-            // act
-            var response = await useCase.Handle(new SignInRequest("userName", "password", true, true, false), mockOutputPort.Object);
+        // assert
+        Assert.True(response);
+        mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        mockUserRepository.Verify(factory => factory.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Once);
+        mockOutputPort.VerifyAll();
+    }
+    [Fact]
+    public async void Handle_GivenIncompleteCredentials_ShouldFail()
+    {
+        // arrange
+        Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();
+        userManager.Setup(i => i.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(new AppUser("","","",""));
 
-            // assert
-            Assert.True(response);
-            mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-            mockUserRepository.Verify(factory => factory.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Once);
-            mockOutputPort.VerifyAll();
-        }
+        List<Claim> claims = new List<Claim>();
+        var mockUserRepository = new Mock<IUserRepository>();
 
-        [Fact]
-        public async void Handle_GivenIncompleteCredentials_ShouldFail()
-        {
-            // arrange
-            Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();
-            userManager.Setup(i => i.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(new AppUser("","","",""));
+        mockUserRepository.Setup(repo => repo.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.SignInResponse(null, false));
 
-            List<Claim> claims = new List<Claim>();
-            var mockUserRepository = new Mock<IUserRepository>();
+        var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
+        var useCase = new SignInUseCase(mockUserRepository.Object);
 
-            mockUserRepository.Setup(repo => repo.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.SignInResponse(null, false));
-
-            var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
-            var useCase = new SignInUseCase(mockUserRepository.Object);
-
-            // act
-            var response = await useCase.Handle(new SignInRequest("", "password", true, true, false), mockOutputPort.Object);
+        // act
+        var response = await useCase.Handle(new SignInRequest("", "password", true, true, false), mockOutputPort.Object);
 
 
-            // assert
-            Assert.False(response);
-            mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-            mockUserRepository.Verify(factory => factory.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);
-            mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
-            mockOutputPort.VerifyAll();
-        }
+        // assert
+        Assert.False(response);
+        mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        mockUserRepository.Verify(factory => factory.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);
+        mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
+        mockOutputPort.VerifyAll();
+    }
+    [Fact]
+    public async void Handle_GivenUnknownCredentials_ShouldFail()
+    {
+        // arrange
+        Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();
+        userManager.Setup(i => i.FindByNameAsync(It.IsAny<string>())).ReturnsAsync((AppUser)null);
 
-        [Fact]
-        public async void Handle_GivenUnknownCredentials_ShouldFail()
-        {
-            // arrange
-            Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();
-            userManager.Setup(i => i.FindByNameAsync(It.IsAny<string>())).ReturnsAsync((AppUser)null);
+        List<Claim> claims = new List<Claim>();
+        var mockUserRepository = new Mock<IUserRepository>();
 
-            List<Claim> claims = new List<Claim>();
-            var mockUserRepository = new Mock<IUserRepository>();
+        mockUserRepository.Setup(repo => repo.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.SignInResponse(null, false));
 
-            mockUserRepository.Setup(repo => repo.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.SignInResponse(null, false));
+        var useCase = new SignInUseCase(mockUserRepository.Object);
 
-            var useCase = new SignInUseCase(mockUserRepository.Object);
+        var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
 
-            var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
+        // act
+        var response = await useCase.Handle(new SignInRequest("", "password", true, true, false), mockOutputPort.Object);
 
-            // act
-            var response = await useCase.Handle(new SignInRequest("", "password", true, true, false), mockOutputPort.Object);
+        // assert
+        Assert.False(response);
+        mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
+        mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        mockOutputPort.VerifyAll();
+    }
+    [Fact]
+    public async void Handle_GivenInvalidPassword_ShouldFail()
+    {
+        // arrange
+        Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();
+        userManager.Setup(i => i.FindByNameAsync(It.IsAny<string>())).ReturnsAsync((AppUser)null);
 
-            // assert
-            Assert.False(response);
-            mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
-            mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-            mockOutputPort.VerifyAll();
-        }
+        List<Claim> claims = new List<Claim>();
+        var mockUserRepository = new Mock<IUserRepository>();
+        mockUserRepository.Setup(repo => repo.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.SignInResponse(null, false));
 
-        [Fact]
-        public async void Handle_GivenInvalidPassword_ShouldFail()
-        {
-            // arrange
-            Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();
-            userManager.Setup(i => i.FindByNameAsync(It.IsAny<string>())).ReturnsAsync((AppUser)null);
+        var useCase = new SignInUseCase(mockUserRepository.Object);
+        var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
 
-            List<Claim> claims = new List<Claim>();
-            var mockUserRepository = new Mock<IUserRepository>();
+        // act
+        var response = await useCase.Handle(new SignInRequest("", "password", true, true, false), mockOutputPort.Object);
 
-            mockUserRepository.Setup(repo => repo.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.SignInResponse(null, false));
-
-            var useCase = new SignInUseCase(mockUserRepository.Object);
-
-            var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
-            mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
-
-            // act
-            var response = await useCase.Handle(new SignInRequest("", "password", true, true, false), mockOutputPort.Object);
-
-            // assert
-            Assert.False(response);
-            mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
-            mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-            mockOutputPort.VerifyAll();
-        }
+        // assert
+        Assert.False(response);
+        mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
+        mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        mockOutputPort.VerifyAll();
     }
 }

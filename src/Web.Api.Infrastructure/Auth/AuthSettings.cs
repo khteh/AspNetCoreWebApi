@@ -1,9 +1,5 @@
-using System;
-
-namespace Web.Api.Infrastructure.Auth
+namespace Web.Api.Infrastructure.Auth;
+public class AuthSettings
 {
-    public class AuthSettings
-    {
-        public string SecretKey { get; set; }
-    }
+    public string SecretKey { get; set; }
 }

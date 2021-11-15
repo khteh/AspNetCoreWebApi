@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
-
-
-namespace Web.Api.Infrastructure.Auth
+namespace Web.Api.Infrastructure.Auth;
+public class JwtIssuerOptions
 {
-  public class JwtIssuerOptions
-  {
     /// <summary>
     /// 4.1.1.  "iss" (Issuer) Claim - The "iss" (issuer) claim identifies the principal that issued the JWT.
     /// </summary>
@@ -52,5 +49,4 @@ namespace Web.Api.Infrastructure.Auth
     /// The signing key to use when generating tokens.
     /// </summary>
     public SigningCredentials SigningCredentials { get; set; }
-  }
 }

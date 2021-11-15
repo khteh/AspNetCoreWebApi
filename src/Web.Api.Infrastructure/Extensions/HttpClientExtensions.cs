@@ -1,14 +1,11 @@
-using System;
-using System.Net.Http;
-using Grpc.Net.Client;
 using Polly;
 using Polly.Extensions.Http;
-
-namespace Microsoft.Extensions.DependencyInjection
+using System;
+using System.Net.Http;
+namespace Microsoft.Extensions.DependencyInjection;
+public static class HttpClientExtensions
 {
-    public static class HttpClientExtensions
-    {
-        public static IHttpClientBuilder AddHttpsClient<TClient, TImplementation>(this IServiceCollection services)
+    public static IHttpClientBuilder AddHttpsClient<TClient, TImplementation>(this IServiceCollection services)
             where TClient : class
             where TImplementation : class, TClient
             => services.AddHttpClient<TClient, TImplementation>().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
@@ -16,21 +13,20 @@ namespace Microsoft.Extensions.DependencyInjection
                 ClientCertificateOptions = ClientCertificateOption.Manual,
                 ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
             }).AddPolicyHandler(GetRetryPolicy());
-        public static IHttpClientBuilder AddHttpsClient<TClient>(this IServiceCollection services) where TClient : class 
+    public static IHttpClientBuilder AddHttpsClient<TClient>(this IServiceCollection services) where TClient : class 
             => services.AddHttpClient<TClient>().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {
                 ClientCertificateOptions = ClientCertificateOption.Manual,
                 ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
             }).AddPolicyHandler(GetRetryPolicy());
-        public static IHttpClientBuilder AddGrpcClient<TClient>(this IServiceCollection services, Uri uri) where TClient : Grpc.Core.ClientBase 
+    public static IHttpClientBuilder AddGrpcClient<TClient>(this IServiceCollection services, Uri uri) where TClient : Grpc.Core.ClientBase 
             => services.AddGrpcClient<TClient>(o => {o.Address = uri;}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {
                 ClientCertificateOptions = ClientCertificateOption.Manual,
                 ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
             }).AddPolicyHandler(GetRetryPolicy());
-        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
+    private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
             HttpPolicyExtensions.HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                 .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) + TimeSpan.FromMilliseconds(new Random().Next(0, 100)));
-    }
 }

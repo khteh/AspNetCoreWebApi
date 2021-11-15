@@ -1,9 +1,5 @@
-﻿
-
-namespace Web.Api.Core.Interfaces
+﻿namespace Web.Api.Core.Interfaces;
+public interface IOutputPort<in TUseCaseResponse>
 {
-    public interface IOutputPort<in TUseCaseResponse>
-    {
-        void Handle(TUseCaseResponse response);
-    }
+    void Handle(TUseCaseResponse response);
 }

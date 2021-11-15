@@ -1,34 +1,34 @@
-﻿using FluentValidation.AspNetCore;
-using MediatR;
-using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Serilog;
-using Serilog.Events;
-using Serilog.Formatting.Elasticsearch;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿global using FluentValidation.AspNetCore;
+global using MediatR;
+global using Microsoft.AspNetCore.Antiforgery;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.AspNetCore.Builder;
+global using Microsoft.AspNetCore.CookiePolicy;
+global using Microsoft.AspNetCore.Diagnostics;
+global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+global using Microsoft.AspNetCore.Hosting;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Http.Connections;
+global using Microsoft.AspNetCore.HttpOverrides;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.AspNetCore.SignalR;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Diagnostics.HealthChecks;
+global using Microsoft.Extensions.Hosting;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.IdentityModel.Tokens;
+global using Microsoft.OpenApi.Models;
+global using Serilog;
+global using Serilog.Events;
+global using Serilog.Formatting.Elasticsearch;
+global using System;
+global using System.Collections.Generic;
+global using System.IO;
+global using System.Net;
+global using System.Text;
+global using System.Threading;
+global using System.Threading.Tasks;
 using Web.Api;
 using Web.Api.Behaviours;
 using Web.Api.Commands;
@@ -44,7 +44,10 @@ using Web.Api.Models.Logging;
 using Web.Api.Models.Response;
 using Web.Api.Presenters.Grpc;
 using Web.Api.Services;
-
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
+try {
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
     ApplicationName = typeof(Program).Assembly.FullName,
@@ -74,34 +77,23 @@ else
     logConfig.WriteTo.Console(new ElasticsearchJsonFormatter());
 // Create the logger
 Log.Logger = logConfig.CreateLogger();
-try
-{
-    int originalMinWorker, originalMinIOC;
-    int minWorker = 1000;
-    string strMinWorkerThreads = Environment.GetEnvironmentVariable("COMPlus_ThreadPool_ForceMinWorkerThreads");
-    if (!string.IsNullOrEmpty(strMinWorkerThreads) && Int32.TryParse(strMinWorkerThreads, out int minWorkerThreads))
-        minWorker = minWorkerThreads;
-    // Get the current settings.
-    ThreadPool.GetMinThreads(out originalMinWorker, out originalMinIOC);
-    // Change the minimum number of worker threads to four, but
-    // keep the old setting for minimum asynchronous I/O 
-    // completion threads.
-    if (ThreadPool.SetMinThreads(minWorker, originalMinIOC))
-        // The minimum number of threads was set successfully.
-        Log.Information($"Using {minWorker} threads");
-    else
-        // The minimum number of threads was not changed.
-        Log.Error($"Failed to set {minWorker} threads. Using original {originalMinWorker} threads");
-    System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
-}
-catch (Exception e)
-{
-    Log.Fatal($"Exception: {e.Message}");
-}
-finally
-{
-    Log.CloseAndFlush();
-}
+int originalMinWorker, originalMinIOC;
+int minWorker = 1000;
+string strMinWorkerThreads = Environment.GetEnvironmentVariable("COMPlus_ThreadPool_ForceMinWorkerThreads");
+if (!string.IsNullOrEmpty(strMinWorkerThreads) && Int32.TryParse(strMinWorkerThreads, out int minWorkerThreads))
+    minWorker = minWorkerThreads;
+// Get the current settings.
+ThreadPool.GetMinThreads(out originalMinWorker, out originalMinIOC);
+// Change the minimum number of worker threads to four, but
+// keep the old setting for minimum asynchronous I/O 
+// completion threads.
+if (ThreadPool.SetMinThreads(minWorker, originalMinIOC))
+    // The minimum number of threads was set successfully.
+    Log.Information($"Using {minWorker} threads");
+else
+    // The minimum number of threads was not changed.
+    Log.Error($"Failed to set {minWorker} threads. Using original {originalMinWorker} threads");
+    ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
 builder.WebHost.UseSerilog((ctx, config) =>
                      {
                          config.ReadFrom.Configuration(ctx.Configuration);
@@ -364,6 +356,7 @@ app.UseSwagger().UseSwaggerUI(c =>
     c.SwaggerEndpoint($"{pathBase}/swagger/v6.0/swagger.json", "AspNetCoreApiStarter V6.0");
 });
 app.Logger.LogInformation($"Using PathBase: {pathBase}");
+app.UseSerilogRequestLogging();
 app.Use(async (context, next) =>
 {
     // Request method, scheme, and path
@@ -413,7 +406,15 @@ lifetime.ApplicationStopping.Register(() => app.Logger.LogInformation("Applicati
 lifetime.ApplicationStopped.Register(() => app.Logger.LogInformation("ApplicationStopped"));
 
 app.Run();
-
+}
+catch (Exception e)
+{
+    Log.Fatal($"Exception: {e.Message}");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 static void AppStarted(Microsoft.Extensions.Logging.ILogger logger, ReadinessHealthCheck readinessHealthCheck)
 {
     logger.LogInformation($"ApplicationStarted");

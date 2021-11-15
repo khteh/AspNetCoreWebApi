@@ -7,50 +7,47 @@ using Web.Api.Core.DTO;
 using Web.Api.Core.Interfaces;
 using Web.Api.Presenters.Grpc;
 using Xunit;
-namespace Web.Api.UnitTests.Presenters.Grpc
+namespace Web.Api.UnitTests.Presenters.Grpc;
+public class GRPCDeleteUserPresenterUnitTests
 {
-    public class GRPCDeleteUserPresenterUnitTests
+    private readonly IMapper _mapper;
+    public GRPCDeleteUserPresenterUnitTests()
     {
-        private readonly IMapper _mapper;
-        public GRPCDeleteUserPresenterUnitTests()
-        {
-            IServiceCollection services = new ServiceCollection();
-            services.AddAutoMapper(typeof(GrpcProfile));
-            _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
-        }
-        [Fact]
-        public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
-        {
-            // arrange
-            var presenter = new DeleteUserPresenter(_mapper);
+        IServiceCollection services = new ServiceCollection();
+        services.AddAutoMapper(typeof(GrpcProfile));
+        _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
+    }
+    [Fact]
+    public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
+    {
+        // arrange
+        var presenter = new DeleteUserPresenter(_mapper);
 
-            // act
-            presenter.Handle(new UseCaseResponseMessage("", true));
+        // act
+        presenter.Handle(new UseCaseResponseMessage("", true));
 
-            // assert
-            Assert.NotNull(presenter.Response);
-            Assert.NotNull(presenter.Response.Response);
-            Assert.True(presenter.Response.Response.Success);
-            Assert.False(presenter.Response.Response.Errors.Any());
-        }
+        // assert
+        Assert.NotNull(presenter.Response);
+        Assert.NotNull(presenter.Response.Response);
+        Assert.True(presenter.Response.Response.Success);
+        Assert.False(presenter.Response.Response.Errors.Any());
+    }
+    [Fact]
+    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    {
+        // arrange
+        var presenter = new DeleteUserPresenter(_mapper);
 
-        [Fact]
-        public void Handle_GivenFailedUseCaseResponse_SetsErrors()
-        {
-            // arrange
-            var presenter = new DeleteUserPresenter(_mapper);
+        // act
+        presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid user!") }));
 
-            // act
-            presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid user!") }));
-
-            // assert
-            Assert.NotNull(presenter.Response);
-            Assert.NotNull(presenter.Response.Response.Errors);
-            Assert.NotEmpty(presenter.Response.Response.Errors);
-            Assert.False(string.IsNullOrEmpty(presenter.Response.Response.Errors.First().Code));
-            Assert.False(string.IsNullOrEmpty(presenter.Response.Response.Errors.First().Description));
-            Assert.Equal(HttpStatusCode.BadRequest.ToString(), presenter.Response.Response.Errors.First().Code);
-            Assert.Equal("Invalid user!", presenter.Response.Response.Errors.First().Description);
-        }
+        // assert
+        Assert.NotNull(presenter.Response);
+        Assert.NotNull(presenter.Response.Response.Errors);
+        Assert.NotEmpty(presenter.Response.Response.Errors);
+        Assert.False(string.IsNullOrEmpty(presenter.Response.Response.Errors.First().Code));
+        Assert.False(string.IsNullOrEmpty(presenter.Response.Response.Errors.First().Description));
+        Assert.Equal(HttpStatusCode.BadRequest.ToString(), presenter.Response.Response.Errors.First().Code);
+        Assert.Equal("Invalid user!", presenter.Response.Response.Errors.First().Description);
     }
 }

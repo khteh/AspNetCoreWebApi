@@ -1,11 +1,7 @@
-﻿using Web.Api.Core.DTO.UseCaseResponses;
-using Web.Api.Core.Interfaces;
-
-namespace Web.Api.Core.DTO.UseCaseRequests
+﻿using Web.Api.Core.Interfaces;
+namespace Web.Api.Core.DTO.UseCaseRequests;
+public class DeleteUserRequest : IUseCaseRequest<UseCaseResponseMessage>
 {
-    public class DeleteUserRequest : IUseCaseRequest<UseCaseResponseMessage>
-    {
-        public string UserName { get; }
-        public DeleteUserRequest(string username) => UserName = username;
-    }
+    public string UserName { get; }
+    public DeleteUserRequest(string username) => UserName = username;
 }
