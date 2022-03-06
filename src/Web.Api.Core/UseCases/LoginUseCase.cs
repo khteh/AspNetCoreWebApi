@@ -26,11 +26,12 @@ public sealed class LoginUseCase : ILoginUseCase
         if (!string.IsNullOrEmpty(message.UserName) && !string.IsNullOrEmpty(message.Password))
         {
             result = await _userRepository.CheckPassword(message.UserName, message.Password);
-            if (result != null && result.Success && result.User != null) {
+            if (result != null && result.Success && result.User != null)
+            {
                 // generate refresh token
                 var refreshToken = _tokenFactory.GenerateToken();
                 result.User.AddRefreshToken(refreshToken, message.RemoteIpAddress);
-                _userRepository.Update(result.User);
+                await _userRepository.Update(result.User);
                 // generate access token
                 outputPort.Handle(new LoginResponse(await _jwtFactory.GenerateEncodedToken(result.User.IdentityId, result.User.UserName), refreshToken, true));
                 return true;

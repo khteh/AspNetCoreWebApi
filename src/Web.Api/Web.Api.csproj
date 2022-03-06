@@ -4,6 +4,7 @@
 	  <LangVersion>10.0</LangVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="wwwroot\" />
