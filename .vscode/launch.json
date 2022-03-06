@@ -17,8 +17,8 @@
             "internalConsoleOptions": "openOnSessionStart",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
-                "ASPNETCORE_URLS": "https://localhost",
-                "ASPNETCORE_HTTPS_PORT": "443"
+                "ASPNETCORE_URLS": "https://localhost:5001",
+                "ASPNETCORE_HTTPS_PORT": "5001"
             },
             "launchBrowser": {
                 "enabled": true,
