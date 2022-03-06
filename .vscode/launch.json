@@ -10,15 +10,15 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/Web.Api/bin/Debug/net5.0/Web.Api.dll",
+            "program": "${workspaceFolder}/src/Web.Api/bin/Debug/net6.0/Web.Api.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Web.Api",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
-		"ASPNETCORE_URLS": "http://localhost:5000",
-		"ASPNETCORE_HTTPS_PORT": "5000"
+                "ASPNETCORE_URLS": "https://localhost",
+                "ASPNETCORE_HTTPS_PORT": "443"
             },
             "launchBrowser": {
                 "enabled": true,
