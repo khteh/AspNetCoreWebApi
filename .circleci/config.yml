@@ -14,6 +14,7 @@ jobs:
       - run: dotnet test -c Release --no-restore --no-build test/Web.Api.IntegrationTests
       - run: dotnet publish -c Release --no-restore --no-build src/Web.Api
       - setup_remote_docker:
+          version: 20.10.14
           docker_layer_caching: true
       # use a primary image that already has Docker (recommended)
       # or install it during a build like we do here
