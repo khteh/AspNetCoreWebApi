@@ -1,4 +1,4 @@
-# AspNetCoreApiStarter
+# AspNetCoreWebApi
 
 An ASP.NET 6.0 Web API, SignalR and GRPC project to quickly bootstrap new projects. Includes Identity, JWT authentication w/ refresh tokens. The design of the application is driven by both Domain-Driven-Design and Clean Architecture (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). It makes use of Command and Decorator pattern, and MediatR for in-process synchronous messaging.
 
@@ -15,7 +15,7 @@ $ dotnet ef database update --context AppIdentityDbContext
 
 # Visual Studio
 
-Open the solution file <code>AspNetCoreApiStarter.sln</code> and build/run.
+Open the solution file <code>AspNetCoreWebApi.sln</code> and build/run.
 
 # Visual Studio Code
 
