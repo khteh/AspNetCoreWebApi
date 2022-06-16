@@ -27,7 +27,7 @@ jobs:
             MAJOR=$(cat version.txt | awk -F"." '{ print $1 }')
             MINOR=$(cat version.txt | awk -F"." '{ print $2 }')
             VERSION=$MAJOR.$MINOR.$CIRCLE_BUILD_NUM
-            docker build -t khteh/asp.netcoreapistarter:latest -t khteh/asp.netcoreapistarter:$VERSION src
+            docker build -t khteh/asp.netcorewebapi:latest -t khteh/asp.netcorewebapi:$VERSION src
       - run:
           name: Login to docker hub
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
@@ -38,7 +38,7 @@ jobs:
             MINOR=$(cat version.txt | awk -F"." '{ print $2 }')
             VERSION=$MAJOR.$MINOR.$CIRCLE_BUILD_NUM
             echo ${VERSION} > docker-build_number.txt
-            docker push khteh/asp.netcoreapistarter --all-tags
+            docker push khteh/asp.netcorewebapi --all-tags
       - persist_to_workspace:
           name: Save Workspace
           root: .
@@ -74,7 +74,7 @@ jobs:
       - run:
           name: Update Application
           command: |
-            kubectl patch statefulset aspnetapistarter --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"'$AWS_ACCOUNT_ID'.dkr.ecr.ap-southeast-1.amazonaws.com/aspnetapistarter:'$CIRCLE_BUILD_NUM_DOCKER'"}]'
+            kubectl patch statefulset aspnetcorewebapi --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"'$AWS_ACCOUNT_ID'.dkr.ecr.ap-southeast-1.amazonaws.com/aspnetcorewebapi:'$CIRCLE_BUILD_NUM_DOCKER'"}]'
 workflows:
   main:
     jobs:
