@@ -227,7 +227,7 @@ builder.Services.AddSwaggerGen(c =>
         {
             Name = "Teh Kok How",
             Email = "funcoolgeek@gmail.com",
-            Url = new Uri("https://github.com/khteh/AspNetCoreApiStarter"),
+            Url = new Uri("https://github.com/khteh/AspNetCoreWebApi"),
         },
     });
     // Swagger 2.+ support
@@ -353,7 +353,7 @@ app.MapRazorPages();
 string pathBase = app.Configuration["PATH_BASE"];
 app.UseSwagger().UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint($"{pathBase}/swagger/v6.0/swagger.json", "AspNetCoreApiStarter V6.0");
+    c.SwaggerEndpoint($"{pathBase}/swagger/v6.0/swagger.json", "AspNetCoreWebApi V6.0");
 });
 app.Logger.LogInformation($"Using PathBase: {pathBase}");
 app.UseSerilogRequestLogging();

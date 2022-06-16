@@ -5,10 +5,13 @@ An ASP.NET 6.0 Web API, SignalR and GRPC project to quickly bootstrap new projec
 # Database Setup
 
 - Uses MySQL.
-- Install dotnet ef tool: <code>**dotnet tool install --global dotnet-ef**</code>
+- Install dotnet ef tool: `dotnet tool install --global dotnet-ef`
 - Apply database migrations to create the db. From a command line within the _Web.Api.Infrastructure_ project folder use the dotnet CLI to run :
-- <code>Web.Api.Infrastructure>**dotnet ef database update --context AppDbContext**</code>
-- <code>Web.Api.Infrastructure>**dotnet ef database update --context AppIdentityDbContext**</code>
+```
+$ cd Web.Api.Infrastructure
+$ dotnet ef database update --context AppDbContext
+$ dotnet ef database update --context AppIdentityDbContext
+```
 
 # Visual Studio
 
