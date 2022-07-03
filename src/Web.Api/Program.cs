@@ -94,6 +94,9 @@ try
     else
         // The minimum number of threads was not changed.
         Log.Error($"Failed to set {minWorker} threads. Using original {originalMinWorker} threads");
+    string pathBase = Environment.GetEnvironmentVariable("PATH_BASE");
+    Log.Information($"Using PathBase: {pathBase}");
+
     ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
     builder.WebHost.UseSerilog((ctx, config) =>
                          {
@@ -328,8 +331,6 @@ try
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
     }
-    string pathBase = app.Configuration["PATH_BASE"];
-    app.Logger.LogInformation($"Using PathBase: {pathBase}");
     app.UseResponseCaching();
     app.UseForwardedHeaders();
     app.UseHttpsRedirection();
