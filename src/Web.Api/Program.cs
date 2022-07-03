@@ -336,21 +336,21 @@ try
     app.UseHttpsRedirection();
     app.UseStaticFiles();
     app.UseCookiePolicy(new CookiePolicyOptions() { HttpOnly = HttpOnlyPolicy.Always, Secure = CookieSecurePolicy.Always });
+    app.UsePathBase(pathBase);
     app.UseRouting();
-    //app.UsePathBase(pathBase);
     app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
     app.UseAuthorization();
     app.UseWebSockets();
     app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
-    app.MapHub<ChatHub>($"/chatHub", o => o.Transports = HttpTransportType.WebSockets);
+    app.MapHub<ChatHub>($"{pathBase}/chatHub", o => o.Transports = HttpTransportType.WebSockets);
     //endpoints.MapGrpcService<GreeterService>("/greet");
     app.MapGrpcService<AccountsService>();
     app.MapGrpcService<AuthService>();
-    app.MapHealthChecks($"/health/live", new HealthCheckOptions()
+    app.MapHealthChecks($"{pathBase}/health/live", new HealthCheckOptions()
     {
         Predicate = check => check.Name == "Liveness"
     });
-    app.MapHealthChecks($"/health/ready", new HealthCheckOptions()
+    app.MapHealthChecks($"{pathBase}/health/ready", new HealthCheckOptions()
     {
         Predicate = check => check.Name == "Readiness"
     });
