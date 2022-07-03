@@ -329,6 +329,7 @@ try
         app.UseHsts();
     }
     string pathBase = app.Configuration["PATH_BASE"];
+    app.Logger.LogInformation($"Using PathBase: {pathBase}");
     app.UseResponseCaching();
     app.UseForwardedHeaders();
     app.UseHttpsRedirection();
@@ -340,15 +341,15 @@ try
     app.UseAuthorization();
     app.UseWebSockets();
     app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
-    app.MapHub<ChatHub>("/chatHub", o => o.Transports = HttpTransportType.WebSockets);
+    app.MapHub<ChatHub>($"{pathBase}/chatHub", o => o.Transports = HttpTransportType.WebSockets);
     //endpoints.MapGrpcService<GreeterService>("/greet");
     app.MapGrpcService<AccountsService>();
     app.MapGrpcService<AuthService>();
-    app.MapHealthChecks($"/health/live", new HealthCheckOptions()
+    app.MapHealthChecks($"{pathBase}/health/live", new HealthCheckOptions()
     {
         Predicate = check => check.Name == "Liveness"
     });
-    app.MapHealthChecks($"/health/ready", new HealthCheckOptions()
+    app.MapHealthChecks($"{pathBase}/health/ready", new HealthCheckOptions()
     {
         Predicate = check => check.Name == "Readiness"
     });
@@ -358,7 +359,6 @@ try
     {
         c.SwaggerEndpoint($"{pathBase}/swagger/v6.0/swagger.json", "AspNetCoreWebApi V6.0");
     });
-    app.Logger.LogInformation($"Using PathBase: {pathBase}");
     app.UseSerilogRequestLogging();
     app.Use(async (context, next) =>
     {
