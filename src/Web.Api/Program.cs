@@ -336,7 +336,7 @@ try
     app.UseHttpsRedirection();
     app.UseStaticFiles();
     app.UseCookiePolicy(new CookiePolicyOptions() { HttpOnly = HttpOnlyPolicy.Always, Secure = CookieSecurePolicy.Always });
-    app.UsePathBase(pathBase);
+    //app.UsePathBase(pathBase);
     app.UseRouting();
     app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
     app.UseAuthorization();
@@ -382,7 +382,7 @@ try
         //foreach (var header in context.Request.Headers)
         //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
         // Connection: RemoteIp
-        //context.Request.PathBase = new PathString(pathBase); // Kubernetes ingress rule
+        context.Request.PathBase = new PathString(pathBase); // Kubernetes ingress rule
         context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
         context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
         context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
