@@ -336,7 +336,7 @@ try
     app.UseHttpsRedirection();
     app.UseStaticFiles();
     app.UseCookiePolicy(new CookiePolicyOptions() { HttpOnly = HttpOnlyPolicy.Always, Secure = CookieSecurePolicy.Always });
-    //app.UsePathBase(pathBase); This does NOT work
+    app.UsePathBase(pathBase); //This does NOT work
     app.UseRouting();
     app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
     app.UseAuthorization();
