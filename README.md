@@ -26,7 +26,8 @@ Open the solution file <code>AspNetCoreWebApi.sln</code> and build/run.
 
 # Visual Studio Code
 
-Open the <code>src</code> folder and <code>F5</code> to build/run.
+- `Ctrl`+`Shift`+`B` to build
+- `F5` to start debug session
 
 ## Unit Testing
 
