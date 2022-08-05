@@ -22,8 +22,29 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
+            "justMyCode": false,
+            "internalConsoleOptions": "openOnSessionStart",
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "https://localhost:5001",
+                "ASPNETCORE_HTTPS_PORT": "5001"
+            },
+            "launchBrowser": {
+                "enabled": true,
+                "args": "${auto-detect-url}",
+                "windows": {
+                    "command": "cmd.exe",
+                    "args": "/C start ${auto-detect-url}"
+
+                },
+                "osx": {
+                    "command": "open"
+
+                },
+                "linux": {
+                    "command": "xdg-open"
+
+                },
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
