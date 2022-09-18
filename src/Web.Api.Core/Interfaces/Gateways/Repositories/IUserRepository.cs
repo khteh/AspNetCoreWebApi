@@ -2,7 +2,7 @@
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 namespace Web.Api.Core.Interfaces.Gateways.Repositories;
-public interface IUserRepository  : IRepository<User>
+public interface IUserRepository : IRepository<User>
 {
     Task<CreateUserResponse> Create(string firstName, string lastName, string email, string userName, string password);
     Task<DeleteUserResponse> Delete(string username);
