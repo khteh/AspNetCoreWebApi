@@ -20,8 +20,8 @@ public static class InfrastructureServices
                 .AddSingleton<IJwtTokenValidator, JwtTokenValidator>()
                 .AddScoped<SignInManager<AppUser>>();
         if (!useInMemoryDatabase)
-            service.AddDbContextPool<AppIdentityDbContext>(options => options.UseMySql(configuration.GetConnectionString("Default"), ServerVersion.AutoDetect(configuration.GetConnectionString("Default")), b => b.MigrationsAssembly("Web.Api.Infrastructure")))
-                    .AddDbContextPool<AppDbContext>(options => options.UseMySql(configuration.GetConnectionString("Default"), ServerVersion.AutoDetect(configuration.GetConnectionString("Default")), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
+            service.AddDbContextPool<AppIdentityDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")))
+                    .AddDbContextPool<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
         return service;
     }
 }

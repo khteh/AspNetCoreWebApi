@@ -4,87 +4,94 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Web.Api.Infrastructure.Identity;
 
-namespace Web.Api.Infrastructure.Migrations
+#nullable disable
+
+namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
 {
     [DbContext(typeof(AppIdentityDbContext))]
-    [Migration("20191007054841_appidentitydbcontext.initial")]
-    partial class appidentitydbcontextinitial
+    [Migration("20220919090617_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex");
+                        .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<short>("EmailConfirmed")
                         .HasColumnType("smallint");
@@ -93,33 +100,33 @@ namespace Web.Api.Infrastructure.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<short>("PhoneNumberConfirmed")
                         .HasColumnType("smallint");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<short>("TwoFactorEnabled")
                         .HasColumnType("smallint");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -130,160 +137,162 @@ namespace Web.Api.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Web.Api.Infrastructure.Identity.AppUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(85)")
-                        .HasMaxLength(85);
+                        .HasMaxLength(85)
+                        .HasColumnType("character varying(85)");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .HasColumnType("varchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<short>("EmailConfirmed")
                         .HasColumnType("smallint");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<short>("LockoutEnabled")
                         .HasColumnType("smallint");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasColumnType("varchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasColumnType("varchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<short>("PhoneNumberConfirmed")
                         .HasColumnType("smallint");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<short>("TwoFactorEnabled")
                         .HasColumnType("smallint");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("varchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
-                        .HasName("EmailIndex");
+                        .HasDatabaseName("EmailIndex");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex");
+                        .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

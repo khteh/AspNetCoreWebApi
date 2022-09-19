@@ -37,7 +37,8 @@ public abstract class DesignTimeDbContextFactoryBase<TContext> : IDesignTimeDbCo
             throw new ArgumentException($"{nameof(connectionString)} is null or empty.", nameof(connectionString));
         var optionsBuilder = new DbContextOptionsBuilder<TContext>();
         Console.WriteLine("DesignTimeDbContextFactory.Create(string): Connection string: {0}", connectionString);
-        optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        //optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        optionsBuilder.UseNpgsql(connectionString);
         var options = optionsBuilder.Options;
         return CreateNewInstance(options);
     }

@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
         //EF access the RefreshTokens collection property through its backing field
         navigation.SetPropertyAccessMode(PropertyAccessMode.Field);
         builder.Ignore(b => b.Email);
+        builder.OwnsOne(o => o.Address);
     }
     public override int SaveChanges()
     {
