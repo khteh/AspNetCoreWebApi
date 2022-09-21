@@ -411,9 +411,9 @@ try
 
     app.Run();
 }
-catch (Exception e)
+catch (Exception ex) when (ex.GetType().Name is not "StopTheHostException") // https://github.com/dotnet/runtime/issues/60600
 {
-    Log.Fatal($"Exception: {e.Message}");
+    Log.Fatal($"Exception: {ex.Message}");
 }
 finally
 {
