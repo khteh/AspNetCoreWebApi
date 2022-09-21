@@ -12,6 +12,9 @@
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+**/*.crt
+**/*.key*
+tls.sh
 
 # Build results
 [Dd]ebug/

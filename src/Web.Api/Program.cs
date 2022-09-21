@@ -62,7 +62,7 @@ try
     builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", false, true)
                     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
-                    .AddJsonFile($"appsettings.mysql.json", true, true)
+                    .AddJsonFile($"appsettings.postgresql.json", true, true)
                     .AddEnvironmentVariables()
                     .AddCommandLine(args);
     //builder.WebHost.UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory())); Changing the host configuration using WebApplicationBuilder.Host is not supported. Use WebApplication.CreateBuilder(WebApplicationOptions) instead.

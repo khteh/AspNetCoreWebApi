@@ -11,13 +11,14 @@ An ASP.NET 6.0 Web API, SignalR and GRPC project to quickly bootstrap new projec
 $ dotnet tool install --global dotnet-ef
 $ dotnet tool update --global dotnet-ef
 ```
+
 - Either run the application / `Web.Api.Infrastructure` project and the DB will be automatically created or:
 - Apply database migrations to create the db. From a command line within the `Web.Api.Infrastructure` project folder use the dotnet CLI to run :
 
 ```
-$ cd Web.Api.Infrastructure
-$ dotnet ef database update --context AppDbContext
-$ dotnet ef database update --context AppIdentityDbContext
+$ cd src/Web.Api.Infrastructure
+$ dotnet ef database update -c AppDbContext
+$ dotnet ef database update -c AppIdentityDbContext
 ```
 
 # Visual Studio

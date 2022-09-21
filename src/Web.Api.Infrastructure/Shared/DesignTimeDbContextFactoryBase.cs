@@ -23,7 +23,7 @@ public abstract class DesignTimeDbContextFactoryBase<TContext> : IDesignTimeDbCo
                 .SetBasePath(basePath)
                 .AddJsonFile("appsettings.json", false, true)
                 .AddJsonFile($"appsettings.{environmentName}.json", true, true)
-                .AddJsonFile($"appsettings.mysql.json", true, true)
+                .AddJsonFile($"appsettings.postgresql.json", true, true)
                 .AddEnvironmentVariables();
         var config = builder.Build();
         var connstr = config.GetConnectionString("Default");
