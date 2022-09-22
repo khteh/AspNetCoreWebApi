@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 using Web.Api.Commands;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Models.Response;
@@ -29,14 +27,14 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> Login([FromBody] Models.Request.LoginRequest request)
     {
         if (!ModelState.IsValid) { return BadRequest(ModelState); }
-        LoginResponse response = await _mediator.Send(new LoginCommand(request.UserName, request.Password, Request.HttpContext.Connection.RemoteIpAddress?.ToString()));
+        LogInResponse response = await _mediator.Send(new LogInCommand(request.UserName, request.Password, Request.HttpContext.Connection.RemoteIpAddress?.ToString()));
         return _mapper.Map<JsonContentResult>(response);
     }
     // POST api/auth/refreshtoken
     [HttpPost("refreshtoken")]
     public async Task<ActionResult> RefreshToken([FromBody] Models.Request.ExchangeRefreshTokenRequest request)
     {
-        if (!ModelState.IsValid) { return BadRequest(ModelState);}
+        if (!ModelState.IsValid) { return BadRequest(ModelState); }
         ExchangeRefreshTokenResponse response = await _mediator.Send(new ExchangeRefreshTokenCommand(request.AccessToken, request.RefreshToken, _authSettings.SecretKey));
         return _mapper.Map<JsonContentResult>(response);
     }

@@ -216,7 +216,7 @@ try
     builder.Services.AddAutoMapper(new[] { typeof(IdentityProfile), typeof(GrpcProfile), typeof(ResponseProfile) });
     builder.Services.AddMediatR(typeof(Program));
     builder.Services.AddScoped<IPipelineBehavior<RegisterUserCommand, RegisterUserResponse>, LoggingBehavior<RegisterUserCommand, RegisterUserResponse>>();
-    builder.Services.AddScoped<IPipelineBehavior<LoginCommand, LoginResponse>, LoggingBehavior<LoginCommand, LoginResponse>>();
+    builder.Services.AddScoped<IPipelineBehavior<LogInCommand, LogInResponse>, LoggingBehavior<LogInCommand, LogInResponse>>();
     builder.Services.AddScoped<IPipelineBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>, LoggingBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>>();
     builder.Services.AddEndpointsApiExplorer();
     // Register the Swagger generator, defining 1 or more Swagger documents

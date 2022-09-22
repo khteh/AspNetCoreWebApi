@@ -19,12 +19,12 @@ public class ChatHubTests : IClassFixture<CustomWebApplicationFactory<Program>>
         Assert.NotNull(client);
         var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
         httpResponse.EnsureSuccessStatusCode();
-        LoginResponse response = Serialization.JsonSerializer.DeSerializeObject<LoginResponse>(await httpResponse.Content.ReadAsStringAsync());
+        LogInResponse response = Serialization.JsonSerializer.DeSerializeObject<LogInResponse>(await httpResponse.Content.ReadAsStringAsync());
         Assert.NotNull(response);
         Assert.NotNull(response.AccessToken);
         Assert.False(string.IsNullOrEmpty(response.AccessToken.Token));
         Assert.False(string.IsNullOrEmpty(response.RefreshToken));
-        Assert.Equal(7200,(int)response.AccessToken.ExpiresIn);
+        Assert.Equal(7200, (int)response.AccessToken.ExpiresIn);
         return response.AccessToken.Token;
     }
     [Fact]
@@ -34,7 +34,8 @@ public class ChatHubTests : IClassFixture<CustomWebApplicationFactory<Program>>
         string echo = string.Empty;
         string message = "Integration Testing in Microsoft AspNetCore SignalR";
         HubConnection connection = new HubConnectionBuilder()
-            .WithUrl("https://localhost/chatHub", o => {
+            .WithUrl("https://localhost/chatHub", o =>
+            {
                 o.Transports = HttpTransportType.WebSockets;
                 o.AccessTokenProvider = async () => await AccessTokenProvider();
                 o.SkipNegotiation = true;
@@ -46,7 +47,8 @@ public class ChatHubTests : IClassFixture<CustomWebApplicationFactory<Program>>
                     return await wsClient.ConnectAsync(new Uri(url), cancellationToken);
                 };
             }).Build();
-        connection.On<string>("ReceiveMessage", i => {
+        connection.On<string>("ReceiveMessage", i =>
+        {
             echo = i;
             messageReceivedEvent.Set();
         });
@@ -66,7 +68,8 @@ public class ChatHubTests : IClassFixture<CustomWebApplicationFactory<Program>>
         string sender = "Mickey Mouse";
         string message = "Integration Testing in Microsoft AspNetCore SignalR";
         HubConnection connection = new HubConnectionBuilder()
-            .WithUrl("https://localhost/chatHub", o => {
+            .WithUrl("https://localhost/chatHub", o =>
+            {
                 o.Transports = HttpTransportType.WebSockets;
                 o.AccessTokenProvider = async () => await AccessTokenProvider();
                 o.SkipNegotiation = true;
@@ -78,7 +81,8 @@ public class ChatHubTests : IClassFixture<CustomWebApplicationFactory<Program>>
                     return await wsClient.ConnectAsync(new Uri(url), cancellationToken);
                 };
             }).Build();
-        connection.On<string, string>("ReceiveMessageFromUser", (u, i) => {
+        connection.On<string, string>("ReceiveMessageFromUser", (u, i) =>
+        {
             user = u;
             echo = i;
             messageReceivedEvent.Set();

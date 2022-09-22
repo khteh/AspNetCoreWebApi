@@ -115,12 +115,12 @@ public class AccountsControllerIntegrationTests : IClassFixture<CustomWebApplica
         var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"));
         loginResponse.EnsureSuccessStatusCode();
         var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
-        Models.Response.LoginResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginSuccessResponse);
+        Models.Response.LogInResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(strLoginSuccessResponse);
         Assert.NotNull(loginResult);
         Assert.True(loginResult.Success);
         Assert.Null(loginResult.Errors);
         Assert.NotNull(loginResult.AccessToken.Token);
-        Assert.Equal(7200,(int)loginResult.AccessToken.ExpiresIn);
+        Assert.Equal(7200, (int)loginResult.AccessToken.ExpiresIn);
         Assert.NotNull(loginResult.RefreshToken);
 
         // Change Password
@@ -135,7 +135,7 @@ public class AccountsControllerIntegrationTests : IClassFixture<CustomWebApplica
         // Should fail login with previous password
         var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"));
         var strLoginFailResponse = await loginFailResponse.Content.ReadAsStringAsync();
-        Models.Response.LoginResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginFailResponse);
+        Models.Response.LogInResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(strLoginFailResponse);
         Assert.NotNull(response);
         Assert.NotNull(response.Errors);
         Assert.NotEmpty(response.Errors);
@@ -169,12 +169,12 @@ public class AccountsControllerIntegrationTests : IClassFixture<CustomWebApplica
         var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"));
         loginResponse.EnsureSuccessStatusCode();
         var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
-        Models.Response.LoginResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginSuccessResponse);
+        Models.Response.LogInResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(strLoginSuccessResponse);
         Assert.NotNull(loginResult);
         Assert.True(loginResult.Success);
         Assert.Null(loginResult.Errors);
         Assert.NotNull(loginResult.AccessToken);
-        Assert.Equal(7200,(int)loginResult.AccessToken.ExpiresIn);
+        Assert.Equal(7200, (int)loginResult.AccessToken.ExpiresIn);
         Assert.False(string.IsNullOrEmpty(loginResult.AccessToken.Token));
         Assert.False(string.IsNullOrEmpty(loginResult.RefreshToken));
 
@@ -190,7 +190,7 @@ public class AccountsControllerIntegrationTests : IClassFixture<CustomWebApplica
         // Should fail login with previous password
         var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"));
         var strLoginFailResponse = await loginFailResponse.Content.ReadAsStringAsync();
-        Models.Response.LoginResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(strLoginFailResponse);
+        Models.Response.LogInResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(strLoginFailResponse);
         Assert.NotNull(response);
         Assert.NotNull(response.Errors);
         Assert.NotEmpty(response.Errors);

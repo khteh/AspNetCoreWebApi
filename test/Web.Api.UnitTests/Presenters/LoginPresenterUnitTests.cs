@@ -16,7 +16,7 @@ public class LoginPresenterUnitTests
         var presenter = new LoginPresenter();
 
         // act
-        presenter.Handle(new LoginResponse(new AccessToken("", 0),"", true));
+        presenter.Handle(new LoginResponse(new AccessToken("", 0), "", true));
 
         // assert
         Assert.Equal((int)HttpStatusCode.OK, presenter.ContentResult.StatusCode);
@@ -29,7 +29,7 @@ public class LoginPresenterUnitTests
         var presenter = new LoginPresenter();
 
         // act
-        presenter.Handle(new LoginResponse(new AccessToken(token, 0),"", true));
+        presenter.Handle(new LoginResponse(new AccessToken(token, 0), "", true));
 
         // assert
         LoginResponse data = JsonSerializer.DeSerializeObject<LoginResponse>(presenter.ContentResult.Content);
@@ -45,7 +45,7 @@ public class LoginPresenterUnitTests
         presenter.Handle(new LoginResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
         // assert
-        Models.Response.LoginResponse response = JsonSerializer.DeSerializeObject<Models.Response.LoginResponse>(presenter.ContentResult.Content);
+        Models.Response.LogInResponse response = JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(presenter.ContentResult.Content);
         Assert.Equal((int)HttpStatusCode.Unauthorized, presenter.ContentResult.StatusCode);
         Assert.NotNull(response);
         Assert.NotNull(response.Errors);
