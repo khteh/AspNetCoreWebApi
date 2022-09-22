@@ -1,7 +1,7 @@
 ﻿using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Core.UseCases;
 namespace Microsoft.Extensions.DependencyInjection;
-public static class InfrastructureServices
+public static class CoreServices
 {
     public static IServiceCollection AddCore(this IServiceCollection service) =>
             service.AddScoped<IChangePasswordUseCase, ChangePasswordUseCase>()
