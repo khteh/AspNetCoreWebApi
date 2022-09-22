@@ -8,10 +8,10 @@ using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Presenters.Grpc;
 using Xunit;
 namespace Web.Api.UnitTests.Presenters.Grpc;
-public class GRPCLoginPresenterUnitTests
+public class GRPCLogInPresenterUnitTests
 {
     private readonly IMapper _mapper;
-    public GRPCLoginPresenterUnitTests()
+    public GRPCLogInPresenterUnitTests()
     {
         IServiceCollection services = new ServiceCollection();
         services.AddAutoMapper(typeof(GrpcProfile));
@@ -21,10 +21,10 @@ public class GRPCLoginPresenterUnitTests
     public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
     {
         // arrange
-        var presenter = new LoginPresenter(_mapper);
+        var presenter = new LogInPresenter(_mapper);
 
         // act
-        presenter.Handle(new LoginResponse(new AccessToken("", 0),"", true));
+        presenter.Handle(new LogInResponse(new AccessToken("", 0),"", true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -37,10 +37,10 @@ public class GRPCLoginPresenterUnitTests
     {
         // arrange
         const string token = "777888AAABBB";
-        var presenter = new LoginPresenter(_mapper);
+        var presenter = new LogInPresenter(_mapper);
 
         // act
-        presenter.Handle(new LoginResponse(new AccessToken(token, 0),"", true));
+        presenter.Handle(new LogInResponse(new AccessToken(token, 0),"", true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -53,10 +53,10 @@ public class GRPCLoginPresenterUnitTests
     public void Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
-        var presenter = new LoginPresenter(_mapper);
+        var presenter = new LogInPresenter(_mapper);
 
         // act
-        presenter.Handle(new LoginResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
+        presenter.Handle(new LogInResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
         // assert
         Assert.NotNull(presenter.Response);

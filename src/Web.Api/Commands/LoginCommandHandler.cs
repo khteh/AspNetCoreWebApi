@@ -6,9 +6,9 @@ namespace Web.Api.Commands;
 public class LogInCommandHandler : IRequestHandler<LogInCommand, LogInResponse>
 {
     private readonly ILogger<LogInCommandHandler> _logger;
-    private readonly ILoginUseCase _useCase;
-    private readonly LoginPresenter _presenter;
-    public LogInCommandHandler(ILogger<LogInCommandHandler> logger, ILoginUseCase useCase, LoginPresenter presenter)
+    private readonly ILogInUseCase _useCase;
+    private readonly LogInPresenter _presenter;
+    public LogInCommandHandler(ILogger<LogInCommandHandler> logger, ILogInUseCase useCase, LogInPresenter presenter)
     {
         _logger = logger;
         _useCase = useCase;
@@ -16,7 +16,7 @@ public class LogInCommandHandler : IRequestHandler<LogInCommand, LogInResponse>
     }
     public async Task<LogInResponse> Handle(LogInCommand request, CancellationToken cancellationToken)
     {
-        await _useCase.Handle(new LoginRequest(request.UserName, request.Password, request.RemoteIpAddress), _presenter);
+        await _useCase.Handle(new LogInRequest(request.UserName, request.Password, request.RemoteIpAddress), _presenter);
         return _presenter.Response;
     }
 }

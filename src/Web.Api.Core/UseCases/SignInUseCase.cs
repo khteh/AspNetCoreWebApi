@@ -17,7 +17,8 @@ public class SignInUseCase : ISignInUseCase
         {
             result = message.IsMobileApp ? await _userRepository.SignInMobile(message.UserName, message.Password, message.LockOutOnFailure)
                                             : await _userRepository.SignIn(message.UserName, message.Password, message.RememberMe, message.LockOutOnFailure);
-            if (result != null && result.Success && !string.IsNullOrEmpty(result.UserId)) {
+            if (result != null && result.Success && !string.IsNullOrEmpty(result.UserId))
+            {
                 outputPort.Handle(new UseCaseResponseMessage(result.UserId, true, "Signed in successfully!", null));
                 return true;
             }

@@ -7,16 +7,16 @@ using Web.Api.Presenters;
 using Web.Api.Serialization;
 using Xunit;
 namespace Web.Api.UnitTests.Presenters;
-public class LoginPresenterUnitTests
+public class LogInPresenterUnitTests
 {
     [Fact]
     public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
     {
         // arrange
-        var presenter = new LoginPresenter();
+        var presenter = new LogInPresenter();
 
         // act
-        presenter.Handle(new LoginResponse(new AccessToken("", 0), "", true));
+        presenter.Handle(new LogInResponse(new AccessToken("", 0), "", true));
 
         // assert
         Assert.Equal((int)HttpStatusCode.OK, presenter.ContentResult.StatusCode);
@@ -26,23 +26,23 @@ public class LoginPresenterUnitTests
     {
         // arrange
         const string token = "777888AAABBB";
-        var presenter = new LoginPresenter();
+        var presenter = new LogInPresenter();
 
         // act
-        presenter.Handle(new LoginResponse(new AccessToken(token, 0), "", true));
+        presenter.Handle(new LogInResponse(new AccessToken(token, 0), "", true));
 
         // assert
-        LoginResponse data = JsonSerializer.DeSerializeObject<LoginResponse>(presenter.ContentResult.Content);
+        LogInResponse data = JsonSerializer.DeSerializeObject<LogInResponse>(presenter.ContentResult.Content);
         Assert.Equal(token, data.AccessToken.Token);
     }
     [Fact]
     public void Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
-        var presenter = new LoginPresenter();
+        var presenter = new LogInPresenter();
 
         // act
-        presenter.Handle(new LoginResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
+        presenter.Handle(new LogInResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
         // assert
         Models.Response.LogInResponse response = JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(presenter.ContentResult.Content);

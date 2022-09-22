@@ -9,7 +9,7 @@ public static class CoreServices
             .AddScoped<IExchangeRefreshTokenUseCase, ExchangeRefreshTokenUseCase>()
             .AddScoped<IFindUserUseCase, FindUserUseCase>()
             .AddScoped<ILockUserUseCase, LockUserUseCase>()
-            .AddScoped<ILoginUseCase, LoginUseCase>()
+            .AddScoped<ILogInUseCase, LogInUseCase>()
             .AddScoped<IRegisterUserUseCase, RegisterUserUseCase>()
             .AddScoped<IResetPasswordUseCase, ResetPasswordUseCase>()
             .AddScoped<ISignInUseCase, SignInUseCase>();

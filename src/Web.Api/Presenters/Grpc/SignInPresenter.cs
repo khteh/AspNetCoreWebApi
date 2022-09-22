@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Web.Api.Core.DTO.UseCaseResponses;
+
 namespace Web.Api.Presenters.Grpc;
-public sealed class LogInPresenter : PresenterBase<LogInResponse>
+
+public sealed class SignInPresenter : PresenterBase<LogInResponse>
 {
     public Web.Api.Identity.Auth.LogInResponse Response { get; private set; }
-    public LogInPresenter(IMapper mapper) : base(mapper) { }
+    public SignInPresenter(IMapper mapper) : base(mapper) { }
     public override void Handle(LogInResponse response)
     {
         base.Handle(response);

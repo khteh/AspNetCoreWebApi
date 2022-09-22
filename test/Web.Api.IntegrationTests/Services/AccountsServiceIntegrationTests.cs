@@ -9,7 +9,7 @@ using static Web.Api.Identity.Auth.Auth;
 namespace Web.Api.IntegrationTests.Services;
 public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//FunctionalTestBase//IClassFixture<CustomGrpcServerFactory<Program>>
 {
-    #if false
+#if false
     private ServiceProvider _serviceProvider;
     public AccountsServiceIntegrationTests(CustomGrpcServerFactory<Program> factory)
     {
@@ -17,19 +17,20 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
         factory.CreateClient();
         _serviceProvider = factory.ServiceProvider;
     }
-    #endif
+#endif
     [Fact]
     public async Task CanRegisterUserWithValidAccountDetails()
     {
         AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
         Assert.NotNull(client);
         // Act
-        RegisterUserResponse response = await client.RegisterAsync(new RegisterUserRequest() {
-                FirstName = "John",
-                LastName = "Doe",
-                Email = "jdoe@gmail.com",
-                UserName = "johndoe",
-                Password = "P@$$w0rd"
+        RegisterUserResponse response = await client.RegisterAsync(new RegisterUserRequest()
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "jdoe@gmail.com",
+            UserName = "johndoe",
+            Password = "P@$$w0rd"
         });//.ResponseAsync.DefaultTimeout();
 
         // Assert
@@ -46,7 +47,7 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
     {
         AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
         Assert.NotNull(client);
-        DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "deleteme"});
+        DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "deleteme" });
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -59,12 +60,13 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
         AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
         Assert.NotNull(client);
         // Act
-        RegisterUserResponse response = await client.RegisterAsync(new RegisterUserRequest() {
-                FirstName = "John",
-                LastName = "Doe",
-                Email = string.Empty,
-                UserName = string.Empty,
-                Password = "P@$$w0rd"
+        RegisterUserResponse response = await client.RegisterAsync(new RegisterUserRequest()
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = string.Empty,
+            UserName = string.Empty,
+            Password = "P@$$w0rd"
         });//.ResponseAsync.DefaultTimeout();
 
         // Assert
@@ -83,7 +85,7 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
     {
         AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
         Assert.NotNull(client);
-        DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "DeleteMeNot"});
+        DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "DeleteMeNot" });
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.False(response.Response.Success);
@@ -99,7 +101,7 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
     {
         AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
         Assert.NotNull(client);
-        FindUserResponse response = await client.FindByIdAsync(new StringInputParameter() { Value = id});
+        FindUserResponse response = await client.FindByIdAsync(new StringInputParameter() { Value = id });
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -112,7 +114,7 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
     {
         AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
         Assert.NotNull(client);
-        FindUserResponse response = await client.FindByUserNameAsync(new StringInputParameter() { Value = "mickeymouse"}); // UserManager is NOT case sensitive!
+        FindUserResponse response = await client.FindByUserNameAsync(new StringInputParameter() { Value = "mickeymouse" }); // UserManager is NOT case sensitive!
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -125,7 +127,7 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
     {
         AccountsClient client = new AccountsClient(GrpcChannel);//_serviceProvider.GetRequiredService<AccountsClient>();
         Assert.NotNull(client);
-        FindUserResponse response = await client.FindByEmailAsync(new StringInputParameter() { Value = "mickey@mouse.com"}); // UserManager is NOT case sensitive!
+        FindUserResponse response = await client.FindByEmailAsync(new StringInputParameter() { Value = "mickey@mouse.com" }); // UserManager is NOT case sensitive!
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -141,12 +143,13 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
         Assert.NotNull(accountsClient);
         Assert.NotNull(authClient);
         // Create User
-        RegisterUserResponse response = await accountsClient.RegisterAsync(new RegisterUserRequest() {
-                FirstName = "FirstName",
-                LastName = "LastName",
-                Email = "user@gmail.com",
-                UserName = "user1",
-                Password = "P@$$w0rd"
+        RegisterUserResponse response = await accountsClient.RegisterAsync(new RegisterUserRequest()
+        {
+            FirstName = "FirstName",
+            LastName = "LastName",
+            Email = "user@gmail.com",
+            UserName = "user1",
+            Password = "P@$$w0rd"
         });//.ResponseAsync.DefaultTimeout();
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
@@ -155,9 +158,10 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
         Assert.False(string.IsNullOrEmpty(response.Id));
 
         // Login
-        LoginResponse loginResponse = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user1",
-                Password = "P@$$w0rd"
+        LogInResponse loginResponse = await authClient.LogInAsync(new LogInRequest()
+        {
+            UserName = "user1",
+            Password = "P@$$w0rd"
         });
         Assert.NotNull(loginResponse);
         Assert.NotNull(loginResponse.Response);
@@ -169,20 +173,22 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
         Assert.Equal(7200, loginResponse.AccessToken.ExpiresIn);
 
         // Change Password
-        Identity.Response pwdResponse = await accountsClient.ChangePasswordAsync(new ChangePasswordRequest() {
-                Id = response.Id,
-                Password = "P@$$w0rd",
-                NewPassword = "P@$$w0rd1",
-            });
+        Identity.Response pwdResponse = await accountsClient.ChangePasswordAsync(new ChangePasswordRequest()
+        {
+            Id = response.Id,
+            Password = "P@$$w0rd",
+            NewPassword = "P@$$w0rd1",
+        });
         Assert.NotNull(pwdResponse);
         Assert.NotNull(pwdResponse);
         Assert.True(pwdResponse.Success);
         Assert.Empty(pwdResponse.Errors);
 
         // Should fail login with previous password
-        LoginResponse loginResponse1 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user1",
-                Password = "P@$$w0rd"
+        LogInResponse loginResponse1 = await authClient.LogInAsync(new LogInRequest()
+        {
+            UserName = "user1",
+            Password = "P@$$w0rd"
         });
         Assert.NotNull(loginResponse1);
         Assert.NotNull(loginResponse1.Response);
@@ -194,9 +200,10 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
         Assert.Equal("Invalid username or password!", loginResponse1.Response.Errors.First().Description);
 
         // Login
-        LoginResponse loginResponse2 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user1",
-                Password = "P@$$w0rd1"
+        LogInResponse loginResponse2 = await authClient.LogInAsync(new LogInRequest()
+        {
+            UserName = "user1",
+            Password = "P@$$w0rd1"
         });
         Assert.NotNull(loginResponse2);
         Assert.NotNull(loginResponse2.Response);
@@ -215,12 +222,13 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
         Assert.NotNull(accountsClient);
         Assert.NotNull(authClient);
         // Create User
-        RegisterUserResponse response = await accountsClient.RegisterAsync(new RegisterUserRequest() {
-                FirstName = "FirstName",
-                LastName = "LastName",
-                Email = "user1@gmail.com",
-                UserName = "user2",
-                Password = "P@$$w0rd"
+        RegisterUserResponse response = await accountsClient.RegisterAsync(new RegisterUserRequest()
+        {
+            FirstName = "FirstName",
+            LastName = "LastName",
+            Email = "user1@gmail.com",
+            UserName = "user2",
+            Password = "P@$$w0rd"
         });//.ResponseAsync.DefaultTimeout();
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
@@ -229,9 +237,10 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
         Assert.False(string.IsNullOrEmpty(response.Id));
 
         // Login
-        LoginResponse loginResponse = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user2",
-                Password = "P@$$w0rd"
+        LogInResponse loginResponse = await authClient.LogInAsync(new LogInRequest()
+        {
+            UserName = "user2",
+            Password = "P@$$w0rd"
         });
         Assert.NotNull(loginResponse);
         Assert.NotNull(loginResponse.Response);
@@ -243,9 +252,10 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
         Assert.Equal(7200, loginResponse.AccessToken.ExpiresIn);
 
         // Reset Password
-        Identity.Response pwdResponse = await accountsClient.ResetPasswordAsync(new ResetPasswordRequest() {
-                Id = response.Id,
-                NewPassword = "P@$$w0rd1",
+        Identity.Response pwdResponse = await accountsClient.ResetPasswordAsync(new ResetPasswordRequest()
+        {
+            Id = response.Id,
+            NewPassword = "P@$$w0rd1",
         });
         Assert.NotNull(pwdResponse);
         Assert.NotNull(pwdResponse);
@@ -253,9 +263,10 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
         Assert.Empty(pwdResponse.Errors);
 
         // Should fail login with previous password
-        LoginResponse loginResponse1 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user2",
-                Password = "P@$$w0rd"
+        LogInResponse loginResponse1 = await authClient.LogInAsync(new LogInRequest()
+        {
+            UserName = "user2",
+            Password = "P@$$w0rd"
         });
         Assert.NotNull(loginResponse1);
         Assert.NotNull(loginResponse1.Response);
@@ -267,9 +278,10 @@ public class AccountsServiceIntegrationTests : GrpcTestFixture<Program>//Functio
         Assert.Equal("Invalid username or password!", loginResponse1.Response.Errors.First().Description);
 
         // Login
-        LoginResponse loginResponse2 = await authClient.LoginAsync(new LoginRequest() {
-                UserName = "user2",
-                Password = "P@$$w0rd1"
+        LogInResponse loginResponse2 = await authClient.LogInAsync(new LogInRequest()
+        {
+            UserName = "user2",
+            Password = "P@$$w0rd1"
         });
         Assert.NotNull(loginResponse2);
         Assert.NotNull(loginResponse2.Response);

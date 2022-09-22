@@ -3,24 +3,24 @@ using System.Threading.Tasks;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 using Web.Api.Core.DTO.UseCaseRequests;
-using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.Services;
 using Web.Api.Core.Interfaces.UseCases;
+
 namespace Web.Api.Core.UseCases;
-public sealed class LoginUseCase : ILoginUseCase
+public sealed class LogInUseCase : ILogInUseCase
 {
     private readonly IUserRepository _userRepository;
     private readonly IJwtFactory _jwtFactory;
     private readonly ITokenFactory _tokenFactory;
-    public LoginUseCase(IUserRepository userRepository, IJwtFactory jwtFactory, ITokenFactory tokenFactory)
+    public LogInUseCase(IUserRepository userRepository, IJwtFactory jwtFactory, ITokenFactory tokenFactory)
     {
         _userRepository = userRepository;
         _jwtFactory = jwtFactory;
         _tokenFactory = tokenFactory;
     }
-    public async Task<bool> Handle(LoginRequest message, IOutputPort<LoginResponse> outputPort)
+    public async Task<bool> Handle(LogInRequest message, IOutputPort<DTO.UseCaseResponses.LogInResponse> outputPort)
     {
         LogInResponse result = null;
         if (!string.IsNullOrEmpty(message.UserName) && !string.IsNullOrEmpty(message.Password))
@@ -33,11 +33,11 @@ public sealed class LoginUseCase : ILoginUseCase
                 result.User.AddRefreshToken(refreshToken, message.RemoteIpAddress);
                 await _userRepository.Update(result.User);
                 // generate access token
-                outputPort.Handle(new LoginResponse(await _jwtFactory.GenerateEncodedToken(result.User.IdentityId, result.User.UserName), refreshToken, true));
+                outputPort.Handle(new DTO.UseCaseResponses.LogInResponse(await _jwtFactory.GenerateEncodedToken(result.User.IdentityId, result.User.UserName), refreshToken, true));
                 return true;
             }
         }
-        outputPort.Handle(new LoginResponse(result != null ? result.Errors : new System.Collections.Generic.List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username or password!") }));
+        outputPort.Handle(new DTO.UseCaseResponses.LogInResponse(result != null ? result.Errors : new System.Collections.Generic.List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username or password!") }));
         return false;
     }
 }

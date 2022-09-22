@@ -1,7 +1,6 @@
 ﻿using Moq;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO;
-using Web.Api.Core.DTO.GatewayResponses.Repositories;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
@@ -9,28 +8,29 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.Services;
 using Web.Api.Core.UseCases;
 using Xunit;
+
 namespace Web.Api.Core.UnitTests.UseCases;
-public class LoginUseCaseCheckPasswordUnitTests
+public class LogInUseCaseCheckPasswordUnitTests
 {
     [Fact]
     public async void Handle_GivenValidCredentials_ShouldSucceed()
     {
         // arrange
-        User user = new User("","","","");
+        User user = new User("", "", "", "");
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync(user);
-        mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new LogInResponse(user, true));
+        mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Web.Api.Core.DTO.GatewayResponses.Repositories.LogInResponse(user, true));
 
         var mockJwtFactory = new Mock<IJwtFactory>();
         mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new AccessToken("", 0));
 
         var mockTokenFactory = new Mock<ITokenFactory>();
-        var useCase = new LoginUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
-        var mockOutputPort = new Mock<IOutputPort<LoginResponse>>();
-        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LoginResponse>()));
+        var useCase = new LogInUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
+        var mockOutputPort = new Mock<IOutputPort<LogInResponse>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LogInResponse>()));
 
         // act
-        var response = await useCase.Handle(new LoginRequest("userName", "password","127.0.0.1"), mockOutputPort.Object);
+        var response = await useCase.Handle(new LogInRequest("userName", "password", "127.0.0.1"), mockOutputPort.Object);
 
         // assert
         Assert.True(response);
@@ -45,20 +45,20 @@ public class LoginUseCaseCheckPasswordUnitTests
     {
         // arrange
         var mockUserRepository = new Mock<IUserRepository>();
-        mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync(new User("","","",""));
-        mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new LogInResponse(null, false));
+        mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync(new User("", "", "", ""));
+        mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Web.Api.Core.DTO.GatewayResponses.Repositories.LogInResponse(null, false));
 
         var mockJwtFactory = new Mock<IJwtFactory>();
         mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new AccessToken("", 0));
 
         var mockTokenFactory = new Mock<ITokenFactory>();
-        var useCase = new LoginUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
+        var useCase = new LogInUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
 
-        var mockOutputPort = new Mock<IOutputPort<LoginResponse>>();
-        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LoginResponse>()));
+        var mockOutputPort = new Mock<IOutputPort<LogInResponse>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LogInResponse>()));
 
         // act
-        var response = await useCase.Handle(new LoginRequest("", "password","127.0.0.1"), mockOutputPort.Object);
+        var response = await useCase.Handle(new LogInRequest("", "password", "127.0.0.1"), mockOutputPort.Object);
 
         // assert
         Assert.False(response);
@@ -76,18 +76,18 @@ public class LoginUseCaseCheckPasswordUnitTests
         // arrange
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync((User)null);
-        mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new LogInResponse(null, false));
+        mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Web.Api.Core.DTO.GatewayResponses.Repositories.LogInResponse(null, false));
 
         var mockJwtFactory = new Mock<IJwtFactory>();
         mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new AccessToken("", 0));
 
         var mockTokenFactory = new Mock<ITokenFactory>();
-        var useCase = new LoginUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
-        var mockOutputPort = new Mock<IOutputPort<LoginResponse>>();
-        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LoginResponse>()));
+        var useCase = new LogInUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
+        var mockOutputPort = new Mock<IOutputPort<LogInResponse>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LogInResponse>()));
 
         // act
-        var response = await useCase.Handle(new LoginRequest("", "password","127.0.0.1"), mockOutputPort.Object);
+        var response = await useCase.Handle(new LogInRequest("", "password", "127.0.0.1"), mockOutputPort.Object);
 
         // assert
         Assert.False(response);
@@ -104,18 +104,18 @@ public class LoginUseCaseCheckPasswordUnitTests
         // arrange
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync((User)null);
-        mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new LogInResponse(null, false));
+        mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Web.Api.Core.DTO.GatewayResponses.Repositories.LogInResponse(null, false));
 
         var mockJwtFactory = new Mock<IJwtFactory>();
         mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new AccessToken("", 0));
 
         var mockTokenFactory = new Mock<ITokenFactory>();
-        var useCase = new LoginUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
-        var mockOutputPort = new Mock<IOutputPort<LoginResponse>>();
-        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LoginResponse>()));
+        var useCase = new LogInUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
+        var mockOutputPort = new Mock<IOutputPort<LogInResponse>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LogInResponse>()));
 
         // act
-        var response = await useCase.Handle(new LoginRequest("", "password","127.0.0.1"), mockOutputPort.Object);
+        var response = await useCase.Handle(new LogInRequest("", "password", "127.0.0.1"), mockOutputPort.Object);
 
         // assert
         Assert.False(response);

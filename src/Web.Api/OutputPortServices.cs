@@ -6,7 +6,8 @@ public static class OutputPortServices
 {
     public static IServiceCollection AddOutputPorts(this IServiceCollection service) =>
         service.AddScoped<IOutputPort<ExchangeRefreshTokenResponse>, ExchangeRefreshTokenPresenter>()
-                .AddScoped<IOutputPort<LoginResponse>, LoginPresenter>()
+                .AddScoped<IOutputPort<LogInResponse>, LogInPresenter>()
+                .AddScoped<IOutputPort<LogInResponse>, SignInPresenter>()
                 .AddScoped<ChangePasswordPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.ChangePasswordPresenter>()
                 .AddScoped<RegisterUserPresenter>()
@@ -18,8 +19,10 @@ public static class OutputPortServices
                 .AddScoped<Web.Api.Presenters.Grpc.FindUserPresenter>()
                 .AddScoped<LockUserPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.LockUserPresenter>()
-                .AddScoped<LoginPresenter>()
-                .AddScoped<Web.Api.Presenters.Grpc.LoginPresenter>()
+                .AddScoped<LogInPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.LogInPresenter>()
+                .AddScoped<SignInPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.SignInPresenter>()
                 .AddScoped<RegisterUserPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.RegisterUserPresenter>()
                 .AddScoped<ResetPasswordPresenter>()
