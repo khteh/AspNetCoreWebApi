@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     [AllowAnonymous]
     //[ValidateAntiForgeryToken]
-    public async Task<ActionResult> Login([FromBody] Models.Request.LoginRequest request)
+    public async Task<ActionResult> Login([FromBody] Models.Request.LogInRequest request)
     {
         if (!ModelState.IsValid) { return BadRequest(ModelState); }
         LogInResponse response = await _mediator.Send(new LogInCommand(request.UserName, request.Password, Request.HttpContext.Connection.RemoteIpAddress?.ToString()));

@@ -17,7 +17,7 @@ public class ChatHubTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         HttpClient client = _testServer.CreateClient();
         Assert.NotNull(client);
-        var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
+        var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LogInRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
         httpResponse.EnsureSuccessStatusCode();
         LogInResponse response = Serialization.JsonSerializer.DeSerializeObject<LogInResponse>(await httpResponse.Content.ReadAsStringAsync());
         Assert.NotNull(response);

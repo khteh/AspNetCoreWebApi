@@ -1,2 +1,2 @@
 ﻿namespace Web.Api.Models.Request;
-public record LoginRequest(string UserName, string Password, bool RememberMe = false);
+public record LogInRequest(string UserName, string Password, bool RememberMe = false);

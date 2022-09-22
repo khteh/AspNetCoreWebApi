@@ -19,7 +19,7 @@ public class ProtectedControllerIntegrationTests : IClassFixture<CustomWebApplic
     [Fact]
     public async Task CanAccessProtectedResourceAfterLogin()
     {
-        var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LoginRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
+        var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LogInRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"));
         httpResponse.EnsureSuccessStatusCode();
         var stringResponse = await httpResponse.Content.ReadAsStringAsync();
         JsonNode result = JsonNode.Parse(stringResponse);

@@ -111,7 +111,7 @@ public class AccountsControllerIntegrationTests : IClassFixture<CustomWebApplica
         Assert.False(string.IsNullOrEmpty(id));
 
         // Login
-        Models.Request.LoginRequest loginRequest = new Models.Request.LoginRequest("user1", "Pa$$word1");
+        Models.Request.LogInRequest loginRequest = new Models.Request.LogInRequest("user1", "Pa$$word1");
         var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"));
         loginResponse.EnsureSuccessStatusCode();
         var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
@@ -165,7 +165,7 @@ public class AccountsControllerIntegrationTests : IClassFixture<CustomWebApplica
         Assert.False(string.IsNullOrEmpty(id));
 
         // Login
-        Models.Request.LoginRequest loginRequest = new Models.Request.LoginRequest("user2", "Pa$$word1");
+        Models.Request.LogInRequest loginRequest = new Models.Request.LogInRequest("user2", "Pa$$word1");
         var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"));
         loginResponse.EnsureSuccessStatusCode();
         var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
