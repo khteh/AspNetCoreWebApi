@@ -286,7 +286,7 @@ try
     builder.Services.AddHealthChecks()
         .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>() { "Liveness" })
         .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string> { "Readiness" })
-        .AddMySql(builder.Configuration["ConnectionStrings:Default"], "MySQL", HealthStatus.Unhealthy, new List<string> { "Services" })
+        .AddNpgSql(builder.Configuration["ConnectionStrings:Default"], "PostgreSQL")
         .AddDbContextCheck<AppDbContext>("AppDbContext", HealthStatus.Unhealthy, new List<string> { "Services" });
     builder.Services.AddHostedService<StartupHostedService>()
         .AddSingleton<ReadinessHealthCheck>()
