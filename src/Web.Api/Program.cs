@@ -98,7 +98,7 @@ try
     Log.Information($"Using PathBase: {pathBase}");
 
     ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
-    builder.WebHost.UseSerilog((ctx, config) =>
+    builder.Host.UseSerilog((ctx, config) =>
                          {
                              config.ReadFrom.Configuration(ctx.Configuration);
                              if (ctx.HostingEnvironment.IsDevelopment())
