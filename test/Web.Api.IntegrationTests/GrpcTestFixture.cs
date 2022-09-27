@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
         GrpcConfig grpcConfig = config.GetSection(nameof(GrpcConfig)).Get<GrpcConfig>();
         LoggerFactory = new LoggerFactory();
         _factory = new CustomGRPCWebApplicationFactory<TStartup>(config);
-        var client = _factory.CreateDefaultClient(new ResponseVersionHandler());
+        var client = _factory.CreateDefaultClient(new Http3Handler());
         client.BaseAddress = new Uri(grpcConfig.Endpoint);
         GrpcChannel = GrpcChannel.ForAddress(client.BaseAddress, new GrpcChannelOptions
         {
@@ -39,13 +40,20 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
         _factory.Dispose();
         GC.SuppressFinalize(this);
     }
-    private class ResponseVersionHandler : DelegatingHandler
+    private class Http3Handler : DelegatingHandler
     {
+        public Http3Handler() { }
+        public Http3Handler(HttpMessageHandler innerHandler) : base(innerHandler) { }
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            request.Version = HttpVersion.Version30;
+            request.VersionPolicy = HttpVersionPolicy.RequestVersionExact;
+#if false
             var response = await base.SendAsync(request, cancellationToken);
             response.Version = request.Version;
             return response;
+#endif
+            return await base.SendAsync(request, cancellationToken);
         }
     }
 }
