@@ -357,11 +357,11 @@ try
     });
 
     app.MapRazorPages();
-    if (app.Environment.IsDevelopment())
-        app.UseSwagger().UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint($"{pathBase}/swagger/v6.0/swagger.json", "AspNetCoreWebApi V6.0");
-        });
+    //if (app.Environment.IsDevelopment())
+    app.UseSwagger().UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint($"{pathBase}/swagger/v6.0/swagger.json", "AspNetCoreWebApi V6.0");
+    });
     app.UseSerilogRequestLogging();
     app.Use(async (context, next) =>
     {
