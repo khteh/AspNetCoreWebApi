@@ -21,7 +21,7 @@ public class GRPCRegisterUserPresenterUnitTests
     public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
     {
         // arrange
-        var presenter = new RegisterUserPresenter(_mapper);
+        var presenter = new UserPresenter(_mapper);
 
         // act
         presenter.Handle(new UseCaseResponseMessage("", true));
@@ -36,7 +36,7 @@ public class GRPCRegisterUserPresenterUnitTests
     public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
-        var presenter = new RegisterUserPresenter(_mapper);
+        var presenter = new UserPresenter(_mapper);
 
         // act
         presenter.Handle(new UseCaseResponseMessage("1234", true));
@@ -52,7 +52,7 @@ public class GRPCRegisterUserPresenterUnitTests
     public void Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
-        var presenter = new RegisterUserPresenter(_mapper);
+        var presenter = new UserPresenter(_mapper);
 
         // act
         presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));

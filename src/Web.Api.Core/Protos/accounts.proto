@@ -4,12 +4,12 @@ package Web.Api.Identity.Accounts;
 import "Protos/response.proto";
 import "Protos/user.proto";
 service Accounts {
-    rpc Register (RegisterUserRequest) returns (RegisterUserResponse);
+    rpc Register (RegisterUserRequest) returns (UserResponse);
     rpc ChangePassword (ChangePasswordRequest) returns (Web.Api.Identity.Response);
     rpc ResetPassword (ResetPasswordRequest) returns (Web.Api.Identity.Response);
     rpc Lock (StringInputParameter) returns (Web.Api.Identity.Response);
     rpc UnLock (StringInputParameter) returns (Web.Api.Identity.Response);
-    rpc Delete (StringInputParameter) returns (DeleteUserResponse);
+    rpc Delete (StringInputParameter) returns (UserResponse);
     rpc FindById (StringInputParameter) returns (FindUserResponse);
     rpc FindByUserName (StringInputParameter) returns (FindUserResponse);
     rpc FindByEmail (StringInputParameter) returns (FindUserResponse);
@@ -42,11 +42,7 @@ message ResetPasswordRequest {
     string newPassword = 2;
     bool isFirstLogin = 3;
 }
-message RegisterUserResponse {
-    string id = 1;
-    Web.Api.Identity.Response response = 2;
-}
-message DeleteUserResponse {
+message UserResponse {
     string id = 1;
     Web.Api.Identity.Response response = 2;
 }

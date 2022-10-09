@@ -12,7 +12,7 @@ public static class OutputPortServices
                 .AddScoped<Web.Api.Presenters.Grpc.ChangePasswordPresenter>()
                 .AddScoped<RegisterUserPresenter>()
                 .AddScoped<DeleteUserPresenter>()
-                .AddScoped<Web.Api.Presenters.Grpc.DeleteUserPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.UserPresenter>()
                 .AddScoped<ExchangeRefreshTokenPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.ExchangeRefreshTokenPresenter>()
                 .AddScoped<FindUserPresenter>()
@@ -24,7 +24,6 @@ public static class OutputPortServices
                 .AddScoped<SignInPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.SignInPresenter>()
                 .AddScoped<RegisterUserPresenter>()
-                .AddScoped<Web.Api.Presenters.Grpc.RegisterUserPresenter>()
                 .AddScoped<ResetPasswordPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.ResetPasswordPresenter>();
 }

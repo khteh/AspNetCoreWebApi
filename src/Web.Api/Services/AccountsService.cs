@@ -1,6 +1,4 @@
 using Grpc.Core;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Identity.Accounts;
 using Web.Api.Presenters.Grpc;
@@ -9,27 +7,27 @@ public class AccountsService : Accounts.AccountsBase
 {
     private readonly ILogger<AccountsService> _logger;
     private readonly IRegisterUserUseCase _registerUserUseCase;
-    private readonly RegisterUserPresenter _registerUserPresenter;
+    private readonly UserPresenter _userPresenter;
     private readonly IFindUserUseCase _findUserUseCase;
     private readonly FindUserPresenter _findUserPresenter;
     private readonly IDeleteUserUseCase _deleteUserUseCase;
-    private readonly DeleteUserPresenter _deleteUserPresenter;
+    private readonly UserPresenter _deleteUserPresenter;
     private readonly IChangePasswordUseCase _changePasswordUseCase;
     private readonly IResetPasswordUseCase _resetPasswordUseCase;
     private readonly ChangePasswordPresenter _changePasswordPresenter;
     private readonly ResetPasswordPresenter _resetPasswordPresenter;
     private readonly ILockUserUseCase _lockUserUseCase;
     private readonly LockUserPresenter _lockUserPresenter;
-    public AccountsService(ILogger<AccountsService> logger, IRegisterUserUseCase registerUserUseCase, RegisterUserPresenter registerUserPresenter, 
-            IDeleteUserUseCase deleteUserUseCase, DeleteUserPresenter deleteUserPresenter, 
-            IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter, 
-            IChangePasswordUseCase changePasswordUseCase, ChangePasswordPresenter changePasswordPresenter, 
+    public AccountsService(ILogger<AccountsService> logger, IRegisterUserUseCase registerUserUseCase, UserPresenter userPresenter,
+            IDeleteUserUseCase deleteUserUseCase, UserPresenter deleteUserPresenter,
+            IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter,
+            IChangePasswordUseCase changePasswordUseCase, ChangePasswordPresenter changePasswordPresenter,
             IResetPasswordUseCase resetPasswordUseCase, ResetPasswordPresenter resetPasswordPresenter,
             ILockUserUseCase lockUserUseCase, LockUserPresenter lockUserPresenter)
     {
         _logger = logger;
         _registerUserUseCase = registerUserUseCase;
-        _registerUserPresenter = registerUserPresenter;
+        _userPresenter = userPresenter;
         _deleteUserUseCase = deleteUserUseCase;
         _deleteUserPresenter = deleteUserPresenter;
         _findUserUseCase = findUserUseCase;
@@ -41,10 +39,10 @@ public class AccountsService : Accounts.AccountsBase
         _lockUserUseCase = lockUserUseCase;
         _lockUserPresenter = lockUserPresenter;
     }
-    public async override Task<Web.Api.Identity.Accounts.RegisterUserResponse> Register(Web.Api.Identity.Accounts.RegisterUserRequest request, ServerCallContext context)
+    public async override Task<Web.Api.Identity.Accounts.UserResponse> Register(Web.Api.Identity.Accounts.RegisterUserRequest request, ServerCallContext context)
     {
-        await _registerUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.RegisterUserRequest(request.FirstName, request.LastName, request.Email, request.UserName, request.Password), _registerUserPresenter);
-        return _registerUserPresenter.Response;
+        await _registerUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.RegisterUserRequest(request.FirstName, request.LastName, request.Email, request.UserName, request.Password), _userPresenter);
+        return _userPresenter.Response;
     }
     // POST api/accounts
     public async override Task<Web.Api.Identity.Response> ChangePassword(Web.Api.Identity.Accounts.ChangePasswordRequest request, ServerCallContext context)
@@ -58,7 +56,7 @@ public class AccountsService : Accounts.AccountsBase
         return _resetPasswordPresenter.Response;
     }
     // POST api/accounts
-    public async override Task<Web.Api.Identity.Accounts.DeleteUserResponse> Delete(StringInputParameter id, ServerCallContext context)
+    public async override Task<Web.Api.Identity.Accounts.UserResponse> Delete(StringInputParameter id, ServerCallContext context)
     {
         await _deleteUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.DeleteUserRequest(id.Value), _deleteUserPresenter);
         return _deleteUserPresenter.Response;
