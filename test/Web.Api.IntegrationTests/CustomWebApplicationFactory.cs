@@ -16,7 +16,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "IntegrationTests");
-        builder.ConfigureServices(services => {
+        builder.ConfigureServices(services =>
+        {
             // Create a new service provider.
 #if false
             var serviceProvider = new ServiceCollection()
@@ -27,9 +28,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             services.Remove(descriptor);
             descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextPool<AppIdentityDbContext>));
             services.Remove(descriptor);
-
             services.AddEntityFrameworkInMemoryDatabase().AddLogging();
-
             // Add a database context (AppDbContext) using an in-memory database for testing.
             services.AddDbContextPool<AppDbContext>(options =>
                 {
@@ -39,7 +38,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                     options.EnableDetailedErrors();
                     options.LogTo(Console.WriteLine);
                 });
-
             services.AddDbContextPool<AppIdentityDbContext>(options =>
                 {
                     options.UseInMemoryDatabase("InMemoryIdentityDb");
@@ -49,9 +47,10 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                     options.LogTo(Console.WriteLine);
                 });
             services.AddScoped<SignInManager<AppUser>>();
-            services.AddScoped<ILogger<UserRepository>>(provider => {
-                    ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-                    return loggerFactory.CreateLogger<UserRepository>();
+            services.AddScoped<ILogger<UserRepository>>(provider =>
+            {
+                ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+                return loggerFactory.CreateLogger<UserRepository>();
             });
             services.AddDistributedMemoryCache();
             // Build the service provider.
@@ -69,11 +68,14 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 appDb.Database.EnsureCreated();
                 identityDb.Database.EnsureCreated();
 
-                try {
+                try
+                {
                     // Seed the database with test data.
                     SeedData.PopulateTestData(identityDb);
                     SeedData.PopulateTestData(appDb);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     logger.LogError(ex, $"An error occurred seeding the " +
                     $"database with test messages. Error: {ex.Message}");
                 }
