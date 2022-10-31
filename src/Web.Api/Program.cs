@@ -51,7 +51,7 @@ try
 {
     var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     {
-        ApplicationName = typeof(Program).Assembly.FullName,
+        ApplicationName = typeof(Program).Assembly.GetName().Name,
         ContentRootPath = Path.GetFullPath(Directory.GetCurrentDirectory()),
         WebRootPath = "wwwroot",
         Args = args
