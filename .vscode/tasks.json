@@ -10,7 +10,7 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
-        },        
+        },
         {
             "label": "build",
             "command": "dotnet",
