@@ -71,7 +71,7 @@ try
     //.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
     //.WriteTo.RollingFile(config["Logging:LogFile"], fileSizeLimitBytes: 10485760, retainedFileCountLimit: null)
     //.Enrich.FromLogContext();
-    if (env.IsDevelopment())
+    if (env.IsDevelopment() || env.IsStaging())
         //config.WriteTo.Console(new CompactJsonFormatter())
         logConfig.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
     else
@@ -101,7 +101,7 @@ try
     builder.Host.UseSerilog((ctx, config) =>
                          {
                              config.ReadFrom.Configuration(ctx.Configuration);
-                             if (ctx.HostingEnvironment.IsDevelopment())
+                             if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
                                  config.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
                          });
     // Add services to the container.
@@ -312,10 +312,8 @@ try
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
+    if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
         app.UseDeveloperExceptionPage();
-    }
     else
     {
         app.UseExceptionHandler(builder => builder.Run(async context =>
@@ -357,7 +355,7 @@ try
     });
 
     app.MapRazorPages();
-    //if (app.Environment.IsDevelopment())
+    //if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
     app.UseSwagger().UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint($"{pathBase}/swagger/v6.0/swagger.json", "AspNetCoreWebApi V6.0");
