@@ -22,8 +22,9 @@ jobs:
       - run:
           name: Update DB user and privileges
           command: |
-            psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -c "CREATE USER "$POSTGRESQL_USER" WITH PASSWORD '$POSTGRESQL_PASSWORD';"
-            psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -c "GRANT ALL PRIVILEGES ON DATABASE \"AspNetCoreWebApi\" TO '$POSTGRESQL_USER';"
+            echo POSTGRES_USER: $POSTGRES_USER
+            psql -v ON_ERROR_STOP=1 -h localhost -U $POSTGRES_USER -c "CREATE USER "$POSTGRESQL_USER" WITH PASSWORD '$POSTGRESQL_PASSWORD';"
+            psql -v ON_ERROR_STOP=1 -h localhost -U $POSTGRES_USER -c "GRANT ALL PRIVILEGES ON DATABASE \"AspNetCoreWebApi\" TO '$POSTGRESQL_USER';"
       - run:
           name: Update database with the existing migrations folder
           command: |
