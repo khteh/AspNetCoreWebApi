@@ -5,10 +5,8 @@ jobs:
     docker:
       - image: khteh/circleci-dotnet:latest
       - image: postgres:latest
-        auth:
-          username: $POSTGRESQL_USER
-          password: $POSTGRESQL_PASSWORD # context / project UI env-var reference
         environment:
+          POSTGRES_HOST_AUTH_METHOD: trust
           POSTGRES_USER: $POSTGRESQL_USER
           POSTGRES_DB: AspNetCoreWebApi
           POSTGRESQL_PASSWORD: $POSTGRESQL_PASSWORD
