@@ -95,7 +95,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Response.Errors.First().Code);
         Assert.Equal("Invalid user!", response.Response.Errors.First().Description);
     }
-    [Theory]
+    [Theory(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
     [InlineData("CE73A87D-0AA6-4191-B65B-6B49F333E316")]
     [InlineData("3ABE9D63-777C-4865-8FA0-A53A657313D5")]
     public async Task CanFindById(string id)
