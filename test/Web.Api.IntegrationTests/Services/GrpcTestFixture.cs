@@ -86,7 +86,6 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
                         services.Configure<GrpcConfig>(context.Configuration.GetSection(nameof(GrpcConfig)));
                         _services = services;
                         // Build the service provider.
-                        //_services = services;
                         IServiceProvider ServiceProvider = services.BuildServiceProvider();
                         // Create a scope to obtain a reference to the database contexts
                         using (var scope = ServiceProvider.CreateScope())
@@ -141,6 +140,7 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
         _handler?.Dispose();
         _host?.Dispose();
         _server?.Dispose();
+#if false        
         var sp = _services.BuildServiceProvider();
         // Create a scope to obtain a reference to the database contexts
         using (var scope = sp.CreateScope())
@@ -150,6 +150,7 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
             var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
             SeedData.CleanUpGrpcTestData(identityDb, appDb);
         }
+#endif
         GC.SuppressFinalize(this);
     }
 
