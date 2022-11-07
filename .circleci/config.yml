@@ -23,8 +23,8 @@ jobs:
           name: Update DB user and privileges
           command: |
             psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-            CREATE USER "$POSTGRESQL_USER" WITH PASSWORD '$POSTGRESQL_PASSWORD';
-            GRANT ALL PRIVILEGES ON DATABASE AspNetCoreWebApi TO "$POSTGRESQL_USER";
+                CREATE USER "$POSTGRESQL_USER" WITH PASSWORD '$POSTGRESQL_PASSWORD';
+                GRANT ALL PRIVILEGES ON DATABASE "AspNetCoreWebApi" TO "$POSTGRESQL_USER";
             EOSQL
       - run:
           name: Update database with the existing migrations folder
