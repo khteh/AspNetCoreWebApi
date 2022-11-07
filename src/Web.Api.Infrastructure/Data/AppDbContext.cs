@@ -19,8 +19,10 @@ public class AppDbContext : DbContext
         var navigation = builder.Metadata.FindNavigation(nameof(User.RefreshTokens));
         //EF access the RefreshTokens collection property through its backing field
         navigation.SetPropertyAccessMode(PropertyAccessMode.Field);
-        builder.Ignore(b => b.Email);
-        builder.OwnsOne(o => o.Address);
+        builder.Ignore(u => u.FirstName);
+        builder.Ignore(u => u.LastName);
+        builder.Ignore(u => u.UserName);
+        builder.Ignore(u => u.Email);
     }
     public override int SaveChanges()
     {

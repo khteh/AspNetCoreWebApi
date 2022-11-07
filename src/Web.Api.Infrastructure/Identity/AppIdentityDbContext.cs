@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System;
 namespace Web.Api.Infrastructure.Identity;
 public class AppIdentityDbContext : IdentityDbContext<AppUser>
 {
@@ -12,6 +9,7 @@ public class AppIdentityDbContext : IdentityDbContext<AppUser>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+#if false
         builder.Entity<IdentityUser>(entity => entity.Property(m => m.Id).HasMaxLength(85));
         builder.Entity<IdentityUser>(entity => entity.Property(m => m.NormalizedEmail).HasMaxLength(85));
         builder.Entity<IdentityUser>(entity => entity.Property(m => m.NormalizedUserName).HasMaxLength(85));
@@ -33,9 +31,6 @@ public class AppIdentityDbContext : IdentityDbContext<AppUser>
         builder.Entity<IdentityUserClaim<string>>(entity => entity.Property(m => m.UserId).HasMaxLength(85));
         builder.Entity<IdentityRoleClaim<string>>(entity => entity.Property(m => m.Id).HasMaxLength(85));
         builder.Entity<IdentityRoleClaim<string>>(entity => entity.Property(m => m.RoleId).HasMaxLength(85));
-        foreach (var entityType in builder.Model.GetEntityTypes())
-            foreach (var property in entityType.GetProperties())
-                if (property.ClrType == typeof(bool))
-                    property.SetValueConverter(new BoolToZeroOneConverter<Int16>());
+#endif
     }
 }

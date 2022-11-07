@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 using Web.Api.Models.Response;
 using Xunit;
 namespace Web.Api.IntegrationTests.SignalR;
-public class ChatHubTests : IClassFixture<CustomWebApplicationFactory<Program>>
+[Collection("Controller Test Collection")]
+public class ChatHubTests
 {
     private readonly TestServer _testServer;
     public ChatHubTests(CustomWebApplicationFactory<Program> factory) => _testServer = factory.Server;

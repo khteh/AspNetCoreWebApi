@@ -17,7 +17,7 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("ProductVersion", "6.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -25,8 +25,7 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasMaxLength(85)
-                        .HasColumnType("character varying(85)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -37,8 +36,8 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
                         .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
-                        .HasMaxLength(85)
-                        .HasColumnType("character varying(85)");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -53,7 +52,6 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(85)
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
@@ -66,8 +64,7 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasMaxLength(85)
-                        .HasColumnType("character varying(85)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -76,66 +73,10 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(85)
-                        .HasColumnType("character varying(85)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
-
-                    b.Property<short>("EmailConfirmed")
-                        .HasColumnType("smallint");
-
-                    b.Property<short>("LockoutEnabled")
-                        .HasColumnType("smallint");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(85)
-                        .HasColumnType("character varying(85)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(85)
-                        .HasColumnType("character varying(85)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<short>("PhoneNumberConfirmed")
-                        .HasColumnType("smallint");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<short>("TwoFactorEnabled")
-                        .HasColumnType("smallint");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("IdentityUser");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(85)
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
@@ -148,7 +89,6 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(85)
                         .HasColumnType("character varying(85)");
 
                     b.HasKey("Id");
@@ -161,19 +101,16 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(85)
-                        .HasColumnType("character varying(85)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(85)
-                        .HasColumnType("character varying(85)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(85)
                         .HasColumnType("character varying(85)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
@@ -186,12 +123,10 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasMaxLength(85)
                         .HasColumnType("character varying(85)");
 
                     b.Property<string>("RoleId")
-                        .HasMaxLength(85)
-                        .HasColumnType("character varying(85)");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -203,16 +138,13 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasMaxLength(85)
                         .HasColumnType("character varying(85)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(85)
-                        .HasColumnType("character varying(85)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(85)
-                        .HasColumnType("character varying(85)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Value")
                         .HasColumnType("text");
@@ -239,8 +171,8 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<short>("EmailConfirmed")
-                        .HasColumnType("smallint");
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
@@ -248,8 +180,8 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
-                    b.Property<short>("LockoutEnabled")
-                        .HasColumnType("smallint");
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
@@ -268,14 +200,14 @@ namespace Web.Api.Infrastructure.Migrations.AppIdentityDb
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
 
-                    b.Property<short>("PhoneNumberConfirmed")
-                        .HasColumnType("smallint");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
-                    b.Property<short>("TwoFactorEnabled")
-                        .HasColumnType("smallint");
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)

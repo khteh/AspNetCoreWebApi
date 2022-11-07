@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Web.Api.Core.Shared;
 namespace Web.Api.Core.Domain.Entities;
@@ -11,6 +12,7 @@ public class User : BaseEntity
     public string IdentityId { get; init; }
     public string UserName { get; init; } // Required by automapper
     public string Email { get; init; }
+    [Required]
     public Address Address { get; init; }
     private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
     public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();

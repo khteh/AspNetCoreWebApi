@@ -16,10 +16,7 @@ namespace Web.Api.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FirstName = table.Column<string>(type: "text", nullable: true),
-                    LastName = table.Column<string>(type: "text", nullable: true),
                     IdentityId = table.Column<string>(type: "text", nullable: true),
-                    UserName = table.Column<string>(type: "text", nullable: true),
                     Address_Street = table.Column<string>(type: "text", nullable: true),
                     Address_City = table.Column<string>(type: "text", nullable: true),
                     Address_State = table.Column<string>(type: "text", nullable: true),

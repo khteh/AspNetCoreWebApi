@@ -158,7 +158,6 @@ try
         configureOptions.ClaimsIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
         configureOptions.TokenValidationParameters = tokenValidationParameters;
         configureOptions.SaveToken = true;
-
         configureOptions.Events = new JwtBearerEvents
         {
             OnAuthenticationFailed = context =>

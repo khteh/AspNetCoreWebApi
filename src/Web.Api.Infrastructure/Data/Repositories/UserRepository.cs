@@ -11,25 +11,33 @@ using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
+using Web.Api.Core.Interfaces.Services;
 using Web.Api.Core.Specifications;
 using Web.Api.Infrastructure.Identity;
 namespace Web.Api.Infrastructure.Data.Repositories;
 public sealed class UserRepository : EfRepository<User>, IUserRepository
 {
+    private readonly IJwtFactory _jwtFactory;
+    private readonly IJwtTokenValidator _jwtTokenValidator;
+    private readonly ITokenFactory _tokenFactory;
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly IMapper _mapper;
     private readonly ILogger<UserRepository> _logger;
-    public UserRepository(ILogger<UserRepository> logger, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IMapper mapper, AppDbContext appDbContext): base(appDbContext)
+    public UserRepository(ILogger<UserRepository> logger, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IMapper mapper, AppDbContext appDbContext, IJwtFactory jwtFactory, IJwtTokenValidator jwtTokenValidator, ITokenFactory tokenFactory) : base(appDbContext)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _jwtFactory = jwtFactory;
+        _jwtTokenValidator = jwtTokenValidator;
+        _tokenFactory = tokenFactory;
         _mapper = mapper;
         _logger = logger;
     }
     public async Task<CreateUserResponse> Create(string firstName, string lastName, string email, string userName, string password)
     {
-        try {
+        try
+        {
             var appUser = new AppUser { Email = email, UserName = userName, FirstName = firstName, LastName = lastName };
             var identityResult = await _userManager.CreateAsync(appUser, password);
             if (!identityResult.Succeeded)
@@ -40,14 +48,17 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             _appDbContext.Users.Add(user);
             await _appDbContext.SaveChangesAsync();
             return new CreateUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             _logger.LogCritical($"{nameof(UserRepository)}.{nameof(Create)} Exception! {e.Message}");
             return new CreateUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
         }
     }
     public async Task<DeleteUserResponse> Delete(string userName)
     {
-        try {
+        try
+        {
             AppUser appUser = await _userManager.FindByNameAsync(userName);
             if (appUser != null)
             {
@@ -59,15 +70,52 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
                 {
                     _appDbContext.Users.Remove(user);
                     await _appDbContext.SaveChangesAsync();
-                } else
+                }
+                else
                     return new DeleteUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), "Failed to remove user from app DB! This is result in inconsistency between application Users table and Identity framework!") });
                 return new DeleteUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
-            } else
-            return new DeleteUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid user!") });
-        } catch (Exception e) {
+            }
+            else
+                return new DeleteUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid user!") });
+        }
+        catch (Exception e)
+        {
             _logger.LogCritical($"{nameof(UserRepository)}.{nameof(Delete)} Exception! {e.Message}");
             return new DeleteUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
         }
+    }
+    public async Task<ExchangeRefreshTokenResponse> ExchangeRefreshToken(string accessToken, string refreshToken, string signingKey)
+    {
+        ExchangeRefreshTokenResponse response = null;
+        try
+        {
+            ClaimsPrincipal cp = _jwtTokenValidator.GetPrincipalFromToken(accessToken, signingKey);
+            // invalid token/signing key was passed and we can't extract user claims
+            if (cp != null)
+            {
+                Claim claim = cp.Claims.First(c => c.Type == "id");
+                User user = await getUser(await _userManager.FindByIdAsync(claim.Value));
+                if (user != null && user.HasValidRefreshToken(refreshToken))
+                {
+                    AccessToken jwtToken = await _jwtFactory.GenerateEncodedToken(user.IdentityId, user.UserName);
+                    string newRefreshToken = _tokenFactory.GenerateToken();
+                    user.RemoveRefreshToken(refreshToken); // delete the token we've exchanged
+                    user.AddRefreshToken(newRefreshToken, ""); // add the new one
+                    await Update(user);
+                    response = new ExchangeRefreshTokenResponse(jwtToken, refreshToken, true);
+                }
+                else if (user == null)
+                    return new ExchangeRefreshTokenResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid user!") });
+            }
+            else
+                return new ExchangeRefreshTokenResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid credential!") });
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical($"{nameof(UserRepository)}.{nameof(ExchangeRefreshToken)} Exception! {e.Message}");
+            return new ExchangeRefreshTokenResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+        }
+        return response;
     }
     public async Task<User> FindUserByName(string userName) => await getUser(await _userManager.FindByNameAsync(userName));
     public async Task<FindUserResponse> FindByName(string userName) => await getFindUserResponse(await _userManager.FindByNameAsync(userName));
@@ -83,105 +131,123 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
     /// <returns></returns>
     public async Task<SignInResponse> SignInMobile(string username, string password, bool logoutOnFailure)
     {
-        try {
+        try
+        {
             AppUser user = await _userManager.FindByNameAsync(username);
-            if (user == null) {
+            if (user == null)
+            {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username {username} and password {password}!");
-                return new SignInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Invalid username {username} and password {password}!")});
+                return new SignInResponse(null, false, new List<Error>() { new Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
             }
-            SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, password, logoutOnFailure);;
+            SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, password, logoutOnFailure); ;
             if (result.IsNotAllowed)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} is not allowed to login!");
-                return new SignInResponse(null, false, new List<Error>() {new Error("IsNotAllowed", $"User account {username} is not allowed to login!")});
+                return new SignInResponse(null, false, new List<Error>() { new Error("IsNotAllowed", $"User account {username} is not allowed to login!") });
             }
             if (result.IsLockedOut)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} locked out!");
-                return new SignInResponse(null, false, new List<Error>() {new Error("IsLockedOut", $"User account {username} locked out!")});
+                return new SignInResponse(null, false, new List<Error>() { new Error("IsLockedOut", $"User account {username} locked out!") });
             }
             if (result.RequiresTwoFactor)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} requires two-factor authentication!");
-                return new SignInResponse(null, false, new List<Error>() {new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!")});
+                return new SignInResponse(null, false, new List<Error>() { new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!") });
             }
-            if (!result.Succeeded) {
+            if (!result.Succeeded)
+            {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username {username} and password {password}!");
-                return new SignInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Invalid username {username} and password {password}!")});
+                return new SignInResponse(null, false, new List<Error>() { new Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
             }
             // Use _userManager.IsInRoleAsync(user,  to check if user is in the required role
             _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User {username} signed in successfully!");
             return new SignInResponse(user.Id, true);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Exception! {e.Message}");
-            return new SignInResponse(null, false, new List<Error>() {new Error("NotSucceeded", $"Exception! {e.Message}")});
+            return new SignInResponse(null, false, new List<Error>() { new Error("NotSucceeded", $"Exception! {e.Message}") });
         }
     }
     public async Task<SignInResponse> SignIn(string username, string password, bool rememberMe, bool logoutOnFailure)
     {
-        try {
+        try
+        {
             AppUser user = await _userManager.FindByNameAsync(username);
-            if (user == null) {
+            if (user == null)
+            {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password}!");
-                return new SignInResponse(null, false, new List<Error>() {new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!")});
+                return new SignInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
             }
             SignInResult result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, logoutOnFailure);
             if (result.IsNotAllowed)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} is not allowed to login!");
-                return new SignInResponse(null, false, new List<Error>() {new Error("IsNotAllowed", $"User account {username} is not allowed to login!")});
+                return new SignInResponse(null, false, new List<Error>() { new Error("IsNotAllowed", $"User account {username} is not allowed to login!") });
             }
             if (result.IsLockedOut)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} locked out!");
-                return new SignInResponse(null, false, new List<Error>() {new Error("IsLockedOut", $"User account {username} locked out!")});
+                return new SignInResponse(null, false, new List<Error>() { new Error("IsLockedOut", $"User account {username} locked out!") });
             }
             if (result.RequiresTwoFactor)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} requires two-factor authentication!");
-                return new SignInResponse(null, false, new List<Error>() {new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!")});
+                return new SignInResponse(null, false, new List<Error>() { new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!") });
             }
-            if (!result.Succeeded) {
+            if (!result.Succeeded)
+            {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password}!");
-                return new SignInResponse(null, false, new List<Error>() {new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!")});
+                return new SignInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
             }
             _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User {username} signed in successfully!");
             return new SignInResponse(user.Id, true);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Exception! {e.Message}");
-            return new SignInResponse(null, false, new List<Error>() {new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}")});
+            return new SignInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
         }
     }
-    public async Task<LogInResponse> CheckPassword(string username, string password) 
+    public async Task<LogInResponse> CheckPassword(string username, string password)
     {
-        try {
+        try
+        {
             AppUser user = await _userManager.FindByNameAsync(username);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, password)) {
+            if (user == null || !await _userManager.CheckPasswordAsync(user, password))
+            {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Invalid username {username} and password {password}!");
-                return new LogInResponse(null, false, new List<Error>() {new Error(HttpStatusCode.Unauthorized.ToString(), $"Invalid username or password!")});
+                return new LogInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.Unauthorized.ToString(), $"Invalid username or password!") });
             }
             return new LogInResponse(await FindUserByName(username), true);
-            } catch (Exception e) {
-                _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Exception! {e.Message}");
-                return new LogInResponse(null, false, new List<Error>() {new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}")});
-            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Exception! {e.Message}");
+            return new LogInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
+        }
     }
     public async Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword)
     {
-        try {
+        try
+        {
             AppUser appUser = await _userManager.FindByIdAsync(id);
             if (appUser == null)
-                return new PasswordResponse(null, false, new List<Error>(){new Error(HttpStatusCode.BadRequest.ToString(), "User not found!")});
+                return new PasswordResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "User not found!") });
             IdentityResult identityResult = await _userManager.ChangePasswordAsync(appUser, oldPassword, newPassword);
             if (identityResult.Succeeded)
                 return new PasswordResponse(appUser.Id, true, null);
-            else {
+            else
+            {
                 _logger.LogError($"{nameof(ChangePassword)} failed to change password of user {id}!");
                 return new PasswordResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             _logger.LogError($"{nameof(ChangePassword)} Exception! {e.Message}");
-            return new PasswordResponse(null, false, new List<Error>(){new Error(HttpStatusCode.InternalServerError.ToString(), $"User change password failed! {e.Message}")});
+            return new PasswordResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"User change password failed! {e.Message}") });
         }
     }
     public async Task<PasswordResponse> ResetPassword(string id, string password)
@@ -198,12 +264,16 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
                     _logger.LogCritical($"{nameof(ResetPassword)} failed to reset access failed count of user {user.Id}!");
                     return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                 }
-            } else {
+            }
+            else
+            {
                 _logger.LogCritical($"{nameof(ResetPassword)} failed to reset password of user {user.Id}!");
                 return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
             }
             return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
-        } else {
+        }
+        else
+        {
             _logger.LogCritical($"Trying to reset password of  invalid user {id}!");
             return new PasswordResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Trying to reset password of invalid user {id}!") });
         }
@@ -229,7 +299,9 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             user.LockoutEnd = DateTimeOffset.MaxValue;
             IdentityResult result = await _userManager.UpdateAsync(user);
             return new LockUserResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
-        } else {
+        }
+        else
+        {
             _logger.LogCritical($"Trying to lock an invalid user {user.Id}!");
             return new LockUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Trying to lock an invalid user {user.Id}!") });
         }
@@ -256,7 +328,9 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             user.AccessFailedCount = 0;
             IdentityResult result = await _userManager.UpdateAsync(user);
             return new LockUserResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
-        } else {
+        }
+        else
+        {
             _logger.LogCritical($"Trying to unlock an invalid user {user.Id}!");
             return new LockUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Trying to unlock an invalid user {user.Id}!") });
         }

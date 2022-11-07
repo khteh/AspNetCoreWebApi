@@ -6,8 +6,10 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Xunit;
+
 namespace Web.Api.IntegrationTests.Controllers;
-public class AccountsControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory<Program>>
+[Collection("Controller Test Collection")]
+public class AccountsControllerIntegrationTests
 {
     private readonly HttpClient _client;
     public AccountsControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) => _client = factory.CreateClient();

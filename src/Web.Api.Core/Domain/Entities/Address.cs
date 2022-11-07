@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using Web.Api.Core.Shared;
 
 namespace Web.Api.Core.Domain.Entities;
 
+[Owned]
 public class Address : ValueObject
 {
     public string Street { get; private set; }

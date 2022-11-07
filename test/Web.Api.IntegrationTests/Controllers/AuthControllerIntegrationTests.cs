@@ -7,7 +7,8 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Xunit;
 namespace Web.Api.IntegrationTests.Controllers;
-public class AuthControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory<Program>>
+[Collection("Controller Test Collection")]
+public class AuthControllerIntegrationTests
 {
     private readonly HttpClient _client;
     public AuthControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) => _client = factory.CreateClient();
@@ -69,6 +70,6 @@ public class AuthControllerIntegrationTests : IClassFixture<CustomWebApplication
         Assert.NotNull(response.Errors);
         Assert.NotEmpty(response.Errors);
         Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Errors.First().Code);
-        Assert.Equal("Invalid token!", response.Errors.First().Description);
+        Assert.Equal("Invalid credential!", response.Errors.First().Description);
     }
 }

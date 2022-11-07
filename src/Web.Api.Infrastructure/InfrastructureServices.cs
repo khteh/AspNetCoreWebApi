@@ -11,7 +11,7 @@ using Web.Api.Infrastructure.Interfaces;
 namespace Microsoft.Extensions.DependencyInjection;
 public static class InfrastructureServices
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection service, IConfiguration configuration, bool useInMemoryDatabase = false)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection service, IConfiguration configuration, bool isIntegrationTest = false)
     {
         service.AddScoped<IUserRepository, UserRepository>()
                 .AddSingleton<IJwtFactory, JwtFactory>()
@@ -19,9 +19,9 @@ public static class InfrastructureServices
                 .AddSingleton<ITokenFactory, TokenFactory>()
                 .AddSingleton<IJwtTokenValidator, JwtTokenValidator>()
                 .AddScoped<SignInManager<AppUser>>();
-        if (!useInMemoryDatabase)
-            service.AddDbContextPool<AppIdentityDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")))
-                    .AddDbContextPool<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
+        //if (!useInMemoryDatabase)
+        service.AddDbContextPool<AppIdentityDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")))
+                    .AddDbContextPool<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
         return service;
     }
 }

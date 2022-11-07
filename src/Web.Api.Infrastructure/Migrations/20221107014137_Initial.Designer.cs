@@ -12,14 +12,14 @@ using Web.Api.Infrastructure.Data;
 namespace Web.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220919085849_Initial")]
+    [Migration("20221107014137_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("ProductVersion", "6.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -68,20 +68,11 @@ namespace Web.Api.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("FirstName")
-                        .HasColumnType("text");
-
                     b.Property<string>("IdentityId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastName")
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("Modified")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -127,7 +118,8 @@ namespace Web.Api.Infrastructure.Migrations
                                 .HasForeignKey("UserId");
                         });
 
-                    b.Navigation("Address");
+                    b.Navigation("Address")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Web.Api.Core.Domain.Entities.User", b =>
