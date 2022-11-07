@@ -5,13 +5,12 @@ jobs:
     docker:
       - image: khteh/circleci-dotnet:latest
       - image: postgres:latest
-        #command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_0900_ai_ci --default-authentication-plugin=mysql_native_password
+        auth:
+          username: $POSTGRESQL_USER
+          password: $POSTGRESQL_PASSWORD # context / project UI env-var reference
         environment:
-          POSTGRESQL_HOST: 127.0.0.1
-          POSTGRES_HOST_AUTH_METHOD: trust
-          POSTGRESQL_DB: AspNetCoreWebApi
-          POSTGRESQL_ALLOW_EMPTY_PASSWORD: true
-          POSTGRESQL_USER: $POSTGRESQL_USER
+          POSTGRES_USER: $POSTGRESQL_USER
+          POSTGRES_DB: AspNetCoreWebApi
           POSTGRESQL_PASSWORD: $POSTGRESQL_PASSWORD
     steps:
       - checkout
