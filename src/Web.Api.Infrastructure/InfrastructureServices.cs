@@ -19,7 +19,6 @@ public static class InfrastructureServices
                 .AddSingleton<ITokenFactory, TokenFactory>()
                 .AddSingleton<IJwtTokenValidator, JwtTokenValidator>()
                 .AddScoped<SignInManager<AppUser>>();
-        //if (!useInMemoryDatabase)
         service.AddDbContextPool<AppIdentityDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")))
                     .AddDbContextPool<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
         return service;

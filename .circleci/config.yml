@@ -6,7 +6,7 @@ jobs:
       - image: khteh/circleci-dotnet:latest
       - image: postgres:latest
         environment:
-          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_PASSWORD: $POSTGRESQL_PASSWORD
           POSTGRES_USER: $POSTGRESQL_USER
           POSTGRES_DB: AspNetCoreWebApi
           POSTGRESQL_PASSWORD: $POSTGRESQL_PASSWORD
