@@ -25,7 +25,7 @@ jobs:
             psql -v ON_ERROR_STOP=1 -h localhost -U postgres -c "CREATE USER $POSTGRESQL_USER WITH PASSWORD '$POSTGRESQL_PASSWORD';"
             psql -v ON_ERROR_STOP=1 -h localhost -U postgres -c "create database \"AspNetCoreWebApi\";"
             psql -v ON_ERROR_STOP=1 -h localhost -U postgres -c "GRANT ALL ON schema public TO $POSTGRESQL_USER;"
-            psql -v ON_ERROR_STOP=1 -h localhost -U postgres -c "GRANT USAGE ON SCHEMA public TO $POSTGRESQL_USER;"
+            psql -v ON_ERROR_STOP=1 -h localhost -U postgres -c "GRANT USAGE,CREATE ON SCHEMA public TO $POSTGRESQL_USER;"
             psql -v ON_ERROR_STOP=1 -h localhost -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE \"AspNetCoreWebApi\" TO $POSTGRESQL_USER;"
       - run:
           name: Update database with the existing migrations folder
