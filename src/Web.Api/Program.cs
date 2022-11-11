@@ -67,10 +67,6 @@ try
                     .AddCommandLine(args);
     //builder.WebHost.UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory())); Changing the host configuration using WebApplicationBuilder.Host is not supported. Use WebApplication.CreateBuilder(WebApplicationOptions) instead.
     LoggerConfiguration logConfig = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration);
-    //.MinimumLevel.Debug()
-    //.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-    //.WriteTo.RollingFile(config["Logging:LogFile"], fileSizeLimitBytes: 10485760, retainedFileCountLimit: null)
-    //.Enrich.FromLogContext();
     if (env.IsDevelopment() || env.IsStaging())
         //config.WriteTo.Console(new CompactJsonFormatter())
         logConfig.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
@@ -339,21 +335,6 @@ try
     app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
     app.UseAuthorization();
     app.UseWebSockets();
-    app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
-    app.MapHub<ChatHub>($"/chatHub", o => o.Transports = HttpTransportType.WebSockets);
-    //endpoints.MapGrpcService<GreeterService>("/greet");
-    app.MapGrpcService<AccountsService>();
-    app.MapGrpcService<AuthService>();
-    app.MapHealthChecks($"/health/live", new HealthCheckOptions()
-    {
-        Predicate = check => check.Name == "Liveness"
-    });
-    app.MapHealthChecks($"/health/ready", new HealthCheckOptions()
-    {
-        Predicate = check => check.Name == "Readiness"
-    });
-
-    app.MapRazorPages();
     //if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
     app.UseSwagger().UseSwaggerUI(c =>
     {
@@ -400,6 +381,20 @@ try
             context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions() { HttpOnly = false });
         }
         await next(context);
+    });
+    app.MapRazorPages();
+    app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+    app.MapHub<ChatHub>($"/chatHub", o => o.Transports = HttpTransportType.WebSockets);
+    //endpoints.MapGrpcService<GreeterService>("/greet");
+    app.MapGrpcService<AccountsService>();
+    app.MapGrpcService<AuthService>();
+    app.MapHealthChecks($"/health/live", new HealthCheckOptions()
+    {
+        Predicate = check => check.Name == "Liveness"
+    });
+    app.MapHealthChecks($"/health/ready", new HealthCheckOptions()
+    {
+        Predicate = check => check.Name == "Readiness"
     });
 
     IHostApplicationLifetime lifetime = app.Lifetime;
