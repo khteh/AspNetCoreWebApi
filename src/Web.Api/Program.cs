@@ -277,7 +277,7 @@ try
     // WARNING: use *either* the NameUserIdProvider *or* the 
     // EmailBasedUserIdProvider, but do not use both. 
     // Register Infrastructure Services
-    builder.Services.AddInfrastructure(builder.Configuration, _isIntegrationTests).AddCore().AddOutputPorts();//.AddHealthCheck();
+    builder.Services.AddInfrastructure(builder.Configuration, _isIntegrationTests).AddCore().AddOutputPorts();
     builder.Services.AddHealthChecks()
         .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>() { "Liveness" })
         .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string> { "Readiness" })
