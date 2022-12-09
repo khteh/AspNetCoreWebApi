@@ -244,7 +244,7 @@ try
         //    { "Bearer", new string[] { } }
         //});
         c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                    {
+                    {{ // NOT duplicate. Don't remove.
                         new OpenApiSecurityScheme
                         {
                             Reference = new OpenApiReference
@@ -257,7 +257,7 @@ try
                             In = ParameterLocation.Header,
                         },
                         new List<string>()
-                    });
+                    }});
         c.CustomSchemaIds(i => i.FullName);
     });
     builder.Services.AddGrpc();
