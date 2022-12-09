@@ -399,8 +399,8 @@ try
     IHostApplicationLifetime lifetime = app.Lifetime;
     ReadinessHealthCheck readinessHealthCheck = app.Services.GetRequiredService<ReadinessHealthCheck>();
     lifetime.ApplicationStarted.Register(() => AppStarted(app.Logger, readinessHealthCheck));
-    lifetime.ApplicationStopping.Register(() => app.Logger.LogInformation("ApplicationStopping"));
-    lifetime.ApplicationStopped.Register(() => app.Logger.LogInformation("ApplicationStopped"));
+    lifetime.ApplicationStopping.Register(() => app.Logger.LogInformation($"{typeof(Program).Assembly.GetName().Name} stopping..."));
+    lifetime.ApplicationStopped.Register(() => app.Logger.LogInformation($"{typeof(Program).Assembly.GetName().Name} stopped!"));
 
     app.Run();
 }
@@ -414,7 +414,7 @@ finally
 }
 static void AppStarted(Microsoft.Extensions.Logging.ILogger logger, ReadinessHealthCheck readinessHealthCheck)
 {
-    logger.LogInformation($"ApplicationStarted");
+    logger.LogInformation($"{typeof(Program).Assembly.GetName().Name} started!");
     readinessHealthCheck.StartupCompleted = true;
 }
 public partial class Program { } // so you can reference it from tests
