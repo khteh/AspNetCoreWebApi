@@ -97,8 +97,8 @@ try
     builder.Host.UseSerilog((ctx, config) =>
                          {
                              config.ReadFrom.Configuration(ctx.Configuration);
-                             //                             if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
-                             config.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
+                             if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
+                                 config.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
                          });
     // Add services to the container.
     builder.Services.AddRazorPages();
