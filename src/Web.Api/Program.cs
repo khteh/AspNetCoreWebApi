@@ -279,11 +279,11 @@ try
     // Register Infrastructure Services
     builder.Services.AddInfrastructure(builder.Configuration, _isIntegrationTests).AddCore().AddOutputPorts();
     builder.Services.AddHealthChecks()
-        .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>() { "Liveness" })
-        .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string> { "Readiness" })
+        .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>() { "live" })
+        .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string> { "ready" })
         .AddNpgSql(builder.Configuration["ConnectionStrings:Default"], "PostgreSQL")
         .AddDbContextCheck<AppDbContext>("AppDbContext", HealthStatus.Unhealthy, new List<string> { "Services" });
-    builder.Services.AddHostedService<StartupHostedService>()
+    builder.Services.AddHostedService<StartupBackgroundService>()
         .AddSingleton<ReadinessHealthCheck>()
         .AddSingleton<LivenessHealthCheck>();
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -385,14 +385,13 @@ try
     app.MapRazorPages();
     app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
     app.MapHub<ChatHub>($"/chatHub", o => o.Transports = HttpTransportType.WebSockets);
-    //endpoints.MapGrpcService<GreeterService>("/greet");
     app.MapGrpcService<AccountsService>();
     app.MapGrpcService<AuthService>();
-    app.MapHealthChecks($"/health/live", new HealthCheckOptions()
+    app.MapHealthChecks("/health/live", new HealthCheckOptions()
     {
         Predicate = check => check.Name == "Liveness"
     });
-    app.MapHealthChecks($"/health/ready", new HealthCheckOptions()
+    app.MapHealthChecks("/health/ready", new HealthCheckOptions()
     {
         Predicate = check => check.Name == "Readiness"
     });

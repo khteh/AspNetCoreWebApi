@@ -1,7 +1,7 @@
 {
     "explorer.confirmDelete": false,
     "[csharp]": {},
-    "window.zoomLevel": 0,
+    "window.zoomLevel": -1,
     "dotnet-test-explorer.autoExpandTree": false,
     "dotnet-test-explorer.autoWatch": false,
     "dotnet-test-explorer.enableTelemetry": false,
