@@ -415,6 +415,6 @@ finally
 static void AppStarted(Microsoft.Extensions.Logging.ILogger logger, ReadinessHealthCheck readinessHealthCheck)
 {
     logger.LogInformation($"ApplicationStarted");
-    readinessHealthCheck.StartupTaskCompleted = true;
+    readinessHealthCheck.StartupCompleted = true;
 }
 public partial class Program { } // so you can reference it from tests

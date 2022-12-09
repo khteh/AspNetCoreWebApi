@@ -22,12 +22,12 @@ internal class StartupBackgroundService : BackgroundService
     {
         _logger.LogInformation($"{nameof(StartupBackgroundService)}.{nameof(StartAsync)}");
 #if false
-        IApplicationLifetime.ApplicationStarted sets _healthCheck.StartupTaskCompleted to true
+        IApplicationLifetime.ApplicationStarted sets _healthCheck.StartupCompleted to true
         // Simulate the effect of a long-running startup task.
         Task.Run(async () =>
         {
             await Task.Delay(_delaySeconds * 1000);
-            _healthCheck.StartupTaskCompleted = true;
+            _healthCheck.StartupCompleted = true;
             _logger.LogInformation($"Startup Background Service has started.");
         });
 #endif

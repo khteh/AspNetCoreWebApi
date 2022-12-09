@@ -5,12 +5,17 @@ using System.Threading.Tasks;
 namespace Web.Api.HealthChecks;
 internal class ReadinessHealthCheck : IHealthCheck
 {
-    public bool StartupTaskCompleted { get; set; } = false;
+    private volatile bool _isReady;
+    public bool StartupCompleted
+    {
+        get => _isReady;
+        set => _isReady = value;
+    }
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         // Some Readiness check
         Console.WriteLine("Readiness health check executed.");
-        return StartupTaskCompleted ? Task.FromResult(HealthCheckResult.Healthy("The startup task is finished.")) :
+        return StartupCompleted ? Task.FromResult(HealthCheckResult.Healthy("The startup task is finished.")) :
                     Task.FromResult(HealthCheckResult.Unhealthy("The startup task is still running."));
     }
 }
