@@ -245,7 +245,6 @@ try
         //});
         c.AddSecurityRequirement(new OpenApiSecurityRequirement()
                     {
-                    {
                         new OpenApiSecurityScheme
                         {
                             Reference = new OpenApiReference
@@ -258,7 +257,6 @@ try
                             In = ParameterLocation.Header,
                         },
                         new List<string>()
-                    }
                     });
         c.CustomSchemaIds(i => i.FullName);
     });
