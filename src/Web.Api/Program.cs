@@ -99,6 +99,8 @@ try
                              config.ReadFrom.Configuration(ctx.Configuration);
                              if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
                                  config.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
+                             else
+                                 config.WriteTo.Console(new ElasticsearchJsonFormatter());
                          });
     // Add services to the container.
     builder.Services.AddRazorPages();
