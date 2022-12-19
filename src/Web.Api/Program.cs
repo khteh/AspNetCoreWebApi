@@ -29,6 +29,7 @@ global using System.Net;
 global using System.Text;
 global using System.Threading;
 global using System.Threading.Tasks;
+using System.Text.Json;
 using Web.Api;
 using Web.Api.Behaviours;
 using Web.Api.Commands;
@@ -357,7 +358,7 @@ try
                                             context?.Request?.Protocol,
                                             context?.Request?.Headers
                                             );
-        app.Logger.LogInformation(requestLog.ToString());
+        app.Logger.LogInformation(JsonSerializer.Serialize(requestLog)); // geoip works with JSON format
         // Headers
         //foreach (var header in context.Request.Headers)
         //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
