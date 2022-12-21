@@ -17,7 +17,7 @@ public class AccountsController : ControllerBase
     private readonly IFindUserUseCase _findUserUseCase;
     private readonly FindUserPresenter _findUserPresenter;
     public AccountsController(IMediator mediator, IMapper mapper,
-            IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter) 
+            IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter)
     {
         _mediator = mediator;
         _mapper = mapper;
@@ -48,7 +48,7 @@ public class AccountsController : ControllerBase
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-        ResetPasswordResponse response = await _mediator.Send(new ResetPasswordCommand(request.Id, request.NewPassword));
+        ResetPasswordResponse response = await _mediator.Send(new ResetPasswordCommand(request.Id, request.Email, request.NewPassword, request.Code));
         return _mapper.Map<JsonContentResult>(response);
     }
     // POST api/accounts

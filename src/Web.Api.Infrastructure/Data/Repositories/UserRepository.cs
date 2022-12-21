@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO;
@@ -261,21 +262,61 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
                 result = await _userManager.ResetAccessFailedCountAsync(user);
                 if (!result.Succeeded)
                 {
-                    _logger.LogCritical($"{nameof(ResetPassword)} failed to reset access failed count of user {user.Id}!");
+                    StringBuilder sb = new StringBuilder();
+                    foreach (IdentityError error in result.Errors)
+                        sb.AppendLine($"{error.Code}: {error.Description}");
+                    _logger.LogError($"{nameof(ResetPassword)} failed to reset access failed count of user {user.Id}! {sb.ToString()}");
                     return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                 }
             }
             else
             {
-                _logger.LogCritical($"{nameof(ResetPassword)} failed to reset password of user {user.Id}!");
+                StringBuilder sb = new StringBuilder();
+                foreach (IdentityError error in result.Errors)
+                    sb.AppendLine($"{error.Code}: {error.Description}");
+                _logger.LogError($"{nameof(ResetPassword)} failed to reset password of user {user.Id}!");
                 return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
             }
             return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
         }
         else
         {
-            _logger.LogCritical($"Trying to reset password of  invalid user {id}!");
+            _logger.LogError($"Trying to reset password of  invalid user {id}!");
             return new PasswordResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Trying to reset password of invalid user {id}!") });
+        }
+    }
+    public async Task<PasswordResponse> ResetPassword(string email, string password, string code)
+    {
+        AppUser user = await _userManager.FindByEmailAsync(email);
+        if (user != null)
+        {
+            IdentityResult result = await _userManager.ResetPasswordAsync(user, code, password);
+            if (result.Succeeded)
+            {
+                result = await _userManager.ResetAccessFailedCountAsync(user);
+                if (!result.Succeeded)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (IdentityError error in result.Errors)
+                        sb.AppendLine($"{error.Code} {error.Description}");
+                    _logger.LogError($"{nameof(ResetPassword)} failed to reset access failed count of user {user.Id}! {sb.ToString()}");
+                    return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+                }
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (IdentityError error in result.Errors)
+                    sb.AppendLine($"{error.Code} {error.Description}");
+                _logger.LogError($"{nameof(ResetPassword)} failed to reset password of user {user.Id}! {sb.ToString()}");
+                return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+            }
+            return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+        }
+        else
+        {
+            _logger.LogError($"Trying to reset password of  invalid user {email}!");
+            return new PasswordResponse(string.Empty, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Trying to reset password of invalid user {email}!") });
         }
     }
     public async Task<LockUserResponse> LockUser(string id) => await LockUser(await _userManager.FindByIdAsync(id));

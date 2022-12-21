@@ -39,8 +39,10 @@ message ChangePasswordRequest {
 }
 message ResetPasswordRequest {
     string id = 1;
-    string newPassword = 2;
-    bool isFirstLogin = 3;
+    string email = 2;
+    string newPassword = 3;
+    string code = 4;
+    bool isFirstLogin = 5;
 }
 message UserResponse {
     string id = 1;

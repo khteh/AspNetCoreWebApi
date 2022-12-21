@@ -181,7 +181,7 @@ public class AccountsControllerIntegrationTests
         Assert.False(string.IsNullOrEmpty(loginResult.RefreshToken));
 
         // Change Password
-        var pwdResponse = await _client.PostAsync("/api/accounts/resetpassword", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.ResetPasswordRequest(id, "Pa$$word2")), Encoding.UTF8, "application/json"));
+        var pwdResponse = await _client.PostAsync("/api/accounts/resetpassword", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.ResetPasswordRequest(id, null, "Pa$$word2", null)), Encoding.UTF8, "application/json"));
         pwdResponse.EnsureSuccessStatusCode();
         var strPwdResponse = await pwdResponse.Content.ReadAsStringAsync();
         Models.Response.ResetPasswordResponse pwdResponse1 = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ResetPasswordResponse>(strPwdResponse);

@@ -29,18 +29,21 @@ global using System.Net;
 global using System.Text;
 global using System.Threading;
 global using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Text.Json;
 using Web.Api;
 using Web.Api.Behaviours;
 using Web.Api.Commands;
 using Web.Api.Extensions;
 using Web.Api.HealthChecks;
+using Web.Api.Helpers;
 using Web.Api.Hubs;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Mapping;
 using Web.Api.Infrastructure.Helpers;
 using Web.Api.Infrastructure.Identity;
+using Web.Api.Models.Configurations;
 using Web.Api.Models.Logging;
 using Web.Api.Models.Response;
 using Web.Api.Presenters.Grpc;
@@ -64,6 +67,7 @@ try
                     .AddJsonFile("appsettings.json", false, true)
                     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
                     .AddJsonFile($"appsettings.postgresql.json", true, true)
+                    .AddJsonFile($"appsettings.email.json", true, true)
                     .AddEnvironmentVariables()
                     .AddCommandLine(args);
     //builder.WebHost.UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory())); Changing the host configuration using WebApplicationBuilder.Host is not supported. Use WebApplication.CreateBuilder(WebApplicationOptions) instead.
@@ -207,6 +211,9 @@ try
         o.Password.RequireNonAlphanumeric = false;
         o.Password.RequiredLength = 6;
     });
+    var emailSettings = builder.Configuration.GetSection(nameof(EmailSettings));
+    builder.Services.Configure<EmailSettings>(emailSettings);
+    builder.Services.AddTransient<IEmailSender, EmailSender>();
     identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
     identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
     builder.Services.AddControllersWithViews();

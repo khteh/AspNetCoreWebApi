@@ -12,6 +12,7 @@ public interface IUserRepository : IRepository<User>
     Task<FindUserResponse> FindByEmail(string email);
     Task<LogInResponse> CheckPassword(string username, string password);
     Task<PasswordResponse> ResetPassword(string id, string password);
+    Task<PasswordResponse> ResetPassword(string email, string password, string code);
     Task<SignInResponse> SignIn(string username, string password, bool rememberMe, bool logoutOnFailure);
     Task<ExchangeRefreshTokenResponse> ExchangeRefreshToken(string accessToken, string refreshToken, string signingKey);
     Task<SignInResponse> SignInMobile(string username, string password, bool logoutOnFailure);

@@ -18,9 +18,9 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         _useCase = useCase;
         _presenter = presenter;
     }
-    public async Task<ResetPasswordResponse> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
+    public async Task<ResetPasswordResponse> Handle(ResetPasswordCommand command, CancellationToken cancellationToken)
     {
-        await _useCase.Handle(new ResetPasswordRequest(request.Id, request.NewPassword), _presenter);
+        await _useCase.Handle(new ResetPasswordRequest(command.Id, command.Email, command.NewPassword, command.Code), _presenter);
         return _presenter.Response;
     }
 }

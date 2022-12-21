@@ -52,7 +52,7 @@ public class AccountsService : Accounts.AccountsBase
     }
     public async override Task<Web.Api.Identity.Response> ResetPassword(Web.Api.Identity.Accounts.ResetPasswordRequest request, ServerCallContext context)
     {
-        await _resetPasswordUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.ResetPasswordRequest(request.Id, request.NewPassword), _resetPasswordPresenter);
+        await _resetPasswordUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.ResetPasswordRequest(request.Id, request.Email, request.NewPassword, request.Code), _resetPasswordPresenter);
         return _resetPasswordPresenter.Response;
     }
     // POST api/accounts
