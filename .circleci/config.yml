@@ -1,7 +1,17 @@
 version: 2.1
+references:
+  workspace_root: &workspace_root ~/workspace
+
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+
+defaults: &defaults # Default directory to run the steps in.
+  working_directory: *workspace_root
+
 jobs:
   build_and_test:
-    working_directory: ~/workspace
+    <<: *defaults
     docker:
       - image: khteh/circleci-dotnet:latest
       - image: postgres:latest
@@ -65,7 +75,7 @@ jobs:
           paths:
             - docker-build_number.txt
   deploy-eks:
-    working_directory: /tmp
+    <<: *defaults
     docker:
       - image: khteh/ubuntu:latest
     steps:
