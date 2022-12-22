@@ -29,6 +29,7 @@ global using System.Net;
 global using System.Text;
 global using System.Threading;
 global using System.Threading.Tasks;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Text.Json;
 using Web.Api;
@@ -313,7 +314,15 @@ try
     {
         options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
     });
-
+    builder.Services.AddHttpLogging(logging =>
+    {
+        logging.LoggingFields = HttpLoggingFields.All;
+        logging.RequestHeaders.Add("sec-ch-ua");
+        logging.ResponseHeaders.Add("MyResponseHeader");
+        logging.MediaTypeOptions.AddText("application/javascript");
+        logging.RequestBodyLogLimit = 4096;
+        logging.ResponseBodyLogLimit = 4096;
+    });
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -335,6 +344,7 @@ try
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
     }
+    app.UseHttpLogging();
     app.UseResponseCaching();
     app.UseForwardedHeaders();
     app.UseHttpsRedirection();
@@ -405,7 +415,6 @@ try
     {
         Predicate = healthCheck => healthCheck.Tags.Contains("ready") || healthCheck.Tags.Contains("Database") || healthCheck.Tags.Contains("DbContext")
     });
-    app.UseHttpLogging();
     IHostApplicationLifetime lifetime = app.Lifetime;
     ReadinessHealthCheck readinessHealthCheck = app.Services.GetRequiredService<ReadinessHealthCheck>();
     lifetime.ApplicationStarted.Register(() => AppStarted(app.Logger, readinessHealthCheck));
