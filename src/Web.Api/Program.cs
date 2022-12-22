@@ -291,8 +291,8 @@ try
     builder.Services.AddHealthChecks()
         .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>() { "live" })
         .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string> { "ready" })
-        .AddNpgSql(builder.Configuration["ConnectionStrings:Default"], "PostgreSQL")
-        .AddDbContextCheck<AppDbContext>("AppDbContext", HealthStatus.Unhealthy, new List<string> { "Services" });
+        .AddNpgSql(builder.Configuration["ConnectionStrings:Default"], "SELECT 1;", null, "PostgreSQL Health Check", HealthStatus.Unhealthy, new List<string> { "Database" })
+        .AddDbContextCheck<AppDbContext>("AppDbContext", HealthStatus.Unhealthy, new List<string> { "DbContext" });
     builder.Services.AddHostedService<StartupBackgroundService>()
         .AddSingleton<ReadinessHealthCheck>()
         .AddSingleton<LivenessHealthCheck>();
@@ -399,11 +399,11 @@ try
     app.MapGrpcService<AuthService>();
     app.MapHealthChecks("/health/live", new HealthCheckOptions()
     {
-        Predicate = check => check.Name == "Liveness"
+        Predicate = healthCheck => healthCheck.Tags.Contains("live") || healthCheck.Tags.Contains("Database") || healthCheck.Tags.Contains("DbContext")
     });
     app.MapHealthChecks("/health/ready", new HealthCheckOptions()
     {
-        Predicate = check => check.Name == "Readiness"
+        Predicate = healthCheck => healthCheck.Tags.Contains("ready") || healthCheck.Tags.Contains("Database") || healthCheck.Tags.Contains("DbContext")
     });
 
     IHostApplicationLifetime lifetime = app.Lifetime;

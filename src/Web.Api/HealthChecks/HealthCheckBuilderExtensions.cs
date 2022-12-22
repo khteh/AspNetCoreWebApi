@@ -12,7 +12,7 @@ public static class HealthCheckBuilderExtensions
     builder.AddCheck<LivenessHealthCheck>(
                 name,
                 failureStatus,
-                tags).AddCheck<RedisHealthCheck>(name, failureStatus, tags);
+                tags).AddCheck<RedisHealthCheck>("RedisCacheHealthCheck", failureStatus, tags);
     public static IHealthChecksBuilder AddReadinessHealthCheck(
             this IHealthChecksBuilder builder,
             string name,
@@ -21,5 +21,5 @@ public static class HealthCheckBuilderExtensions
     builder.AddCheck<ReadinessHealthCheck>(
                 name,
                 failureStatus,
-                tags).AddCheck<RedisHealthCheck>(name, failureStatus, tags);
+                tags).AddCheck<RedisHealthCheck>("RedisCacheHealthCheck", failureStatus, tags);
 }
