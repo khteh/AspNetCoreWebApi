@@ -292,8 +292,7 @@ try
         .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>() { "live" })
         .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string> { "ready" })
         .AddNpgSql(builder.Configuration["ConnectionStrings:Default"], "PostgreSQL")
-        .AddDbContextCheck<AppDbContext>("AppDbContext", HealthStatus.Unhealthy, new List<string> { "Services" })
-        .AddCheck<RedisHealthCheck>("RedisConnectionCheck");
+        .AddDbContextCheck<AppDbContext>("AppDbContext", HealthStatus.Unhealthy, new List<string> { "Services" });
     builder.Services.AddHostedService<StartupBackgroundService>()
         .AddSingleton<ReadinessHealthCheck>()
         .AddSingleton<LivenessHealthCheck>();
