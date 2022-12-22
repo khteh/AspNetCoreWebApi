@@ -35,6 +35,12 @@ public static class InfrastructureServices
                 options.Configuration = configuration["RedisCache:Connection"];
                 options.InstanceName = configuration["RedisCache:InstanceName"];
             });
+            service.AddSingleton<IConnectionMultiplexer>(sp =>
+                 ConnectionMultiplexer.Connect(new ConfigurationOptions
+                 {
+                     EndPoints = { configuration["RedisCache:Connection"] },
+                     AbortOnConnectFail = false,
+                 }));
             var redis = ConnectionMultiplexer.Connect(configuration["RedisCache:Connection"]);
             service.AddDataProtection().PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
         }
