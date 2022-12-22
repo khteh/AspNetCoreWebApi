@@ -405,7 +405,7 @@ try
     {
         Predicate = healthCheck => healthCheck.Tags.Contains("ready") || healthCheck.Tags.Contains("Database") || healthCheck.Tags.Contains("DbContext")
     });
-
+    app.UseHttpLogging();
     IHostApplicationLifetime lifetime = app.Lifetime;
     ReadinessHealthCheck readinessHealthCheck = app.Services.GetRequiredService<ReadinessHealthCheck>();
     lifetime.ApplicationStarted.Register(() => AppStarted(app.Logger, readinessHealthCheck));
