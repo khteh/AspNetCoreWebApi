@@ -1,4 +1,4 @@
-namespace Web.Api.Models.Configurations;
+namespace Web.Api.Core.Configuration;
 public class EmailSettings
 {
     public string UserName { get; set; }

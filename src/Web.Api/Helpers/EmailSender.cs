@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
-using Web.Api.Models.Configurations;
+using Web.Api.Core.Configuration;
 
 namespace Web.Api.Helpers;
 public class EmailSender : IEmailSender

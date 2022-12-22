@@ -34,6 +34,7 @@ using System.Text.Json;
 using Web.Api;
 using Web.Api.Behaviours;
 using Web.Api.Commands;
+using Web.Api.Core.Configuration;
 using Web.Api.Extensions;
 using Web.Api.HealthChecks;
 using Web.Api.Helpers;
@@ -43,7 +44,6 @@ using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Mapping;
 using Web.Api.Infrastructure.Helpers;
 using Web.Api.Infrastructure.Identity;
-using Web.Api.Models.Configurations;
 using Web.Api.Models.Logging;
 using Web.Api.Models.Response;
 using Web.Api.Presenters.Grpc;
@@ -214,6 +214,8 @@ try
     var emailSettings = builder.Configuration.GetSection(nameof(EmailSettings));
     builder.Services.Configure<EmailSettings>(emailSettings);
     builder.Services.AddTransient<IEmailSender, EmailSender>();
+    var redisCacheConfig = builder.Configuration.GetSection(nameof(RedisCache));
+    builder.Services.Configure<RedisCache>(redisCacheConfig);
     identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
     identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
     builder.Services.AddControllersWithViews();
@@ -285,7 +287,7 @@ try
     // WARNING: use *either* the NameUserIdProvider *or* the 
     // EmailBasedUserIdProvider, but do not use both. 
     // Register Infrastructure Services
-    builder.Services.AddInfrastructure(builder.Configuration, _isIntegrationTests).AddCore().AddOutputPorts();
+    builder.Services.AddInfrastructure(builder.Configuration, env, _isIntegrationTests).AddCore().AddOutputPorts();
     builder.Services.AddHealthChecks()
         .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>() { "live" })
         .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string> { "ready" })
