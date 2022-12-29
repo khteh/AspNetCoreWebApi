@@ -2,6 +2,7 @@
 var login = true;
 var token = null;
 var pathBase = document.baseURI.replace(/\/$/, "");
+// console.log(`pathBase: ${pathBase}`);
 var connection = new signalR.HubConnectionBuilder().withUrl(pathBase+"/chatHub", {
     skipNegotiation: true,
     transport: signalR.HttpTransportType.WebSockets,
