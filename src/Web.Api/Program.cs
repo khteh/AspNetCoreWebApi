@@ -403,7 +403,6 @@ try
         await next(context);
     });
     app.MapRazorPages();
-    //app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
     app.MapControllers();
     app.MapHub<ChatHub>($"/chatHub", o => o.Transports = HttpTransportType.WebSockets);
     app.MapGrpcService<AccountsService>();

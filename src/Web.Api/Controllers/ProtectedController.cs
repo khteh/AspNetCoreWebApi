@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 namespace Web.Api.Controllers;
 [Authorize(Policy = "ApiUser")]
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 public class ProtectedController : ControllerBase
 {

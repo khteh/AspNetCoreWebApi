@@ -7,7 +7,7 @@ using Web.Api.Infrastructure.Auth;
 using Web.Api.Models.Response;
 using Web.Api.Presenters;
 namespace Web.Api.Controllers;
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
 {
