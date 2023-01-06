@@ -8,7 +8,7 @@ using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Models.Response;
 using Web.Api.Presenters;
 namespace Web.Api.Controllers;
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 [ApiController]
 public class AccountsController : ControllerBase
 {
