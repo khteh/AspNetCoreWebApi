@@ -21,6 +21,11 @@ $ dotnet ef database update -c AppDbContext
 $ dotnet ef database update -c AppIdentityDbContext
 ```
 
+# SignalR Client Setup
+
+- `npm install @microsoft/signalr`
+- Copy content of `node_modules\@microsoft\signalr\dist\browser` to `wwwroot/lib/signalr`
+
 # Visual Studio
 
 Open the solution file <code>AspNetCoreWebApi.sln</code> and build/run.
