@@ -39,7 +39,7 @@ Open the solution file <code>AspNetCoreWebApi.sln</code> and build/run.
 
 - Install .Net Core Test Explorer
 - `echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p`
-  - https://github.com/dotnet/aspnetcore/issues/8449
+- https://github.com/dotnet/aspnetcore/issues/8449
 
 # Swagger Enabled
 
