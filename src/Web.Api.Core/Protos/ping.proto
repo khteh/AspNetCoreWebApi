@@ -1,0 +1,11 @@
+syntax = "proto3";
+option csharp_namespace = "Web.Api.Ping";
+package Ping;
+import "google/protobuf/empty.proto";
+service SvcPing {
+  rpc Ping (google.protobuf.Empty) returns (Pong);
+}
+
+message Pong {
+  string message = 1;
+}
