@@ -72,14 +72,6 @@ try
                     .AddEnvironmentVariables()
                     .AddCommandLine(args);
     //builder.WebHost.UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory())); Changing the host configuration using WebApplicationBuilder.Host is not supported. Use WebApplication.CreateBuilder(WebApplicationOptions) instead.
-    LoggerConfiguration logConfig = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration);
-    if (env.IsDevelopment() || env.IsStaging())
-        //config.WriteTo.Console(new CompactJsonFormatter())
-        logConfig.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
-    else
-        logConfig.WriteTo.Console(new ElasticsearchJsonFormatter());
-    // Create the logger
-    Log.Logger = logConfig.CreateLogger();
     int originalMinWorker, originalMinIOC;
     int minWorker = 1000;
     string strMinWorkerThreads = Environment.GetEnvironmentVariable("COMPlus_ThreadPool_ForceMinWorkerThreads");
@@ -101,13 +93,13 @@ try
 
     ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
     builder.Host.UseSerilog((ctx, config) =>
-                         {
-                             config.ReadFrom.Configuration(ctx.Configuration);
-                             if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
-                                 config.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
-                             else
-                                 config.WriteTo.Console(new ElasticsearchJsonFormatter());
-                         });
+    {
+        config.ReadFrom.Configuration(ctx.Configuration);
+        if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
+            config.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
+        else
+            config.WriteTo.Console(new ElasticsearchJsonFormatter());
+    });
     // Add services to the container.
     builder.Services.AddRazorPages();
     builder.Services.AddOptions();
