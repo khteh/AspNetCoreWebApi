@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Web.Api.Models.Response;
 using Xunit;
 namespace Web.Api.IntegrationTests.SignalR;
-[Collection("SignalR Test Collection")]
+[Collection("Controller Test Collection")]
 public class ChatHubTests
 {
     private readonly TestServer _testServer;
