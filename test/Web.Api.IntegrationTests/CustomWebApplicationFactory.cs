@@ -13,7 +13,7 @@ using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
 namespace Web.Api.IntegrationTests;
-public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IDisposable where TStartup : class
+public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
     private IServiceCollection _services;
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -79,7 +79,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             }
         });
     }
-    public new void Dispose()
+    public void Dispose()
     {
         var sp = _services.BuildServiceProvider();
         // Create a scope to obtain a reference to the database contexts
