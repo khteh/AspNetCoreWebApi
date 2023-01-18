@@ -274,6 +274,7 @@ try
         c.CustomSchemaIds(i => i.FullName);
     });
     builder.Services.AddGrpc();
+    builder.Services.AddGrpcReflection();
     builder.Services.AddSignalR();
     // Change to use Name as the user identifier for SignalR
     // WARNING: This requires that the source of your JWT token 
@@ -326,8 +327,11 @@ try
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
+    if (app.Environment.IsDevelopment())
+    {
         app.UseDeveloperExceptionPage();
+        app.MapGrpcReflectionService();
+    }
     else
     {
         app.UseExceptionHandler(builder => builder.Run(async context =>
