@@ -407,6 +407,7 @@ try
     app.MapHub<ChatHub>($"/chatHub", o => o.Transports = HttpTransportType.WebSockets);
     app.MapGrpcService<AccountsService>();
     app.MapGrpcService<AuthService>();
+    app.MapGrpcService<PingService>();
     app.MapHealthChecks("/health/live", new HealthCheckOptions()
     {
         Predicate = healthCheck => healthCheck.Tags.Contains("live") || healthCheck.Tags.Contains("Database") || healthCheck.Tags.Contains("DbContext")
