@@ -16,6 +16,7 @@ namespace Web.Api.IntegrationTests;
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
     private IServiceCollection _services;
+    private ServiceProvider _sp;
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "IntegrationTests");
@@ -52,10 +53,10 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             services.AddDistributedMemoryCache();
             _services = services;
             // Build the service provider.
-            var sp = services.BuildServiceProvider();
+            _sp = services.BuildServiceProvider();
 
             // Create a scope to obtain a reference to the database contexts
-            using (var scope = sp.CreateScope())
+            using (var scope = _sp.CreateScope())
             {
                 var scopedServices = scope.ServiceProvider;
                 var appDb = scopedServices.GetRequiredService<AppDbContext>();
@@ -73,17 +74,16 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, $"An error occurred seeding the " +
-                    $"database with test messages. Error: {ex.Message}");
+                    logger.LogError(ex, $"An error occurred seeding the database with test messages. Error: {ex.Message}");
                 }
             }
         });
     }
     public void Dispose()
     {
-        var sp = _services.BuildServiceProvider();
+        //var sp = _services.BuildServiceProvider();
         // Create a scope to obtain a reference to the database contexts
-        using (var scope = sp.CreateScope())
+        using (var scope = _sp.CreateScope())
         {
             var scopedServices = scope.ServiceProvider;
             var appDb = scopedServices.GetRequiredService<AppDbContext>();
