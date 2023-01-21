@@ -13,7 +13,11 @@ namespace Web.Api.IntegrationTests.SignalR;
 public class ChatHubTests
 {
     private readonly TestServer _testServer;
-    public ChatHubTests(CustomWebApplicationFactory<Program> factory) => _testServer = factory.Server;
+    public ChatHubTests(CustomWebApplicationFactory<Program> factory) //=> _testServer = factory.Server;
+    {
+        _testServer = CustomWebApplicationFactory<Program>.CreateWebApplicationFactory().Server;
+    }
+
     private async Task<string> AccessTokenProvider()
     {
         HttpClient client = _testServer.CreateClient();

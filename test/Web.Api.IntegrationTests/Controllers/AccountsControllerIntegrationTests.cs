@@ -6,13 +6,15 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Xunit;
-
 namespace Web.Api.IntegrationTests.Controllers;
 [Collection("Controller Test Collection")]
 public class AccountsControllerIntegrationTests
 {
     private readonly HttpClient _client;
-    public AccountsControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) => _client = factory.CreateClient();
+    public AccountsControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) //=> _client = factory.CreateClient();
+    {
+        _client = CustomWebApplicationFactory<Program>.CreateWebApplicationFactory().CreateClient();
+    }
 
     [Fact]
     public async Task CanRegisterUserWithValidAccountDetails()
