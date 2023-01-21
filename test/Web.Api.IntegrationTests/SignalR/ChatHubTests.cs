@@ -15,7 +15,8 @@ public class ChatHubTests
     private readonly TestServer _testServer;
     public ChatHubTests(CustomWebApplicationFactory<Program> factory) //=> _testServer = factory.Server;
     {
-        _testServer = CustomWebApplicationFactory<Program>.CreateWebApplicationFactory().Server;
+        _testServer = factory.Server;
+        factory.InitDB();
     }
 
     private async Task<string> AccessTokenProvider()

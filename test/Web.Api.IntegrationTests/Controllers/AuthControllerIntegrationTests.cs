@@ -13,7 +13,8 @@ public class AuthControllerIntegrationTests
     private readonly HttpClient _client;
     public AuthControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) //=> _client = factory.CreateClient();
     {
-        _client = CustomWebApplicationFactory<Program>.CreateWebApplicationFactory().CreateClient();
+        _client = factory.CreateClient();
+        factory.InitDB();
     }
 
     [Fact]

@@ -16,10 +16,6 @@ using Web.Api.Infrastructure.Identity;
 namespace Web.Api.IntegrationTests;
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
-    private IServiceCollection _services;
-    private ServiceProvider _sp;
-    private CustomWebApplicationFactory() => Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "IntegrationTests");
-    #if false
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "IntegrationTests");
@@ -54,41 +50,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 return loggerFactory.CreateLogger<UserRepository>();
             });
             services.AddDistributedMemoryCache();
-            _services = services;
-            // Build the service provider.
-            _sp = services.BuildServiceProvider();
-
-            // Create a scope to obtain a reference to the database contexts
-            using (var scope = _sp.CreateScope())
-            {
-                var scopedServices = scope.ServiceProvider;
-                var appDb = scopedServices.GetRequiredService<AppDbContext>();
-                var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
-                var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
-
-                // Ensure the database is created.
-                appDb.Database.EnsureCreated();
-                identityDb.Database.EnsureCreated();
-
-                try
-                {
-                    // Seed the database with test data.
-                    SeedData.PopulateTestData(identityDb, appDb);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, $"An error occurred seeding the database with test messages. Error: {ex.Message}");
-                }
-            }
         });
     }
-    #endif
-    public static CustomWebApplicationFactory<TStartup> CreateWebApplicationFactory()
+    public void InitDB()
     {
-        var factory = new CustomWebApplicationFactory<TStartup>();
-        
-        // Create a scope to obtain a reference to the database contexts
-        using (var scope = factory.Services.CreateScope())
+        using (var scope = Services.CreateScope())
         {
             var scopedServices = scope.ServiceProvider;
             var appDb = scopedServices.GetRequiredService<AppDbContext>();
@@ -110,7 +76,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 throw;
             }
         }
-        return factory;
     }
     public void Dispose()
     {
