@@ -211,6 +211,16 @@ try
     builder.Services.Configure<RedisCache>(redisCacheConfig);
     identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
     identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
+    if (!string.IsNullOrEmpty(builder.Configuration["Cors:Domains"]))
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+                              {
+                                  policy.WithOrigins(builder.Configuration["Cors:Domains"].Split(','))
+                                  .AllowAnyHeader()
+                                  .AllowAnyMethod();
+                              });
+        });
     builder.Services.AddControllersWithViews();
     builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
     //.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter())); Fixed in .Net Core 5
