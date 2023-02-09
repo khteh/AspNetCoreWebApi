@@ -430,7 +430,7 @@ try
 
     app.Run();
 }
-catch (Exception ex) when (ex.GetType().Name is not "StopTheHostException") // https://github.com/dotnet/runtime/issues/60600
+catch (Exception ex) when (ex.GetType().Name is not "HostAbortedException") // https://github.com/dotnet/runtime/issues/60600
 {
     Log.Fatal($"Exception: {ex.Message}");
 }
