@@ -41,7 +41,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                     options.LogTo(Console.WriteLine);
                 });
             services.AddLogging();
-            services.AddOptions();
             services.Configure<GrpcConfig>(context.Configuration.GetSection(nameof(GrpcConfig)));
             services.AddScoped<SignInManager<AppUser>>();
             services.AddScoped<ILogger<UserRepository>>(provider =>
