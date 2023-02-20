@@ -392,7 +392,7 @@ try
         context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
         context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
         // https://dotnetthoughts.net/implementing-content-security-policy-in-aspnetcore/
-        context.Response.Headers.Add("Content-Security-Policy", "default-src 'self' cdn.jsdelivr.net;");
+        context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com;");
         context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
         {
             Public = true,
