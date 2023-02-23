@@ -21,15 +21,26 @@ public class EmailSender : IEmailSender
                 (i) Select "Mail" app
                 (ii) Select device "Other"        
         */
-        SmtpClient client = new SmtpClient
+        if (!string.IsNullOrEmpty(_emailSettings.UserName) && !string.IsNullOrEmpty(email))
         {
-            Port = 587,
-            Host = "smtp.gmail.com", //or another email sender provider
-            EnableSsl = true,
-            DeliveryMethod = SmtpDeliveryMethod.Network,
-            UseDefaultCredentials = false,
-            Credentials = new NetworkCredential(_emailSettings.UserName, _emailSettings.Password)
-        };
-        await client.SendMailAsync(_emailSettings.UserName, email, subject, htmlMessage);
+            SmtpClient client = new SmtpClient
+            {
+                Port = 587,
+                Host = "smtp.gmail.com", //or another email sender provider
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(_emailSettings.UserName, _emailSettings.Password)
+            };
+            MailMessage msg = new MailMessage(new MailAddress(_emailSettings.UserName), new MailAddress(email));
+            msg.Subject = subject;
+            msg.Body = htmlMessage;
+            msg.IsBodyHtml = true;
+            await client.SendMailAsync(msg);
+            _logger.LogInformation($"{nameof(EmailSender)} Email sent to {email} successfully!");
+        }
+        else
+            _logger.LogError($"{nameof(EmailSender)} Invalid emails! from: {_emailSettings.UserName}, to: {email}");
+
     }
 }
