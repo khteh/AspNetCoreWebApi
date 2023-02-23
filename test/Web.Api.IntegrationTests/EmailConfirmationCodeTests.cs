@@ -8,7 +8,7 @@ using Web.Api.Infrastructure.Identity;
 using Xunit;
 
 namespace Web.Api.IntegrationTests;
-[CollectionDefinition("Controller Test Collection")]
+[Collection("Controller Test Collection")]
 public class EmailConfirmationCodeTests
 {
     private readonly CustomWebApplicationFactory<Program> _factory;
