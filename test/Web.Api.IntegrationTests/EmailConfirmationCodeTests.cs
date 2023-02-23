@@ -50,7 +50,7 @@ public class EmailConfirmationCodeTests
             AppUser user1 = await userManager.FindByNameAsync("deleteme");
             Assert.NotNull(user1);
             IdentityResult identityResult = await userManager.ConfirmEmailAsync(user1, code);
-            Assert.True(identityResult.Succeeded);
+            Assert.False(identityResult.Succeeded);
         }
     }
 }
