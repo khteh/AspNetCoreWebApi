@@ -41,6 +41,5 @@ public class EmailSender : IEmailSender
         }
         else
             _logger.LogError($"{nameof(EmailSender)} Invalid emails! from: {_emailSettings.UserName}, to: {email}");
-
     }
 }
