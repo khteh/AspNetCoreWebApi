@@ -1,6 +1,9 @@
+﻿using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
+
 namespace Web.Api.Core.DTO.UseCaseRequests;
-public class SignInRequest : IUseCaseRequest<UseCaseResponseMessage>
+
+public class SignInRequest : IUseCaseRequest<SignInResponse>
 {
     public string UserName { get; set; }
     public string Password { get; set; }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
@@ -138,77 +139,132 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             if (user == null)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username {username} and password {password}!");
-                return new SignInResponse(null, false, new List<Error>() { new Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
             }
             SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, password, logoutOnFailure); ;
             if (result.IsNotAllowed)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} is not allowed to login!");
-                return new SignInResponse(null, false, new List<Error>() { new Error("IsNotAllowed", $"User account {username} is not allowed to login!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("IsNotAllowed", $"User account {username} is not allowed to login!") });
             }
             if (result.IsLockedOut)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} locked out!");
-                return new SignInResponse(null, false, new List<Error>() { new Error("IsLockedOut", $"User account {username} locked out!") });
+                return new SignInResponse(Guid.Empty, null, false, false, true, new List<Core.DTO.Error>() { new Core.DTO.Error("IsLockedOut", $"User account {username} locked out!") });
             }
             if (result.RequiresTwoFactor)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} requires two-factor authentication!");
-                return new SignInResponse(null, false, new List<Error>() { new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!") });
+                return new SignInResponse(Guid.Empty, null, false, true, false, new List<Core.DTO.Error>() { new Core.DTO.Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!") });
             }
             if (!result.Succeeded)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username {username} and password {password}!");
-                return new SignInResponse(null, false, new List<Error>() { new Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
             }
             // Use _userManager.IsInRoleAsync(user,  to check if user is in the required role
             _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User {username} signed in successfully!");
-            return new SignInResponse(user.Id, true);
+            return new SignInResponse(Guid.Parse(user.Id), user.UserName, true);
         }
         catch (Exception e)
         {
             _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Exception! {e.Message}");
-            return new SignInResponse(null, false, new List<Error>() { new Error("NotSucceeded", $"Exception! {e.Message}") });
+            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("NotSucceeded", $"Exception! {e.Message}") });
         }
     }
-    public async Task<SignInResponse> SignIn(string username, string password, bool rememberMe, bool logoutOnFailure)
+    public async Task<SignInResponse> SignIn(string username, string password, string remoteIP, bool rememberMe, bool logoutOnFailure)
     {
         try
         {
             AppUser user = await _userManager.FindByNameAsync(username);
             if (user == null)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password}!");
-                return new SignInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password} from remoteIP: {remoteIP}!");
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
             }
             SignInResult result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, logoutOnFailure);
             if (result.IsNotAllowed)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} is not allowed to login!");
-                return new SignInResponse(null, false, new List<Error>() { new Error("IsNotAllowed", $"User account {username} is not allowed to login!") });
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} is not allowed to login from remoteIP: {remoteIP}!");
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("IsNotAllowed", $"User account {username} is not allowed to login!") });
             }
             if (result.IsLockedOut)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} locked out!");
-                return new SignInResponse(null, false, new List<Error>() { new Error("IsLockedOut", $"User account {username} locked out!") });
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} locked out from remoteIP: {remoteIP}!");
+                return new SignInResponse(Guid.Empty, null, false, false, true, new List<Core.DTO.Error>() { new Core.DTO.Error("IsLockedOut", $"User account {username} locked out!") });
             }
             if (result.RequiresTwoFactor)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} requires two-factor authentication!");
-                return new SignInResponse(null, false, new List<Error>() { new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!") });
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} requires two-factor authentication from remoteIP: {remoteIP}!");
+                return new SignInResponse(Guid.Empty, null, false, true, false, new List<Core.DTO.Error>() { new Core.DTO.Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!") });
             }
             if (!result.Succeeded)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password}!");
-                return new SignInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password} from remoteIP: {remoteIP}!");
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
             }
-            _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User {username} signed in successfully!");
-            return new SignInResponse(user.Id, true);
+            _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User {username} signed in successfully from remoteIP: {remoteIP}!");
+            return new SignInResponse(Guid.Parse(user.Id), user.UserName, true);
         }
         catch (Exception e)
         {
             _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Exception! {e.Message}");
-            return new SignInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
+            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
+        }
+    }
+    public async Task<SignInResponse> SignInWithClaims(string identityId, List<Claim> claims, AuthenticationProperties authProperties)
+    {
+        try
+        {
+            AppUser user = _mapper.Map<Web.Api.Core.Domain.Entities.User, AppUser>(await GetSingleBySpec(new UserSpecification(identityId)));
+            if (user != null)
+            {
+                await _signInManager.SignInWithClaimsAsync(user, authProperties, claims);
+                _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignInWithClaims)} User {user.UserName} signed in successfully!");
+                return new SignInResponse(Guid.Parse(user.Id), user.UserName, true);
+            }
+            _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInWithClaims)} user {identityId} sign in failed!");
+            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.Forbidden.ToString(), $"Invalid identityId {identityId}!") });
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignInWithClaims)} Exception! {e.Message}");
+            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
+        }
+    }
+    public async Task<SignInResponse> TwoFactorRecoveryCodeSignIn(string recoveryCode)
+    {
+        try
+        {
+            FindUserResponse response = await GetTwoFactorAuthenticationUserAsync();
+            if (!response.Success || string.IsNullOrEmpty(response.Id) || response.User == null || response.Errors.Any())
+            {
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} Invalid {recoveryCode}!");
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("IsNotAllowed", $"Invalid {recoveryCode}!") });
+            }
+            SignInResult result = await _signInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
+            if (result.IsNotAllowed)
+            {
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} {recoveryCode} is not allowed to login!");
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("IsNotAllowed", $"Invalid {recoveryCode}!") });
+            }
+            if (result.IsLockedOut)
+            {
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} {recoveryCode} locked out!");
+                return new SignInResponse(Guid.Empty, null, false, false, true, new List<Core.DTO.Error>() { new Core.DTO.Error("IsLockedOut", $"Invalid {recoveryCode}!") });
+            }
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} {recoveryCode}!");
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("NotSucceeded", $"Invalid {recoveryCode}!") });
+            }
+            _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} RecoveryCode {recoveryCode} signed in successfully!");
+            return new SignInResponse(Guid.Parse(response.Id), response.User.UserName, true);
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} Exception! {e.Message}");
+            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
         }
     }
     public async Task<LogInResponse> CheckPassword(string username, string password)
@@ -383,4 +439,5 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         return user == null ? new FindUserResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "User not found!") }) :
                 new FindUserResponse(appUser.Id, user, true, null);
     }
+    public async Task<FindUserResponse> GetTwoFactorAuthenticationUserAsync() => await getFindUserResponse(await _signInManager.GetTwoFactorAuthenticationUserAsync());
 }
