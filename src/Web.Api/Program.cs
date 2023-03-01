@@ -203,14 +203,18 @@ try
         o.Password.RequireUppercase = false;
         o.Password.RequireNonAlphanumeric = false;
         o.Password.RequiredLength = 6;
+        o.Tokens.ProviderMap.Add("IAMEmailConfirmation", new TokenProviderDescriptor(typeof(CustomEmailConfirmationTokenProvider<AppUser>)));
+        o.Tokens.EmailConfirmationTokenProvider = "IAMEmailConfirmation";
     });
+
+    builder.Services.AddTransient<CustomEmailConfirmationTokenProvider<AppUser>>();
     var emailSettings = builder.Configuration.GetSection(nameof(EmailSettings));
     builder.Services.Configure<EmailSettings>(emailSettings);
     builder.Services.AddTransient<IEmailSender, EmailSender>();
     var redisCacheConfig = builder.Configuration.GetSection(nameof(RedisCache));
     builder.Services.Configure<RedisCache>(redisCacheConfig);
     identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
-    identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
+    identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();//.AddDefaultUI();
     if (!string.IsNullOrEmpty(builder.Configuration["Cors:Domains"]))
         builder.Services.AddCors(options =>
         {
@@ -287,7 +291,11 @@ try
     builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
     // Change to use email as the user identifier for SignalR
     // builder.Services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
-
+    builder.Services.ConfigureApplicationCookie(o => {
+        // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm?view=aspnetcore-7.0&tabs=visual-studio#change-email-and-activity-timeout
+        o.ExpireTimeSpan = TimeSpan.FromDays(5); // The default inactivity timeout is 14 days.
+        o.SlidingExpiration = true;
+    });
     // WARNING: use *either* the NameUserIdProvider *or* the 
     // EmailBasedUserIdProvider, but do not use both. 
     // Register Infrastructure Services
@@ -391,6 +399,8 @@ try
         context.Request.PathBase = new PathString(pathBase); // Kubernetes ingress rule.
         context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
         context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+        // https://dotnetthoughts.net/implementing-content-security-policy-in-aspnetcore/
+        context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com;");
         context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
         {
             Public = true,
@@ -430,7 +440,7 @@ try
 
     app.Run();
 }
-catch (Exception ex) when (ex.GetType().Name is not "StopTheHostException") // https://github.com/dotnet/runtime/issues/60600
+catch (Exception ex) when (ex.GetType().Name is not "HostAbortedException") // https://github.com/dotnet/runtime/issues/60600
 {
     Log.Fatal($"Exception: {ex.Message}");
 }

@@ -11,7 +11,7 @@ namespace Web.Api.IntegrationTests.Controllers;
 public class AccountsControllerIntegrationTests
 {
     private readonly HttpClient _client;
-    public AccountsControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) //=> _client = factory.CreateClient();
+    public AccountsControllerIntegrationTests(CustomWebApplicationFactory<Program> factory)
     {
         _client = factory.CreateClient();
         factory.InitDB();

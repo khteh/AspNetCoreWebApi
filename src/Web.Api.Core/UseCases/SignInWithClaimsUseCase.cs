@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Web.Api.Core.DTO.UseCaseRequests;
@@ -9,20 +9,18 @@ using Web.Api.Core.Interfaces.UseCases;
 
 namespace Web.Api.Core.UseCases;
 
-public class SignInUseCase : ISignInUseCase
+public class SignInWithClaimsUseCase : ISignInWithClaimsUseCase
 {
     private readonly IUserRepository _userRepository;
-    public SignInUseCase(IUserRepository repo) => _userRepository = repo;
-    public async Task<bool> Handle(SignInRequest message, IOutputPort<SignInResponse> outputPort)
+    public SignInWithClaimsUseCase(IUserRepository repo) => _userRepository = repo;
+    public async Task<bool> Handle(SignInWithClaimsRequest message, IOutputPort<SignInResponse> outputPort)
     {
         DTO.GatewayResponses.Repositories.SignInResponse result = null;
-        if (!string.IsNullOrEmpty(message.UserName) && !string.IsNullOrEmpty(message.Password))
+        if (!string.IsNullOrEmpty(message.IdentityId))
         {
-            result = message.IsMobileApp ? await _userRepository.SignInMobile(message.UserName, message.Password, message.LockOutOnFailure)
-                                            : await _userRepository.SignIn(message.UserName, message.Password, message.RemoteIpAddress, message.RememberMe, message.LockOutOnFailure);
+            result = await _userRepository.SignInWithClaims(message.IdentityId, message.Claims, message.AuthProperties);
             if (result != null && result.Success && result.UserId != Guid.Empty)
             {
-                // public SignInResponse(Guid id, string username, bool success = false, string message = null)
                 outputPort.Handle(new SignInResponse(result.UserId, result.UserName, true, "Signed in successfully!"));
                 return true;
             }

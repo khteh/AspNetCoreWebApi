@@ -13,7 +13,7 @@ namespace Web.Api.IntegrationTests.SignalR;
 public class ChatHubTests
 {
     private readonly TestServer _testServer;
-    public ChatHubTests(CustomWebApplicationFactory<Program> factory) //=> _testServer = factory.Server;
+    public ChatHubTests(CustomWebApplicationFactory<Program> factory)
     {
         _testServer = factory.Server;
         factory.InitDB();

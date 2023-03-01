@@ -15,8 +15,6 @@ public static class SeedData
             dbIdentityContext.Users.Remove(appUser);
             if (user != null)
                 dbContext.Users.Remove(user);
-            dbIdentityContext.SaveChanges();
-            dbContext.SaveChanges();
         }
 
         appUser = dbIdentityContext.Users.FirstOrDefault(i => i.UserName.Equals("user1"));
@@ -26,8 +24,6 @@ public static class SeedData
             dbIdentityContext.Users.Remove(appUser);
             if (user != null)
                 dbContext.Users.Remove(user);
-            dbIdentityContext.SaveChanges();
-            dbContext.SaveChanges();
         }
 
         appUser = dbIdentityContext.Users.FirstOrDefault(i => i.UserName.Equals("user2"));
@@ -37,8 +33,6 @@ public static class SeedData
             dbIdentityContext.Users.Remove(appUser);
             if (user != null)
                 dbContext.Users.Remove(user);
-            dbIdentityContext.SaveChanges();
-            dbContext.SaveChanges();
         }
 
         appUser = dbIdentityContext.Users.FirstOrDefault(i => i.UserName.Equals("johndoe"));
@@ -48,9 +42,9 @@ public static class SeedData
             dbIdentityContext.Users.Remove(appUser);
             if (user != null)
                 dbContext.Users.Remove(user);
-            dbIdentityContext.SaveChanges();
-            dbContext.SaveChanges();
         }
+        dbIdentityContext.SaveChanges();
+        dbContext.SaveChanges();
     }
     public static void PopulateTestData(AppIdentityDbContext dbIdentityContext, AppDbContext dbContext)
     {
@@ -84,7 +78,6 @@ public static class SeedData
                 FirstName = "Delete",
                 LastName = "Me"
             });
-        dbIdentityContext.SaveChanges();
 
         User user = dbContext.Users.FirstOrDefault(i => i.IdentityId.Equals("41532945-599e-4910-9599-0e7402017fbe"));
         if (user == null)
@@ -103,6 +96,7 @@ public static class SeedData
             user.AddRefreshToken("whatever", "127.0.0.1");
             dbContext.Users.Add(user);
         }
+        dbIdentityContext.SaveChanges();
         dbContext.SaveChanges();
     }
     public static void CleanUpGrpcTestData(AppIdentityDbContext dbIdentityContext, AppDbContext dbContext)
@@ -114,8 +108,6 @@ public static class SeedData
             dbIdentityContext.Users.Remove(appUser);
             if (user != null)
                 dbContext.Users.Remove(user);
-            dbIdentityContext.SaveChanges();
-            dbContext.SaveChanges();
         }
 
         appUser = dbIdentityContext.Users.FirstOrDefault(i => i.UserName.Equals("user1grpc"));
@@ -125,8 +117,6 @@ public static class SeedData
             dbIdentityContext.Users.Remove(appUser);
             if (user != null)
                 dbContext.Users.Remove(user);
-            dbIdentityContext.SaveChanges();
-            dbContext.SaveChanges();
         }
 
         appUser = dbIdentityContext.Users.FirstOrDefault(i => i.UserName.Equals("user2grpc"));
@@ -136,8 +126,6 @@ public static class SeedData
             dbIdentityContext.Users.Remove(appUser);
             if (user != null)
                 dbContext.Users.Remove(user);
-            dbIdentityContext.SaveChanges();
-            dbContext.SaveChanges();
         }
 
         appUser = dbIdentityContext.Users.FirstOrDefault(i => i.UserName.Equals("johndoegrpc"));
@@ -147,9 +135,9 @@ public static class SeedData
             dbIdentityContext.Users.Remove(appUser);
             if (user != null)
                 dbContext.Users.Remove(user);
-            dbIdentityContext.SaveChanges();
-            dbContext.SaveChanges();
         }
+        dbIdentityContext.SaveChanges();
+        dbContext.SaveChanges();
     }
     public static void PopulateGrpcTestData(AppIdentityDbContext dbIdentityContext, AppDbContext dbContext)
     {
@@ -179,7 +167,6 @@ public static class SeedData
             FirstName = "Delete Grpc",
             LastName = "Me"
         });
-        dbIdentityContext.SaveChanges();
 
         var user = new User("Mickey Grpc", "Mouse", "CE73A87D-0AA6-4191-B65B-6B49F333E316", "mickeymousegrpc");
         //user.Id = 1;
@@ -190,7 +177,7 @@ public static class SeedData
         //user1.Id = 2;
         user1.AddRefreshToken("whatever", "127.0.0.1");
         dbContext.Users.Add(user1);
-
+        dbIdentityContext.SaveChanges();
         dbContext.SaveChanges();
     }
 }
