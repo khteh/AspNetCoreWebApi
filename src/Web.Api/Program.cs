@@ -31,6 +31,7 @@ global using System.Threading;
 global using System.Threading.Tasks;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Reflection;
 using System.Text.Json;
 using Web.Api;
 using Web.Api.Behaviours;
@@ -229,7 +230,7 @@ try
     builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
     //.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter())); Fixed in .Net Core 5
     builder.Services.AddAutoMapper(new[] { typeof(IdentityProfile), typeof(GrpcProfile), typeof(ResponseProfile) });
-    builder.Services.AddMediatR(typeof(Program));
+    builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
     builder.Services.AddScoped<IPipelineBehavior<RegisterUserCommand, RegisterUserResponse>, LoggingBehavior<RegisterUserCommand, RegisterUserResponse>>();
     builder.Services.AddScoped<IPipelineBehavior<LogInCommand, LogInResponse>, LoggingBehavior<LogInCommand, LogInResponse>>();
     builder.Services.AddScoped<IPipelineBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>, LoggingBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>>();
@@ -291,7 +292,8 @@ try
     builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
     // Change to use email as the user identifier for SignalR
     // builder.Services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
-    builder.Services.ConfigureApplicationCookie(o => {
+    builder.Services.ConfigureApplicationCookie(o =>
+    {
         // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm?view=aspnetcore-7.0&tabs=visual-studio#change-email-and-activity-timeout
         o.ExpireTimeSpan = TimeSpan.FromDays(5); // The default inactivity timeout is 14 days.
         o.SlidingExpiration = true;
