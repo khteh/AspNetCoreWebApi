@@ -14,7 +14,7 @@ public sealed class RegisterUserUseCase : IRegisterUserUseCase
     public RegisterUserUseCase(IUserRepository userRepository) => _userRepository = userRepository;
     public async Task<bool> Handle(RegisterUserRequest message, IOutputPort<UseCaseResponseMessage> outputPort)
     {
-        if (!string.IsNullOrEmpty(message.FirstName) && !!string.IsNullOrEmpty(message.LastName) && !string.IsNullOrEmpty(message.Email) && EmailValidation.IsValidEmail(message.Email) && !string.IsNullOrEmpty(message.UserName) && !string.IsNullOrEmpty(message.Password))
+        if (!string.IsNullOrEmpty(message.FirstName) && !string.IsNullOrEmpty(message.LastName) && !string.IsNullOrEmpty(message.Email) && EmailValidation.IsValidEmail(message.Email) && !string.IsNullOrEmpty(message.UserName) && !string.IsNullOrEmpty(message.Password))
         {
             var response = await _userRepository.Create(message.FirstName, message.LastName, message.Email, message.UserName, message.Password);
             outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors));

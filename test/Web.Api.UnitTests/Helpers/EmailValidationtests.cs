@@ -33,5 +33,6 @@ public class EmailValidationUnitTests
         Assert.False(EmailValidation.IsValidEmail("@2.3"));
         Assert.False(EmailValidation.IsValidEmail("1@2@.3"));
         Assert.False(EmailValidation.IsValidEmail("me@email"));
+        Assert.False(EmailValidation.IsValidEmail("email.com"));
     }
 }
