@@ -52,10 +52,11 @@ public class AccountsControllerIntegrationTests
         Assert.Single(result["errors"].AsArray());
         foreach (JsonNode error in result["errors"].AsArray())
         {
+            // HttpStatusCode.BadRequest.ToString(), "Invalid request input!"
             Assert.False(string.IsNullOrEmpty((string)error["code"]));
-            Assert.Equal("InvalidUserName", (string)error["code"]);
+            Assert.Equal(HttpStatusCode.BadRequest.ToString(), (string)error["code"]);
             Assert.False(string.IsNullOrEmpty((string)error["description"]));
-            Assert.Equal("Username '' is invalid, can only contain letters or digits.", (string)error["description"]);
+            Assert.Equal("Invalid request input!", (string)error["description"]);
         }
     }
     [Fact]
