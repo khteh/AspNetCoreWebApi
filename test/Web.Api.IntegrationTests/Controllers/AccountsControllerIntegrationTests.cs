@@ -42,7 +42,7 @@ public class AccountsControllerIntegrationTests
     [Fact]
     public async Task CantRegisterUserWithInvalidAccountDetailsAndFailsFluentValidation()
     {
-        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("John", "Doe", string.Empty, string.Empty, "Pa$$word")), Encoding.UTF8, "application/json"));
+        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("John", "Doe", "me@email.com", string.Empty, "Pa$$word")), Encoding.UTF8, "application/json"));
         Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
         var stringResponse = await httpResponse.Content.ReadAsStringAsync();
         JsonNode result = JsonNode.Parse(stringResponse);
@@ -56,6 +56,26 @@ public class AccountsControllerIntegrationTests
             Assert.Equal("InvalidUserName", (string)error["code"]);
             Assert.False(string.IsNullOrEmpty((string)error["description"]));
             Assert.Equal("Username '' is invalid, can only contain letters or digits.", (string)error["description"]);
+        }
+    }
+    [Fact]
+    public async Task CantRegisterUserWithInvalidEmailAndFailsFluentValidation()
+    {
+        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("John", "Doe", "email.com", string.Empty, "Pa$$word")), Encoding.UTF8, "application/json"));
+        Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
+        var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+        JsonNode result = JsonNode.Parse(stringResponse);
+        Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
+        Assert.False((bool)result["success"]);
+        Assert.NotNull(result["errors"]);
+        Assert.Single(result["errors"].AsArray());
+        foreach (JsonNode error in result["errors"].AsArray())
+        {
+            // HttpStatusCode.BadRequest.ToString(), "Invalid request input!"
+            Assert.False(string.IsNullOrEmpty((string)error["code"]));
+            Assert.Equal(HttpStatusCode.BadRequest.ToString(), (string)error["code"]);
+            Assert.False(string.IsNullOrEmpty((string)error["description"]));
+            Assert.Equal("Invalid request input!", (string)error["description"]);
         }
     }
     [Fact]
