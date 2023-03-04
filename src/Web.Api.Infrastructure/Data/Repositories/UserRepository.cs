@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -410,6 +411,64 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         return user == null ?
                 new LockUserResponse(null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid user {id}!") })
                 : await UnLockUser(await _userManager.FindByIdAsync(user.IdentityId));
+    }
+    public async Task<CodeResponse> RegistrationConfirmation(string email)
+    {
+        try
+        {
+            AppUser user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                _logger.LogError($"{nameof(UserRepository)}.{nameof(RegistrationConfirmation)} Invalid user {email}!");
+                return new CodeResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot reset password of invalid user {email}!") });
+            }
+            Core.Domain.Entities.User u = await GetSingleBySpec(new UserSpecification(user.Id));
+            if (u == null)
+            {
+                _logger.LogError($"{nameof(UserRepository)}.{nameof(RegistrationConfirmation)} Invalid user IdentityId {user.Id}!");
+                return new CodeResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot reset password of invalid user {email}!") });
+            }
+            string code = string.Empty;
+            if (_userManager.Options.SignIn.RequireConfirmedAccount)
+            {
+                code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            }
+            return new CodeResponse(u.Id.ToString(), code, true);
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical($"{nameof(UserRepository)}.{nameof(RegistrationConfirmation)} Exception! {e.Message}");
+            return new CodeResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+        }
+    }
+    public async Task<FindUserResponse> ConfirmEmail(Guid id, string code)
+    {
+        try
+        {
+            Core.Domain.Entities.User user = await GetSingleBySpec(new UserSpecification(id.ToString()));
+            if (user != null)
+            {
+                AppUser appUser = await _userManager.FindByIdAsync(user.IdentityId);//_mapper.Map<KyberlifeDomainModel.Core.Domain.Entities.User, KyberlifeUser>(await GetSingleBySpec(new UserSpecification(user.IdentityId)));
+                if (appUser != null)
+                {
+                    IdentityResult identityResult = await _userManager.ConfirmEmailAsync(appUser, code);
+                    return !identityResult.Succeeded ?
+                        new FindUserResponse(string.Empty, null, false, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList())
+                        : new FindUserResponse(appUser.Id, user, identityResult.Succeeded, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+                }
+                else
+                    _logger.LogError($"{nameof(UserRepository)}.{nameof(ConfirmEmail)} Invalid user email confirmation! Id: {id}, code: {code}, IdentityId: {user.IdentityId}");
+            }
+            else
+                _logger.LogError($"{nameof(UserRepository)}.{nameof(ConfirmEmail)} Invalid user email confirmation! Id: {id}, code: {code}");
+            return new FindUserResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot add confirm email of invalid user {id}!") });
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical($"{nameof(UserRepository)}.{nameof(ConfirmEmail)} Exception! {e.Message}");
+            return new FindUserResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+        }
     }
     private async Task<LockUserResponse> UnLockUser(AppUser user)
     {

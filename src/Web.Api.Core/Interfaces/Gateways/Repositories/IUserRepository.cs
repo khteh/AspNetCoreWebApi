@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -22,6 +23,8 @@ public interface IUserRepository : IRepository<User>
     Task<ExchangeRefreshTokenResponse> ExchangeRefreshToken(string accessToken, string refreshToken, string signingKey);
     Task<SignInResponse> SignInMobile(string username, string password, bool logoutOnFailure);
     Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword);
+    Task<CodeResponse> RegistrationConfirmation(string email);
+    Task<FindUserResponse> ConfirmEmail(Guid id, string code);
     Task<LockUserResponse> LockUser(string id);
     Task<LockUserResponse> UnLockUser(string id);
 }
