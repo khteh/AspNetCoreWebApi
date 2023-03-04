@@ -25,10 +25,10 @@ public class EmailChangeConfirmationTests
             var scopedServices = scope.ServiceProvider;
             UserManager<AppUser> userManager = scopedServices.GetRequiredService<UserManager<AppUser>>();
             Assert.NotNull(userManager);
-            AppUser user = await userManager.FindByNameAsync("mickeymouse");
+            AppUser user = await userManager.FindByNameAsync("deleteme");
             Assert.NotNull(user);
-            string code = await userManager.GenerateChangeEmailTokenAsync(user, "mickey_new@mouse.com");
-            IdentityResult identityResult = await userManager.ChangeEmailAsync(user, "mickey_new@mouse.com", code);
+            string code = await userManager.GenerateChangeEmailTokenAsync(user, "deleteme@me.com");
+            IdentityResult identityResult = await userManager.ChangeEmailAsync(user, "deleteme@me.com", code);
             Assert.True(identityResult.Succeeded);
         }
     }
