@@ -434,7 +434,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
                 code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
             }
-            return new CodeResponse(u.Id.ToString(), code, true);
+            return new CodeResponse(user.Id, code, true);
         }
         catch (Exception e)
         {
@@ -442,31 +442,69 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             return new CodeResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
         }
     }
-    public async Task<FindUserResponse> ConfirmEmail(Guid id, string code)
+    public async Task<CodeResponse> GenerateChangeEmailToken(string identityId, string email)
     {
         try
         {
-            Core.Domain.Entities.User user = await GetSingleBySpec(new UserSpecification(id.ToString()));
-            if (user != null)
+            AppUser user = await _userManager.FindByIdAsync(identityId);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                return new CodeResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot change email of invalid user {email}!") });
+            // For more information on how to enable account confirmation and password reset please
+            // visit https://go.microsoft.com/fwlink/?LinkID=532713
+            var code = await _userManager.GenerateChangeEmailTokenAsync(user, email);
+            return new CodeResponse(user.Id, code, true);
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical($"{nameof(UserRepository)}.{nameof(GenerateChangeEmailToken)} Exception! {e.Message}");
+            return new CodeResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+        }
+    }
+    public async Task<FindUserResponse> ConfirmEmail(string identityId, string code)
+    {
+        try
+        {
+            AppUser appUser = await _userManager.FindByIdAsync(identityId);
+            if (appUser != null)
             {
-                AppUser appUser = await _userManager.FindByIdAsync(user.IdentityId);//_mapper.Map<KyberlifeDomainModel.Core.Domain.Entities.User, KyberlifeUser>(await GetSingleBySpec(new UserSpecification(user.IdentityId)));
-                if (appUser != null)
-                {
-                    IdentityResult identityResult = await _userManager.ConfirmEmailAsync(appUser, code);
-                    return !identityResult.Succeeded ?
-                        new FindUserResponse(string.Empty, null, false, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList())
-                        : new FindUserResponse(appUser.Id, user, identityResult.Succeeded, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
-                }
-                else
-                    _logger.LogError($"{nameof(UserRepository)}.{nameof(ConfirmEmail)} Invalid user email confirmation! Id: {id}, code: {code}, IdentityId: {user.IdentityId}");
+                IdentityResult identityResult = await _userManager.ConfirmEmailAsync(appUser, code);
+                return !identityResult.Succeeded ?
+                    new FindUserResponse(string.Empty, null, false, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList())
+                    : new FindUserResponse(appUser.Id, await getUser(appUser), identityResult.Succeeded, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
             }
             else
-                _logger.LogError($"{nameof(UserRepository)}.{nameof(ConfirmEmail)} Invalid user email confirmation! Id: {id}, code: {code}");
-            return new FindUserResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot add confirm email of invalid user {id}!") });
+                _logger.LogError($"{nameof(UserRepository)}.{nameof(ConfirmEmail)} Invalid user email confirmation! Id: {identityId}, code: {code}");
+            return new FindUserResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot add confirm email of invalid user {identityId}!") });
         }
         catch (Exception e)
         {
             _logger.LogCritical($"{nameof(UserRepository)}.{nameof(ConfirmEmail)} Exception! {e.Message}");
+            return new FindUserResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+        }
+    }
+    public async Task<FindUserResponse> ConfirmEmailChange(string identityId, string email, string code)
+    {
+        try
+        {
+            AppUser appUser = await _userManager.FindByIdAsync(identityId);
+            if (appUser != null)
+            {
+                var identityResult = await _userManager.ChangeEmailAsync(appUser, email, code);
+                if (!identityResult.Succeeded)
+                    return new FindUserResponse(appUser.Id, null, identityResult.Succeeded, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+                // In our UI email and user name are one and the same, so when we update the email
+                // we need to update the user name.
+                var setUserNameResult = await _userManager.SetUserNameAsync(appUser, email);
+                if (!identityResult.Succeeded)
+                    return new FindUserResponse(appUser.Id, null, identityResult.Succeeded, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+                await _signInManager.RefreshSignInAsync(appUser);
+                return new FindUserResponse(appUser.Id, await getUser(appUser), true, null);
+            }
+            return new FindUserResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot confirm email change of invalid user {identityId}!") });
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical($"{nameof(UserRepository)}.{nameof(ConfirmEmailChange)} Exception! {e.Message}");
             return new FindUserResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
         }
     }

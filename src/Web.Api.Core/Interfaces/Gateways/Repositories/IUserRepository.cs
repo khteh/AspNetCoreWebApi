@@ -24,7 +24,9 @@ public interface IUserRepository : IRepository<User>
     Task<SignInResponse> SignInMobile(string username, string password, bool logoutOnFailure);
     Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword);
     Task<CodeResponse> RegistrationConfirmation(string email);
-    Task<FindUserResponse> ConfirmEmail(Guid id, string code);
+    Task<FindUserResponse> ConfirmEmail(string id, string code);
+    Task<CodeResponse> GenerateChangeEmailToken(string identityId, string email);
+    Task<FindUserResponse> ConfirmEmailChange(string identityId, string email, string code);
     Task<LockUserResponse> LockUser(string id);
     Task<LockUserResponse> UnLockUser(string id);
 }

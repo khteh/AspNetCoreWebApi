@@ -4,7 +4,7 @@ namespace Web.Api.Core.DTO.UseCaseRequests;
 
 public class ConfirmEmailRequest : IUseCaseRequest<UseCaseResponseMessage>
 {
-    public Guid IdentityId { get; set; }
+    public string IdentityId { get; set; }
     public string Code { get; set; }
-    public ConfirmEmailRequest(Guid id, string code) => (IdentityId, Code) = (id, code);
+    public ConfirmEmailRequest(string id, string code) => (IdentityId, Code) = (id, code);
 }
