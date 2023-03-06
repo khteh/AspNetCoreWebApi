@@ -198,7 +198,7 @@ try
     // add identity
     var identityBuilder = builder.Services.AddIdentityCore<AppUser>(o =>
     {
-        // configure identity options
+        o.Stores.MaxLengthForKeys = 128;
         o.Password.RequireDigit = false;
         o.Password.RequireLowercase = false;
         o.Password.RequireUppercase = false;
