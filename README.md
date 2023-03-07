@@ -4,7 +4,7 @@ An ASP.NET 7.0 Web API, SignalR and GRPC project to quickly bootstrap new projec
 
 # Database Setup
 
-- Uses MySQL.
+- Uses PostgreSQL.
 - Install/update dotnet ef tool:
 
 ```
@@ -28,11 +28,13 @@ $ dotnet ef database update -c AppIdentityDbContext
 
 # Visual Studio
 
-Open the solution file <code>AspNetCoreWebApi.sln</code> and build/run.
+- Generate TLS cert and put the `localhost.pfx` into `/tmp`
+- Open the solution file <code>AspNetCoreWebApi.sln</code> and build/run.
 
 # Visual Studio Code
 
 - `Ctrl`+`Shift`+`B` to build
+- Generate TLS cert and put the `localhost.pfx` into `/tmp`
 - `F5` to start debug session
 
 ## Unit Testing
