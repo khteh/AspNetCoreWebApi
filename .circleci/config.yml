@@ -38,7 +38,6 @@ jobs:
       - run:
           name: Update database with the existing migrations folder
           command: |
-            dotnet tool update --global dotnet-ef
             cd src/Web.Api.Infrastructure
             dotnet-ef database update -c AppDbContext
             dotnet-ef database update -c AppIdentityDbContext
