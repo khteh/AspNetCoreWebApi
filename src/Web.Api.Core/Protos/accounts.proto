@@ -5,6 +5,8 @@ import "Protos/response.proto";
 import "Protos/user.proto";
 service Accounts {
     rpc Register (RegisterUserRequest) returns (UserResponse);
+    rpc RegistrationConfirmation (StringInputParameter) returns (CodeResponse);
+    rpc ConfirmEmail (ConfirmEmailRequest) returns (Web.Api.Identity.Response);
     rpc ChangePassword (ChangePasswordRequest) returns (Web.Api.Identity.Response);
     rpc ResetPassword (ResetPasswordRequest) returns (Web.Api.Identity.Response);
     rpc Lock (StringInputParameter) returns (Web.Api.Identity.Response);
@@ -43,6 +45,13 @@ message ResetPasswordRequest {
     string newPassword = 3;
     string code = 4;
     bool isFirstLogin = 5;
+}
+message ConfirmEmailRequest {
+    string id = 1;
+    string code = 2;
+}
+message CodeResponse {
+    string code = 1;
 }
 message UserResponse {
     string id = 1;

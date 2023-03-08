@@ -10,6 +10,8 @@ public static class OutputPortServices
                 .AddScoped<IOutputPort<LogInResponse>, SignInPresenter>()
                 .AddScoped<ChangePasswordPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.ChangePasswordPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.RegistrationConfirmationPresenter>()
+                .AddScoped<Web.Api.Presenters.Grpc.EmailConfirmationPresenter>()
                 .AddScoped<RegisterUserPresenter>()
                 .AddScoped<DeleteUserPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.UserPresenter>()

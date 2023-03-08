@@ -17,13 +17,19 @@ public class AccountsService : Accounts.AccountsBase
     private readonly ChangePasswordPresenter _changePasswordPresenter;
     private readonly ResetPasswordPresenter _resetPasswordPresenter;
     private readonly ILockUserUseCase _lockUserUseCase;
+    private readonly IRegistrationConfirmationUseCase _registrationConfirmationUseCase;
+    private readonly IConfirmEmailUseCase _confirmEmailUseCase;
     private readonly LockUserPresenter _lockUserPresenter;
+    private readonly RegistrationConfirmationPresenter _registrationConfirmationPresenter;
+    private readonly EmailConfirmationPresenter _emailConfirmationPresenter;
     public AccountsService(ILogger<AccountsService> logger, IRegisterUserUseCase registerUserUseCase, UserPresenter userPresenter,
             IDeleteUserUseCase deleteUserUseCase, UserPresenter deleteUserPresenter,
             IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter,
             IChangePasswordUseCase changePasswordUseCase, ChangePasswordPresenter changePasswordPresenter,
             IResetPasswordUseCase resetPasswordUseCase, ResetPasswordPresenter resetPasswordPresenter,
-            ILockUserUseCase lockUserUseCase, LockUserPresenter lockUserPresenter)
+            ILockUserUseCase lockUserUseCase, IRegistrationConfirmationUseCase registrationConfirmationUseCase,
+            IConfirmEmailUseCase confirmEmailUseCase,
+            LockUserPresenter lockUserPresenter, RegistrationConfirmationPresenter registrationConfirmationPresenter, EmailConfirmationPresenter emailConfirmationPresenter)
     {
         _logger = logger;
         _registerUserUseCase = registerUserUseCase;
@@ -37,12 +43,26 @@ public class AccountsService : Accounts.AccountsBase
         _resetPasswordUseCase = resetPasswordUseCase;
         _resetPasswordPresenter = resetPasswordPresenter;
         _lockUserUseCase = lockUserUseCase;
+        _registrationConfirmationUseCase = registrationConfirmationUseCase;
+        _confirmEmailUseCase = confirmEmailUseCase;
         _lockUserPresenter = lockUserPresenter;
+        _registrationConfirmationPresenter = registrationConfirmationPresenter;
+        _emailConfirmationPresenter = emailConfirmationPresenter;
     }
     public async override Task<Web.Api.Identity.Accounts.UserResponse> Register(Web.Api.Identity.Accounts.RegisterUserRequest request, ServerCallContext context)
     {
         await _registerUserUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.RegisterUserRequest(request.FirstName, request.LastName, request.Email, request.UserName, request.Password), _userPresenter);
         return _userPresenter.Response;
+    }
+    public async override Task<Web.Api.Identity.Accounts.CodeResponse> RegistrationConfirmation(StringInputParameter email, ServerCallContext context)
+    {
+        await _registrationConfirmationUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.RegistrationConfirmationRequest(email.Value), _registrationConfirmationPresenter);
+        return _registrationConfirmationPresenter.Response;
+    }
+    public async override Task<Web.Api.Identity.Response> ConfirmEmail(ConfirmEmailRequest request, ServerCallContext context)
+    {
+        await _confirmEmailUseCase.Handle(new Web.Api.Core.DTO.UseCaseRequests.ConfirmEmailRequest(request.Id, request.Code), _emailConfirmationPresenter);
+        return _emailConfirmationPresenter.Response;
     }
     // POST api/accounts
     public async override Task<Web.Api.Identity.Response> ChangePassword(Web.Api.Identity.Accounts.ChangePasswordRequest request, ServerCallContext context)

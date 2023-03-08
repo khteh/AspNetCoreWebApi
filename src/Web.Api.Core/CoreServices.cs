@@ -11,6 +11,8 @@ public static class CoreServices
             .AddScoped<ILockUserUseCase, LockUserUseCase>()
             .AddScoped<ILogInUseCase, LogInUseCase>()
             .AddScoped<IRegisterUserUseCase, RegisterUserUseCase>()
+            .AddScoped<IRegistrationConfirmationUseCase, RegistrationConfirmationUseCase>()
+            .AddScoped<IConfirmEmailUseCase, ConfirmEmailUseCase>()
             .AddScoped<IResetPasswordUseCase, ResetPasswordUseCase>()
             .AddScoped<ISignInUseCase, SignInUseCase>();
 }

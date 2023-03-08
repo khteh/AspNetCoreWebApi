@@ -40,7 +40,8 @@ public static class InfrastructureServices
                  }));
             var redis = ConnectionMultiplexer.Connect(configuration["RedisCache:Connection"]);
             service.AddDataProtection().PersistKeysToStackExchangeRedis(redis, "AspNetCoreWebApi");
-        }
+        } else
+            service.AddDataProtection();
         return service;
     }
 }
