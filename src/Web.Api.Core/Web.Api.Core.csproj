@@ -7,6 +7,7 @@
     <Protobuf Include="Protos/*.proto" GrpcServices="Server" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Mailkit" Version="3.6.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="7.0.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="Google.Protobuf" Version="3.22.0" />
