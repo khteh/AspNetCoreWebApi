@@ -16,16 +16,16 @@ public class Email : IEmail
     private readonly ILogger<Email> _logger;
     private readonly EmailSettings _config;
     public Email(ILogger<Email> logger, IOptions<EmailSettings> config) => (_logger, _config) = (logger, config.Value);
-    public async Task<bool> SendEmailAsync(string recipientEmail, string subject, string textBody)
+    public async Task<bool> SendEmailAsync(string recipientEmail, string subject, string textBody, string htmlBody)
     {
         MimeMessage message = new MimeMessage();
         message.From.Add(MailboxAddress.Parse(_config.UserName));
         message.To.Add(MailboxAddress.Parse(recipientEmail));
         message.Subject = subject;
-        message.Body = new TextPart("plain")
-        {
-            Text = textBody
-        };
+        BodyBuilder bodyBuilder = new BodyBuilder();
+        bodyBuilder.HtmlBody = htmlBody;
+        bodyBuilder.TextBody = textBody;
+        message.Body = bodyBuilder.ToMessageBody();
         using (SmtpClient client = new SmtpClient())
             try
             {
