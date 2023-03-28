@@ -416,7 +416,7 @@ try
             // and Angular uses it by default.
             IAntiforgery antiforgery = app.Services.GetRequiredService<IAntiforgery>();
             var tokens = antiforgery.GetAndStoreTokens(context);
-            context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions() { HttpOnly = false, Secure = true });
+            context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken!, new CookieOptions() { HttpOnly = false, Secure = true });
         }
         await next(context);
     });
