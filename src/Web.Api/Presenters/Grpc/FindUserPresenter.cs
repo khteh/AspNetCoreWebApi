@@ -5,7 +5,7 @@ public class FindUserPresenter  : PresenterBase<FindUserResponse>
 {
     public Identity.Accounts.FindUserResponse Response {get; private set;}
     public FindUserPresenter(IMapper mapper) : base(mapper) {}
-    public override void Handle(FindUserResponse response)
+    public override async Task Handle(FindUserResponse response)
     {
         base.Handle(response);
         Response = new Identity.Accounts.FindUserResponse() { Response = BaseResponse };

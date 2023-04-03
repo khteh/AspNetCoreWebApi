@@ -4,7 +4,7 @@ using Web.Api.Serialization;
 namespace Web.Api.Presenters;
 public sealed class ExchangeRefreshTokenPresenter : PresenterBase<ExchangeRefreshTokenResponse, Models.Response.ExchangeRefreshTokenResponse>
 {
-    public override void Handle(ExchangeRefreshTokenResponse response)
+    public override async Task Handle(ExchangeRefreshTokenResponse response)
     {
         Response = response.Success ? new Models.Response.ExchangeRefreshTokenResponse(response.AccessToken, response.RefreshToken, true, null) : new Models.Response.ExchangeRefreshTokenResponse(null, null, false, response.Errors);
         ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);

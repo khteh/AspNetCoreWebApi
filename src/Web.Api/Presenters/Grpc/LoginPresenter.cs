@@ -5,7 +5,7 @@ public sealed class LogInPresenter : PresenterBase<LogInResponse>
 {
     public Web.Api.Identity.Auth.LogInResponse Response { get; private set; }
     public LogInPresenter(IMapper mapper) : base(mapper) { }
-    public override void Handle(LogInResponse response)
+    public override async Task Handle(LogInResponse response)
     {
         base.Handle(response);
         Response = new Web.Api.Identity.Auth.LogInResponse() { Response = BaseResponse };

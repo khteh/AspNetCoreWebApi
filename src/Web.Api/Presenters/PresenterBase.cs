@@ -7,7 +7,7 @@ namespace Web.Api.Presenters;
 public abstract class PresenterBase<T> : IOutputPort<T> where T : UseCaseResponseMessage
 {
     public JsonContentResult ContentResult { get; } = new JsonContentResult();
-    public virtual void Handle(T response)
+    public virtual async Task Handle(T response)
     {
         ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
         ContentResult.Content = JsonSerializer.SerializeObject(response);
@@ -17,7 +17,7 @@ public abstract class PresenterBase<T, TResponse> : IOutputPort<T> where T : Use
 {
     public TResponse Response { get; protected set; }
     public JsonContentResult ContentResult { get; } = new JsonContentResult();
-    public virtual void Handle(T response)
+    public virtual async Task Handle(T response)
     {
         Response = (TResponse)Activator.CreateInstance(typeof(TResponse), new object[] { response.Success, response.Errors });
         ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
