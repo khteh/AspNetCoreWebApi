@@ -12,7 +12,7 @@ public sealed class ExchangeRefreshTokenUseCase : IExchangeRefreshTokenUseCase
     public async Task<bool> Handle(ExchangeRefreshTokenRequest message, IOutputPort<ExchangeRefreshTokenResponse> outputPort)
     {
         DTO.GatewayResponses.Repositories.ExchangeRefreshTokenResponse response = await _userRepository.ExchangeRefreshToken(message.AccessToken, message.RefreshToken, message.SigningKey);
-        outputPort.Handle(response.Success ? new ExchangeRefreshTokenResponse(response.AccessToken, response.RefreshToken, true) : new ExchangeRefreshTokenResponse(response.Errors));
+        await outputPort.Handle(response.Success ? new ExchangeRefreshTokenResponse(response.AccessToken, response.RefreshToken, true) : new ExchangeRefreshTokenResponse(response.Errors));
         return response.Success;
     }
 }

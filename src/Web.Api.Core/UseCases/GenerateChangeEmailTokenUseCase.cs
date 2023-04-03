@@ -19,7 +19,7 @@ public class GenerateChangeEmailTokenUseCase : IGenerateChangeEmailTokenUseCase
     {
         DTO.GatewayResponses.Repositories.CodeResponse response = await _userRepository.GenerateChangeEmailToken(message.IdentityId, message.Email);
         string errMsg = response.Errors != null && response.Errors.Any() ? response.Errors.First().Description : string.Empty;
-        outputPort.Handle(new DTO.UseCaseResponses.CodeResponse(response.Id, response.Code, response.Success, errMsg, response.Errors));
+        await outputPort.Handle(new DTO.UseCaseResponses.CodeResponse(response.Id, response.Code, response.Success, errMsg, response.Errors));
         return response.Success;
     }
 }

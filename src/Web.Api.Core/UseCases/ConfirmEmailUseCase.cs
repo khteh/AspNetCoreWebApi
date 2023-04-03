@@ -24,7 +24,7 @@ public class ConfirmEmailUseCase : IConfirmEmailUseCase
                 sb.Append($"{error.Code} {error.Description}");
             _logger.LogError($"{nameof(ConfirmEmailUseCase)} Failed to confirm email of user id: {message.IdentityId}, code: {message.Code}, reasons: {sb.ToString()}");
         }
-        outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors));
+        await outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors));
         return response.Success;
     }
 }

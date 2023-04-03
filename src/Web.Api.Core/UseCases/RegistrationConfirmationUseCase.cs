@@ -30,7 +30,7 @@ public sealed class RegistrationConfirmationUseCase : IRegistrationConfirmationU
             _logger.LogError($"{nameof(RegistrationConfirmationUseCase)} Failed to confirm user registration of Id: {response.Id}, ConfirmationCode: {response.Code}, reasons: reasons: {sb.ToString()}");
         }
         string errMsg = response.Errors != null && response.Errors.Any() ? response.Errors.First().Description : string.Empty;
-        outputPort.Handle(new CodeResponse(response.Id, response.Code, response.Success, errMsg, response.Errors));
+        await outputPort.Handle(new CodeResponse(response.Id, response.Code, response.Success, errMsg, response.Errors));
         return response.Success;
     }
 }

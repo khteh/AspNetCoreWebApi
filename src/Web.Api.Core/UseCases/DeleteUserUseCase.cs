@@ -10,8 +10,8 @@ public class DeleteUserUseCase : IDeleteUserUseCase
     public DeleteUserUseCase(IUserRepository userRepository) => _userRepository = userRepository;
     public async Task<bool> Handle(DeleteUserRequest message, IOutputPort<UseCaseResponseMessage> outputPort)
     {
-            var response = await _userRepository.Delete(message.UserName);
-            outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id.ToString(), true) : new UseCaseResponseMessage(response.Errors));
-            return response.Success;
+        var response = await _userRepository.Delete(message.UserName);
+        await outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id.ToString(), true) : new UseCaseResponseMessage(response.Errors));
+        return response.Success;
     }
 }

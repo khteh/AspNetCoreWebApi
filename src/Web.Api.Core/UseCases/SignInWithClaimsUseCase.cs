@@ -21,14 +21,14 @@ public class SignInWithClaimsUseCase : ISignInWithClaimsUseCase
             result = await _userRepository.SignInWithClaims(message.IdentityId, message.Claims, message.AuthProperties);
             if (result != null && result.Success && result.UserId != Guid.Empty)
             {
-                outputPort.Handle(new SignInResponse(result.UserId, result.UserName, true, "Signed in successfully!"));
+                await outputPort.Handle(new SignInResponse(result.UserId, result.UserName, true, "Signed in successfully!"));
                 return true;
             }
         }
         if (result != null)
-            outputPort.Handle(new SignInResponse(result.RequiresTwoFactor, result.IsLockedOut, result.Errors));
+            await outputPort.Handle(new SignInResponse(result.RequiresTwoFactor, result.IsLockedOut, result.Errors));
         else
-            outputPort.Handle(new SignInResponse(false, false, new List<DTO.Error>() { new DTO.Error("login_failure", "Invalid username or password.") }));
+            await outputPort.Handle(new SignInResponse(false, false, new List<DTO.Error>() { new DTO.Error("login_failure", "Invalid username or password.") }));
         return false;
     }
 }

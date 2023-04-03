@@ -33,11 +33,11 @@ public sealed class LogInUseCase : ILogInUseCase
                 result.User.AddRefreshToken(refreshToken, message.RemoteIpAddress);
                 await _userRepository.Update(result.User);
                 // generate access token
-                outputPort.Handle(new DTO.UseCaseResponses.LogInResponse(await _jwtFactory.GenerateEncodedToken(result.User.IdentityId, result.User.UserName), refreshToken, true));
+                await outputPort.Handle(new DTO.UseCaseResponses.LogInResponse(await _jwtFactory.GenerateEncodedToken(result.User.IdentityId, result.User.UserName), refreshToken, true));
                 return true;
             }
         }
-        outputPort.Handle(new DTO.UseCaseResponses.LogInResponse(result != null ? result.Errors : new System.Collections.Generic.List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username or password!") }));
+        await outputPort.Handle(new DTO.UseCaseResponses.LogInResponse(result != null ? result.Errors : new System.Collections.Generic.List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username or password!") }));
         return false;
     }
 }

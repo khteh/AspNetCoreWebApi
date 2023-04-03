@@ -25,11 +25,11 @@ public sealed class FindUserUseCase : IFindUserUseCase
             response = await _userRepository.FindByEmail(message.Email);
         if (response == null)
         {
-            outputPort.Handle(new FindUserResponse(null, null, false, "Invalid request input!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!") }));
+            await outputPort.Handle(new FindUserResponse(null, null, false, "Invalid request input!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!") }));
             return false;
         }
         else
-            outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
+            await outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
                                                 new FindUserResponse(null, null, false, response.Errors.First().Description, response.Errors));
         return response.Success;
     }
@@ -40,17 +40,17 @@ public sealed class FindUserUseCase : IFindUserUseCase
             DTO.GatewayResponses.Repositories.FindUserResponse response = await _userRepository.FindByEmail(normalizedEmail);
             if (response == null)
             {
-                outputPort.Handle(new FindUserResponse(null, null, false, "Invalid request input!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!") }));
+                await outputPort.Handle(new FindUserResponse(null, null, false, "Invalid request input!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!") }));
                 return false;
             }
             else
-                outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
+                await outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
                                                     new FindUserResponse(null, null, false, response.Errors.First().Description, response.Errors));
             return response.Success;
         }
         else
         {
-            outputPort.Handle(new FindUserResponse(null, null, false, "Invalid request input!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!") }));
+            await outputPort.Handle(new FindUserResponse(null, null, false, "Invalid request input!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!") }));
             return false;
         }
     }
@@ -59,11 +59,11 @@ public sealed class FindUserUseCase : IFindUserUseCase
         DTO.GatewayResponses.Repositories.FindUserResponse response = await _userRepository.FindById(userId);
         if (response == null)
         {
-            outputPort.Handle(new FindUserResponse(null, null, false, response.Errors.First().Description, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!") }));
+            await outputPort.Handle(new FindUserResponse(null, null, false, response.Errors.First().Description, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!") }));
             return false;
         }
         else
-            outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
+            await outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
                                                 new FindUserResponse(null, null, false, response.Errors.First().Description, response.Errors));
         return response.Success;
     }
@@ -72,11 +72,11 @@ public sealed class FindUserUseCase : IFindUserUseCase
         DTO.GatewayResponses.Repositories.FindUserResponse response = await _userRepository.FindByName(userName);
         if (response == null)
         {
-            outputPort.Handle(new FindUserResponse(null, null, false, response.Errors.First().Description, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!") }));
+            await outputPort.Handle(new FindUserResponse(null, null, false, response.Errors.First().Description, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid request input!") }));
             return false;
         }
         else
-            outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
+            await outputPort.Handle(response.Success ? new FindUserResponse(response.User, response.Id, true) :
                                                 new FindUserResponse(null, null, false, response.Errors.First().Description, response.Errors));
         return response.Success;
     }

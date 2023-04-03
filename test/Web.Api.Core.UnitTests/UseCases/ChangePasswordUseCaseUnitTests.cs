@@ -32,7 +32,7 @@ public class ChangePasswordUseCaseUnitTests
         var response = await useCase.Handle(new ChangePasswordRequest("firstName", "oldPassword", "newPassword"), mockOutputPort.Object);
 
         // assert
-        Assert.True(response);            
+        Assert.True(response);
         mockUserRepository.VerifyAll();
         mockOutputPort.VerifyAll();
     }

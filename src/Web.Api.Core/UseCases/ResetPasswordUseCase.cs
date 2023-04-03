@@ -23,12 +23,12 @@ public class ResetPasswordUseCase : IResetPasswordUseCase
             response = await _userRepository.ResetPassword(request.Email, request.NewPassword, request.Code);
         else
         {
-            outputPort.Handle(new UseCaseResponseMessage(string.Empty, false, $"Failed to reset password of user {request.Id}", new List<DTO.Error>() { new DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Invalid input parameters to reset password!") }));
+            await outputPort.Handle(new UseCaseResponseMessage(string.Empty, false, $"Failed to reset password of user {request.Id}", new List<DTO.Error>() { new DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Invalid input parameters to reset password!") }));
             return false;
         }
         if (response == null)
         {
-            outputPort.Handle(new UseCaseResponseMessage(string.Empty, false, $"Failed to reset password of user {request.Id}", new List<DTO.Error>() { new DTO.Error(HttpStatusCode.InternalServerError.ToString(), $"Failed to reset password of user {request.Id}") }));
+            await outputPort.Handle(new UseCaseResponseMessage(string.Empty, false, $"Failed to reset password of user {request.Id}", new List<DTO.Error>() { new DTO.Error(HttpStatusCode.InternalServerError.ToString(), $"Failed to reset password of user {request.Id}") }));
             return false;
         }
         else
@@ -42,7 +42,7 @@ public class ResetPasswordUseCase : IResetPasswordUseCase
                     sb.Append($"{error.Code} {error.Description}");
                 _logger.LogError($"User {request.Email} failed to reset password! {sb.ToString()}");
             }
-            outputPort.Handle(response.Success ? new UseCaseResponseMessage(request.Id, true, null) : new UseCaseResponseMessage(response.Errors));
+            await outputPort.Handle(response.Success ? new UseCaseResponseMessage(request.Id, true, null) : new UseCaseResponseMessage(response.Errors));
         }
         return response.Success;
     }

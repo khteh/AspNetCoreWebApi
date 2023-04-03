@@ -12,7 +12,7 @@ public class ConfirmEmailChangeUseCase : IConfirmEmailChangeUseCase
     public async Task<bool> Handle(ConfirmEmailChangeRequest message, IOutputPort<UseCaseResponseMessage> outputPort)
     {
         DTO.GatewayResponses.Repositories.FindUserResponse response = await _userRepository.ConfirmEmailChange(message.IdentityId, message.Email, message.Code);
-        outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors));
+        await outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors));
         return response.Success;
     }
 }

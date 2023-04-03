@@ -11,7 +11,7 @@ public class ChangePasswordUseCase : IChangePasswordUseCase
     public async Task<bool> Handle(ChangePasswordRequest message, IOutputPort<UseCaseResponseMessage> outputPort)
     {
         var response = await _userRepository.ChangePassword(message.IdentityId, message.OldPassword, message.NewPassword);
-        outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors));
+        await outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors));
         return response.Success;
     }
 }
