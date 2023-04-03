@@ -7,7 +7,7 @@ public class UserPresenter : PresenterBase<UseCaseResponseMessage>
     public UserPresenter(IMapper mapper) : base(mapper) { }
     public override async Task Handle(UseCaseResponseMessage response)
     {
-        base.Handle(response);
+        await base.Handle(response);
         Response = new Identity.Accounts.UserResponse() { Id = response.Id, Response = BaseResponse };
     }
 }

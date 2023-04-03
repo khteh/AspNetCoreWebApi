@@ -6,7 +6,7 @@ public class DeleteUserPresenter : PresenterBase<UseCaseResponseMessage, DeleteU
 {
     public override async Task Handle(UseCaseResponseMessage response)
     {
-        base.Handle(response);
+        await base.Handle(response);
         ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest);
     }
 }

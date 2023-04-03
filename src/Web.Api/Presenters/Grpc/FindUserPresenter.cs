@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using Web.Api.Core.DTO.UseCaseResponses;
 namespace Web.Api.Presenters.Grpc;
-public class FindUserPresenter  : PresenterBase<FindUserResponse>
+public class FindUserPresenter : PresenterBase<FindUserResponse>
 {
-    public Identity.Accounts.FindUserResponse Response {get; private set;}
-    public FindUserPresenter(IMapper mapper) : base(mapper) {}
+    public Identity.Accounts.FindUserResponse Response { get; private set; }
+    public FindUserPresenter(IMapper mapper) : base(mapper) { }
     public override async Task Handle(FindUserResponse response)
     {
-        base.Handle(response);
+        await base.Handle(response);
         Response = new Identity.Accounts.FindUserResponse() { Response = BaseResponse };
         if (response.Id != null)
             Response.Id = response.Id;
