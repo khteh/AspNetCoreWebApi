@@ -428,10 +428,12 @@ try
     app.MapGrpcService<PingService>();
     app.MapHealthChecks("/health/live", new HealthCheckOptions()
     {
+        AllowCachingResponses = false,
         Predicate = healthCheck => healthCheck.Tags.Contains("live") || healthCheck.Tags.Contains("Database") || healthCheck.Tags.Contains("DbContext")
     });
     app.MapHealthChecks("/health/ready", new HealthCheckOptions()
     {
+        AllowCachingResponses = false,
         Predicate = healthCheck => healthCheck.Tags.Contains("ready") || healthCheck.Tags.Contains("Database") || healthCheck.Tags.Contains("DbContext")
     });
     IHostApplicationLifetime lifetime = app.Lifetime;
