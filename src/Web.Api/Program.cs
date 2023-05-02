@@ -295,7 +295,7 @@ try
     builder.Services.ConfigureApplicationCookie(o =>
     {
         // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm?view=aspnetcore-7.0&tabs=visual-studio#change-email-and-activity-timeout
-        o.ExpireTimeSpan = TimeSpan.FromDays(5); // The default inactivity timeout is 14 days.
+        o.ExpireTimeSpan = TimeSpan.FromHours(1); // The default inactivity timeout is 14 days.
         o.SlidingExpiration = true;
     });
     // WARNING: use *either* the NameUserIdProvider *or* the 
