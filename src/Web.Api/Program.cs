@@ -29,6 +29,7 @@ global using System.Net;
 global using System.Text;
 global using System.Threading;
 global using System.Threading.Tasks;
+using Elastic.Apm.NetCoreAll;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Reflection;
@@ -347,6 +348,7 @@ try
     }
     else
     {
+        app.UseAllElasticApm(builder.Configuration);
         app.UseExceptionHandler(builder => builder.Run(async context =>
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
