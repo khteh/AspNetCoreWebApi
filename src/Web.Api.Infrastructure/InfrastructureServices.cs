@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
@@ -23,8 +24,13 @@ public static class InfrastructureServices
                 .AddSingleton<ITokenFactory, TokenFactory>()
                 .AddSingleton<IJwtTokenValidator, JwtTokenValidator>()
                 .AddScoped<SignInManager<AppUser>>();
-        service.AddDbContextPool<AppIdentityDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")))
-                    .AddDbContextPool<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
+        service.AddDbContextPool<AppIdentityDbContext>(options => {
+                    options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure"));
+                    options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+                }).AddDbContextPool<AppDbContext>(options => {
+                    options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure"));
+                    options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+                });
         if (!isIntegrationTest && env.IsProduction())
         {
             service.AddStackExchangeRedisCache(options =>
