@@ -363,7 +363,14 @@ try
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
     }
-    app.UseHttpLogging();
+    app.UseWhen(
+            ctx => ctx.Request.ContentType != "application/grpc",
+            builder =>
+            {
+                builder.UseHttpLogging();
+            }
+        );    
+    //app.UseHttpLogging(); https://github.com/dotnet/aspnetcore/issues/39317
     app.UseResponseCaching();
     app.UseForwardedHeaders();
     app.UseHttpsRedirection();
