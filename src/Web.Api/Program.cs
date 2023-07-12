@@ -188,7 +188,10 @@ try
     // api user claim policy
     builder.Services.AddAuthorization(options =>
     {
-        options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+        options.AddPolicy("ApiUser", policy => {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess);
+        });
     });
     builder.Services.AddAntiforgery(options =>
     {
