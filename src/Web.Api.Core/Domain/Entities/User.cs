@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Web.Api.Core.Shared;
 namespace Web.Api.Core.Domain.Entities;
 [Serializable]
 public class User : BaseEntity
 {
-    public string FirstName { get; init; } // EF migrations require at least initter - won't work on auto-property
-    public string LastName { get; init; }
     public string IdentityId { get; init; }
+    [NotMapped]
+    public string FirstName { get; init; } // EF migrations require at least initter - won't work on auto-property
+    [NotMapped]
+    public string LastName { get; init; }
+    [NotMapped]
     public string UserName { get; init; } // Required by automapper
+    [NotMapped]
     public string Email { get; init; }
     [Required]
     public Address Address { get; init; }
