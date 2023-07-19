@@ -8,19 +8,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
 namespace Web.Api.IntegrationTests;
-public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
+public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IDisposable where TStartup : class
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "IntegrationTests");
         builder.ConfigureServices((context, services) =>
         {
+            string connStr = context.Configuration.GetConnectionString("IntegrationTests");
             // Create a new service provider.
             var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextPool<AppDbContext>));
             services.Remove(descriptor);
@@ -54,27 +54,24 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public void InitDB()
     {
         using (var scope = Services.CreateScope())
-        {
-            var scopedServices = scope.ServiceProvider;
-            var appDb = scopedServices.GetRequiredService<AppDbContext>();
-            var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
-            var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
-
-            // Ensure the database is created.
-            appDb.Database.EnsureCreated();
-            identityDb.Database.EnsureCreated();
-
             try
             {
+                var scopedServices = scope.ServiceProvider;
+                var appDb = scopedServices.GetRequiredService<AppDbContext>();
+                var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
+                var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
+
+                // Ensure the database is created.
+                appDb.Database.EnsureCreated();
+                identityDb.Database.EnsureCreated();
                 // Seed the database with test data.
                 SeedData.PopulateTestData(identityDb, appDb);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"An error occurred seeding the database with test messages. Error: {ex.Message}");
+                Console.WriteLine($"{nameof(InitDB)} exception! {ex}");
                 throw;
             }
-        }
     }
     public void Dispose()
     {

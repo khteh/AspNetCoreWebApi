@@ -16,7 +16,6 @@ public static class SeedData
             if (user != null)
                 dbContext.Users.Remove(user);
         }
-
         appUser = dbIdentityContext.Users.FirstOrDefault(i => i.UserName.Equals("user1"));
         if (appUser != null)
         {
@@ -25,7 +24,6 @@ public static class SeedData
             if (user != null)
                 dbContext.Users.Remove(user);
         }
-
         appUser = dbIdentityContext.Users.FirstOrDefault(i => i.UserName.Equals("user2"));
         if (appUser != null)
         {
@@ -34,7 +32,14 @@ public static class SeedData
             if (user != null)
                 dbContext.Users.Remove(user);
         }
-
+        appUser = dbIdentityContext.Users.FirstOrDefault(i => i.UserName.Equals("deleteme"));
+        if (appUser != null)
+        {
+            User user = dbContext.Users.FirstOrDefault(i => i.IdentityId.Equals(appUser.Id));
+            dbIdentityContext.Users.Remove(appUser);
+            if (user != null)
+                dbContext.Users.Remove(user);
+        }
         appUser = dbIdentityContext.Users.FirstOrDefault(i => i.UserName.Equals("johndoe"));
         if (appUser != null)
         {

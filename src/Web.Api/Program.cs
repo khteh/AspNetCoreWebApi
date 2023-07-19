@@ -188,7 +188,8 @@ try
     // api user claim policy
     builder.Services.AddAuthorization(options =>
     {
-        options.AddPolicy("ApiUser", policy => {
+        options.AddPolicy("ApiUser", policy =>
+        {
             policy.RequireAuthenticatedUser();
             policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess);
         });
@@ -372,7 +373,7 @@ try
             {
                 builder.UseHttpLogging();
             }
-        );    
+        );
     //app.UseHttpLogging(); https://github.com/dotnet/aspnetcore/issues/39317
     app.UseResponseCaching();
     app.UseForwardedHeaders();
