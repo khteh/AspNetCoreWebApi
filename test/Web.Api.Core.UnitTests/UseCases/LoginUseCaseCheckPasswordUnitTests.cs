@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseRequests;
@@ -25,7 +26,8 @@ public class LogInUseCaseCheckPasswordUnitTests
         mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new AccessToken("", 0));
 
         var mockTokenFactory = new Mock<ITokenFactory>();
-        var useCase = new LogInUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
+        var mockLogger = new Mock<ILogger<LogInUseCase>>();
+        var useCase = new LogInUseCase(mockLogger.Object, mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
         var mockOutputPort = new Mock<IOutputPort<LogInResponse>>();
         mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LogInResponse>()));
 
@@ -52,7 +54,8 @@ public class LogInUseCaseCheckPasswordUnitTests
         mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new AccessToken("", 0));
 
         var mockTokenFactory = new Mock<ITokenFactory>();
-        var useCase = new LogInUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
+        var mockLogger = new Mock<ILogger<LogInUseCase>>();
+        var useCase = new LogInUseCase(mockLogger.Object, mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
 
         var mockOutputPort = new Mock<IOutputPort<LogInResponse>>();
         mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LogInResponse>()));
@@ -82,7 +85,8 @@ public class LogInUseCaseCheckPasswordUnitTests
         mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new AccessToken("", 0));
 
         var mockTokenFactory = new Mock<ITokenFactory>();
-        var useCase = new LogInUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
+        var mockLogger = new Mock<ILogger<LogInUseCase>>();
+        var useCase = new LogInUseCase(mockLogger.Object, mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
         var mockOutputPort = new Mock<IOutputPort<LogInResponse>>();
         mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LogInResponse>()));
 
@@ -110,7 +114,8 @@ public class LogInUseCaseCheckPasswordUnitTests
         mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new AccessToken("", 0));
 
         var mockTokenFactory = new Mock<ITokenFactory>();
-        var useCase = new LogInUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
+        var mockLogger = new Mock<ILogger<LogInUseCase>>();
+        var useCase = new LogInUseCase(mockLogger.Object, mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
         var mockOutputPort = new Mock<IOutputPort<LogInResponse>>();
         mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LogInResponse>()));
 

@@ -6,13 +6,16 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 namespace Web.Api.IntegrationTests.Controllers;
 [Collection("Controller Test Collection")]
 public class AccountsControllerIntegrationTests
 {
     private readonly HttpClient _client;
-    public AccountsControllerIntegrationTests(CustomWebApplicationFactory<Program> factory)
+    private readonly ITestOutputHelper _output;
+    public AccountsControllerIntegrationTests(ITestOutputHelper output, CustomWebApplicationFactory<Program> factory)
     {
+        _output = output;
         _client = factory.CreateClient();
         factory.InitDB();
     }
@@ -139,6 +142,9 @@ public class AccountsControllerIntegrationTests
         // Login
         Models.Request.LogInRequest loginRequest = new Models.Request.LogInRequest("user1", "Pa$$word1");
         var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"));
+        string strLoginResponse = await loginResponse.Content.ReadAsStringAsync();
+        if (!loginResponse.IsSuccessStatusCode)
+            _output.WriteLine($"{nameof(CanChangePasswordWithValidAccountDetails)} failed with error message:  {strLoginResponse}");
         loginResponse.EnsureSuccessStatusCode();
         var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
         Models.Response.LogInResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(strLoginSuccessResponse);

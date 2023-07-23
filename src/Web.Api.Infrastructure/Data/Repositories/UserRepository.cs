@@ -278,12 +278,16 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Invalid username {username} and password {password}!");
                 return new LogInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.Unauthorized.ToString(), $"Invalid username or password!") });
             }
+            else if (user == null)
+                _logger.LogError($"{nameof(CheckPassword)} Invalid user! {username}");
+            else
+                _logger.LogError($"{nameof(CheckPassword)} Invalid credentials! {username}");
             return new LogInResponse(await FindUserByName(username), true);
         }
         catch (Exception e)
         {
-            _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Exception! {e.Message}");
-            return new LogInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
+            _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Exception! {e}");
+            return new LogInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e}") });
         }
     }
     public async Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword)

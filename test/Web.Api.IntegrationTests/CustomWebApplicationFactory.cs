@@ -40,7 +40,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                     options.EnableDetailedErrors();
                     options.LogTo(Console.WriteLine);
                 });
-            services.AddLogging();
+            services.AddLogging((loggingBuilder) => loggingBuilder
+                .SetMinimumLevel(LogLevel.Debug)
+                .AddConsole());
             services.Configure<GrpcConfig>(context.Configuration.GetSection(nameof(GrpcConfig)));
             services.AddScoped<SignInManager<AppUser>>();
             services.AddScoped<ILogger<UserRepository>>(provider =>
