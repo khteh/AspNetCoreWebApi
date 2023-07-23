@@ -20,7 +20,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "IntegrationTests");
         builder.ConfigureServices((context, services) =>
         {
-            string connStr = context.Configuration.GetConnectionString("IntegrationTests");
             // Create a new service provider.
             var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextPool<AppDbContext>));
             services.Remove(descriptor);
