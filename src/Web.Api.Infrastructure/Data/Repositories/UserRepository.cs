@@ -140,28 +140,28 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             if (user == null)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username {username} and password {password}!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
             }
             SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, password, logoutOnFailure); ;
             if (result.IsNotAllowed)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} is not allowed to login!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("IsNotAllowed", $"User account {username} is not allowed to login!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("IsNotAllowed", $"User account {username} is not allowed to login!") });
             }
             if (result.IsLockedOut)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} locked out!");
-                return new SignInResponse(Guid.Empty, null, false, false, true, new List<Core.DTO.Error>() { new Core.DTO.Error("IsLockedOut", $"User account {username} locked out!") });
+                return new SignInResponse(Guid.Empty, null, false, false, true, new List<Error>() { new Error("IsLockedOut", $"User account {username} locked out!") });
             }
             if (result.RequiresTwoFactor)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User account {username} requires two-factor authentication!");
-                return new SignInResponse(Guid.Empty, null, false, true, false, new List<Core.DTO.Error>() { new Core.DTO.Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!") });
+                return new SignInResponse(Guid.Empty, null, false, true, false, new List<Error>() { new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!") });
             }
             if (!result.Succeeded)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username {username} and password {password}!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
             }
             // Use _userManager.IsInRoleAsync(user,  to check if user is in the required role
             _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User {username} signed in successfully!");
@@ -170,7 +170,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         catch (Exception e)
         {
             _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Exception! {e.Message}");
-            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("NotSucceeded", $"Exception! {e.Message}") });
+            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("NotSucceeded", $"Exception! {e.Message}") });
         }
     }
     public async Task<SignInResponse> SignIn(string username, string password, string remoteIP, bool rememberMe, bool logoutOnFailure)
@@ -181,28 +181,28 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             if (user == null)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password} from remoteIP: {remoteIP}!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
             }
             SignInResult result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, logoutOnFailure);
             if (result.IsNotAllowed)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} is not allowed to login from remoteIP: {remoteIP}!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("IsNotAllowed", $"User account {username} is not allowed to login!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("IsNotAllowed", $"User account {username} is not allowed to login!") });
             }
             if (result.IsLockedOut)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} locked out from remoteIP: {remoteIP}!");
-                return new SignInResponse(Guid.Empty, null, false, false, true, new List<Core.DTO.Error>() { new Core.DTO.Error("IsLockedOut", $"User account {username} locked out!") });
+                return new SignInResponse(Guid.Empty, null, false, false, true, new List<Error>() { new Error("IsLockedOut", $"User account {username} locked out!") });
             }
             if (result.RequiresTwoFactor)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User account {username} requires two-factor authentication from remoteIP: {remoteIP}!");
-                return new SignInResponse(Guid.Empty, null, false, true, false, new List<Core.DTO.Error>() { new Core.DTO.Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!") });
+                return new SignInResponse(Guid.Empty, null, false, true, false, new List<Error>() { new Error("RequiresTwoFactor", $"User account {username} requires two-factor authentication!") });
             }
             if (!result.Succeeded)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password} from remoteIP: {remoteIP}!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
             }
             _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User {username} signed in successfully from remoteIP: {remoteIP}!");
             return new SignInResponse(Guid.Parse(user.Id), user.UserName, true);
@@ -210,14 +210,14 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         catch (Exception e)
         {
             _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Exception! {e.Message}");
-            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
+            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
         }
     }
     public async Task<SignInResponse> SignInWithClaims(string identityId, List<Claim> claims, AuthenticationProperties authProperties)
     {
         try
         {
-            AppUser user = _mapper.Map<Web.Api.Core.Domain.Entities.User, AppUser>(await GetSingleBySpec(new UserSpecification(identityId)));
+            AppUser user = _mapper.Map<User, AppUser>(await GetSingleBySpec(new UserSpecification(identityId)));
             if (user != null)
             {
                 await _signInManager.SignInWithClaimsAsync(user, authProperties, claims);
@@ -225,12 +225,12 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
                 return new SignInResponse(Guid.Parse(user.Id), user.UserName, true);
             }
             _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInWithClaims)} user {identityId} sign in failed!");
-            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.Forbidden.ToString(), $"Invalid identityId {identityId}!") });
+            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid identityId {identityId}!") });
         }
         catch (Exception e)
         {
             _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(SignInWithClaims)} Exception! {e.Message}");
-            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
+            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
         }
     }
     public async Task<SignInResponse> TwoFactorRecoveryCodeSignIn(string recoveryCode)
@@ -241,23 +241,23 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             if (!response.Success || string.IsNullOrEmpty(response.Id) || response.User == null || response.Errors.Any())
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} Invalid {recoveryCode}!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("IsNotAllowed", $"Invalid {recoveryCode}!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("IsNotAllowed", $"Invalid {recoveryCode}!") });
             }
             SignInResult result = await _signInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
             if (result.IsNotAllowed)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} {recoveryCode} is not allowed to login!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("IsNotAllowed", $"Invalid {recoveryCode}!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("IsNotAllowed", $"Invalid {recoveryCode}!") });
             }
             if (result.IsLockedOut)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} {recoveryCode} locked out!");
-                return new SignInResponse(Guid.Empty, null, false, false, true, new List<Core.DTO.Error>() { new Core.DTO.Error("IsLockedOut", $"Invalid {recoveryCode}!") });
+                return new SignInResponse(Guid.Empty, null, false, false, true, new List<Error>() { new Error("IsLockedOut", $"Invalid {recoveryCode}!") });
             }
             if (!result.Succeeded)
             {
                 _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} {recoveryCode}!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error("NotSucceeded", $"Invalid {recoveryCode}!") });
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("NotSucceeded", $"Invalid {recoveryCode}!") });
             }
             _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} RecoveryCode {recoveryCode} signed in successfully!");
             return new SignInResponse(Guid.Parse(response.Id), response.User.UserName, true);
@@ -265,7 +265,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         catch (Exception e)
         {
             _logger.LogCritical(2, $"{nameof(UserRepository)}.{nameof(TwoFactorRecoveryCodeSignIn)} Exception! {e.Message}");
-            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
+            return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
         }
     }
     public async Task<LogInResponse> CheckPassword(string username, string password)
@@ -361,7 +361,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
                     foreach (IdentityError error in result.Errors)
                         sb.AppendLine($"{error.Code} {error.Description}");
                     _logger.LogError($"{nameof(ResetPassword)} failed to reset access failed count of user {user.Id}! {sb.ToString()}");
-                    return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+                    return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                 }
             }
             else
@@ -370,14 +370,14 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
                 foreach (IdentityError error in result.Errors)
                     sb.AppendLine($"{error.Code} {error.Description}");
                 _logger.LogError($"{nameof(ResetPassword)} failed to reset password of user {user.Id}! {sb.ToString()}");
-                return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+                return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
             }
-            return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+            return new PasswordResponse(user.Id, result.Succeeded, result.Succeeded ? null : result.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
         }
         else
         {
             _logger.LogError($"Trying to reset password of  invalid user {email}!");
-            return new PasswordResponse(string.Empty, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Trying to reset password of invalid user {email}!") });
+            return new PasswordResponse(string.Empty, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Trying to reset password of invalid user {email}!") });
         }
     }
     public async Task<LockUserResponse> LockUser(string id) => await LockUser(await _userManager.FindByIdAsync(id));
@@ -424,13 +424,13 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             if (user == null)
             {
                 _logger.LogError($"{nameof(UserRepository)}.{nameof(RegistrationConfirmation)} Invalid user {email}!");
-                return new CodeResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot reset password of invalid user {email}!") });
+                return new CodeResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Cannot reset password of invalid user {email}!") });
             }
             Core.Domain.Entities.User u = await GetSingleBySpec(new UserSpecification(user.Id));
             if (u == null)
             {
                 _logger.LogError($"{nameof(UserRepository)}.{nameof(RegistrationConfirmation)} Invalid user IdentityId {user.Id}!");
-                return new CodeResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot reset password of invalid user {email}!") });
+                return new CodeResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Cannot reset password of invalid user {email}!") });
             }
             string code = string.Empty;
             if (_userManager.Options.SignIn.RequireConfirmedAccount)
@@ -443,7 +443,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         catch (Exception e)
         {
             _logger.LogCritical($"{nameof(UserRepository)}.{nameof(RegistrationConfirmation)} Exception! {e.Message}");
-            return new CodeResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+            return new CodeResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
         }
     }
     public async Task<CodeResponse> GenerateChangeEmailToken(string identityId, string email)
@@ -452,7 +452,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         {
             AppUser user = await _userManager.FindByIdAsync(identityId);
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-                return new CodeResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot change email of invalid user {email}!") });
+                return new CodeResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Cannot change email of invalid user {email}!") });
             // For more information on how to enable account confirmation and password reset please
             // visit https://go.microsoft.com/fwlink/?LinkID=532713
             var code = await _userManager.GenerateChangeEmailTokenAsync(user, email);
@@ -461,7 +461,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         catch (Exception e)
         {
             _logger.LogCritical($"{nameof(UserRepository)}.{nameof(GenerateChangeEmailToken)} Exception! {e.Message}");
-            return new CodeResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+            return new CodeResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
         }
     }
     public async Task<FindUserResponse> ConfirmEmail(string identityId, string code)
@@ -473,17 +473,17 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             {
                 IdentityResult identityResult = await _userManager.ConfirmEmailAsync(appUser, code);
                 return !identityResult.Succeeded ?
-                    new FindUserResponse(string.Empty, null, false, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList())
-                    : new FindUserResponse(appUser.Id, await getUser(appUser), identityResult.Succeeded, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+                    new FindUserResponse(string.Empty, null, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList())
+                    : new FindUserResponse(appUser.Id, await getUser(appUser), identityResult.Succeeded, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
             }
             else
                 _logger.LogError($"{nameof(UserRepository)}.{nameof(ConfirmEmail)} Invalid user email confirmation! Id: {identityId}, code: {code}");
-            return new FindUserResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot add confirm email of invalid user {identityId}!") });
+            return new FindUserResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Cannot add confirm email of invalid user {identityId}!") });
         }
         catch (Exception e)
         {
             _logger.LogCritical($"{nameof(UserRepository)}.{nameof(ConfirmEmail)} Exception! {e.Message}");
-            return new FindUserResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+            return new FindUserResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
         }
     }
     public async Task<FindUserResponse> ConfirmEmailChange(string identityId, string email, string code)
@@ -495,21 +495,21 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             {
                 var identityResult = await _userManager.ChangeEmailAsync(appUser, email, code);
                 if (!identityResult.Succeeded)
-                    return new FindUserResponse(appUser.Id, null, identityResult.Succeeded, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+                    return new FindUserResponse(appUser.Id, null, identityResult.Succeeded, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                 // In our UI email and user name are one and the same, so when we update the email
                 // we need to update the user name.
                 var setUserNameResult = await _userManager.SetUserNameAsync(appUser, email);
                 if (!identityResult.Succeeded)
-                    return new FindUserResponse(appUser.Id, null, identityResult.Succeeded, identityResult.Errors.Select(e => new Core.DTO.Error(e.Code, e.Description)).ToList());
+                    return new FindUserResponse(appUser.Id, null, identityResult.Succeeded, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                 await _signInManager.RefreshSignInAsync(appUser);
                 return new FindUserResponse(appUser.Id, await getUser(appUser), true, null);
             }
-            return new FindUserResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.BadRequest.ToString(), $"Cannot confirm email change of invalid user {identityId}!") });
+            return new FindUserResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Cannot confirm email change of invalid user {identityId}!") });
         }
         catch (Exception e)
         {
             _logger.LogCritical($"{nameof(UserRepository)}.{nameof(ConfirmEmailChange)} Exception! {e.Message}");
-            return new FindUserResponse(string.Empty, null, false, new List<Core.DTO.Error>() { new Core.DTO.Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+            return new FindUserResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
         }
     }
     private async Task<LockUserResponse> UnLockUser(AppUser user)
