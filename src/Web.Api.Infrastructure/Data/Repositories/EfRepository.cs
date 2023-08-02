@@ -10,7 +10,7 @@ public abstract class EfRepository<T> : IRepository<T> where T : BaseEntity
     protected readonly AppDbContext _appDbContext;
     protected EfRepository(AppDbContext appDbContext) => _appDbContext = appDbContext;
     public virtual async Task<T> GetById(int id) => await _appDbContext.Set<T>().FindAsync(id);
-    public async Task<List<T>> ListAll() => await _appDbContext.Set<T>().ToListAsync();
+    public virtual async Task<List<T>> ListAll() => await _appDbContext.Set<T>().ToListAsync();
     public virtual async Task<T> GetSingleBySpec(ISpecification<T> spec)
     {
         var result = await List(spec);
