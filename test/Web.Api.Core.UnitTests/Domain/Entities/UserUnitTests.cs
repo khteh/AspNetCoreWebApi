@@ -8,7 +8,7 @@ public class UserUnitTests
     {
         // arrange
         const string refreshToken = "1234";
-        var user = new User("","","","");
+        var user = new User("", "", "", "", "", "");
         user.AddRefreshToken(refreshToken, "127.0.0.1");
 
         // act
@@ -21,7 +21,7 @@ public class UserUnitTests
     {
         // arrange
         const string refreshToken = "1234";
-        var user = new User("", "", "", "");
+        var user = new User("", "", "", "", "", "");
         user.AddRefreshToken(refreshToken, "127.0.0.1", -6); // Provision with token 6 days old
 
         // act

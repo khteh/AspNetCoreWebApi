@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -47,7 +48,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
                 return new CreateUserResponse(appUser.Id, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
             // add the email claim and value for this user
             await _userManager.AddClaimAsync(appUser, new Claim(ClaimTypes.Name, appUser.UserName));
-            var user = new User(firstName, lastName, appUser.Id, appUser.UserName);
+            var user = new User(firstName, lastName, appUser.Id, appUser.UserName, appUser.Email, appUser.PhoneNumber);
             _appDbContext.Users.Add(user);
             await _appDbContext.SaveChangesAsync();
             return new CreateUserResponse(appUser.Id, identityResult.Succeeded, identityResult.Succeeded ? null : identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
@@ -510,6 +511,29 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         {
             _logger.LogCritical($"{nameof(UserRepository)}.{nameof(ConfirmEmailChange)} Exception! {e.Message}");
             return new FindUserResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+        }
+    }
+    private record UserModel(int Id, string FirstName, string LastName, string UserName, string Email, string PhoneNumber);
+    public async Task<FindResponse<User>> FindUsers(int page = 0, int pageSize = 100)
+    {
+        try
+        {
+            List<User> users = await _appDbContext.Users.Skip(page * pageSize).Take(pageSize).ToListAsync();
+            Dictionary<int, UserModel> userModels = users.Join(_userManager.Users, u => u.IdentityId, ku => ku.Id, (u, ku) => new UserModel(u.Id, ku.FirstName, ku.LastName, ku.UserName, ku.Email, ku.PhoneNumber)).ToDictionary(i => i.Id);
+            users.AsParallel().ForAll(u =>
+            {
+                u.FirstName = userModels[u.Id].FirstName;
+                u.LastName = userModels[u.Id].LastName;
+                u.UserName = userModels[u.Id].UserName;
+                u.Email = userModels[u.Id].Email;
+                u.PhoneNumber = userModels[u.Id].PhoneNumber;
+            });
+            return new FindResponse<User>(Guid.Empty, users, users.Any());
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical($"{nameof(FindUsers)} exception! {e}");
+            return new FindResponse<User>(Guid.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"{nameof(FindUsers)} exception! {e}") });
         }
     }
     private async Task<LockUserResponse> UnLockUser(AppUser user)

@@ -17,7 +17,7 @@ public class LogInUseCaseCheckPasswordUnitTests
     public async void Handle_GivenValidCredentials_ShouldSucceed()
     {
         // arrange
-        User user = new User("", "", "", "");
+        var user = new User("", "", "", "", "", "");
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync(user);
         mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Web.Api.Core.DTO.GatewayResponses.Repositories.LogInResponse(user, true));
@@ -47,7 +47,7 @@ public class LogInUseCaseCheckPasswordUnitTests
     {
         // arrange
         var mockUserRepository = new Mock<IUserRepository>();
-        mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync(new User("", "", "", ""));
+        mockUserRepository.Setup(repo => repo.FindUserByName(It.IsAny<string>())).ReturnsAsync(new User("", "", "", "", "", ""));
         mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Web.Api.Core.DTO.GatewayResponses.Repositories.LogInResponse(null, false));
 
         var mockJwtFactory = new Mock<IJwtFactory>();

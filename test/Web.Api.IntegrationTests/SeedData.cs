@@ -87,7 +87,7 @@ public static class SeedData
         User user = dbContext.Users.FirstOrDefault(i => i.IdentityId.Equals("41532945-599e-4910-9599-0e7402017fbe"));
         if (user == null)
         {
-            user = new User("Mickey", "Mouse", "41532945-599e-4910-9599-0e7402017fbe", "mickeymouse");
+            user = new User("Mickey", "Mouse", "41532945-599e-4910-9599-0e7402017fbe", "mickeymouse", "mickey@email.com", string.Empty);
             //user.Id = 1;
             user.AddRefreshToken("cvVsJXuuvb+gTyz+Rk0mBbitkw3AaLgsLecU3cwsUXU=", "127.0.0.1");
             dbContext.Users.Add(user);
@@ -96,7 +96,7 @@ public static class SeedData
         user = dbContext.Users.FirstOrDefault(i => i.IdentityId.Equals("7B697F98-AE31-41E7-BE13-20C63314ABF9"));
         if (user == null)
         {
-            user = new User("Delete", "Me", "7B697F98-AE31-41E7-BE13-20C63314ABF9", "deleteme");
+            user = new User("Delete", "Me", "7B697F98-AE31-41E7-BE13-20C63314ABF9", "deleteme", string.Empty, string.Empty);
             //user1.Id = 2;
             user.AddRefreshToken("whatever", "127.0.0.1");
             dbContext.Users.Add(user);
@@ -173,12 +173,12 @@ public static class SeedData
             LastName = "Me"
         });
 
-        var user = new User("Mickey Grpc", "Mouse", "CE73A87D-0AA6-4191-B65B-6B49F333E316", "mickeymousegrpc");
+        var user = new User("Mickey Grpc", "Mouse", "CE73A87D-0AA6-4191-B65B-6B49F333E316", "mickeymousegrpc", "mickey@email.com", string.Empty);
         //user.Id = 1;
         user.AddRefreshToken("cvVsJXuuvb+gTyz+Rk0mBbitkw3AaLgsLecU3cwsUXU=", "127.0.0.1");
         dbContext.Users.Add(user);
 
-        var user1 = new User("Delete Grpc", "Me", "3ABE9D63-777C-4865-8FA0-A53A657313D5", "deletemegrpc");
+        var user1 = new User("Delete Grpc", "Me", "3ABE9D63-777C-4865-8FA0-A53A657313D5", "deletemegrpc", string.Empty, string.Empty);
         //user1.Id = 2;
         user1.AddRefreshToken("whatever", "127.0.0.1");
         dbContext.Users.Add(user1);

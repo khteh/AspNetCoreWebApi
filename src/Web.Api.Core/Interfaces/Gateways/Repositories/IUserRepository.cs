@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authentication;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 namespace Web.Api.Core.Interfaces.Gateways.Repositories;
@@ -29,4 +28,5 @@ public interface IUserRepository : IRepository<User>
     Task<FindUserResponse> ConfirmEmailChange(string identityId, string email, string code);
     Task<LockUserResponse> LockUser(string id);
     Task<LockUserResponse> UnLockUser(string id);
+    Task<FindResponse<User>> FindUsers(int page = 0, int pageSize = 100);
 }
