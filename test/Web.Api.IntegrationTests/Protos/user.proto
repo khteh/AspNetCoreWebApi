@@ -4,10 +4,11 @@ package Web.Api.Identity;
 import "Protos/refreshToken.proto";
 message User {
     int32 id = 1;
-    string firstName = 2;
-    string lastName = 3;
-    string identityId = 4;
+    string identityId = 2;
+    string firstName = 3;
+    string lastName = 4;
     string userName = 5;
     string email = 6;
-    repeated Web.Api.Identity.RefreshToken refreshTokens = 7;
+    string phoneNumber = 7;
+    repeated Web.Api.Identity.RefreshToken refreshTokens = 8;
 }
