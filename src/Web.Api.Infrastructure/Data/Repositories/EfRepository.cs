@@ -13,7 +13,7 @@ public abstract class EfRepository<T> : IRepository<T> where T : BaseEntity
     public virtual async Task<List<T>> ListAll() => await _appDbContext.Set<T>().ToListAsync();
     public virtual async Task<T> GetSingleBySpec(ISpecification<T> spec)
     {
-        var result = await List(spec);
+        IQueryable<T> result = await Aggregate(spec);
         return result.FirstOrDefault();
     }
     public virtual async Task<long> Count(ISpecification<T> spec, int page = -1, int pageSize = 100) => (await Aggregate(spec, page, pageSize)).Count();
