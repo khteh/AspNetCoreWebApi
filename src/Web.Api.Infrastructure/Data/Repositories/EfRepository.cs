@@ -16,35 +16,11 @@ public abstract class EfRepository<T> : IRepository<T> where T : BaseEntity
         var result = await List(spec);
         return result.FirstOrDefault();
     }
-    public virtual async Task<long> Count(ISpecification<T> spec)
+    public virtual async Task<long> Count(ISpecification<T> spec, int page = -1, int pageSize = 100) => (await Aggregate(spec, page, pageSize)).Count();
+    public virtual async Task<List<T>> List(ISpecification<T> spec, int page = -1, int pageSize = 100)
     {
-        // fetch a Queryable that includes all expression-based includes
-        var queryableResultWithIncludes = spec.Includes
-                .Aggregate(_appDbContext.Set<T>().AsQueryable(),
-                    (current, include) => current.Include(include));
-
-        // modify the IQueryable to include any string-based include statements
-        var secondaryResult = spec.IncludeStrings
-                .Aggregate(queryableResultWithIncludes,
-                    (current, include) => current.Include(include));
-
-        // return the result of the query using the specification's criteria expression
-        return secondaryResult.Where(spec.Criteria).Count();
-    }
-    public virtual async Task<List<T>> List(ISpecification<T> spec)
-    {
-        // fetch a Queryable that includes all expression-based includes
-        var queryableResultWithIncludes = spec.Includes
-                .Aggregate(_appDbContext.Set<T>().AsQueryable(),
-                    (current, include) => current.Include(include));
-
-        // modify the IQueryable to include any string-based include statements
-        var secondaryResult = spec.IncludeStrings
-                .Aggregate(queryableResultWithIncludes,
-                    (current, include) => current.Include(include));
-
-        // return the result of the query using the specification's criteria expression
-        return await secondaryResult.Where(spec.Criteria).ToListAsync();
+        IQueryable<T> result = await Aggregate(spec, page, pageSize);
+        return await result.ToListAsync();
     }
     public virtual async Task<T> Add(T entity)
     {
@@ -61,5 +37,18 @@ public abstract class EfRepository<T> : IRepository<T> where T : BaseEntity
     {
         _appDbContext.Set<T>().Remove(entity);
         await _appDbContext.SaveChangesAsync();
+    }
+    private async Task<IQueryable<T>> Aggregate(ISpecification<T> spec, int page = -1, int pageSize = 100)
+    {
+        // fetch a Queryable that includes all expression-based includes
+        IQueryable<T> queryableResultWithIncludes = spec.Includes
+                .Aggregate(_appDbContext.Set<T>().AsQueryable(),
+                    (current, include) => current.Include(include));
+
+        // modify the IQueryable to include any string-based include statements
+        IQueryable<T> secondaryResult = spec.IncludeStrings
+                .Aggregate(queryableResultWithIncludes,
+                    (current, include) => current.Include(include));
+        return page >= 0 && pageSize > 0 ? secondaryResult.Where(spec.Criteria).Skip(page * pageSize).Take(pageSize) : secondaryResult.Where(spec.Criteria);
     }
 }
