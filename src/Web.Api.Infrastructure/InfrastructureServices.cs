@@ -18,19 +18,22 @@ public static class InfrastructureServices
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection service, IConfiguration configuration, IWebHostEnvironment env, bool isIntegrationTest = false)
     {
-        service.AddScoped<IUserRepository, UserRepository>()
+        service.AddScoped<ICacheRepository, CacheRepository>()
+                .AddScoped<IUserRepository, UserRepository>()
                 .AddSingleton<IJwtFactory, JwtFactory>()
                 .AddSingleton<IJwtTokenHandler, JwtTokenHandler>()
                 .AddSingleton<ITokenFactory, TokenFactory>()
                 .AddSingleton<IJwtTokenValidator, JwtTokenValidator>()
                 .AddScoped<SignInManager<AppUser>>();
-        service.AddDbContextPool<AppIdentityDbContext>(options => {
-                    options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure"));
-                    options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
-                }).AddDbContextPool<AppDbContext>(options => {
-                    options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure"));
-                    options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
-                });
+        service.AddDbContextPool<AppIdentityDbContext>(options =>
+        {
+            options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure"));
+            options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+        }).AddDbContextPool<AppDbContext>(options =>
+        {
+            options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure"));
+            options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+        });
         if (!isIntegrationTest && env.IsProduction())
         {
             service.AddStackExchangeRedisCache(options =>
@@ -46,8 +49,12 @@ public static class InfrastructureServices
                  }));
             var redis = ConnectionMultiplexer.Connect(configuration["RedisCache:Connection"]);
             service.AddDataProtection().PersistKeysToStackExchangeRedis(redis, "AspNetCoreWebApi");
-        } else
+        }
+        else
+        {
+            service.AddDistributedMemoryCache();
             service.AddDataProtection();
+        }
         return service;
     }
 }
