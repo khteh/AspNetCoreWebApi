@@ -1,0 +1,68 @@
+﻿// See https://aka.ms/new-console-template for more information
+using Grpc.Net.Client;
+using Microsoft.Extensions.Configuration;
+using System.CommandLine;
+using System.Security.Authentication;
+using Web.Api.Core.Configuration;
+using Web.Api.Ping;
+using static System.Console;
+using static Web.Api.Ping.SvcPing;
+
+internal class Program
+{
+    private static GrpcConfig _grpcConfig;
+    private static async Task<int> Main(string[] args)
+    {
+        try
+        {
+            string contentRootFull = Path.GetFullPath(Directory.GetCurrentDirectory());
+            string environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT");
+            IConfigurationRoot config = new ConfigurationBuilder()
+                    .SetBasePath(contentRootFull)
+                    .AddJsonFile($"appsettings.{environment}.json", false, true)
+                    .AddEnvironmentVariables().Build();
+            _grpcConfig = config.GetSection(nameof(GrpcConfig)).Get<GrpcConfig>();
+            WriteLine($"Environment: {environment}, server: {_grpcConfig.Endpoint}");
+            // The port number must match the port of the gRPC server.
+            RootCommand rootCommand = new RootCommand("Various commands which run on shell");
+            var ping = new Command("ping", "Ping grpc service");
+            rootCommand.AddCommand(ping);
+            ping.SetHandler(PingHandler);
+            return await rootCommand.InvokeAsync(args);
+        }
+        catch (Exception e)
+        {
+            WriteLine($"Exception! {e}");
+            return -1;
+        }
+    }
+    internal static async Task PingHandler()
+    {
+        WriteLine($"Press ENTER when the gRPC server @{_grpcConfig.Endpoint} is ready");
+        ReadLine();
+        try
+        {
+            //var headers = new Metadata();
+            //headers.Add("Authorization", $"Bearer {token}");
+            var httpHandler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                //ServerCertificateCustomValidationCallback = (request, cert, chain, errors) => { return true; },
+                SslProtocols = SslProtocols.Tls13
+            };
+            // Return `true` to allow certificates that are untrusted/invalid
+            //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            using var channel = GrpcChannel.ForAddress(_grpcConfig.Endpoint, new GrpcChannelOptions { HttpHandler = httpHandler });
+            SvcPingClient client = new SvcPingClient(channel);
+            Pong response = await client.PingAsync(new Google.Protobuf.WellKnownTypes.Empty());
+            if (!string.IsNullOrEmpty(response.Message))
+                WriteLine($"Ping response: {response.Message}");
+            else
+                WriteLine($"Failed to ping {_grpcConfig.Endpoint}!");
+        }
+        catch (Exception e)
+        {
+            WriteLine($"Exception! {e}");
+        }
+    }
+}
