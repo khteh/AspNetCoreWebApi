@@ -52,6 +52,22 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "build_console",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/test/Console/Console.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "build_unit_tests",
             "command": "dotnet",
             "type": "process",
