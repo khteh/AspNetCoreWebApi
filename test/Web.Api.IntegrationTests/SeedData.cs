@@ -1,4 +1,5 @@
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Identity;
@@ -141,8 +142,29 @@ public static class SeedData
             if (user != null)
                 dbContext.Users.Remove(user);
         }
-        dbIdentityContext.SaveChanges();
-        dbContext.SaveChanges();
+        bool flag = false;
+        for (int i = 0; !flag && i < 3; i++)
+        try {
+            dbIdentityContext.SaveChanges();
+            dbContext.SaveChanges();
+            flag = true;
+        } catch(DbUpdateConcurrencyException ex)
+        {
+            flag = false;
+            var entry = ex.Entries.Single();
+            //The MSDN examples use Single so I think there will be only one
+            //but if you prefer - do it for all entries
+            //foreach(var entry in ex.Entries)
+            //{
+            if(entry.State == EntityState.Deleted)
+                //When EF deletes an item its state is set to Detached
+                //http://msdn.microsoft.com/en-us/data/jj592676.aspx
+                entry.State = EntityState.Detached;
+            else
+                entry.OriginalValues.SetValues(entry.GetDatabaseValues());
+                //throw; //You may prefer not to resolve when updating
+            //}
+        }
     }
     public static void PopulateGrpcTestData(AppIdentityDbContext dbIdentityContext, AppDbContext dbContext)
     {
