@@ -44,11 +44,15 @@ public abstract class EfRepository<T> : IRepository<T> where T : BaseEntity
         IQueryable<T> queryableResultWithIncludes = spec.Includes
                 .Aggregate(_appDbContext.Set<T>().AsQueryable(),
                     (current, include) => current.Include(include));
-
         // modify the IQueryable to include any string-based include statements
         IQueryable<T> secondaryResult = spec.IncludeStrings
                 .Aggregate(queryableResultWithIncludes,
                     (current, include) => current.Include(include));
-        return page >= 0 && pageSize > 0 ? secondaryResult.Where(spec.Criteria).Skip(page * pageSize).Take(pageSize) : secondaryResult.Where(spec.Criteria);
+        IQueryable<T> orderedResult = secondaryResult.Where(spec.Criteria).AsSplitQuery();
+        if (spec.OrderBy != null)
+            orderedResult = secondaryResult.OrderBy(spec.OrderBy).AsSplitQuery();
+        else if (spec.OrderByDescending != null)
+            orderedResult = secondaryResult.OrderByDescending(spec.OrderByDescending).AsSplitQuery();
+        return page >= 0 && pageSize > 0 ? orderedResult.Skip(page * pageSize).Take(pageSize) : orderedResult;
     }
 }
