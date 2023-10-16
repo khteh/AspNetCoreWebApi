@@ -50,9 +50,9 @@ public abstract class EfRepository<T> : IRepository<T> where T : BaseEntity
                     (current, include) => current.Include(include));
         IQueryable<T> orderedResult = secondaryResult.Where(spec.Criteria).AsSplitQuery();
         if (spec.OrderBy != null)
-            orderedResult = secondaryResult.OrderBy(spec.OrderBy).AsSplitQuery();
+            orderedResult = orderedResult.OrderBy(spec.OrderBy).AsSplitQuery();
         else if (spec.OrderByDescending != null)
-            orderedResult = secondaryResult.OrderByDescending(spec.OrderByDescending).AsSplitQuery();
+            orderedResult = orderedResult.OrderByDescending(spec.OrderByDescending).AsSplitQuery();
         return page >= 0 && pageSize > 0 ? orderedResult.Skip(page * pageSize).Take(pageSize) : orderedResult;
     }
 }
