@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using System.CommandLine;
@@ -25,9 +26,12 @@ internal class Program
             WriteLine($"Environment: {environment}, server: {_grpcConfig.Endpoint}");
             // The port number must match the port of the gRPC server.
             RootCommand rootCommand = new RootCommand("Various commands which run on shell");
-            var ping = new Command("ping", "Ping grpc service");
+            var tokenOption = new Option<string>(
+                       name: "--token",
+                       description: "Access Token");
+            Command ping = new Command("ping", "Ping grpc service") { tokenOption };
             rootCommand.AddCommand(ping);
-            ping.SetHandler(PingHandler);
+            ping.SetHandler(async (token) => { await PingHandler(token!); }, tokenOption);
             return await rootCommand.InvokeAsync(args);
         }
         catch (Exception e)
@@ -36,15 +40,15 @@ internal class Program
             return -1;
         }
     }
-    internal static async Task PingHandler()
+    internal static async Task PingHandler(string token)
     {
         WriteLine($"Press ENTER when the gRPC server @{_grpcConfig.Endpoint} is ready");
         ReadLine();
         try
         {
-            //var headers = new Metadata();
-            //headers.Add("Authorization", $"Bearer {token}");
-            var httpHandler = new HttpClientHandler
+            Metadata headers = new Metadata();
+            headers.Add("Authorization", $"Bearer {token}");
+            HttpClientHandler httpHandler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
                 //ServerCertificateCustomValidationCallback = (request, cert, chain, errors) => { return true; },
