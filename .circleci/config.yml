@@ -25,7 +25,7 @@ jobs:
           name: Wait for PostgreSQL Server
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run: dotnet restore
-      - run: dotnet build -c Release --no-restore /p:Version=7.0 --version-suffix $CIRCLE_BUILD_NUM
+      - run: dotnet build -c Release --no-restore /p:Version=8.0 --version-suffix $CIRCLE_BUILD_NUM
       - run: dotnet test -c Release --no-restore --no-build test/Web.Api.Core.UnitTests
       - run: dotnet test -c Release --no-restore --no-build test/Web.Api.UnitTests
       - run: dotnet test -c Release --no-restore --no-build test/Web.Api.Infrastructure.UnitTests

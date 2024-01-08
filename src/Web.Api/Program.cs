@@ -244,11 +244,11 @@ try
     // Register the Swagger generator, defining 1 or more Swagger documents
     builder.Services.AddSwaggerGen(c =>
     {
-        c.SwaggerDoc("v7.0", new OpenApiInfo
+        c.SwaggerDoc("v8.0", new OpenApiInfo
         {
             Title = "ASP.Net Core RESTful, SignalR and GRPC service",
-            Version = "v7.0",
-            Description = "An ASP.NET Core 7.0 Web API, SignalR and GRPC project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.",
+            Version = "v8.0",
+            Description = "An ASP.NET Core 8.0 Web API, SignalR and GRPC project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.",
             Contact = new OpenApiContact
             {
                 Name = "Teh Kok How",
@@ -388,7 +388,7 @@ try
     //if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
     app.UseSwagger().UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint($"{pathBase}/swagger/v7.0/swagger.json", "AspNetCoreWebApi V7.0");
+        c.SwaggerEndpoint($"{pathBase}/swagger/v8.0/swagger.json", "AspNetCoreWebApi V8.0");
     });
     app.UseSerilogRequestLogging();
     app.Use(async (context, next) =>
