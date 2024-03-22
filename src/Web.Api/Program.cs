@@ -240,6 +240,7 @@ try
     builder.Services.AddScoped<IPipelineBehavior<RegisterUserCommand, RegisterUserResponse>, LoggingBehavior<RegisterUserCommand, RegisterUserResponse>>();
     builder.Services.AddScoped<IPipelineBehavior<LogInCommand, LogInResponse>, LoggingBehavior<LogInCommand, LogInResponse>>();
     builder.Services.AddScoped<IPipelineBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>, LoggingBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>>();
+    builder.Services.AddScoped<IPipelineBehavior<GenerateNew2FARecoveryCodesCommand, GenerateNew2FARecoveryCodesResponse>, LoggingBehavior<GenerateNew2FARecoveryCodesCommand, GenerateNew2FARecoveryCodesResponse>>();
     builder.Services.AddEndpointsApiExplorer();
     // Register the Swagger generator, defining 1 or more Swagger documents
     builder.Services.AddSwaggerGen(c =>

@@ -8,6 +8,7 @@ public static class CoreServices
             .AddScoped<IDeleteUserUseCase, DeleteUserUseCase>()
             .AddScoped<IExchangeRefreshTokenUseCase, ExchangeRefreshTokenUseCase>()
             .AddScoped<IFindUserUseCase, FindUserUseCase>()
+            .AddScoped<IGenerateNew2FARecoveryCodesUseCase, GenerateNew2FARecoveryCodesUseCase>()
             .AddScoped<ILockUserUseCase, LockUserUseCase>()
             .AddScoped<ILogInUseCase, LogInUseCase>()
             .AddScoped<IRegisterUserUseCase, RegisterUserUseCase>()

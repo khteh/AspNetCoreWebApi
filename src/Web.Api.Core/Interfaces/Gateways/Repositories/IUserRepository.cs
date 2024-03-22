@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ public interface IUserRepository : IRepository<User>
     Task<PasswordResponse> ResetPassword(string email, string password, string code);
     Task<SignInResponse> SignIn(string username, string password, string remoteIP, bool rememberMe, bool logoutOnFailure);
     Task<SignInResponse> TwoFactorRecoveryCodeSignIn(string code);
+    Task<GenerateNew2FARecoveryCodesResponse> GenerateNew2FARecoveryCodes(string id, int codes);
     Task<SignInResponse> SignInWithClaims(string identityId, List<Claim> claims, AuthenticationProperties authProperties);
     Task<ExchangeRefreshTokenResponse> ExchangeRefreshToken(string accessToken, string refreshToken, string signingKey);
     Task<SignInResponse> SignInMobile(string username, string password, bool logoutOnFailure);

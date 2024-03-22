@@ -269,6 +269,21 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
         }
     }
+    public async Task<GenerateNew2FARecoveryCodesResponse> GenerateNew2FARecoveryCodes(string id, int codes)
+    {
+        try
+        {
+            AppUser appUser = await _userManager.FindByIdAsync(id);
+            if (appUser != null)
+                return new GenerateNew2FARecoveryCodesResponse(id, (await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(appUser, codes)).ToList(), true);
+            return new GenerateNew2FARecoveryCodesResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid user {id}!") });
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical($"{nameof(UserRepository)}.{nameof(GenerateNew2FARecoveryCodes)} Exception! {e}");
+            return new GenerateNew2FARecoveryCodesResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+        }
+    }
     public async Task<LogInResponse> CheckPassword(string username, string password)
     {
         try

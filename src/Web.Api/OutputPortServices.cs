@@ -12,6 +12,7 @@ public static class OutputPortServices
                 .AddScoped<Web.Api.Presenters.Grpc.ChangePasswordPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.RegistrationConfirmationPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.EmailConfirmationPresenter>()
+                .AddScoped<GenerateNew2FARecoveryCodesPresenter>()
                 .AddScoped<RegisterUserPresenter>()
                 .AddScoped<DeleteUserPresenter>()
                 .AddScoped<Web.Api.Presenters.Grpc.UserPresenter>()

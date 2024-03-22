@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
@@ -14,7 +16,8 @@ public class FindUserPresenterUnitTests
     public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
     {
         // arrange
-        var presenter = new FindUserPresenter();
+        var logger = new Mock<ILogger<FindUserPresenter>>();
+        var presenter = new FindUserPresenter(logger.Object);
 
         // act
         presenter.Handle(new FindUserResponse(new User(), "", true, null, null));
@@ -26,7 +29,8 @@ public class FindUserPresenterUnitTests
     public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
-        var presenter = new FindUserPresenter();
+        var logger = new Mock<ILogger<FindUserPresenter>>();
+        var presenter = new FindUserPresenter(logger.Object);
 
         // act
         presenter.Handle(new FindUserResponse(new User(), "1234", true));
@@ -40,7 +44,8 @@ public class FindUserPresenterUnitTests
     public void Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
-        var presenter = new FindUserPresenter();
+        var logger = new Mock<ILogger<FindUserPresenter>>();
+        var presenter = new FindUserPresenter(logger.Object);
 
         // act
         presenter.Handle(new FindUserResponse(null, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using Web.Api.Core.Interfaces;
 using Web.Api.Models.Response;
@@ -17,8 +18,14 @@ public abstract class PresenterBase<T, TResponse> : IOutputPort<T> where T : Use
 {
     public TResponse Response { get; protected set; }
     public JsonContentResult ContentResult { get; } = new JsonContentResult();
+    protected readonly Microsoft.Extensions.Logging.ILogger _logger;
+    public PresenterBase(Microsoft.Extensions.Logging.ILogger logger) => _logger = logger;
     public virtual async Task Handle(T response)
     {
+        if (!response.Success)
+            _logger.LogError($"{nameof(PresenterBase<T, TResponse>)} operation failed! {response.Errors?.FirstOrDefault().Description}");
+        else
+            _logger.LogDebug($"{nameof(PresenterBase<T, TResponse>)} operation succeeded!");
         Response = (TResponse)Activator.CreateInstance(typeof(TResponse), new object[] { response.Success, response.Errors });
         ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
         ContentResult.Content = JsonSerializer.SerializeObject(Response);

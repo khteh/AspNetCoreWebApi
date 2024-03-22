@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Web.Api.Core.DTO;
 using Web.Api.Core.Interfaces;
 using Web.Api.Models.Response;
@@ -13,7 +15,8 @@ public class ResetPasswordPresenterUnitTests
     public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
     {
         // arrange
-        var presenter = new ResetPasswordPresenter();
+        var logger = new Mock<ILogger<ResetPasswordPresenter>>();
+        var presenter = new ResetPasswordPresenter(logger.Object);
 
         // act
         presenter.Handle(new UseCaseResponseMessage("", true));
@@ -25,7 +28,8 @@ public class ResetPasswordPresenterUnitTests
     public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
-        var presenter = new ResetPasswordPresenter();
+        var logger = new Mock<ILogger<ResetPasswordPresenter>>();
+        var presenter = new ResetPasswordPresenter(logger.Object);
 
         // act
         presenter.Handle(new UseCaseResponseMessage("1234", true));
@@ -41,7 +45,8 @@ public class ResetPasswordPresenterUnitTests
     public void Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
-        var presenter = new ResetPasswordPresenter();
+        var logger = new Mock<ILogger<ResetPasswordPresenter>>();
+        var presenter = new ResetPasswordPresenter(logger.Object);
 
         // act
         presenter.Handle(new UseCaseResponseMessage(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));

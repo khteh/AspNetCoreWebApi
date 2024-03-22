@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Web.Api.Core.DTO;
 using Web.Api.Presenters;
 using Web.Api.Serialization;
@@ -13,7 +15,8 @@ public class ExchangeRefreshTokenPresenterUnitTests
     {
         // arrange
         const string token = "777888AAABBB";
-        var presenter = new ExchangeRefreshTokenPresenter();
+        var logger = new Mock<ILogger<ExchangeRefreshTokenPresenter>>();
+        var presenter = new ExchangeRefreshTokenPresenter(logger.Object);
 
         // act
         presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new AccessToken(token, 0), "", true));
@@ -30,7 +33,8 @@ public class ExchangeRefreshTokenPresenterUnitTests
     {
         // arrange
         const string token = "777888AAABBB";
-        var presenter = new ExchangeRefreshTokenPresenter();
+        var logger = new Mock<ILogger<ExchangeRefreshTokenPresenter>>();
+        var presenter = new ExchangeRefreshTokenPresenter(logger.Object);
 
         // act
         presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(null, token, true));
@@ -43,10 +47,11 @@ public class ExchangeRefreshTokenPresenterUnitTests
     public void Handle_GivenFailedUseCaseResponse_SetsError()
     {
         // arrange
-        var presenter = new ExchangeRefreshTokenPresenter();
+        var logger = new Mock<ILogger<ExchangeRefreshTokenPresenter>>();
+        var presenter = new ExchangeRefreshTokenPresenter(logger.Object);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Token!")}));
+        presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Token!") }));
 
         // assert
         Models.Response.ExchangeRefreshTokenResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ExchangeRefreshTokenResponse>(presenter.ContentResult.Content);

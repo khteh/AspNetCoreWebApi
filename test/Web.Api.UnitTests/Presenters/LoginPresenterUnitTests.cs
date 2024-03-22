@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Presenters;
@@ -13,7 +15,8 @@ public class LogInPresenterUnitTests
     public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
     {
         // arrange
-        var presenter = new LogInPresenter();
+        var logger = new Mock<ILogger<LogInPresenter>>();
+        var presenter = new LogInPresenter(logger.Object);
 
         // act
         presenter.Handle(new LogInResponse(new AccessToken("", 0), "", true));
@@ -26,7 +29,8 @@ public class LogInPresenterUnitTests
     {
         // arrange
         const string token = "777888AAABBB";
-        var presenter = new LogInPresenter();
+        var logger = new Mock<ILogger<LogInPresenter>>();
+        var presenter = new LogInPresenter(logger.Object);
 
         // act
         presenter.Handle(new LogInResponse(new AccessToken(token, 0), "", true));
@@ -39,7 +43,8 @@ public class LogInPresenterUnitTests
     public void Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
-        var presenter = new LogInPresenter();
+        var logger = new Mock<ILogger<LogInPresenter>>();
+        var presenter = new LogInPresenter(logger.Object);
 
         // act
         presenter.Handle(new LogInResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
