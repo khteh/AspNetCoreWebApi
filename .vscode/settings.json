@@ -5,5 +5,5 @@
     "dotnet-test-explorer.autoExpandTree": false,
     "dotnet-test-explorer.autoWatch": false,
     "dotnet-test-explorer.enableTelemetry": false,
-    "dotnet-test-explorer.testProjectPath": "test/*/*.csproj"
+    "dotnet-test-explorer.testProjectPath": "test/*Tests/*.csproj"
 }

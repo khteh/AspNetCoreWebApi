@@ -367,7 +367,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         AppUser user = await _userManager.FindByEmailAsync(email);
         if (user != null)
         {
-            IdentityResult result = await _userManager.ResetPasswordAsync(user, code, password);
+            IdentityResult result = await _userManager.ResetPasswordAsync(user, Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)), password);
             if (result.Succeeded)
             {
                 result = await _userManager.ResetAccessFailedCountAsync(user);
@@ -394,6 +394,34 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         {
             _logger.LogError($"Trying to reset password of  invalid user {email}!");
             return new PasswordResponse(string.Empty, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Trying to reset password of invalid user {email}!") });
+        }
+    }
+    public async Task<CodeResponse> ForgotPassword(string email)
+    {
+        try
+        {
+            AppUser user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                _logger.LogError($"{nameof(UserRepository)}.{nameof(ForgotPassword)} Cannot reset password of invalid user {email}!");
+                return new CodeResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Cannot reset password of invalid user {email}!") });
+            }
+            else if (!await _userManager.IsEmailConfirmedAsync(user))
+            {
+                _logger.LogError($"{nameof(UserRepository)}.{nameof(ForgotPassword)} Cannot reset password of unconfirmed user email {email}!");
+                return new CodeResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Cannot reset password of unconfirmed user email {email}!") });
+            }
+            _logger.LogInformation($"{nameof(UserRepository)}.{nameof(ForgotPassword)} Generating password reset code for user {email}...");
+            // For more information on how to enable account confirmation and password reset please
+            // visit https://go.microsoft.com/fwlink/?LinkID=532713
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            return new CodeResponse(user.Id, code, true);
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical($"{nameof(UserRepository)}.{nameof(ForgotPassword)} Exception! {e}");
+            return new CodeResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
         }
     }
     public async Task<LockUserResponse> LockUser(string id) => await LockUser(await _userManager.FindByIdAsync(id));
@@ -472,6 +500,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             // For more information on how to enable account confirmation and password reset please
             // visit https://go.microsoft.com/fwlink/?LinkID=532713
             var code = await _userManager.GenerateChangeEmailTokenAsync(user, email);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
             return new CodeResponse(user.Id, code, true);
         }
         catch (Exception e)
@@ -487,7 +516,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             AppUser appUser = await _userManager.FindByIdAsync(identityId);
             if (appUser != null)
             {
-                IdentityResult identityResult = await _userManager.ConfirmEmailAsync(appUser, code);
+                IdentityResult identityResult = await _userManager.ConfirmEmailAsync(appUser, Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)));
                 return !identityResult.Succeeded ?
                     new FindUserResponse(string.Empty, null, false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList())
                     : new FindUserResponse(appUser.Id, await getUser(appUser), identityResult.Succeeded, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
@@ -509,7 +538,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             AppUser appUser = await _userManager.FindByIdAsync(identityId);
             if (appUser != null)
             {
-                var identityResult = await _userManager.ChangeEmailAsync(appUser, email, code);
+                var identityResult = await _userManager.ChangeEmailAsync(appUser, email, Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)));
                 if (!identityResult.Succeeded)
                     return new FindUserResponse(appUser.Id, null, identityResult.Succeeded, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
                 // In our UI email and user name are one and the same, so when we update the email

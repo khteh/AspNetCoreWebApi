@@ -17,6 +17,7 @@ public interface IUserRepository : IRepository<User>
     Task<LogInResponse> CheckPassword(string username, string password);
     Task<PasswordResponse> ResetPassword(string id, string password);
     Task<PasswordResponse> ResetPassword(string email, string password, string code);
+    Task<CodeResponse> ForgotPassword(string email);
     Task<SignInResponse> SignIn(string username, string password, string remoteIP, bool rememberMe, bool logoutOnFailure);
     Task<SignInResponse> TwoFactorRecoveryCodeSignIn(string code);
     Task<GenerateNew2FARecoveryCodesResponse> GenerateNew2FARecoveryCodes(string id, int codes);

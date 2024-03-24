@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -17,7 +18,7 @@ public class ConfirmEmailUseCase : IConfirmEmailUseCase
         Web.Api.Core.DTO.GatewayResponses.Repositories.FindUserResponse response = await _userRepository.ConfirmEmail(message.IdentityId, message.Code);
         if (response.Success)
             _logger.LogInformation($"{nameof(ConfirmEmailUseCase)} Successfully confirm email of user Id: {message.IdentityId}, Code: {message.Code}");
-        else
+        else if (response.Errors != null && response.Errors.Any())
         {
             StringBuilder sb = new StringBuilder();
             foreach (DTO.Error error in response.Errors)
