@@ -10,7 +10,7 @@ using Web.Api.Core.UseCases;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
 namespace Web.Api.Infrastructure.UnitTests.UseCases;
-public class SignInUseCaseSignInUnitTests
+public class SignInUseCaseUnitTests
 {
     [Fact]
     public async void Handle_GivenValidCredentials_ShouldSucceed()

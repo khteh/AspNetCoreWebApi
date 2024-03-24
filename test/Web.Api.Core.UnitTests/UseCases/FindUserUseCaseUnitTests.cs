@@ -17,7 +17,7 @@ public class FindUserUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.FindById(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse(string.Empty, new Mock<User>().Object, true));
 
         // 2. The use case and star of this test
         var useCase = new FindUserUseCase(mockUserRepository.Object);
@@ -178,7 +178,7 @@ public class FindUserUseCaseUnitTests
 
         // assert
         Assert.False(response);
-        mockUserRepository.Verify(factory => factory.FindById(string.Empty), Times.Never);
+        mockUserRepository.Verify(factory => factory.FindById(It.IsAny<string>()), Times.Never);
         mockOutputPort.VerifyAll();
     }
 }
