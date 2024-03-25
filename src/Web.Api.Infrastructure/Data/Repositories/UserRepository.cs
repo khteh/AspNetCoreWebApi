@@ -269,6 +269,26 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e.Message}") });
         }
     }
+    public async Task<FindUserResponse> RefreshSignIn(string id)
+    {
+        try
+        {
+            AppUser appUser = await _userManager.FindByIdAsync(id);
+            if (appUser != null)
+            {
+                await _signInManager.RefreshSignInAsync(appUser);
+                _logger.LogInformation($"{nameof(UserRepository)}.{nameof(RefreshSignIn)} User {appUser.Id} signin refreshed successfully!");
+                return new FindUserResponse(appUser.Id, null, true);
+            }
+            else
+                return new FindUserResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Identity! {id}") });
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical($"{nameof(UserRepository)}.{nameof(Update)} Exception! {e}");
+            return new FindUserResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+        }
+    }
     public async Task<GenerateNew2FARecoveryCodesResponse> GenerateNew2FARecoveryCodes(string id, int codes)
     {
         try
@@ -499,7 +519,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
                 return new CodeResponse(string.Empty, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Cannot change email of invalid user {email}!") });
             // For more information on how to enable account confirmation and password reset please
             // visit https://go.microsoft.com/fwlink/?LinkID=532713
-            var code = await _userManager.GenerateChangeEmailTokenAsync(user, email);
+            string code = await _userManager.GenerateChangeEmailTokenAsync(user, email);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
             return new CodeResponse(user.Id, code, true);
         }
@@ -608,5 +628,5 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
         return user == null ? new FindUserResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "User not found!") }) :
                 new FindUserResponse(appUser.Id, user, true, null);
     }
-    public async Task<FindUserResponse> GetTwoFactorAuthenticationUserAsync() => await getFindUserResponse(await _signInManager.GetTwoFactorAuthenticationUserAsync());
+    private async Task<FindUserResponse> GetTwoFactorAuthenticationUserAsync() => await getFindUserResponse(await _signInManager.GetTwoFactorAuthenticationUserAsync());
 }

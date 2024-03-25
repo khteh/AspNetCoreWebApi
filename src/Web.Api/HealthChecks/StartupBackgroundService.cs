@@ -18,7 +18,7 @@ internal class StartupBackgroundService : BackgroundService
         //await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
         _healthCheck.StartupCompleted = true;
     }
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public override async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation($"{nameof(StartupBackgroundService)}.{nameof(StartAsync)}");
 #if false
@@ -33,10 +33,10 @@ internal class StartupBackgroundService : BackgroundService
 #endif
         //return Task.CompletedTask;
     }
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public override async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation($"{nameof(StartupBackgroundService)}.{nameof(StopAsync)}");
         //return Task.CompletedTask;
     }
-    public void Dispose() => GC.SuppressFinalize(this);
+    public override void Dispose() => GC.SuppressFinalize(this);
 }

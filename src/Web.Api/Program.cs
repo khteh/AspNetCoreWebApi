@@ -237,6 +237,9 @@ try
     //.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter())); Fixed in .Net Core 5
     builder.Services.AddAutoMapper(new[] { typeof(IdentityProfile), typeof(GrpcProfile), typeof(ResponseProfile) });
     builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
+    builder.Services.AddScoped<IPipelineBehavior<ConfirmEmailCommand, ResponseBase>, LoggingBehavior<ConfirmEmailCommand, ResponseBase>>();
+    builder.Services.AddScoped<IPipelineBehavior<ConfirmEmailChangeCommand, ResponseBase>, LoggingBehavior<ConfirmEmailChangeCommand, ResponseBase>>();
+    builder.Services.AddScoped<IPipelineBehavior<GenerateChangeEmailTokenCommand, CodeResponse>, LoggingBehavior<GenerateChangeEmailTokenCommand, CodeResponse>>();
     builder.Services.AddScoped<IPipelineBehavior<RegisterUserCommand, RegisterUserResponse>, LoggingBehavior<RegisterUserCommand, RegisterUserResponse>>();
     builder.Services.AddScoped<IPipelineBehavior<LogInCommand, LogInResponse>, LoggingBehavior<LogInCommand, LogInResponse>>();
     builder.Services.AddScoped<IPipelineBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>, LoggingBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>>();

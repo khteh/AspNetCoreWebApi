@@ -5,7 +5,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class OutputPortServices
 {
     public static IServiceCollection AddOutputPorts(this IServiceCollection service) =>
-        service.AddScoped<IOutputPort<ExchangeRefreshTokenResponse>, ExchangeRefreshTokenPresenter>()
+        service.AddScoped<CodePresenter>()
+                .AddScoped<IOutputPort<ExchangeRefreshTokenResponse>, ExchangeRefreshTokenPresenter>()
                 .AddScoped<IOutputPort<LogInResponse>, LogInPresenter>()
                 .AddScoped<IOutputPort<LogInResponse>, SignInPresenter>()
                 .AddScoped<ChangePasswordPresenter>()
@@ -28,5 +29,6 @@ public static class OutputPortServices
                 .AddScoped<Web.Api.Presenters.Grpc.SignInPresenter>()
                 .AddScoped<RegisterUserPresenter>()
                 .AddScoped<ResetPasswordPresenter>()
-                .AddScoped<Web.Api.Presenters.Grpc.ResetPasswordPresenter>();
+                .AddScoped<Web.Api.Presenters.Grpc.ResetPasswordPresenter>()
+                .AddScoped<SimplePresenter>();
 }

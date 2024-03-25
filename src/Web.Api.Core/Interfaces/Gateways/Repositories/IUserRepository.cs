@@ -24,6 +24,7 @@ public interface IUserRepository : IRepository<User>
     Task<SignInResponse> SignInWithClaims(string identityId, List<Claim> claims, AuthenticationProperties authProperties);
     Task<ExchangeRefreshTokenResponse> ExchangeRefreshToken(string accessToken, string refreshToken, string signingKey);
     Task<SignInResponse> SignInMobile(string username, string password, bool logoutOnFailure);
+    Task<FindUserResponse> RefreshSignIn(string id);
     Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword);
     Task<CodeResponse> RegistrationConfirmation(string email);
     Task<FindUserResponse> ConfirmEmail(string id, string code);
