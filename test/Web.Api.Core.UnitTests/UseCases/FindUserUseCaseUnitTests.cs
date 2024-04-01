@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.UseCaseRequests;
+using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
@@ -24,8 +25,8 @@ public class FindUserUseCaseUnitTests
 
         // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
         // for final preparation to deliver back to the UI/web page/api response etc.
-        var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
-        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
+        var mockOutputPort = new Mock<IOutputPort<FindUserResponse>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<FindUserResponse>()));
 
         // act
 
@@ -53,8 +54,8 @@ public class FindUserUseCaseUnitTests
 
         // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
         // for final preparation to deliver back to the UI/web page/api response etc.
-        var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
-        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
+        var mockOutputPort = new Mock<IOutputPort<FindUserResponse>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<FindUserResponse>()));
 
         // act
 
@@ -82,8 +83,8 @@ public class FindUserUseCaseUnitTests
 
         // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
         // for final preparation to deliver back to the UI/web page/api response etc.
-        var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
-        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
+        var mockOutputPort = new Mock<IOutputPort<FindUserResponse>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<FindUserResponse>()));
 
         // act
 
@@ -111,8 +112,8 @@ public class FindUserUseCaseUnitTests
 
         // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
         // for final preparation to deliver back to the UI/web page/api response etc.
-        var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
-        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
+        var mockOutputPort = new Mock<IOutputPort<FindUserResponse>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<FindUserResponse>()));
 
         // act
 
@@ -139,8 +140,8 @@ public class FindUserUseCaseUnitTests
 
         // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
         // for final preparation to deliver back to the UI/web page/api response etc.
-        var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
-        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
+        var mockOutputPort = new Mock<IOutputPort<FindUserResponse>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<FindUserResponse>()));
 
         // act
 
@@ -168,8 +169,8 @@ public class FindUserUseCaseUnitTests
 
         // 3. The output port is the mechanism to pass response data from the use case to a Presenter 
         // for final preparation to deliver back to the UI/web page/api response etc.
-        var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
-        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
+        var mockOutputPort = new Mock<IOutputPort<FindUserResponse>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<FindUserResponse>()));
 
         // act
 

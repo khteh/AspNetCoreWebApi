@@ -14,11 +14,11 @@ public class GenerateNew2FARecoveryCodesUseCase : IGenerateNew2FARecoveryCodesUs
 {
     private readonly IUserRepository _userRepository;
     public GenerateNew2FARecoveryCodesUseCase(IUserRepository userRepository) => _userRepository = userRepository;
-    public async Task<bool> Handle(GenerateNew2FARecoveryCodesRequest message, IOutputPort<DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse> outputPort)
+    public async Task<bool> Handle(GenerateNew2FARecoveryCodesRequest message, IOutputPort<GenerateNew2FARecoveryCodesResponse> outputPort)
     {
         DTO.GatewayResponses.Repositories.GenerateNew2FARecoveryCodesResponse response = await _userRepository.GenerateNew2FARecoveryCodes(message.Id, message.Codes);
         string errMsg = response.Errors != null && response.Errors.Any() ? response.Errors.First().Description : string.Empty;
-        await outputPort.Handle(new DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse(response.Id, response.Codes, response.Success, errMsg, response.Errors));
+        await outputPort.Handle(new GenerateNew2FARecoveryCodesResponse(response.Id, response.Codes, response.Success, errMsg, response.Errors));
         return response.Success;
     }
 }
