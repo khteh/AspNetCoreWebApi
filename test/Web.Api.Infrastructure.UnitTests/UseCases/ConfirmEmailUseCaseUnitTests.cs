@@ -38,11 +38,11 @@ public class ConfirmEmailUseCaseUnitTests
 
         // assert
         Assert.True(response);
-        mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        mockUserRepository.VerifyAll();
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_GivenINValidCredentials_ShouldFail()
+    public async void Handle_GivenInValidCode_ShouldFail()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");
@@ -60,10 +60,11 @@ public class ConfirmEmailUseCaseUnitTests
         mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
 
         // act
-        var response = await useCase.Handle(new ConfirmEmailRequest("id", "code"), mockOutputPort.Object);
+        var response = await useCase.Handle(new ConfirmEmailRequest("id", string.Empty), mockOutputPort.Object);
 
         // assert
         Assert.False(response);
+        mockUserRepository.Verify(factory => factory.ConfirmEmail(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         mockOutputPort.VerifyAll();
     }
 }
