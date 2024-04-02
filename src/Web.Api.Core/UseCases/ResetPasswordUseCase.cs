@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseRequests;
+using Web.Api.Core.Helpers;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.UseCases;
@@ -17,9 +18,9 @@ public class ResetPasswordUseCase : IResetPasswordUseCase
     public async Task<bool> Handle(ResetPasswordRequest request, IOutputPort<UseCaseResponseMessage> outputPort)
     {
         DTO.GatewayResponses.Repositories.PasswordResponse response = null;
-        if (!string.IsNullOrEmpty(request.Id))
+        if (!string.IsNullOrEmpty(request.Id) && !string.IsNullOrEmpty(request.NewPassword))
             response = await _userRepository.ResetPassword(request.Id, request.NewPassword);
-        else if (!string.IsNullOrEmpty(request.Email) && !string.IsNullOrEmpty(request.Code))
+        else if (!string.IsNullOrEmpty(request.Email) && EmailValidation.IsValidEmail(request.Email) && !string.IsNullOrEmpty(request.Code) && !string.IsNullOrEmpty(request.NewPassword))
             response = await _userRepository.ResetPassword(request.Email, request.NewPassword, request.Code);
         else
         {

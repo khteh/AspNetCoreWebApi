@@ -59,9 +59,11 @@ public class RegisterUserUseCaseUnitTests
         // act
 
         // 4. We need a request model to carry data into the use case from the upper layer (UI, Controller etc.)
-        var response = await useCase.Handle(new RegisterUserRequest("firstName", "lastName", "domain.com", "userName", "password"), mockOutputPort.Object);
+        var response = await useCase.Handle(new RegisterUserRequest("firstName", "lastName", "email", "userName", "password"), mockOutputPort.Object);
 
         // assert
         Assert.False(response);
+        mockUserRepository.Verify(factory => factory.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        mockOutputPort.VerifyAll();
     }
 }

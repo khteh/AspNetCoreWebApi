@@ -19,18 +19,26 @@ public sealed class RegistrationConfirmationUseCase : IRegistrationConfirmationU
     public RegistrationConfirmationUseCase(ILogger<RegistrationConfirmationUseCase> logger, IUserRepository userRepository) => (_logger, _userRepository) = (logger, userRepository);
     public async Task<bool> Handle(RegistrationConfirmationRequest message, IOutputPort<CodeResponse> outputPort)
     {
-        DTO.GatewayResponses.Repositories.CodeResponse response = await _userRepository.RegistrationConfirmation(message.Email);
-        if (response.Success)
-            _logger.LogInformation($"{nameof(RegistrationConfirmationUseCase)} Successfully confirm user registration of Id: {response.Id}, ConfirmationCode: {response.Code}");
+        if (!string.IsNullOrEmpty(message.Email) && EmailValidation.IsValidEmail(message.Email))
+        {
+            DTO.GatewayResponses.Repositories.CodeResponse response = await _userRepository.RegistrationConfirmation(message.Email);
+            if (response.Success)
+                _logger.LogInformation($"{nameof(RegistrationConfirmationUseCase)} Successfully confirm user registration of Id: {response.Id}, ConfirmationCode: {response.Code}");
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (DTO.Error error in response.Errors)
+                    sb.Append($"{error.Code} {error.Description}");
+                _logger.LogError($"{nameof(RegistrationConfirmationUseCase)} Failed to confirm user registration of Id: {response.Id}, ConfirmationCode: {response.Code}, reasons: reasons: {sb.ToString()}");
+            }
+            string errMsg = response.Errors != null && response.Errors.Any() ? response.Errors.First().Description : string.Empty;
+            await outputPort.Handle(new CodeResponse(response.Id, response.Code, response.Success, errMsg, response.Errors));
+            return response.Success;
+        }
         else
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (DTO.Error error in response.Errors)
-                sb.Append($"{error.Code} {error.Description}");
-            _logger.LogError($"{nameof(RegistrationConfirmationUseCase)} Failed to confirm user registration of Id: {response.Id}, ConfirmationCode: {response.Code}, reasons: reasons: {sb.ToString()}");
+            await outputPort.Handle(new CodeResponse(string.Empty, string.Empty, false, $"Invalid Email {message.Email}!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid Email {message.Email}!") }));
+            return false;
         }
-        string errMsg = response.Errors != null && response.Errors.Any() ? response.Errors.First().Description : string.Empty;
-        await outputPort.Handle(new CodeResponse(response.Id, response.Code, response.Success, errMsg, response.Errors));
-        return response.Success;
     }
 }

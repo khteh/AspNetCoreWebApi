@@ -41,4 +41,34 @@ public class ConfirmEmailUseCaseUnitTests
         mockUserRepository.VerifyAll();
         mockOutputPort.VerifyAll();
     }
+    [Fact]
+    public async void Handle_ConfirmEmail_InvalidCode_ShouldFail()
+    {
+        // arrange
+
+        // 1. We need to store the user data somehow
+        var mockUserRepository = new Mock<IUserRepository>();
+        mockUserRepository
+              .Setup(repo => repo.ConfirmEmail(It.IsAny<string>(), It.IsAny<string>()))
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
+
+        var mockLogger = new Mock<ILogger<ConfirmEmailUseCase>>();
+        // 2. The use case and star of this test
+        var useCase = new ConfirmEmailUseCase(mockLogger.Object, mockUserRepository.Object);
+
+        // 3. The output port is the mechanism to pass response data from the use case to a Presenter
+        // for final preparation to deliver back to the UI/web page/api response etc.
+        var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
+
+        // act
+
+        // 4. We need a request model to carry data into the use case from the upper layer (UI, Controller etc.)
+        var response = await useCase.Handle(new ConfirmEmailRequest("id", string.Empty), mockOutputPort.Object);
+
+        // assert
+        Assert.False(response);
+        mockUserRepository.Verify(factory => factory.ConfirmEmail(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        mockOutputPort.VerifyAll();
+    }
 }

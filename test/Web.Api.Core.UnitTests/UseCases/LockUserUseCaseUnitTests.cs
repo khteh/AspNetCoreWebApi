@@ -35,7 +35,7 @@ public class LockUserUseCaseUnitTests
         // assert
     }
     [Fact]
-    public async void Handle_LockUser_ShouldThrow()
+    public async void Handle_LockUser_ShouldSucceed()
     {
         // arrange
 
@@ -64,14 +64,14 @@ public class LockUserUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_UnLockUser_ShouldThrow()
+    public async void Handle_UnLockUser_ShouldSucceed()
     {
         // arrange
 
         // 1. We need to store the user data somehow
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
-              .Setup(repo => repo.LockUser(It.IsAny<string>()))
+              .Setup(repo => repo.UnLockUser(It.IsAny<string>()))
               .ReturnsAsync(new DTO.GatewayResponses.Repositories.LockUserResponse("", true));
 
         // 2. The use case and star of this test
@@ -88,5 +88,8 @@ public class LockUserUseCaseUnitTests
         var response = await useCase.UnLock("id", mockOutputPort.Object);
 
         // assert
+        Assert.True(response);
+        mockUserRepository.VerifyAll();
+        mockOutputPort.VerifyAll();
     }
 }
