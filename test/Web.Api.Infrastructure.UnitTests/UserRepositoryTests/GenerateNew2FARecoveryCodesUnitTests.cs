@@ -13,7 +13,7 @@ using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Core.UseCases;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
-namespace Web.Api.Infrastructure.UnitTests.UseCases;
+namespace Web.Api.Infrastructure.UnitTests.UserRepository;
 public class GenerateNew2FARecoveryCodesUseCaseUnitTests
 {
     [Fact]

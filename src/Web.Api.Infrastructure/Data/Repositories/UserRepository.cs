@@ -19,7 +19,7 @@ using Web.Api.Core.Interfaces.Services;
 using Web.Api.Core.Specifications;
 using Web.Api.Infrastructure.Identity;
 namespace Web.Api.Infrastructure.Data.Repositories;
-public sealed class UserRepository : EfRepository<User>, IUserRepository
+public class UserRepository : EfRepository<User>, IUserRepository
 {
     private readonly IJwtFactory _jwtFactory;
     private readonly IJwtTokenValidator _jwtTokenValidator;
@@ -326,7 +326,7 @@ public sealed class UserRepository : EfRepository<User>, IUserRepository
             return new LogInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), $"Exception! {e}") });
         }
     }
-    public async Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword)
+    public async virtual Task<PasswordResponse> ChangePassword(string id, string oldPassword, string newPassword)
     {
         try
         {

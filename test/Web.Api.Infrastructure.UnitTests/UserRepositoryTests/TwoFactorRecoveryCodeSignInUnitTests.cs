@@ -9,8 +9,8 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
-namespace Web.Api.Infrastructure.UnitTests.UseCases;
-public class TwoFactorRecoveryCodeSignInUseCaseUnitTests
+namespace Web.Api.Infrastructure.UnitTests.UserRepository;
+public class TwoFactorRecoveryCodeSignInUnitTests
 {
     [Fact]
     public async void Handle_GivenValidRecoveryCode_ShouldSucceed()

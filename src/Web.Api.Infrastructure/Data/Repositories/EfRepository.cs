@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Shared;
 namespace Web.Api.Infrastructure.Data.Repositories;
-public abstract class EfRepository<T> : IRepository<T> where T : BaseEntity
+public abstract class EfRepository<T> : IDisposable, IRepository<T> where T : BaseEntity
 {
     protected readonly AppDbContext _appDbContext;
     protected EfRepository(AppDbContext appDbContext) => _appDbContext = appDbContext;
@@ -54,5 +55,10 @@ public abstract class EfRepository<T> : IRepository<T> where T : BaseEntity
         else if (spec.OrderByDescending != null)
             orderedResult = orderedResult.OrderByDescending(spec.OrderByDescending).AsSplitQuery();
         return page >= 0 && pageSize > 0 ? orderedResult.Skip(page * pageSize).Take(pageSize) : orderedResult;
+    }
+    public void Dispose()
+    {
+        _appDbContext.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

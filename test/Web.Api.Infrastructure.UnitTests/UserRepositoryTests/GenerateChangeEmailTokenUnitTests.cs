@@ -13,8 +13,8 @@ using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Core.UseCases;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
-namespace Web.Api.Infrastructure.UnitTests.UseCases;
-public class GenerateChangeEmailTokenUseCaseUnitTests
+namespace Web.Api.Infrastructure.UnitTests.UserRepository;
+public class GenerateChangeEmailTokenUnitTests
 {
     [Fact]
     public async void Handle_GivenValidCredentials_ShouldSucceed()
