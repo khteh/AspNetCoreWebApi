@@ -6,6 +6,7 @@ public static class CoreServices
     public static IServiceCollection AddCore(this IServiceCollection service) =>
             service.AddScoped<IChangePasswordUseCase, ChangePasswordUseCase>()
                 .AddScoped<IConfirmEmailChangeUseCase, ConfirmEmailChangeUseCase>()
+                .AddScoped<IConfirmEmailUseCase, ConfirmEmailUseCase>()
                 .AddScoped<IDeleteUserUseCase, DeleteUserUseCase>()
                 .AddScoped<IExchangeRefreshTokenUseCase, ExchangeRefreshTokenUseCase>()
                 .AddScoped<IFindUserUseCase, FindUserUseCase>()
@@ -17,7 +18,7 @@ public static class CoreServices
                 .AddScoped<IRefreshSignInUseCase, RefreshSignInUseCase>()
                 .AddScoped<IRegisterUserUseCase, RegisterUserUseCase>()
                 .AddScoped<IRegistrationConfirmationUseCase, RegistrationConfirmationUseCase>()
-                .AddScoped<IConfirmEmailUseCase, ConfirmEmailUseCase>()
                 .AddScoped<IResetPasswordUseCase, ResetPasswordUseCase>()
-                .AddScoped<ISignInUseCase, SignInUseCase>();
+                .AddScoped<ISignInUseCase, SignInUseCase>()
+                .AddScoped<ITwoFactorRecoveryCodeSignInUseCase, TwoFactorRecoveryCodeSignInUseCase>();
 }

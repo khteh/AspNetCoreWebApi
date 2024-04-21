@@ -11,6 +11,7 @@ public class SignInResponse : UseCaseResponseMessage
     public bool IsLockedOut { get; }
     public Guid Id { get; }
     public string UserName { get; }
+    public SignInResponse(List<Error> errors, string message = null) : base(null, false, message, errors) { }
     public SignInResponse(bool requires2fa, bool lockedout, List<Error> errors, string message = null) : base(string.Empty, false, message, errors)
     {
         RequiresTwoFactor = requires2fa;

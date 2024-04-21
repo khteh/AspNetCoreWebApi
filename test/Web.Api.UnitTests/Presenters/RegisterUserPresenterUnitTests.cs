@@ -13,19 +13,6 @@ namespace Web.Api.UnitTests.Presenters;
 public class RegisterUserPresenterUnitTests
 {
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
-    {
-        // arrange
-        var logger = new Mock<ILogger<RegisterUserPresenter>>();
-        var presenter = new RegisterUserPresenter(logger.Object);
-
-        // act
-        presenter.Handle(new UseCaseResponseMessage("", true));
-
-        // assert
-        Assert.Equal((int)HttpStatusCode.Created, presenter.ContentResult.StatusCode);
-    }
-    [Fact]
     public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
@@ -36,7 +23,8 @@ public class RegisterUserPresenterUnitTests
         presenter.Handle(new UseCaseResponseMessage("1234", true));
 
         // assert
-        UseCaseResponseMessage data = JsonSerializer.DeSerializeObject<UseCaseResponseMessage>(presenter.ContentResult.Content);
+        RegisterUserResponse data = JsonSerializer.DeSerializeObject<RegisterUserResponse>(presenter.ContentResult.Content);
+        Assert.Equal((int)HttpStatusCode.Created, presenter.ContentResult.StatusCode);
         Assert.True(data.Success);
         Assert.Equal("1234", data.Id);
     }

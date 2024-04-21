@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 
 namespace Web.Api.Core.Interfaces;
 public interface IOutputPort<in TUseCaseResponse>

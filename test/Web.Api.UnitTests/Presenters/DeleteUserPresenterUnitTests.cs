@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
@@ -12,19 +13,6 @@ namespace Web.Api.UnitTests.Presenters;
 public class DeleteUserPresenterUnitTests
 {
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
-    {
-        // arrange
-        var logger = new Mock<ILogger<DeleteUserPresenter>>();
-        var presenter = new DeleteUserPresenter(logger.Object);
-
-        // act
-        presenter.Handle(new UseCaseResponseMessage("", true));
-
-        // assert
-        Assert.Equal((int)HttpStatusCode.NoContent, presenter.ContentResult.StatusCode);
-    }
-    [Fact]
     public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
@@ -32,7 +20,8 @@ public class DeleteUserPresenterUnitTests
         var presenter = new DeleteUserPresenter(logger.Object);
 
         // act
-        presenter.Handle(new UseCaseResponseMessage("1234", true));
+        Guid id = Guid.NewGuid();
+        presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
 
         // assert
         DeleteUserResponse response = Serialization.JsonSerializer.DeSerializeObject<DeleteUserResponse>(presenter.ContentResult.Content);

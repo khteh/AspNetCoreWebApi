@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
@@ -9,36 +10,37 @@ using Web.Api.Presenters;
 using Web.Api.Serialization;
 using Xunit;
 namespace Web.Api.UnitTests.Presenters;
-public class LogInPresenterUnitTests
+public class SignInPresenterUnitTests
 {
     [Fact]
     public void Handle_GivenSuccessfulUseCaseResponse_SetsAccessToken()
     {
         // arrange
-        const string token = "777888AAABBB";
-        var logger = new Mock<ILogger<LogInPresenter>>();
-        var presenter = new LogInPresenter(logger.Object);
+        var logger = new Mock<ILogger<SignInPresenter>>();
+        var presenter = new SignInPresenter(logger.Object);
 
         // act
-        presenter.Handle(new LogInResponse(new AccessToken(token, 0), string.Empty, true));
+        Guid id = Guid.NewGuid();
+        string username = "UserName";
+        presenter.Handle(new SignInResponse(id, username, true, string.Empty));
 
         // assert
-        LogInResponse data = JsonSerializer.DeSerializeObject<LogInResponse>(presenter.ContentResult.Content);
+        Models.Response.SignInResponse data = JsonSerializer.DeSerializeObject<Models.Response.SignInResponse>(presenter.ContentResult.Content);
         Assert.Equal((int)HttpStatusCode.OK, presenter.ContentResult.StatusCode);
-        Assert.Equal(token, data.AccessToken.Token);
+        Assert.True(data.Success);
     }
     [Fact]
     public void Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
-        var logger = new Mock<ILogger<LogInPresenter>>();
-        var presenter = new LogInPresenter(logger.Object);
+        var logger = new Mock<ILogger<SignInPresenter>>();
+        var presenter = new SignInPresenter(logger.Object);
 
         // act
-        presenter.Handle(new LogInResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
+        presenter.Handle(new SignInResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
         // assert
-        Models.Response.LogInResponse response = JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(presenter.ContentResult.Content);
+        Models.Response.SignInResponse response = JsonSerializer.DeSerializeObject<Models.Response.SignInResponse>(presenter.ContentResult.Content);
         Assert.Equal((int)HttpStatusCode.Unauthorized, presenter.ContentResult.StatusCode);
         Assert.NotNull(response);
         Assert.NotNull(response.Errors);

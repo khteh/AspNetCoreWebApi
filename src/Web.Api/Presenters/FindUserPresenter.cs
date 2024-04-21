@@ -7,7 +7,9 @@ public class FindUserPresenter : PresenterBase<FindUserResponse, Models.Response
     public FindUserPresenter(ILogger<FindUserPresenter> logger) : base(logger) { }
     public override async Task Handle(FindUserResponse response)
     {
-        ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
-        ContentResult.Content = JsonSerializer.SerializeObject(new Models.Response.FindUserResponse(response.Id, response.Message, response.User, response.Success, response.Errors));
+        await base.Handle(response);
+        Response.Id = response.Id;
+        Response.User = response.User;
+        ContentResult.Content = JsonSerializer.SerializeObject(Response);
     }
 }

@@ -7,8 +7,9 @@ public sealed class ExchangeRefreshTokenPresenter : PresenterBase<ExchangeRefres
     public ExchangeRefreshTokenPresenter(ILogger<ExchangeRefreshTokenPresenter> logger) : base(logger) { }
     public override async Task Handle(ExchangeRefreshTokenResponse response)
     {
-        Response = response.Success ? new Models.Response.ExchangeRefreshTokenResponse(response.AccessToken, response.RefreshToken, true, null) : new Models.Response.ExchangeRefreshTokenResponse(null, null, false, response.Errors);
-        ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
+        await base.Handle(response);
+        Response.AccessToken = response.AccessToken;
+        Response.RefreshToken = response.RefreshToken;
         ContentResult.Content = JsonSerializer.SerializeObject(Response);
     }
 }

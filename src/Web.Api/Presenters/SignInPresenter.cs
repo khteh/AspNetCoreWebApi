@@ -1,8 +1,11 @@
 ﻿using Web.Api.Core.Interfaces;
-using Web.Api.Models.Response;
+using Web.Api.Core.DTO.UseCaseResponses;
+using Web.Api.Serialization;
 namespace Web.Api.Presenters;
 
-public class SignInPresenter : PresenterBase<UseCaseResponseMessage, SignInResponse>
+public class SignInPresenter : PresenterBase<SignInResponse, Models.Response.SignInResponse>
 {
-    public SignInPresenter(ILogger<FindUserPresenter> logger) : base(logger) { }
+    public SignInPresenter(ILogger<SignInPresenter> logger) : base(logger) { }
+    public override async Task Handle(SignInResponse response) =>
+        await Handle(response, HttpStatusCode.OK, HttpStatusCode.Unauthorized);
 }

@@ -1,8 +1,14 @@
-using Web.Api.Core.DTO.UseCaseResponses;
-using Web.Api.Core.Interfaces;
-using Web.Api.Models.Response;
+using Web.Api.Serialization;
 namespace Web.Api.Presenters;
-public class RegistrationConfirmationPresenter : PresenterBase<Core.DTO.UseCaseResponses.CodeResponse, ChangePasswordResponse>
+public class RegistrationConfirmationPresenter : PresenterBase<Core.DTO.UseCaseResponses.CodeResponse, Web.Api.Models.Response.CodeResponse>
 {
-    public RegistrationConfirmationPresenter(ILogger<FindUserPresenter> logger) : base(logger) { }
+    private readonly ILogger<RegistrationConfirmationPresenter> _logger;
+    public RegistrationConfirmationPresenter(ILogger<RegistrationConfirmationPresenter> logger) : base(logger) => _logger = logger;
+    public override async Task Handle(Core.DTO.UseCaseResponses.CodeResponse response)
+    {
+        await Handle(response, HttpStatusCode.Created, HttpStatusCode.BadRequest);
+        Response.Id = Guid.Parse(response.Id);
+        Response.Code = response.Code;
+        ContentResult.Content = JsonSerializer.SerializeObject(Response);
+    }
 }

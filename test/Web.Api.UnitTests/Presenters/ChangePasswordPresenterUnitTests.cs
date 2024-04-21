@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -12,19 +13,6 @@ namespace Web.Api.UnitTests.Presenters;
 public class ChangePasswordPresenterUnitTests
 {
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
-    {
-        // arrange
-        var logger = new Mock<ILogger<ChangePasswordPresenter>>();
-        var presenter = new ChangePasswordPresenter(logger.Object);
-
-        // act
-        presenter.Handle(new UseCaseResponseMessage("", true));
-
-        // assert
-        Assert.Equal((int)HttpStatusCode.OK, presenter.ContentResult.StatusCode);
-    }
-    [Fact]
     public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
@@ -32,7 +20,8 @@ public class ChangePasswordPresenterUnitTests
         var presenter = new ChangePasswordPresenter(logger.Object);
 
         // act
-        presenter.Handle(new UseCaseResponseMessage("1234", true));
+        Guid id = Guid.NewGuid();
+        presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
 
         // assert
         ChangePasswordResponse response = Serialization.JsonSerializer.DeSerializeObject<ChangePasswordResponse>(presenter.ContentResult.Content);

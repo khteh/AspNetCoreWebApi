@@ -8,8 +8,8 @@ public sealed class RegisterUserPresenter : PresenterBase<UseCaseResponseMessage
     public RegisterUserPresenter(ILogger<RegisterUserPresenter> logger) : base(logger) { }
     public override async Task Handle(UseCaseResponseMessage response)
     {
-        Response = new RegisterUserResponse(response.Id, response.Success, response.Errors);
-        ContentResult.StatusCode = (int)(response.Success ? HttpStatusCode.Created : HttpStatusCode.BadRequest);
+        await Handle(response, HttpStatusCode.Created, HttpStatusCode.BadRequest);
+        Response.Id = response.Id;
         ContentResult.Content = JsonSerializer.SerializeObject(Response);
     }
 }
