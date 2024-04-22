@@ -6,16 +6,16 @@ namespace Web.Api.Presenters.Grpc;
 public abstract class PresenterBase<T> : IOutputPort<T> where T : UseCaseResponseMessage
 {
     protected readonly IMapper _mapper;
-    protected Web.Api.Identity.Response BaseResponse { get; init; }
+    protected Identity.Response BaseResponse { get; init; }
     public PresenterBase(IMapper mapper)
     {
         _mapper = mapper;
-        BaseResponse = new Web.Api.Identity.Response();
+        BaseResponse = new Identity.Response();
     }
     public virtual async Task Handle(T response)
     {
         BaseResponse.Success = response.Success;
         if (response.Errors != null && response.Errors.Any())
-            BaseResponse.Errors.AddRange(_mapper.Map<List<Web.Api.Identity.Error>>(response.Errors));
+            BaseResponse.Errors.AddRange(_mapper.Map<List<Identity.Error>>(response.Errors));
     }
 }
