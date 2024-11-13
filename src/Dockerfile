@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
 MAINTAINER Kok How, Teh <funcoolgeek@gmail.com>
 RUN apt update -y
 RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata gnupg2 gnupg gnupg1
@@ -7,6 +7,6 @@ ADD robots.txt .
 RUN touch /root/.rnd
 RUN openssl req -new -newkey rsa:4096 -x509 -nodes -days 365 -keyout server.key -out server.crt -subj "/C=SG/ST=Singapore/L=Singapore /O=Kok How Pte. Ltd./OU=AspNetCoreWebApi/CN=localhost/emailAddress=funcoolgeek@gmail.com" -passin pass:AspNetCoreWebApi -addext "subjectAltName = DNS:localhost"
 RUN openssl pkcs12 -export -out /tmp/localhost.pfx -inkey server.key -in server.crt -passout pass:AspNetCoreWebApi
-ADD Web.Api/bin/Release/net8.0/publish/ .
+ADD Web.Api/bin/Release/net9.0/publish/ .
 EXPOSE 443
 ENTRYPOINT ["dotnet", "Web.Api.dll"]

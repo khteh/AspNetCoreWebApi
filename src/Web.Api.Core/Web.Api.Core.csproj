@@ -1,21 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <LangVersion>12.0</LangVersion>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>13.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Protobuf Include="Protos/*.proto" GrpcServices="Server" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Mailkit" Version="4.8.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.8" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
-    <PackageReference Include="Google.Protobuf" Version="3.28.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.28.3" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.66.0">
+    <PackageReference Include="Grpc.Tools" Version="2.67.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Npgsql" Version="8.0.4" />
+    <PackageReference Include="Npgsql" Version="8.0.5" />
   </ItemGroup>
 </Project>
