@@ -8,10 +8,10 @@
   <ItemGroup>
     <Protobuf Include="Protos/*.proto" GrpcServices="Client" />
     <RuntimeHostConfigurationOption Include="System.Net.SocketsHttpHandler.Http3Support" Value="true" />
-    <PackageReference Include="Grpc.Net.Client" Version="2.66.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
@@ -20,8 +20,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0" />
-    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.66.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.67.0">
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.67.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.68.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
