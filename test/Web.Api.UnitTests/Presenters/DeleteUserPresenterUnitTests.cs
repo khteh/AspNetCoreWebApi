@@ -20,7 +20,7 @@ public class DeleteUserPresenterUnitTests
         var presenter = new DeleteUserPresenter(logger.Object);
 
         // act
-        Guid id = Guid.NewGuid();
+        Guid id = Guid.CreateVersion7(TimeProvider.System.GetUtcNow());
         presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
 
         // assert

@@ -80,7 +80,7 @@ public class TwoFactorRecoveryCodeSignInUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.TwoFactorRecoveryCodeSignIn(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.SignInResponse(Guid.NewGuid(), string.Empty, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.SignInResponse(Guid.CreateVersion7(TimeProvider.System.GetUtcNow()), string.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new TwoFactorRecoveryCodeSignInUseCase(mockUserRepository.Object);

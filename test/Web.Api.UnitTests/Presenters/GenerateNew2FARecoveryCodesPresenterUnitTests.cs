@@ -22,7 +22,7 @@ public class GenerateNew2FARecoveryCodesPresenterUnitTests
         var presenter = new GenerateNew2FARecoveryCodesPresenter(logger.Object);
 
         // act
-        Guid id = Guid.NewGuid();
+        Guid id = Guid.CreateVersion7(TimeProvider.System.GetUtcNow());
         List<string> codes = new List<string>() { "123" };
         presenter.Handle(new Core.DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse(id.ToString(), codes, true));
 
