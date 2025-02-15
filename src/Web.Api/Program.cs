@@ -92,7 +92,6 @@ try
     string pathBase = Environment.GetEnvironmentVariable("PATH_BASE");
     Log.Information($"Using PathBase: {pathBase}");
 
-    //ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
     builder.Host.UseSerilog((ctx, config) =>
     {
         config.ReadFrom.Configuration(ctx.Configuration);
