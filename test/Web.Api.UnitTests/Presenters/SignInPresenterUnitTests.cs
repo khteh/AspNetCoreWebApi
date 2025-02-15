@@ -20,7 +20,7 @@ public class SignInPresenterUnitTests
         var presenter = new SignInPresenter(logger.Object);
 
         // act
-        Guid id = Guid.NewGuid();
+        Guid id = Guid.CreateVersion7(TimeProvider.System.GetUtcNow());
         string username = "UserName";
         presenter.Handle(new SignInResponse(id, username, true, string.Empty));
 

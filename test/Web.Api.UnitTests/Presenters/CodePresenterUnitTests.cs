@@ -20,7 +20,7 @@ public class CodePresenterUnitTests
         var presenter = new CodePresenter(logger.Object);
 
         // act
-        Guid id = Guid.NewGuid();
+        Guid id = Guid.CreateVersion7(TimeProvider.System.GetUtcNow());
         string code = "1234";
         presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(id.ToString(), code, true));
 

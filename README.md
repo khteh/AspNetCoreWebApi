@@ -7,19 +7,19 @@ An ASP.NET 9.0 Web API, SignalR and GRPC project using Clean Architecture to qui
 - Uses PostgreSQL.
 - Install/update dotnet ef tool:
 
-```
-$ dotnet tool install --global dotnet-ef
-$ dotnet tool update --global dotnet-ef
-```
+  ```
+  $ dotnet tool install --global dotnet-ef
+  $ dotnet tool update --global dotnet-ef
+  ```
 
 - Either run the application / `Web.Api.Infrastructure` project and the DB will be automatically created or:
 - Apply database migrations to create the db. From a command line within the `Web.Api.Infrastructure` project folder use the dotnet CLI to run :
 
-```
-$ cd src/Web.Api.Infrastructure
-$ dotnet ef database update -c AppDbContext
-$ dotnet ef database update -c AppIdentityDbContext
-```
+  ```
+  $ cd src/Web.Api.Infrastructure
+  $ dotnet ef database update -c AppDbContext
+  $ dotnet ef database update -c AppIdentityDbContext
+  ```
 
 # SignalR Client Setup
 
