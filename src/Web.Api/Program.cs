@@ -29,7 +29,6 @@ global using System.Net;
 global using System.Text;
 global using System.Threading;
 global using System.Threading.Tasks;
-using Elastic.Apm.NetCoreAll;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Reflection;
@@ -93,7 +92,7 @@ try
     string pathBase = Environment.GetEnvironmentVariable("PATH_BASE");
     Log.Information($"Using PathBase: {pathBase}");
 
-    ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
+    //ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
     builder.Host.UseSerilog((ctx, config) =>
     {
         config.ReadFrom.Configuration(ctx.Configuration);
@@ -162,7 +161,7 @@ try
             OnAuthenticationFailed = context =>
             {
                 if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                    context.Response.Headers.Add("Token-Expired", "true");
+                    context.Response.Headers.Append("Token-Expired", "true");
                 return Task.CompletedTask;
             },
             // We have to hook the OnMessageReceived event in order to
@@ -346,6 +345,7 @@ try
         logging.RequestBodyLogLimit = 4096;
         logging.ResponseBodyLogLimit = 4096;
     });
+    builder.Services.AddAllElasticApm();
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -356,11 +356,11 @@ try
     }
     else
     {
-        app.UseAllElasticApm(builder.Configuration);
+        //app.UseAllElasticApm(builder.Configuration);
         app.UseExceptionHandler(builder => builder.Run(async context =>
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
                 var error = context.Features.Get<IExceptionHandlerFeature>();
                 if (error != null)
                 {
@@ -417,10 +417,10 @@ try
         //    _logger.LogInformation("Header: {KEY}: {VALUE}", header.Key, header.Value);
         // Connection: RemoteIp
         context.Request.PathBase = new PathString(pathBase); // Kubernetes ingress rule.
-        context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
-        context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+        context.Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
+        context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
         // https://dotnetthoughts.net/implementing-content-security-policy-in-aspnetcore/
-        context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com;");
+        context.Response.Headers.Append("Content-Security-Policy", "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com;");
         context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
         {
             Public = true,
