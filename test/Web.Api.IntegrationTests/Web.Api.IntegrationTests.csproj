@@ -21,7 +21,7 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.2" />
     <PackageReference Include="Grpc.Net.ClientFactory" Version="2.67.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.69.0">
+    <PackageReference Include="Grpc.Tools" Version="2.70.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
