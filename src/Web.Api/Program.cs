@@ -21,7 +21,6 @@ global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.OpenApi.Models;
 global using Serilog;
 global using Serilog.Events;
-global using Serilog.Formatting.Elasticsearch;
 global using System;
 global using System.Collections.Generic;
 global using System.IO;
@@ -29,6 +28,7 @@ global using System.Net;
 global using System.Text;
 global using System.Threading;
 global using System.Threading.Tasks;
+using Elastic.CommonSchema.Serilog;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Reflection;
@@ -94,13 +94,19 @@ try
 
     builder.Host.UseSerilog((ctx, config) =>
     {
+        /* https://www.elastic.co/docs/reference/ecs/logging/dotnet/serilog-formatter
+         * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext
+         * https://github.com/elastic/ecs-dotnet
+         */
         config.ReadFrom.Configuration(ctx.Configuration);
         if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
-            config.WriteTo.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}");
+            config.WriteTo.Async(a => a.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}"));
         else
-            config.WriteTo.Console(new ElasticsearchJsonFormatter());
+            config.WriteTo.Async(a => a.Console(new EcsTextFormatter()));
     });
     // Add services to the container.
+    // Ensure that we make the HttpContextAccessor resolvable through the configuration
+    builder.Services.AddHttpContextAccessor();
     builder.Services.AddRazorPages();
     builder.Services.AddOptions();
     builder.Services.Configure<CookiePolicyOptions>(options =>
@@ -355,7 +361,6 @@ try
     }
     else
     {
-        //app.UseAllElasticApm(builder.Configuration);
         app.UseExceptionHandler(builder => builder.Run(async context =>
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
