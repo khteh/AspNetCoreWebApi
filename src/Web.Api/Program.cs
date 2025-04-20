@@ -418,8 +418,7 @@ try
                                             context?.Connection?.RemoteIpAddress?.ToString(),
                                             context?.Request?.QueryString.ToString(),
                                             context?.Request?.ContentType,
-                                            context?.Request?.Protocol,
-                                            context?.Request?.Headers
+                                            context?.Request?.Protocol
                                             );
         app.Logger.LogInformation(JsonSerializer.Serialize(requestLog)); // geoip works with JSON format
         // Headers
