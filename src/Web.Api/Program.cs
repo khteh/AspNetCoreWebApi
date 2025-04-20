@@ -97,6 +97,7 @@ try
         /* https://www.elastic.co/docs/reference/ecs/logging/dotnet/serilog-formatter
          * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext
          * https://github.com/elastic/ecs-dotnet
+         * https://github.com/serilog/serilog/wiki/configuration-basics
          */
         config.ReadFrom.Configuration(ctx.Configuration);
         if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
@@ -402,9 +403,12 @@ try
     app.UseSerilogRequestLogging();
     app.Use(async (context, next) =>
     {
-        // Request method, scheme, and path
-        //_logger.LogInformation($"Method: {context.Request.Method}, Scheme: {context.Request.Scheme}, PathBase: {context.Request.PathBase}, Path: {context.Request.Path}, IP: {context.Connection.RemoteIpAddress}, Host: {context.Request.Host}, ContentLength: {context.Request.ContentLength}");
-        // The following should have been handled by Serilog.Enrichers.HttpContext configured in appsettings.json
+        /* Request method, scheme, and path
+         * _logger.LogInformation($"Method: {context.Request.Method}, Scheme: {context.Request.Scheme}, PathBase: {context.Request.PathBase}, Path: {context.Request.Path}, IP: {context.Connection.RemoteIpAddress}, Host: {context.Request.Host}, ContentLength: {context.Request.ContentLength}");
+         * The following should have been handled by Serilog.Enrichers.HttpContext configured in appsettings.json
+         * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext
+         * https://github.com/elastic/ecs-dotnet
+         */
         RequestLog requestLog = new RequestLog(context?.Request?.Method,
                                             context?.Request?.Scheme,
                                             context?.Request?.PathBase,
