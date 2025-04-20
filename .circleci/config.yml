@@ -24,7 +24,6 @@ jobs:
       - checkout
       - run:
           name: Wait for PostgreSQL Server
-          #command: dockerize -wait tcp://localhost:5432 -timeout 1m
           command: pg_isready -U "postgres" -h 127.0.0.1 -p 5432
       - run: dotnet restore
       - run: dotnet build -c Release --no-restore /p:Version=9.0 --version-suffix $CIRCLE_BUILD_NUM
