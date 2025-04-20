@@ -404,6 +404,7 @@ try
     {
         // Request method, scheme, and path
         //_logger.LogInformation($"Method: {context.Request.Method}, Scheme: {context.Request.Scheme}, PathBase: {context.Request.PathBase}, Path: {context.Request.Path}, IP: {context.Connection.RemoteIpAddress}, Host: {context.Request.Host}, ContentLength: {context.Request.ContentLength}");
+        // The following should have been handled by Serilog.Enrichers.HttpContext configured in appsettings.json
         RequestLog requestLog = new RequestLog(context?.Request?.Method,
                                             context?.Request?.Scheme,
                                             context?.Request?.PathBase,

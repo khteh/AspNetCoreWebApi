@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -16,7 +17,10 @@ public class AccountsControllerIntegrationTests
     public AccountsControllerIntegrationTests(ITestOutputHelper output, CustomWebApplicationFactory<Program> factory)
     {
         _output = output;
-        _client = factory.CreateClient();
+        _client = factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false
+        });
         factory.InitDB();
     }
 

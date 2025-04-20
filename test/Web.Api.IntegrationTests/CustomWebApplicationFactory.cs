@@ -1,17 +1,14 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
+
 namespace Web.Api.IntegrationTests;
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IDisposable where TStartup : class
 {
@@ -21,24 +18,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         builder.ConfigureServices((context, services) =>
         {
             // Create a new service provider.
-            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextPool<AppDbContext>));
-            services.Remove(descriptor);
-            descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextPool<AppIdentityDbContext>));
-            services.Remove(descriptor);
-            services.AddDbContextPool<AppIdentityDbContext>(options =>
-            {
-                options.UseNpgsql(context.Configuration.GetConnectionString("IntegrationTests"), b => b.MigrationsAssembly("Web.Api.Infrastructure"));
-                options.EnableSensitiveDataLogging();
-                options.EnableDetailedErrors();
-                options.LogTo(Console.WriteLine);
-            })
-                .AddDbContextPool<AppDbContext>(options =>
-                {
-                    options.UseNpgsql(context.Configuration.GetConnectionString("IntegrationTests"), b => b.MigrationsAssembly("Web.Api.Infrastructure"));
-                    options.EnableSensitiveDataLogging();
-                    options.EnableDetailedErrors();
-                    options.LogTo(Console.WriteLine);
-                });
             services.AddLogging((loggingBuilder) => loggingBuilder
                 .SetMinimumLevel(LogLevel.Debug)
                 .AddConsole());
@@ -49,7 +28,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
                 return loggerFactory.CreateLogger<UserRepository>();
             });
-            services.AddDistributedMemoryCache();
         });
     }
     public void InitDB()
