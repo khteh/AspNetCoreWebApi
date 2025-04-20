@@ -406,7 +406,7 @@ try
         /* Request method, scheme, and path
          * _logger.LogInformation($"Method: {context.Request.Method}, Scheme: {context.Request.Scheme}, PathBase: {context.Request.PathBase}, Path: {context.Request.Path}, IP: {context.Connection.RemoteIpAddress}, Host: {context.Request.Host}, ContentLength: {context.Request.ContentLength}");
          * The following should have been handled by Serilog.Enrichers.HttpContext configured in appsettings.json
-         * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext
+         * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext : outputTemplate: "[{Timestamp:HH:mm:ss}] {Level:u3} ClientIP: {ClientIp} CorrelationId: {CorrelationId} header-name: {headername} {Message:lj}{NewLine}{Exception}"
          * https://github.com/elastic/ecs-dotnet
          */
         RequestLog requestLog = new RequestLog(context?.Request?.Method,
