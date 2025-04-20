@@ -350,7 +350,8 @@ try
         logging.RequestBodyLogLimit = 4096;
         logging.ResponseBodyLogLimit = 4096;
     });
-    builder.Services.AddAllElasticApm();
+    if (!string.IsNullOrEmpty(environment) && string.Equals(environment, "Production"))
+        builder.Services.AddAllElasticApm();
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
