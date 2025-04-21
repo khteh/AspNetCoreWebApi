@@ -52,7 +52,7 @@ using Web.Api.Models.Response;
 using Web.Api.Presenters.Grpc;
 using Web.Api.Services;
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
+    .WriteTo.Console(new EcsTextFormatter())
     .CreateBootstrapLogger();
 try
 {
