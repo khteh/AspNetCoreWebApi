@@ -20,6 +20,7 @@ global using Microsoft.Extensions.Logging;
 global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.OpenApi.Models;
 global using Serilog;
+global using Serilog.Extensions;
 global using Serilog.Events;
 global using System;
 global using System.Collections.Generic;
@@ -91,19 +92,20 @@ try
         Log.Error($"Failed to set {minWorker} threads. Using original {originalMinWorker} threads");
     string pathBase = Environment.GetEnvironmentVariable("PATH_BASE");
     Log.Information($"Using PathBase: {pathBase}");
-
+    /* https://www.elastic.co/docs/reference/ecs/logging/dotnet/serilog-formatter
+     * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext
+     * https://github.com/elastic/ecs-dotnet
+     * https://github.com/serilog/serilog/wiki/configuration-basics
+     */
     builder.Host.UseSerilog((ctx, config) =>
     {
-        /* https://www.elastic.co/docs/reference/ecs/logging/dotnet/serilog-formatter
-         * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext
-         * https://github.com/elastic/ecs-dotnet
-         * https://github.com/serilog/serilog/wiki/configuration-basics
-         */
         config.ReadFrom.Configuration(ctx.Configuration);
+#if false
         if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
             config.WriteTo.Async(a => a.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}"));
         else
             config.WriteTo.Async(a => a.Console(new EcsTextFormatter()));
+#endif
     });
     // Add services to the container.
     // Ensure that we make the HttpContextAccessor resolvable through the configuration
@@ -401,6 +403,7 @@ try
         c.SwaggerEndpoint($"{pathBase}/swagger/v9.0/swagger.json", "AspNetCoreWebApi V9.0");
     });
     app.UseSerilogRequestLogging();
+    app.UseSerilogMemoryUsageExact();
     app.Use(async (context, next) =>
     {
         /* Request method, scheme, and path
@@ -411,14 +414,14 @@ try
          */
         RequestLog requestLog = new RequestLog(context?.Request?.Method,
                                             context?.Request?.Scheme,
+                                            context?.Request?.Protocol,
                                             context?.Request?.PathBase,
                                             context?.Request?.Path,
-                                            context?.Request?.Host.ToString(),
-                                            context?.Request?.ContentLength,
-                                            context?.Connection?.RemoteIpAddress?.ToString(),
-                                            context?.Request?.QueryString.ToString(),
-                                            context?.Request?.ContentType,
-                                            context?.Request?.Protocol
+                                            context?.Request?.Host.ToString()
+                                            /*context?.Request?.ContentLength,
+                                            context?.Connection?.RemoteIpAddress?.ToString(), Use Serilog.Enrichers.HttpContext.WithClientIp
+                                            context?.Request?.QueryString.ToString(), WithRequestQuery 
+                                            context?.Request?.ContentType,*/
                                             );
         app.Logger.LogInformation(JsonSerializer.Serialize(requestLog)); // geoip works with JSON format
         // Headers
@@ -468,7 +471,6 @@ try
     lifetime.ApplicationStarted.Register(() => AppStarted(app.Logger, readinessHealthCheck));
     lifetime.ApplicationStopping.Register(() => app.Logger.LogInformation($"{typeof(Program).Assembly.GetName().Name} stopping..."));
     lifetime.ApplicationStopped.Register(() => app.Logger.LogInformation($"{typeof(Program).Assembly.GetName().Name} stopped!"));
-
     app.Run();
 }
 catch (Exception ex) when (ex.GetType().Name is not "HostAbortedException") // https://github.com/dotnet/runtime/issues/60600

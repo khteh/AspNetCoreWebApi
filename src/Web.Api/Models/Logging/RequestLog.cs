@@ -5,17 +5,18 @@ public record RequestLog
     public string Scheme { get; init; }
     public string PathBase { get; init; }
     public string Path { get; init; }
-    public string LocalIP { get; init; }
-    public string IP { get; init; }
     public string Host { get; init; }
-    public long ContentLength { get; init; }
-    public string ContentType { get; init; }
-    public string QueryString { get; init; }
     public string Protocol { get; init; }
 #if false
     /* The following should have been handled by Serilog.Enrichers.HttpContext configured in appsettings.json
+     * https://github.com/denis-peshkov/Serilog.Enrichers.HttpContext
      * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext : outputTemplate: "[{Timestamp:HH:mm:ss}] {Level:u3} ClientIP: {ClientIp} CorrelationId: {CorrelationId} header-name: {headername} {Message:lj}{NewLine}{Exception}"
      */
+    public string IP { get; init; }
+    public string LocalIP { get; init; }
+    public string QueryString { get; init; }
+    public long ContentLength { get; init; }
+    public string ContentType { get; init; }
     public string UserAgent { get; init; }
     public string X_Forwarded_For { get; init; }
     public string X_Forwarded_Proto { get; init; }
@@ -25,19 +26,19 @@ public record RequestLog
     public string X_Original_Host { get; init; }
     public RequestLog(string method, string scheme, string pathBase, string path, string host, long? length, string ip, string queryString, string contentType, string protocol, IHeaderDictionary headers)
 #endif
-    public RequestLog(string method, string scheme, string pathBase, string path, string host, long? length, string ip, string queryString, string contentType, string protocol)
+    public RequestLog(string method, string scheme, string protocol, string pathBase, string path, string host)
     {
-        IP = ip;
         Method = method;
         Scheme = scheme;
         PathBase = pathBase;
         Path = path;
         Host = host;
-        ContentLength = length ?? 0;
-        ContentType = contentType;
-        QueryString = queryString;
         Protocol = protocol;
 #if false
+        IP = ip;
+        QueryString = queryString;
+        ContentLength = length ?? 0;
+        ContentType = contentType;
         if (headers != null)
             foreach (var header in headers)
                 if (header.Key.Equals("User-Agent"))
