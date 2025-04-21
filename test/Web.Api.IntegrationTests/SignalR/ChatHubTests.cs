@@ -18,7 +18,6 @@ public class ChatHubTests
         _testServer = factory.Server;
         factory.InitDB();
     }
-
     private async Task<string> AccessTokenProvider()
     {
         HttpClient client = _testServer.CreateClient();
@@ -40,7 +39,7 @@ public class ChatHubTests
         string echo = string.Empty;
         string message = "Integration Testing in Microsoft AspNetCore SignalR";
         HubConnection connection = new HubConnectionBuilder()
-            .WithUrl("https://localhost/chatHub", o =>
+            .WithUrl("/chatHub", o =>
             {
                 o.Transports = HttpTransportType.WebSockets;
                 o.AccessTokenProvider = async () => await AccessTokenProvider();

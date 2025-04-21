@@ -17,10 +17,7 @@ public class AccountsControllerIntegrationTests
     public AccountsControllerIntegrationTests(ITestOutputHelper output, CustomWebApplicationFactory<Program> factory)
     {
         _output = output;
-        _client = factory.CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false
-        });
+        _client = factory.CreateClient();
         factory.InitDB();
     }
 
