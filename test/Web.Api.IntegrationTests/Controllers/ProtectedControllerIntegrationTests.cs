@@ -10,11 +10,7 @@ namespace Web.Api.IntegrationTests.Controllers;
 public class ProtectedControllerIntegrationTests
 {
     private readonly HttpClient _client;
-    public ProtectedControllerIntegrationTests(CustomWebApplicationFactory<Program> factory)
-    {
-        _client = factory.CreateClient();
-        factory.InitDB();
-    }
+    public ProtectedControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) => _client = factory.CreateClient();
 
     [Fact]
     public async Task CantAccessProtectedResourceWithoutLogin()

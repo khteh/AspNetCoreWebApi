@@ -4,13 +4,15 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
+using Xunit;
 
 namespace Web.Api.IntegrationTests;
-public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IDisposable where TStartup : class
+public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IAsyncLifetime where TStartup : class
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -30,7 +32,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             });
         });
     }
-    public void InitDB()
+    public async Task InitializeAsync()
     {
         using (var scope = Services.CreateScope())
             try
@@ -41,18 +43,18 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
 
                 // Ensure the database is created.
-                appDb.Database.EnsureCreated();
-                identityDb.Database.EnsureCreated();
+                await appDb.Database.EnsureCreatedAsync();
+                await identityDb.Database.EnsureCreatedAsync();
                 // Seed the database with test data.
-                SeedData.PopulateTestData(identityDb, appDb);
+                await SeedData.PopulateTestData(identityDb, appDb);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"{nameof(InitDB)} exception! {ex}");
+                Console.WriteLine($"{nameof(InitializeAsync)} exception! {ex}");
                 throw;
             }
     }
-    public void Dispose()
+    async Task IAsyncLifetime.DisposeAsync()
     {
         //var sp = _services.BuildServiceProvider();
         // Create a scope to obtain a reference to the database contexts
@@ -62,7 +64,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             var scopedServices = scope.ServiceProvider;
             var appDb = scopedServices.GetRequiredService<AppDbContext>();
             var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
-            SeedData.CleanUpTestData(identityDb, appDb);
+            await SeedData.CleanUpTestData(identityDb, appDb);
         }
         base.Dispose();
         GC.SuppressFinalize(this);

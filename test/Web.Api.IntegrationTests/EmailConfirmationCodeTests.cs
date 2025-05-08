@@ -1,9 +1,8 @@
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text;
+using System.Threading.Tasks;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
 
@@ -12,11 +11,7 @@ namespace Web.Api.IntegrationTests;
 public class EmailConfirmationCodeTests
 {
     private readonly CustomWebApplicationFactory<Program> _factory;
-    public EmailConfirmationCodeTests(CustomWebApplicationFactory<Program> factory)
-    {
-        _factory = factory;
-        factory.InitDB();
-    }
+    public EmailConfirmationCodeTests(CustomWebApplicationFactory<Program> factory) => _factory = factory;
     [Fact]
     public async Task EmailConfirmationTokenShoudMatchTest()
     {

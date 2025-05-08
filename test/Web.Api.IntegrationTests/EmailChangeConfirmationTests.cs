@@ -1,9 +1,6 @@
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
 
@@ -12,11 +9,7 @@ namespace Web.Api.IntegrationTests;
 public class EmailChangeConfirmationTests
 {
     private readonly CustomWebApplicationFactory<Program> _factory;
-    public EmailChangeConfirmationTests(CustomWebApplicationFactory<Program> factory)
-    {
-        _factory = factory;
-        factory.InitDB();
-    }
+    public EmailChangeConfirmationTests(CustomWebApplicationFactory<Program> factory) => _factory = factory;
     [Fact]
     public async Task ChangeEmailShouldSucceedTest()
     {

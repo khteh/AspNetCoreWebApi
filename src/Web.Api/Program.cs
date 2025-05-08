@@ -21,7 +21,6 @@ global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.OpenApi.Models;
 global using Serilog;
 global using Serilog.Extensions;
-global using Serilog.Events;
 global using System;
 global using System.Collections.Generic;
 global using System.IO;
