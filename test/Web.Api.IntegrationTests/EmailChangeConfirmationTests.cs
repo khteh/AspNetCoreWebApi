@@ -2,10 +2,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using Web.Api.Infrastructure.Identity;
+using Web.Api.IntegrationTests.Controllers;
 using Xunit;
 
 namespace Web.Api.IntegrationTests;
-[Collection("EmailChangeConfirmation Test Collection")]
+[Collection(EmailChangeConfirmationTestsCollection.Name)]
 public class EmailChangeConfirmationTests
 {
     private readonly CustomWebApplicationFactory<Program> _factory;

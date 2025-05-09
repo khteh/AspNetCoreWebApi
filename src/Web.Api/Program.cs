@@ -470,6 +470,7 @@ try
     lifetime.ApplicationStarted.Register(() => AppStarted(app.Logger, readinessHealthCheck));
     lifetime.ApplicationStopping.Register(() => app.Logger.LogInformation($"{typeof(Program).Assembly.GetName().Name} stopping..."));
     lifetime.ApplicationStopped.Register(() => app.Logger.LogInformation($"{typeof(Program).Assembly.GetName().Name} stopped!"));
+    Log.Information("app.Run()...");
     app.Run();
 }
 catch (Exception ex) when (ex.GetType().Name is not "HostAbortedException") // https://github.com/dotnet/runtime/issues/60600

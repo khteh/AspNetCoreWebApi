@@ -6,10 +6,11 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Web.Api.IntegrationTests.Controllers;
 using Web.Api.Models.Response;
 using Xunit;
 namespace Web.Api.IntegrationTests.SignalR;
-[Collection("SignalR Test Collection")]
+[Collection(SignalRTestsCollection.Name)]
 public class ChatHubTests
 {
     private readonly TestServer _testServer;

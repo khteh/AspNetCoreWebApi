@@ -4,10 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using System.Threading.Tasks;
 using Web.Api.Infrastructure.Identity;
+using Web.Api.IntegrationTests.Controllers;
 using Xunit;
 
 namespace Web.Api.IntegrationTests;
-[Collection("EmailConfirmationCode Test Collection")]
+[Collection(EmailConfirmationCodeTestsCollection.Name)]
 public class EmailConfirmationCodeTests
 {
     private readonly CustomWebApplicationFactory<Program> _factory;
