@@ -18,7 +18,6 @@ public class AccountsControllerIntegrationTests
         _output = output;
         _client = factory.CreateClient();
     }
-
     [Fact]
     public async Task CanRegisterUserWithValidAccountDetails()
     {
