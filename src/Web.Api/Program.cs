@@ -63,8 +63,7 @@ try
         Args = args
     });
     IWebHostEnvironment env = builder.Environment;
-    string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-    bool _isIntegrationTests = !string.IsNullOrEmpty(environment) && environment.Equals("IntegrationTests");
+    bool _isIntegrationTests = !string.IsNullOrEmpty(env.EnvironmentName) && env.EnvironmentName.Equals("IntegrationTests");
     builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", false, true)
                     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
@@ -352,7 +351,7 @@ try
         logging.RequestBodyLogLimit = 4096;
         logging.ResponseBodyLogLimit = 4096;
     });
-    if (!string.IsNullOrEmpty(environment) && string.Equals(environment, "Production"))
+    if (!string.IsNullOrEmpty(env.EnvironmentName) && string.Equals(env.EnvironmentName, "Production"))
         builder.Services.AddAllElasticApm();
     var app = builder.Build();
 

@@ -15,7 +15,7 @@ using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
-using Xunit.Abstractions;
+using Xunit;
 
 public delegate void LogMessage(LogLevel logLevel, string categoryName, EventId eventId, string message, Exception? exception);
 

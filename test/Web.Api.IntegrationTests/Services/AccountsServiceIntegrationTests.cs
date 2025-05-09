@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Web.Api.Identity.Accounts;
 using Web.Api.Identity.Auth;
 using Xunit;
-using Xunit.Abstractions;
 using static Web.Api.Identity.Accounts.Accounts;
 using static Web.Api.Identity.Auth.Auth;
 namespace Web.Api.IntegrationTests.Services;

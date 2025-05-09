@@ -4,7 +4,6 @@ using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using Xunit;
-using Xunit.Abstractions;
 
 public class IntegrationTestBase : IClassFixture<GrpcTestFixture<Program>>, IDisposable
 {

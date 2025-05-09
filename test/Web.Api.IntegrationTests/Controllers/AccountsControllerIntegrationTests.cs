@@ -6,7 +6,6 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 namespace Web.Api.IntegrationTests.Controllers;
 [Collection("Controller Test Collection")]
 public class AccountsControllerIntegrationTests
@@ -21,9 +20,9 @@ public class AccountsControllerIntegrationTests
     [Fact]
     public async Task CanRegisterUserWithValidAccountDetails()
     {
-        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("John", "Doe", "jdoe@gmail.com", "johndoe", "Pa$$word1")), Encoding.UTF8, "application/json"));
+        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("John", "Doe", "jdoe@gmail.com", "johndoe", "Pa$$word1")), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
         httpResponse.EnsureSuccessStatusCode();
-        string stringResponse = await httpResponse.Content.ReadAsStringAsync();
+        string stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.True((bool)result["success"]);
         Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
@@ -33,9 +32,9 @@ public class AccountsControllerIntegrationTests
     [Fact]
     public async Task CanDeleteUserWithValidAccountDetails()
     {
-        var httpResponse = await _client.DeleteAsync("/api/accounts/deleteme");
+        var httpResponse = await _client.DeleteAsync("/api/accounts/deleteme", TestContext.Current.CancellationToken);
         httpResponse.EnsureSuccessStatusCode();
-        var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+        var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.True((bool)result["success"]);
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
@@ -43,9 +42,9 @@ public class AccountsControllerIntegrationTests
     [Fact]
     public async Task CantRegisterUserWithInvalidAccountDetailsAndFailsFluentValidation()
     {
-        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("John", "Doe", "me@email.com", string.Empty, "Pa$$word")), Encoding.UTF8, "application/json"));
+        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("John", "Doe", "me@email.com", string.Empty, "Pa$$word")), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
-        var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+        var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
         Assert.False((bool)result["success"]);
@@ -63,9 +62,9 @@ public class AccountsControllerIntegrationTests
     [Fact]
     public async Task CantRegisterUserWithInvalidEmailAndFailsFluentValidation()
     {
-        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("John", "Doe", "email.com", string.Empty, "Pa$$word")), Encoding.UTF8, "application/json"));
+        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("John", "Doe", "email.com", string.Empty, "Pa$$word")), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
-        var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+        var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
         Assert.False((bool)result["success"]);
@@ -83,16 +82,16 @@ public class AccountsControllerIntegrationTests
     [Fact]
     public async Task CantDeleteUserWithInvalidAccountDetails()
     {
-        var httpResponse = await _client.DeleteAsync("/api/accounts/DeleteMeNot"); // UserManager is NOT case sensitive!
-        var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+        var httpResponse = await _client.DeleteAsync("/api/accounts/DeleteMeNot", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         Assert.Contains("Invalid user!", stringResponse);
         Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
     }
     [Fact]
     public async Task CanFindById()
     {
-        var httpResponse = await _client.GetAsync("/api/accounts/id/41532945-599e-4910-9599-0e7402017fbe"); // UserManager is NOT case sensitive!
-        var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+        var httpResponse = await _client.GetAsync("/api/accounts/id/41532945-599e-4910-9599-0e7402017fbe", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.True((bool)result["success"]);
         string id = (string)result["id"];
@@ -103,8 +102,8 @@ public class AccountsControllerIntegrationTests
     [Fact]
     public async Task CanFindByUsername()
     {
-        var httpResponse = await _client.GetAsync("/api/accounts/username/mickeymouse"); // UserManager is NOT case sensitive!
-        var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+        var httpResponse = await _client.GetAsync("/api/accounts/username/mickeymouse", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.True((bool)result["success"]);
         string id = (string)result["id"];
@@ -116,8 +115,8 @@ public class AccountsControllerIntegrationTests
     public async Task CanFindByEmail()
     {
         //var httpResponse = await _client.GetAsync(WebUtility.UrlEncode("/api/accounts/email/mickey@mouse.com")); // UserManager is NOT case sensitive!
-        var httpResponse = await _client.GetAsync("/api/accounts/email/mickey@mouse.com"); // UserManager is NOT case sensitive!
-        var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+        var httpResponse = await _client.GetAsync("/api/accounts/email/mickey@mouse.com", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.True((bool)result["success"]);
         string id = (string)result["id"];
@@ -129,9 +128,9 @@ public class AccountsControllerIntegrationTests
     public async Task CanChangePasswordWithValidAccountDetails()
     {
         // Create User
-        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("FirstName", "LastName", "user@gmail.com", "user1", "Pa$$word1")), Encoding.UTF8, "application/json"));
+        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("FirstName", "LastName", "user@gmail.com", "user1", "Pa$$word1")), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
         httpResponse.EnsureSuccessStatusCode();
-        JsonNode result = JsonNode.Parse(await httpResponse.Content.ReadAsStringAsync());
+        JsonNode result = JsonNode.Parse(await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         Assert.True((bool)result["success"]);
         Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
         string id = (string)result["id"];
@@ -139,12 +138,12 @@ public class AccountsControllerIntegrationTests
 
         // Login
         Models.Request.LogInRequest loginRequest = new Models.Request.LogInRequest("user1", "Pa$$word1");
-        var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"));
-        string strLoginResponse = await loginResponse.Content.ReadAsStringAsync();
+        var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
+        string strLoginResponse = await loginResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         if (!loginResponse.IsSuccessStatusCode)
             _output.WriteLine($"{nameof(CanChangePasswordWithValidAccountDetails)} failed with error message:  {strLoginResponse}");
         loginResponse.EnsureSuccessStatusCode();
-        var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
+        var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         Models.Response.LogInResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(strLoginSuccessResponse);
         Assert.NotNull(loginResult);
         Assert.True(loginResult.Success);
@@ -154,17 +153,17 @@ public class AccountsControllerIntegrationTests
         Assert.NotNull(loginResult.RefreshToken);
 
         // Change Password
-        var pwdResponse = await _client.PostAsync("/api/accounts/changepassword", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.ChangePasswordRequest(id, "Pa$$word1", "Pa$$word2")), Encoding.UTF8, "application/json"));
+        var pwdResponse = await _client.PostAsync("/api/accounts/changepassword", new StringContent(JsonSerializer.Serialize(new Models.Request.ChangePasswordRequest(id, "Pa$$word1", "Pa$$word2")), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
         pwdResponse.EnsureSuccessStatusCode();
-        var strPwdResponse = await pwdResponse.Content.ReadAsStringAsync();
+        var strPwdResponse = await pwdResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         Models.Response.ChangePasswordResponse pwdResponse1 = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ChangePasswordResponse>(strPwdResponse);
         Assert.True(pwdResponse1.Success);
         Assert.Equal(HttpStatusCode.OK, pwdResponse.StatusCode);
         Assert.Null(pwdResponse1.Errors);
 
         // Should fail login with previous password
-        var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"));
-        var strLoginFailResponse = await loginFailResponse.Content.ReadAsStringAsync();
+        var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
+        var strLoginFailResponse = await loginFailResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         Models.Response.LogInResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(strLoginFailResponse);
         Assert.NotNull(response);
         Assert.NotNull(response.Errors);
@@ -173,9 +172,9 @@ public class AccountsControllerIntegrationTests
         Assert.Contains("Invalid username", response.Errors.First().Description);
 
         // Login
-        var loginSuccessResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest with { Password = "Pa$$word2" }), Encoding.UTF8, "application/json"));
+        var loginSuccessResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonSerializer.Serialize(loginRequest with { Password = "Pa$$word2" }), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
         loginSuccessResponse.EnsureSuccessStatusCode();
-        var strLoginSuccessResponse1 = await loginSuccessResponse.Content.ReadAsStringAsync();
+        var strLoginSuccessResponse1 = await loginSuccessResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode loginResult1 = JsonNode.Parse(strLoginSuccessResponse1);
         Assert.NotNull(loginResult1["accessToken"]);
         Assert.False(string.IsNullOrEmpty((string)loginResult1["accessToken"]["token"]));
@@ -186,9 +185,9 @@ public class AccountsControllerIntegrationTests
     public async Task CanResetPasswordWithValidAccountDetails()
     {
         // Create User
-        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("FirstName", "LastName", "user1@gmail.com", "user2", "Pa$$word1")), Encoding.UTF8, "application/json"));
+        var httpResponse = await _client.PostAsync("/api/accounts/register", new StringContent(JsonSerializer.Serialize(new Models.Request.RegisterUserRequest("FirstName", "LastName", "user1@gmail.com", "user2", "Pa$$word1")), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
         httpResponse.EnsureSuccessStatusCode();
-        JsonNode result = JsonNode.Parse(await httpResponse.Content.ReadAsStringAsync());
+        JsonNode result = JsonNode.Parse(await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         Assert.True((bool)result["success"]);
         Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
         string id = (string)result["id"];
@@ -196,9 +195,9 @@ public class AccountsControllerIntegrationTests
 
         // Login
         Models.Request.LogInRequest loginRequest = new Models.Request.LogInRequest("user2", "Pa$$word1");
-        var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"));
+        var loginResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
         loginResponse.EnsureSuccessStatusCode();
-        var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync();
+        var strLoginSuccessResponse = await loginResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         Models.Response.LogInResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(strLoginSuccessResponse);
         Assert.NotNull(loginResult);
         Assert.True(loginResult.Success);
@@ -209,17 +208,17 @@ public class AccountsControllerIntegrationTests
         Assert.False(string.IsNullOrEmpty(loginResult.RefreshToken));
 
         // Change Password
-        var pwdResponse = await _client.PostAsync("/api/accounts/resetpassword", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.ResetPasswordRequest(id, string.Empty, "Pa$$word2", string.Empty)), Encoding.UTF8, "application/json"));
+        var pwdResponse = await _client.PostAsync("/api/accounts/resetpassword", new StringContent(JsonSerializer.Serialize(new Models.Request.ResetPasswordRequest(id, string.Empty, "Pa$$word2", string.Empty)), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
         pwdResponse.EnsureSuccessStatusCode();
-        var strPwdResponse = await pwdResponse.Content.ReadAsStringAsync();
+        var strPwdResponse = await pwdResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         Models.Response.ResetPasswordResponse pwdResponse1 = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ResetPasswordResponse>(strPwdResponse);
         Assert.True(pwdResponse1.Success);
         Assert.Equal(HttpStatusCode.OK, pwdResponse.StatusCode);
         Assert.Null(pwdResponse1.Errors);
 
         // Should fail login with previous password
-        var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"));
-        var strLoginFailResponse = await loginFailResponse.Content.ReadAsStringAsync();
+        var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
+        var strLoginFailResponse = await loginFailResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         Models.Response.LogInResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(strLoginFailResponse);
         Assert.NotNull(response);
         Assert.NotNull(response.Errors);
@@ -228,9 +227,9 @@ public class AccountsControllerIntegrationTests
         Assert.Contains("Invalid username", response.Errors.First().Description);
 
         // Login
-        var loginSuccessResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(loginRequest with { Password = "Pa$$word2" }), Encoding.UTF8, "application/json"));
+        var loginSuccessResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonSerializer.Serialize(loginRequest with { Password = "Pa$$word2" }), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
         loginSuccessResponse.EnsureSuccessStatusCode();
-        var strLoginSuccessResponse1 = await loginSuccessResponse.Content.ReadAsStringAsync();
+        var strLoginSuccessResponse1 = await loginSuccessResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode loginResult1 = JsonNode.Parse(strLoginSuccessResponse1);
         Assert.NotNull(loginResult1["accessToken"]);
         Assert.False(string.IsNullOrEmpty((string)loginResult1["accessToken"]["token"]));

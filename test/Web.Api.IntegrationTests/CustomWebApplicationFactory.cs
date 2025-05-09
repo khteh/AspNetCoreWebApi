@@ -16,13 +16,13 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "IntegrationTests");
+        // Route the application's logs to the xunit output
+        builder.UseEnvironment("IntegrationTests");
         builder.ConfigureServices((context, services) =>
         {
             // Create a new service provider.
-            services.AddLogging((loggingBuilder) => loggingBuilder
-                .SetMinimumLevel(LogLevel.Debug)
-                .AddConsole());
+            services.AddLogging((loggingBuilder) =>
+                loggingBuilder.SetMinimumLevel(LogLevel.Debug).AddXUnit());
             services.Configure<GrpcConfig>(context.Configuration.GetSection(nameof(GrpcConfig)));
             services.AddScoped<SignInManager<AppUser>>();
             services.AddScoped<ILogger<UserRepository>>(provider =>
@@ -32,7 +32,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             });
         });
     }
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         using (var scope = Services.CreateScope())
             try
@@ -40,7 +40,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 var scopedServices = scope.ServiceProvider;
                 var appDb = scopedServices.GetRequiredService<AppDbContext>();
                 var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
-                var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
 
                 // Ensure the database is created.
                 await appDb.Database.EnsureCreatedAsync();
@@ -54,7 +53,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 throw;
             }
     }
-    async Task IAsyncLifetime.DisposeAsync()
+    public async override ValueTask DisposeAsync()
     {
         //var sp = _services.BuildServiceProvider();
         // Create a scope to obtain a reference to the database contexts
@@ -66,7 +65,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
             await SeedData.CleanUpTestData(identityDb, appDb);
         }
-        base.Dispose();
+        await base.DisposeAsync();
         GC.SuppressFinalize(this);
     }
 }
