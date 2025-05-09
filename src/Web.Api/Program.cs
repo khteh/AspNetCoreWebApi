@@ -95,10 +95,11 @@ try
      * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext
      * https://github.com/elastic/ecs-dotnet
      * https://github.com/serilog/serilog/wiki/configuration-basics
+     * https://github.com/denis-peshkov/Serilog.Enrichers.HttpContext/blob/master/sample/SampleWebApp/Program.cs
      */
-    builder.Host.UseSerilog((ctx, config) =>
+    builder.Host.UseSerilog((ctx, svc, config) =>
     {
-        config.ReadFrom.Configuration(ctx.Configuration);
+        config.ReadFrom.Configuration(ctx.Configuration).ReadFrom.Services(svc).Enrich.FromLogContext();
 #if false
         if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
             config.WriteTo.Async(a => a.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}"));
@@ -355,7 +356,8 @@ try
     if (!string.IsNullOrEmpty(env.EnvironmentName) && string.Equals(env.EnvironmentName, "Production"))
         builder.Services.AddAllElasticApm();
     var app = builder.Build();
-
+    app.UseSerilogRequestLogging();
+    app.UseSerilogMemoryUsageExact();
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -401,8 +403,6 @@ try
     {
         c.SwaggerEndpoint($"{pathBase}/swagger/v9.0/swagger.json", "AspNetCoreWebApi V9.0");
     });
-    app.UseSerilogRequestLogging();
-    app.UseSerilogMemoryUsageExact();
     app.Use(async (context, next) =>
     {
         /* Request method, scheme, and path
