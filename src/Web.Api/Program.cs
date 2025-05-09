@@ -63,6 +63,7 @@ try
         Args = args
     });
     IWebHostEnvironment env = builder.Environment;
+    Log.Information($"Environment: {env.EnvironmentName}");
     bool _isIntegrationTests = !string.IsNullOrEmpty(env.EnvironmentName) && env.EnvironmentName.Equals("IntegrationTests");
     builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", false, true)
