@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.TestHost;
 using System.Threading.Tasks;
 using Xunit;
 namespace Web.Api.IntegrationTests.SignalR;
-[Collection("Controller Test Collection")]
+[Collection("SignalR Test Collection")]
 public class Tests
 {
     private readonly TestServer _testServer;

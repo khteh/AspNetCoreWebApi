@@ -5,7 +5,7 @@ using Web.Api.Infrastructure.Identity;
 using Xunit;
 
 namespace Web.Api.IntegrationTests;
-[Collection("Controller Test Collection")]
+[Collection("EmailChangeConfirmation Test Collection")]
 public class EmailChangeConfirmationTests
 {
     private readonly CustomWebApplicationFactory<Program> _factory;
