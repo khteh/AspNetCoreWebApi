@@ -7,7 +7,6 @@ using System;
 using System.Threading.Tasks;
 using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
-using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
 
@@ -25,11 +24,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 loggingBuilder.SetMinimumLevel(LogLevel.Debug).AddXUnit());
             services.Configure<GrpcConfig>(context.Configuration.GetSection(nameof(GrpcConfig)));
             services.AddScoped<SignInManager<AppUser>>();
-            services.AddScoped<ILogger<UserRepository>>(provider =>
-            {
-                ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-                return loggerFactory.CreateLogger<UserRepository>();
-            });
         });
     }
     public async ValueTask InitializeAsync()
