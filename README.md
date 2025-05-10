@@ -59,6 +59,13 @@ The available APIs include:
 - DELETE `/api/accounts/{username}` - Delete a user using username.
 - GET `/api/protected` - Protected controller for testing role-based authorization.
 
+# Logs
+- logs are available at `/var/log/aspnetcore/logYYYYMMDD_*`
+
+## Windows 11
+- Enter powershell: `PS`
+- `Get-Content -Path "c:\var\log\aspnetcore\log20250510_002" -Wait`
+
 # Continuous Integration:
 
 - Integrated with CircleCI
