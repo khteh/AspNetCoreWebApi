@@ -1,5 +1,4 @@
-﻿using MartinCostello.Logging.XUnit;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,14 +11,13 @@ using Web.Api.Infrastructure.Identity;
 using Xunit;
 
 namespace Web.Api.IntegrationTests;
-public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, ITestOutputHelperAccessor, IAsyncLifetime where TStartup : class
+public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IAsyncLifetime where TStartup : class
 {
-    public ITestOutputHelper? OutputHelper { get; set; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // Route the application's logs to the xunit output
         builder.UseEnvironment("IntegrationTests");
-        builder.ConfigureLogging((p) => p.SetMinimumLevel(LogLevel.Debug).AddXUnit(this));
+        builder.ConfigureLogging((p) => p.SetMinimumLevel(LogLevel.Debug));
         builder.ConfigureServices((context, services) =>
         {
             // Create a new service provider.

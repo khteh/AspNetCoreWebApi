@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 using Xunit;
 namespace Web.Api.IntegrationTests.Controllers;
 [Collection(ControllerTestsCollection.Name)]
-public class AccountsControllerIntegrationTests : IDisposable
+public class AccountsControllerIntegrationTests
 {
     private readonly HttpClient _client;
     private readonly ITestOutputHelper _output;
@@ -18,13 +17,7 @@ public class AccountsControllerIntegrationTests : IDisposable
     {
         _output = output;
         _factory = factory;
-        _factory.OutputHelper = output;
         _client = factory.CreateClient();
-    }
-    public void Dispose()
-    {
-        _factory.OutputHelper = null;
-        GC.SuppressFinalize(this);
     }
     [Fact]
     public async Task CanRegisterUserWithValidAccountDetails()

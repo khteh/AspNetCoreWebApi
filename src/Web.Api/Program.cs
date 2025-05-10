@@ -241,6 +241,7 @@ try
                               });
         });
     builder.Services.AddControllersWithViews();
+    builder.Services.AddOpenApi();
     builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
     //.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter())); Fixed in .Net Core 5
     builder.Services.AddAutoMapper(new[] { typeof(IdentityProfile), typeof(GrpcProfile), typeof(ResponseProfile) });
@@ -362,6 +363,7 @@ try
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
+        app.MapOpenApi();
         app.UseDeveloperExceptionPage();
         app.MapGrpcReflectionService();
     }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using System.Text.Json;
 using Web.Api.Commands;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces.UseCases;
@@ -12,13 +11,15 @@ namespace Web.Api.Controllers;
 [ApiController]
 public class AccountsController : ControllerBase
 {
+    private readonly ILogger<AccountsController> _logger;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
     private readonly IFindUserUseCase _findUserUseCase;
     private readonly FindUserPresenter _findUserPresenter;
-    public AccountsController(IMediator mediator, IMapper mapper,
+    public AccountsController(ILogger<AccountsController> logger, IMediator mediator, IMapper mapper,
             IFindUserUseCase findUserUseCase, FindUserPresenter findUserPresenter)
     {
+        _logger = logger;
         _mediator = mediator;
         _mapper = mapper;
         _findUserUseCase = findUserUseCase;
@@ -30,8 +31,13 @@ public class AccountsController : ControllerBase
     public async Task<ActionResult> Register([FromBody] Models.Request.RegisterUserRequest request)
     {
         if (!ModelState.IsValid)
+        {
+            _logger.LogError($"{nameof(Register)} invalid model state!");
             return BadRequest(ModelState);
+        }
+        _logger.LogDebug($"{nameof(Register)}");
         RegisterUserResponse response = await _mediator.Send(new RegisterUserCommand(request.FirstName, request.LastName, request.Email, request.UserName, request.Password));
+        _logger.LogDebug($"{nameof(Register)} response: {JsonSerializer.Serialize(response)}");
         return _mapper.Map<JsonContentResult>(response);
     }
     // POST api/accounts
