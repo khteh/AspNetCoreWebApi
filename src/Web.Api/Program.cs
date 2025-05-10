@@ -89,6 +89,7 @@ try
             config.WriteTo.Async(a => a.Console(new EcsTextFormatter()));
 #endif
     }, preserveStaticLogger: true);
+    builder.Services.AddLogging(builder => builder.AddSerilog(dispose: true));
     //builder.WebHost.UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory())); Changing the host configuration using WebApplicationBuilder.Host is not supported. Use WebApplication.CreateBuilder(WebApplicationOptions) instead.
     int originalMinWorker, originalMinIOC;
     int minWorker = 1000;
@@ -235,7 +236,7 @@ try
         {
             options.AddDefaultPolicy(policy =>
                               {
-                                  policy.WithOrigins(builder.Configuration["Cors:Domains"].Split(','))
+                                  policy.WithOrigins(builder.Configuration["Cors:Domains"]!.Split(','))
                                   .AllowAnyHeader()
                                   .AllowAnyMethod();
                               });
@@ -473,7 +474,6 @@ try
     lifetime.ApplicationStarted.Register(() => AppStarted(app.Logger, readinessHealthCheck));
     lifetime.ApplicationStopping.Register(() => app.Logger.LogInformation($"{typeof(Program).Assembly.GetName().Name} stopping..."));
     lifetime.ApplicationStopped.Register(() => app.Logger.LogInformation($"{typeof(Program).Assembly.GetName().Name} stopped!"));
-    Log.Information("app.Run()...");
     app.Run();
 }
 catch (Exception ex) when (ex.GetType().Name is not "HostAbortedException") // https://github.com/dotnet/runtime/issues/60600

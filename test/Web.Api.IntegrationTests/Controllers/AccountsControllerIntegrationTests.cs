@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Web.Api.IntegrationTests.Services;
 using Xunit;
 namespace Web.Api.IntegrationTests.Controllers;
 [Collection(ControllerTestsCollection.Name)]
@@ -12,12 +13,10 @@ public class AccountsControllerIntegrationTests
 {
     private readonly HttpClient _client;
     private readonly ITestOutputHelper _output;
-    private readonly CustomWebApplicationFactory<Program> _factory;
     public AccountsControllerIntegrationTests(ITestOutputHelper output, CustomWebApplicationFactory<Program> factory)
     {
         _output = output;
-        _factory = factory;
-        _client = factory.CreateClient();
+        _client = factory.CreateDefaultClient(new Http3Handler());//.CreateClient();
     }
     [Fact]
     public async Task CanRegisterUserWithValidAccountDetails()

@@ -1,12 +1,29 @@
 {
   "profiles": {
     "Web.Api.IntegrationTests": {
-        "commandName": "Project",
-        "launchBrowser": true,
-        "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "IntegrationTests"
-        },
-        "applicationUrl": "https://localhost:4433;http://localhost:4433"
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "IntegrationTests"
+      },
+      "applicationUrl": "https://localhost:4433",
+      "nativeDebugging": true
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "nativeDebugging": true
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:52898/",
+      "sslPort": 44330
     }
   }
 }

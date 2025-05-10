@@ -28,6 +28,7 @@ public class AccountsController : ControllerBase
 
     // POST api/accounts/register
     [HttpPost("register")]
+    [Consumes("application/json")]
     public async Task<ActionResult> Register([FromBody] Models.Request.RegisterUserRequest request)
     {
         if (!ModelState.IsValid)
@@ -42,6 +43,7 @@ public class AccountsController : ControllerBase
     }
     // POST api/accounts
     [HttpPost("changepassword")]
+    [Consumes("application/json")]
     public async Task<ActionResult> ChangePassword([FromBody] Models.Request.ChangePasswordRequest request)
     {
         if (!ModelState.IsValid)
@@ -50,6 +52,7 @@ public class AccountsController : ControllerBase
         return _mapper.Map<JsonContentResult>(response);
     }
     [HttpPost("resetpassword")]
+    [Consumes("application/json")]
     public async Task<ActionResult> ResetPassword([FromBody] Models.Request.ResetPasswordRequest request)
     {
         if (!ModelState.IsValid)

@@ -9,6 +9,7 @@ using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Web.Api.IntegrationTests;
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IAsyncLifetime where TStartup : class
@@ -21,8 +22,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         builder.ConfigureServices((context, services) =>
         {
             // Create a new service provider.
-            //services.AddLogging((loggingBuilder) =>
-            //  loggingBuilder.SetMinimumLevel(LogLevel.Debug).AddXUnit(this).AddConsole());
             services.Configure<GrpcConfig>(context.Configuration.GetSection(nameof(GrpcConfig)));
             services.AddScoped<SignInManager<AppUser>>();
         });
@@ -35,12 +34,14 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 var scopedServices = scope.ServiceProvider;
                 var appDb = scopedServices.GetRequiredService<AppDbContext>();
                 var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
+                ILoggerFactory loggerFactory = scopedServices.GetRequiredService<ILoggerFactory>();
+                ILogger logger = loggerFactory.CreateLogger<CustomWebApplicationFactory<TStartup>>();
                 // Ensure the database is created.
                 await appDb.Database.EnsureCreatedAsync();
                 await identityDb.Database.EnsureCreatedAsync();
                 // Seed the database with test data.
+                logger.LogDebug($"{nameof(InitializeAsync)} populate test data...");
                 await SeedData.PopulateTestData(identityDb, appDb);
-                Console.WriteLine($"{nameof(InitializeAsync)} completes");
             }
             catch (Exception ex)
             {

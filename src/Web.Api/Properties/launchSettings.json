@@ -8,7 +8,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_DETAILEDERRORS": "1"
       },
-      "applicationUrl": "https://localhost:4433/"
+      "applicationUrl": "https://localhost:4433/",
+      "nativeDebugging": true
     }
   }
 }
