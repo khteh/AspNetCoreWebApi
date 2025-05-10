@@ -72,6 +72,23 @@ try
                     .AddJsonFile($"appsettings.email.json", true, true)
                     .AddEnvironmentVariables()
                     .AddCommandLine(args);
+    /* https://www.elastic.co/docs/reference/ecs/logging/dotnet/serilog-formatter
+     * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext
+     * https://github.com/elastic/ecs-dotnet
+     * https://github.com/serilog/serilog/wiki/configuration-basics
+     * https://github.com/denis-peshkov/Serilog.Enrichers.HttpContext/blob/master/sample/SampleWebApp/Program.cs
+     * https://github.com/serilog/serilog-aspnetcore/issues/251
+     */
+    builder.Host.UseSerilog((ctx, svc, config) =>
+    {
+        config.ReadFrom.Configuration(ctx.Configuration).ReadFrom.Services(svc).Enrich.FromLogContext();
+#if false
+        if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
+            config.WriteTo.Async(a => a.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}"));
+        else
+            config.WriteTo.Async(a => a.Console(new EcsTextFormatter()));
+#endif
+    }, preserveStaticLogger: true);
     //builder.WebHost.UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory())); Changing the host configuration using WebApplicationBuilder.Host is not supported. Use WebApplication.CreateBuilder(WebApplicationOptions) instead.
     int originalMinWorker, originalMinIOC;
     int minWorker = 1000;
@@ -91,22 +108,6 @@ try
         Log.Error($"Failed to set {minWorker} threads. Using original {originalMinWorker} threads");
     string pathBase = Environment.GetEnvironmentVariable("PATH_BASE");
     Log.Information($"Using PathBase: {pathBase}");
-    /* https://www.elastic.co/docs/reference/ecs/logging/dotnet/serilog-formatter
-     * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext
-     * https://github.com/elastic/ecs-dotnet
-     * https://github.com/serilog/serilog/wiki/configuration-basics
-     * https://github.com/denis-peshkov/Serilog.Enrichers.HttpContext/blob/master/sample/SampleWebApp/Program.cs
-     */
-    builder.Host.UseSerilog((ctx, svc, config) =>
-    {
-        config.ReadFrom.Configuration(ctx.Configuration).ReadFrom.Services(svc).Enrich.FromLogContext();
-#if false
-        if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
-            config.WriteTo.Async(a => a.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}"));
-        else
-            config.WriteTo.Async(a => a.Console(new EcsTextFormatter()));
-#endif
-    });
     // Add services to the container.
     // Ensure that we make the HttpContextAccessor resolvable through the configuration
     builder.Services.AddHttpContextAccessor();
