@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Web.Api.Core.Configuration;
@@ -34,6 +35,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         {
             BaseAddress = new Uri("https://localhost:4433")
         });
+        /* https://github.com/dotnet/aspnetcore/issues/61871
+         * The HttpClient used with WebApplicationFactory uses an in-memory transport, so no actual network communication happens so I don't think it'll make any difference if you change it.
+         */
+        Client.DefaultRequestVersion = HttpVersion.Version30;
+        Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact;
         using (var scope = Services.CreateScope())
             try
             {
