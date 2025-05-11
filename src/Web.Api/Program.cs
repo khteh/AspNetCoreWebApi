@@ -89,8 +89,6 @@ try
             config.WriteTo.Async(a => a.Console(new EcsTextFormatter()));
 #endif
     }, preserveStaticLogger: true);
-    builder.Services.AddLogging(builder => builder.AddSerilog(dispose: true));
-    //builder.WebHost.UseContentRoot(Path.GetFullPath(Directory.GetCurrentDirectory())); Changing the host configuration using WebApplicationBuilder.Host is not supported. Use WebApplication.CreateBuilder(WebApplicationOptions) instead.
     int originalMinWorker, originalMinIOC;
     int minWorker = 1000;
     string strMinWorkerThreads = Environment.GetEnvironmentVariable("COMPlus_ThreadPool_ForceMinWorkerThreads");

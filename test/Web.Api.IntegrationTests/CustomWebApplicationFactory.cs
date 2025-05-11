@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
@@ -14,6 +15,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 namespace Web.Api.IntegrationTests;
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IAsyncLifetime where TStartup : class
 {
+    public HttpClient Client { get; set; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // Route the application's logs to the xunit output
@@ -28,6 +30,10 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     }
     public async ValueTask InitializeAsync()
     {
+        Client = CreateClient(new WebApplicationFactoryClientOptions
+        {
+            BaseAddress = new Uri("https://localhost:4433")
+        });
         using (var scope = Services.CreateScope())
             try
             {

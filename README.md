@@ -63,8 +63,8 @@ The available APIs include:
 - logs are available at `/var/log/aspnetcore/logYYYYMMDD_*`
 
 ## Windows 11
-- Enter powershell: `PS`
-- `Get-Content -Path "c:\var\log\aspnetcore\log20250510_002" -Wait`
+- Enter powershell: `powershell`
+- `Get-Content -Path "c:\var\log\aspnetcore\logYYYYMMDD_<foo>" -Wait`
 
 # Continuous Integration:
 

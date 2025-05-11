@@ -1,6 +1,6 @@
 ﻿using Xunit;
-
 namespace Web.Api.IntegrationTests.Controllers;
+
 [CollectionDefinition(Name)]
 public class ControllerTestsCollection : ICollectionFixture<CustomWebApplicationFactory<Program>>
 {
