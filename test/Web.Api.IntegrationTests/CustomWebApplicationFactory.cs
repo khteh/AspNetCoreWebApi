@@ -17,6 +17,7 @@ namespace Web.Api.IntegrationTests;
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IAsyncLifetime where TStartup : class
 {
     public HttpClient Client { get; set; }
+    public UserManager<AppUser> UserManager { get; set; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // Route the application's logs to the xunit output
@@ -44,6 +45,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             try
             {
                 var scopedServices = scope.ServiceProvider;
+                UserManager = scopedServices.GetRequiredService<UserManager<AppUser>>();
                 var appDb = scopedServices.GetRequiredService<AppDbContext>();
                 var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
                 ILoggerFactory loggerFactory = scopedServices.GetRequiredService<ILoggerFactory>();
