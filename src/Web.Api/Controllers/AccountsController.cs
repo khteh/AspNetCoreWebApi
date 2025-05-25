@@ -67,14 +67,14 @@ public class AccountsController : ControllerBase
         DeleteUserResponse response = await _mediator.Send(new DeleteUserCommand(id));
         return _mapper.Map<JsonContentResult>(response);
     }
-    // POST api/accounts/FindById
+    // POST api/accounts/id/{id}
     [HttpGet("id/{id}")]
     public async Task<ActionResult> FindById(string id)
     {
         await _findUserUseCase.Handle(new FindUserRequest(string.Empty, string.Empty, id), _findUserPresenter);
         return _findUserPresenter.ContentResult;
     }
-    // POST api/accounts/FindByUserName
+    // POST api/accounts/username/{username}
     [HttpGet("username/{username}")]
     public async Task<ActionResult> FindByUserName(string username)
     {

@@ -6,11 +6,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Web.Api.IntegrationTests.Controllers;
 using Web.Api.Models.Response;
 using Xunit;
 namespace Web.Api.IntegrationTests.SignalR;
-[Collection(SignalRTestsCollection.Name)]
+//[Collection(SignalRTestsCollection.Name)]
 public class ChatHubTests
 {
     private readonly TestServer _testServer;
@@ -36,7 +35,7 @@ public class ChatHubTests
         string echo = string.Empty;
         string message = "Integration Testing in Microsoft AspNetCore SignalR";
         HubConnection connection = new HubConnectionBuilder()
-            .WithUrl("/chatHub", o =>
+            .WithUrl("https://localhost:4433/chatHub", o =>
             {
                 o.Transports = HttpTransportType.WebSockets;
                 o.AccessTokenProvider = async () => await AccessTokenProvider();
@@ -54,9 +53,9 @@ public class ChatHubTests
             echo = i;
             messageReceivedEvent.Set();
         });
-        await connection.StartAsync();
+        await connection.StartAsync(TestContext.Current.CancellationToken);
         Assert.Equal(HubConnectionState.Connected, connection.State);
-        await connection.InvokeAsync("ReceiveMessage", message);
+        await connection.InvokeAsync("ReceiveMessage", message, TestContext.Current.CancellationToken);
         messageReceivedEvent.WaitOne();
         Assert.False(string.IsNullOrEmpty(echo));
         Assert.Equal(message, echo);
@@ -70,7 +69,7 @@ public class ChatHubTests
         string sender = "Mickey Mouse";
         string message = "Integration Testing in Microsoft AspNetCore SignalR";
         HubConnection connection = new HubConnectionBuilder()
-            .WithUrl("https://localhost/chatHub", o =>
+            .WithUrl("https://localhost:4433/chatHub", o =>
             {
                 o.Transports = HttpTransportType.WebSockets;
                 o.AccessTokenProvider = async () => await AccessTokenProvider();
@@ -89,9 +88,9 @@ public class ChatHubTests
             echo = i;
             messageReceivedEvent.Set();
         });
-        await connection.StartAsync();
+        await connection.StartAsync(TestContext.Current.CancellationToken);
         Assert.Equal(HubConnectionState.Connected, connection.State);
-        await connection.InvokeAsync("ReceiveMessageFromUser", sender, message);
+        await connection.InvokeAsync("ReceiveMessageFromUser", sender, message, TestContext.Current.CancellationToken);
         messageReceivedEvent.WaitOne();
         Assert.False(string.IsNullOrEmpty(user));
         Assert.False(string.IsNullOrEmpty(echo));

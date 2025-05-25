@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Web.Api.Infrastructure.Identity;
-using Web.Api.IntegrationTests.Controllers;
 using Xunit;
 
 namespace Web.Api.IntegrationTests;
-[Collection(EmailConfirmationCodeTestsCollection.Name)]
+//[Collection(EmailConfirmationCodeTestsCollection.Name)]
 public class EmailConfirmationCodeTests
 {
     private readonly CustomWebApplicationFactory<Program> _factory;
@@ -16,27 +16,47 @@ public class EmailConfirmationCodeTests
     [Fact]
     public async Task EmailConfirmationTokenShoudMatchTest()
     {
-        Assert.NotNull(_factory.UserManager);
-        AppUser user = await _factory.UserManager.FindByNameAsync("mickeymouse");
-        Assert.NotNull(user);
-        string code = await _factory.UserManager.GenerateEmailConfirmationTokenAsync(user);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-        IdentityResult identityResult = await _factory.UserManager.ConfirmEmailAsync(user, code);
-        Assert.True(identityResult.Succeeded);
+        using (var scope = _factory.Services.CreateScope())
+            try
+            {
+                var scopedServices = scope.ServiceProvider;
+                UserManager<AppUser> um = scopedServices.GetRequiredService<UserManager<AppUser>>();
+                AppUser user = await um.FindByNameAsync("mickeymouse");
+                Assert.NotNull(user);
+                string code = await um.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+                IdentityResult identityResult = await um.ConfirmEmailAsync(user, code);
+                Assert.True(identityResult.Succeeded);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{nameof(EmailConfirmationTokenShoudMatchTest)} exception! {ex}");
+                throw;
+            }
     }
     [Fact]
     public async Task EmailConfirmationTokenShoudNOTMatchTest()
     {
-        Assert.NotNull(_factory.UserManager);
-        AppUser user = await _factory.UserManager.FindByNameAsync("mickeymouse");
-        Assert.NotNull(user);
-        string code = await _factory.UserManager.GenerateEmailConfirmationTokenAsync(user);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-        AppUser user1 = await _factory.UserManager.FindByNameAsync("deleteme");
-        Assert.NotNull(user1);
-        IdentityResult identityResult = await _factory.UserManager.ConfirmEmailAsync(user1, code);
-        Assert.False(identityResult.Succeeded);
+        using (var scope = _factory.Services.CreateScope())
+            try
+            {
+                var scopedServices = scope.ServiceProvider;
+                UserManager<AppUser> um = scopedServices.GetRequiredService<UserManager<AppUser>>();
+                AppUser user = await um.FindByNameAsync("mickeymouse");
+                Assert.NotNull(user);
+                string code = await um.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+                AppUser user1 = await um.FindByNameAsync("deleteme");
+                Assert.NotNull(user1);
+                IdentityResult identityResult = await um.ConfirmEmailAsync(user1, code);
+                Assert.False(identityResult.Succeeded);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{nameof(EmailConfirmationTokenShoudNOTMatchTest)} exception! {ex}");
+                throw;
+            }
     }
 }
