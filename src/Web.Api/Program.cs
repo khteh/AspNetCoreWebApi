@@ -121,8 +121,6 @@ try
                 });
     // Add framework builder.Services.
     // The following are done in builder.Services.AddInfrastructure()
-    //builder.Services.AddDbContextPool<AppIdentityDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
-    //builder.Services.AddDbContextPool<AppDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Web.Api.Infrastructure")));
     // Register the ConfigurationBuilder instance of AuthSettings
     var authSettings = builder.Configuration.GetSection(nameof(AuthSettings));
     builder.Services.Configure<AuthSettings>(authSettings);
