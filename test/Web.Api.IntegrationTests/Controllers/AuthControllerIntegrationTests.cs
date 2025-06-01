@@ -7,7 +7,6 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Xunit;
 namespace Web.Api.IntegrationTests.Controllers;
-//[Collection(ControllerTestsCollection.Name)]
 public class AuthControllerIntegrationTests
 {
     private readonly HttpClient _client;

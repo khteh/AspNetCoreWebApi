@@ -13,8 +13,10 @@ using Web.Api.Infrastructure.Identity;
 using Web.Api.IntegrationTests;
 using Xunit;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+// https://github.com/xunit/xunit/issues/3305
 [assembly: AssemblyFixture(typeof(CustomWebApplicationFactory<Program>))]
 namespace Web.Api.IntegrationTests;
+
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IAsyncLifetime where TStartup : class
 {
     public HttpClient Client { get; set; }
