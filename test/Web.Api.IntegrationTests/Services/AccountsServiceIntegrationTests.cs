@@ -7,6 +7,7 @@ using Xunit;
 using static Web.Api.Identity.Accounts.Accounts;
 using static Web.Api.Identity.Auth.Auth;
 namespace Web.Api.IntegrationTests.Services;
+
 [Collection("GRPC Test Collection")]
 public class AccountsServiceIntegrationTests : IntegrationTestBase
 {
@@ -28,7 +29,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
             Email = "jdoegrpc@gmail.com",
             UserName = "johndoegrpc",
             Password = "P@$$w0rd"
-        });//.ResponseAsync.DefaultTimeout();
+        }, null, null, TestContext.Current.CancellationToken);//.ResponseAsync.DefaultTimeout();
 
         // Assert
         //Assert.AreEqual(deadline, options.Deadline);
@@ -45,7 +46,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
         var client = new AccountsClient(Channel);
         Assert.NotNull(client);
-        DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "deletemegrpc" });
+        DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "deletemegrpc" }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -66,7 +67,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
             Email = string.Empty,
             UserName = string.Empty,
             Password = "P@$$w0rd"
-        });//.ResponseAsync.DefaultTimeout();
+        }, null, null, TestContext.Current.CancellationToken);//.ResponseAsync.DefaultTimeout();
 
         // Assert
         //Assert.AreEqual(deadline, options.Deadline);
@@ -85,7 +86,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
         var client = new AccountsClient(Channel);
         Assert.NotNull(client);
-        DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "DeleteMeNot" });
+        DeleteUserResponse response = await client.DeleteAsync(new StringInputParameter() { Value = "DeleteMeNot" }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.False(response.Response.Success);
@@ -102,7 +103,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
         var client = new AccountsClient(Channel);
         Assert.NotNull(client);
-        FindUserResponse response = await client.FindByIdAsync(new StringInputParameter() { Value = id });
+        FindUserResponse response = await client.FindByIdAsync(new StringInputParameter() { Value = id }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -116,7 +117,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
         var client = new AccountsClient(Channel);
         Assert.NotNull(client);
-        FindUserResponse response = await client.FindByUserNameAsync(new StringInputParameter() { Value = "mickeymousegrpc" }); // UserManager is NOT case sensitive!
+        FindUserResponse response = await client.FindByUserNameAsync(new StringInputParameter() { Value = "mickeymousegrpc" }, null, null, TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -130,7 +131,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
         var client = new AccountsClient(Channel);
         Assert.NotNull(client);
-        FindUserResponse response = await client.FindByEmailAsync(new StringInputParameter() { Value = "mickeygrpc@mouse.com" }); // UserManager is NOT case sensitive!
+        FindUserResponse response = await client.FindByEmailAsync(new StringInputParameter() { Value = "mickeygrpc@mouse.com" }, null, null, TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -155,7 +156,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
             Email = "user1grpc@gmail.com",
             UserName = "user1grpc",
             Password = "P@$$w0rd"
-        });//.ResponseAsync.DefaultTimeout();
+        }, null, null, TestContext.Current.CancellationToken);//.ResponseAsync.DefaultTimeout();
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -167,7 +168,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         {
             UserName = "user1grpc",
             Password = "P@$$w0rd"
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(loginResponse);
         Assert.NotNull(loginResponse.Response);
         Assert.True(loginResponse.Response.Success);
@@ -183,7 +184,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
             Id = response.Id,
             Password = "P@$$w0rd",
             NewPassword = "P@$$w0rd1",
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(pwdResponse);
         Assert.NotNull(pwdResponse);
         Assert.True(pwdResponse.Success);
@@ -194,7 +195,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         {
             UserName = "user1grpc",
             Password = "P@$$w0rd"
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(loginResponse1);
         Assert.NotNull(loginResponse1.Response);
         Assert.False(loginResponse1.Response.Success);
@@ -209,7 +210,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         {
             UserName = "user1grpc",
             Password = "P@$$w0rd1"
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(loginResponse2);
         Assert.NotNull(loginResponse2.Response);
         Assert.True(loginResponse2.Response.Success);
@@ -236,7 +237,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
             Email = "user2grpc@gmail.com",
             UserName = "user2grpc",
             Password = "P@$$w0rd"
-        });//.ResponseAsync.DefaultTimeout();
+        }, null, null, TestContext.Current.CancellationToken);//.ResponseAsync.DefaultTimeout();
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -248,7 +249,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         {
             UserName = "user2grpc",
             Password = "P@$$w0rd"
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(loginResponse);
         Assert.NotNull(loginResponse.Response);
         Assert.True(loginResponse.Response.Success);
@@ -263,7 +264,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         {
             Id = response.Id,
             NewPassword = "P@$$w0rd1",
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(pwdResponse);
         Assert.NotNull(pwdResponse);
         Assert.True(pwdResponse.Success);
@@ -274,7 +275,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         {
             UserName = "user2grpc",
             Password = "P@$$w0rd"
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(loginResponse1);
         Assert.NotNull(loginResponse1.Response);
         Assert.False(loginResponse1.Response.Success);
@@ -289,7 +290,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         {
             UserName = "user2grpc",
             Password = "P@$$w0rd1"
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(loginResponse2);
         Assert.NotNull(loginResponse2.Response);
         Assert.True(loginResponse2.Response.Success);

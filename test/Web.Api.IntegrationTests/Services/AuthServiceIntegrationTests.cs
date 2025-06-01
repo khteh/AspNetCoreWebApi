@@ -5,6 +5,7 @@ using Web.Api.Identity.Auth;
 using Xunit;
 using static Web.Api.Identity.Auth.Auth;
 namespace Web.Api.IntegrationTests.Services;
+
 [Collection("GRPC Test Collection")]
 public class AuthServiceIntegrationTests : IntegrationTestBase
 {
@@ -21,7 +22,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         {
             UserName = "mickeymousegrpc",
             Password = "P@$$w0rd"
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -41,7 +42,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         {
             UserName = "unknown",
             Password = "ShouldFail"
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.False(response.Response.Success);
@@ -61,7 +62,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         {
             UserName = "mickeymousegrpc",
             Password = "P@$$w0rd"
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -75,7 +76,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         {
             AccessToken = response.AccessToken.Token,
             RefreshToken = response.RefreshToken
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response1);
         Assert.NotNull(response1.Response);
         Assert.True(response1.Response.Success);
@@ -95,7 +96,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         {
             AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtbWFjbmVpbCIsImp0aSI6IjA0YjA0N2E4LTViMjMtNDgwNi04M2IyLTg3ODVhYmViM2ZjNyIsImlhdCI6MTUzOTUzNzA4Mywicm9sIjoiYXBpX2FjY2VzcyIsImlkIjoiNDE1MzI5NDUtNTk5ZS00OTEwLTk1OTktMGU3NDAyMDE3ZmJlIiwibmJmIjoxNTM5NTM3MDgyLCJleHAiOjE1Mzk1NDQyODIsImlzcyI6IndlYkFwaSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMC8ifQ.xzDQOKzPZarve68Np8Iu8sh2oqoCpHSmp8fMdYRHC_k",
             RefreshToken = "ShouldFail"
-        });
+        }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.False(response.Response.Success);
