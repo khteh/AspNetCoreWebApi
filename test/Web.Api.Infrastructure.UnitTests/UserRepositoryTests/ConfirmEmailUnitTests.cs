@@ -14,13 +14,15 @@ using Web.Api.Core.UseCases;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 using Xunit;
+using System.Threading.Tasks;
 namespace Web.Api.Infrastructure.UnitTests.UserRepository;
+
 public class ConfirmEmailUnitTests : IClassFixture<InfrastructureTestBase>
 {
     private InfrastructureTestBase _fixture;
     public ConfirmEmailUnitTests(InfrastructureTestBase fixture) => _fixture = fixture;
     [Fact(Skip = "Call to getUser() will throw null reference exception")]
-    public async void GivenValidCredentials_ShouldSucceed()
+    public async Task GivenValidCredentials_ShouldSucceed()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");
@@ -38,7 +40,7 @@ public class ConfirmEmailUnitTests : IClassFixture<InfrastructureTestBase>
         _fixture.UserManager.VerifyAll();
     }
     [Fact]
-    public async void GivenInValidCode_ShouldFail()
+    public async Task GivenInValidCode_ShouldFail()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");

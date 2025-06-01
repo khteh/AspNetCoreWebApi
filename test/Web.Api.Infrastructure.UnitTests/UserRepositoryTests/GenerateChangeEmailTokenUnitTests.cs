@@ -5,6 +5,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces;
@@ -14,10 +15,11 @@ using Web.Api.Core.UseCases;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
 namespace Web.Api.Infrastructure.UnitTests.UserRepository;
+
 public class GenerateChangeEmailTokenUnitTests
 {
     [Fact]
-    public async void Handle_GivenValidCredentials_ShouldSucceed()
+    public async Task Handle_GivenValidCredentials_ShouldSucceed()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");
@@ -42,7 +44,7 @@ public class GenerateChangeEmailTokenUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_GivenValidCredentials_InvalidEmail_ShoulFail()
+    public async Task Handle_GivenValidCredentials_InvalidEmail_ShoulFail()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");
@@ -67,7 +69,7 @@ public class GenerateChangeEmailTokenUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_GivenINValidCredentials_ShouldFail()
+    public async Task Handle_GivenINValidCredentials_ShouldFail()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");

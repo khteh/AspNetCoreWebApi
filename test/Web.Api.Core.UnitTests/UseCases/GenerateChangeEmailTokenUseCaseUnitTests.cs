@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Moq;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.UseCaseRequests;
@@ -8,10 +9,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class GenerateChangeEmailTokenUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_GenerateChangeEmailToken_ShouldSucceed()
+    public async Task Handle_GenerateChangeEmailToken_ShouldSucceed()
     {
         // arrange
 
@@ -40,7 +42,7 @@ public class GenerateChangeEmailTokenUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_GenerateChangeEmailToken_InvalidEmail_ShouldFail()
+    public async Task Handle_GenerateChangeEmailToken_InvalidEmail_ShouldFail()
     {
         // arrange
 

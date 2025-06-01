@@ -6,15 +6,17 @@ using Moq;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using System.Threading.Tasks;
 using Web.Api.Core.Interfaces.Services;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Infrastructure.Interfaces;
 using Xunit;
 namespace Web.Api.Infrastructure.UnitTests.Auth;
+
 public class JwtFactoryUnitTests
 {
     [Fact]
-    public async void GenerateEncodedToken_GivenValidInputs_ReturnsExpectedTokenData()
+    public async Task GenerateEncodedToken_GivenValidInputs_ReturnsExpectedTokenData()
     {
         // arrange
         var token = Guid.CreateVersion7(TimeProvider.System.GetUtcNow()).ToString();
@@ -39,7 +41,7 @@ public class JwtFactoryUnitTests
         mockJwtTokenHandler.VerifyAll();
     }
     [Fact]
-    public async void GenerateEncodedToken_GivenInValidInputs_ReturnsNullTokenData()
+    public async Task GenerateEncodedToken_GivenInValidInputs_ReturnsNullTokenData()
     {
         // arrange
         var token = Guid.CreateVersion7(TimeProvider.System.GetUtcNow()).ToString();

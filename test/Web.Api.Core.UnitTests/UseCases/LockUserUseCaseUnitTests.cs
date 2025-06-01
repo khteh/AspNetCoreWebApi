@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Moq;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces;
@@ -6,10 +7,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class LockUserUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_ShouldThrow()
+    public async Task Handle_ShouldThrow()
     {
         // arrange
 
@@ -35,7 +37,7 @@ public class LockUserUseCaseUnitTests
         // assert
     }
     [Fact]
-    public async void Handle_LockUser_ShouldSucceed()
+    public async Task Handle_LockUser_ShouldSucceed()
     {
         // arrange
 
@@ -64,7 +66,7 @@ public class LockUserUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_UnLockUser_ShouldSucceed()
+    public async Task Handle_UnLockUser_ShouldSucceed()
     {
         // arrange
 

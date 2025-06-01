@@ -20,13 +20,15 @@ using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 using Xunit;
+using System.Threading.Tasks;
 namespace Web.Api.Infrastructure.UnitTests.UserRepository;
+
 public class ConfirmEmailChangeUnitTests : IClassFixture<InfrastructureTestBase>
 {
     private InfrastructureTestBase _fixture;
     public ConfirmEmailChangeUnitTests(InfrastructureTestBase fixture) => _fixture = fixture;
     [Fact(Skip = "Call to getUser() will throw null reference exception")]
-    public async void GivenValidCredentials_ShouldSucceed()
+    public async Task GivenValidCredentials_ShouldSucceed()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");
@@ -46,7 +48,7 @@ public class ConfirmEmailChangeUnitTests : IClassFixture<InfrastructureTestBase>
         _fixture.SignInManager.VerifyAll();
     }
     [Fact(Skip = "Call to getUser() will throw null reference exception")]
-    public async void GivenInValidEmail_ShouldFail()
+    public async Task GivenInValidEmail_ShouldFail()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");
@@ -66,7 +68,7 @@ public class ConfirmEmailChangeUnitTests : IClassFixture<InfrastructureTestBase>
         _fixture.SignInManager.Verify(i => i.RefreshSignInAsync(It.IsAny<AppUser>()), Times.Never);
     }
     [Fact(Skip = "Call to getUser() will throw null reference exception")]
-    public async void GivenInValidCode_ShouldFail()
+    public async Task GivenInValidCode_ShouldFail()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");

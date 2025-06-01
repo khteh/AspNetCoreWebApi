@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Moq;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 using Web.Api.Core.DTO.UseCaseRequests;
@@ -6,10 +7,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class RegisterUserUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_GivenValidRegistrationDetails_ShouldSucceed()
+    public async Task Handle_GivenValidRegistrationDetails_ShouldSucceed()
     {
         // arrange
 
@@ -38,7 +40,7 @@ public class RegisterUserUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_GivenInvalidRegistrationDetails_ShouldFail()
+    public async Task Handle_GivenInvalidRegistrationDetails_ShouldFail()
     {
         // arrange
 

@@ -12,15 +12,17 @@ using Web.Api.Core.UseCases;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace Web.Api.Infrastructure.UnitTests.UserRepository;
+
 public class ExchangeRefreshTokenUnitTests : IClassFixture<InfrastructureTestBase>
 {
     private InfrastructureTestBase _fixture;
     public ExchangeRefreshTokenUnitTests(InfrastructureTestBase fixture) => _fixture = fixture;
 
     [Fact(Skip = "Call to getUser() will throw null reference exception")]
-    public async void Handle_GivenInvalidCredentials_ShouldFail()
+    public async Task Handle_GivenInvalidCredentials_ShouldFail()
     {
         // arrange
         List<Claim> claims = new List<Claim>();
@@ -46,7 +48,7 @@ public class ExchangeRefreshTokenUnitTests : IClassFixture<InfrastructureTestBas
         //mockUserRepository.Verify(factory => factory.Update(It.IsAny<User>()), Times.Never);
     }
     [Fact]
-    public async void Handle_GivenValidCredentials_ShouldSucceed()
+    public async Task Handle_GivenValidCredentials_ShouldSucceed()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");

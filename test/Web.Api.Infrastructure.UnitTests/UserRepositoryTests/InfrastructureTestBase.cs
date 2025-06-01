@@ -15,9 +15,8 @@ using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.Infrastructure.Interfaces;
-using Xunit;
-using Xunit.Abstractions;
 namespace Web.Api.Infrastructure.UnitTests.UserRepository;
+
 public class InfrastructureTestBase : IDisposable
 {
     public Mock<UserManager<AppUser>> UserManager { get; } = new Mock<UserManager<AppUser>>(Mock.Of<IUserStore<AppUser>>(), null, null, null, null, null, null, null, null);

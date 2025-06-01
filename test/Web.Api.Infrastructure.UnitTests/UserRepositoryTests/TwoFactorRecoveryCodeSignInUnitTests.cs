@@ -3,6 +3,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
@@ -10,10 +11,11 @@ using Web.Api.Core.UseCases;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
 namespace Web.Api.Infrastructure.UnitTests.UserRepository;
+
 public class TwoFactorRecoveryCodeSignInUnitTests
 {
     [Fact]
-    public async void Handle_GivenValidRecoveryCode_ShouldSucceed()
+    public async Task Handle_GivenValidRecoveryCode_ShouldSucceed()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");
@@ -34,7 +36,7 @@ public class TwoFactorRecoveryCodeSignInUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_GivenInvalidCode_ShouldFail()
+    public async Task Handle_GivenInvalidCode_ShouldFail()
     {
         // arrange
         Mock<SignInManager<AppUser>> signInManager = new Mock<SignInManager<AppUser>>();

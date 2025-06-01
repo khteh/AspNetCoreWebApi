@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO;
@@ -11,10 +12,11 @@ using Web.Api.Core.UseCases;
 using Xunit;
 
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class LogInUseCaseCheckPasswordUnitTests
 {
     [Fact]
-    public async void Handle_GivenValidCredentials_ShouldSucceed()
+    public async Task Handle_GivenValidCredentials_ShouldSucceed()
     {
         // arrange
         var user = new User("", "", "", "", "", "");
@@ -43,7 +45,7 @@ public class LogInUseCaseCheckPasswordUnitTests
         mockJwtFactory.VerifyAll();
     }
     [Fact]
-    public async void Handle_GivenIncompleteCredentials_ShouldFail()
+    public async Task Handle_GivenIncompleteCredentials_ShouldFail()
     {
         // arrange
         var mockUserRepository = new Mock<IUserRepository>();
@@ -74,7 +76,7 @@ public class LogInUseCaseCheckPasswordUnitTests
         mockJwtFactory.Verify(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
     [Fact]
-    public async void Handle_GivenUnknownCredentials_ShouldFail()
+    public async Task Handle_GivenUnknownCredentials_ShouldFail()
     {
         // arrange
         var mockUserRepository = new Mock<IUserRepository>();
@@ -103,7 +105,7 @@ public class LogInUseCaseCheckPasswordUnitTests
         mockJwtFactory.Verify(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
     [Fact]
-    public async void Handle_GivenInvalidPassword_ShouldFail()
+    public async Task Handle_GivenInvalidPassword_ShouldFail()
     {
         // arrange
         var mockUserRepository = new Mock<IUserRepository>();

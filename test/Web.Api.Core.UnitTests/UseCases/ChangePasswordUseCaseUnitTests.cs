@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Moq;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces;
@@ -5,10 +6,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class ChangePasswordUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_ChangePassword_ShouldSucceed()
+    public async Task Handle_ChangePassword_ShouldSucceed()
     {
         // arrange
 
@@ -37,7 +39,7 @@ public class ChangePasswordUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_ChangePassword_InvalidInputParams_ShouldFail()
+    public async Task Handle_ChangePassword_InvalidInputParams_ShouldFail()
     {
         // arrange
 

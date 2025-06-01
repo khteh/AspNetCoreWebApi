@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Moq;
 using Web.Api.Core.DTO.UseCaseRequests;
@@ -9,10 +10,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class SignInUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_SignIn_Mobile_InvalidCredentials_ShouldFail()
+    public async Task Handle_SignIn_Mobile_InvalidCredentials_ShouldFail()
     {
         // arrange
 
@@ -44,7 +46,7 @@ public class SignInUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_SignIn_Mobile_ShouldSucceed()
+    public async Task Handle_SignIn_Mobile_ShouldSucceed()
     {
         // arrange
 
@@ -76,7 +78,7 @@ public class SignInUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_SignIn_InvalidCredentials_ShouldFail()
+    public async Task Handle_SignIn_InvalidCredentials_ShouldFail()
     {
         // arrange
 
@@ -109,7 +111,7 @@ public class SignInUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_SignIn_ShouldSucceed()
+    public async Task Handle_SignIn_ShouldSucceed()
     {
         // arrange
 
@@ -142,7 +144,7 @@ public class SignInUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_SignIn_WithClaims_WithInvalidID_ShouldFail()
+    public async Task Handle_SignIn_WithClaims_WithInvalidID_ShouldFail()
     {
         // arrange
 
@@ -174,7 +176,7 @@ public class SignInUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_SignIn_WithClaims_WithValidID_ShouldSucceed()
+    public async Task Handle_SignIn_WithClaims_WithValidID_ShouldSucceed()
     {
         // arrange
 

@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using System.Threading.Tasks;
+using Moq;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.DTO.UseCaseResponses;
@@ -7,10 +8,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class FindUserUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_FindById_Succeed()
+    public async Task Handle_FindById_Succeed()
     {
         // arrange
 
@@ -39,7 +41,7 @@ public class FindUserUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_FindByUsername_Succeed()
+    public async Task Handle_FindByUsername_Succeed()
     {
         // arrange
 
@@ -68,7 +70,7 @@ public class FindUserUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_FindByValidEmail_Succeed()
+    public async Task Handle_FindByValidEmail_Succeed()
     {
         // arrange
 
@@ -97,7 +99,7 @@ public class FindUserUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_FindByInvalidEmail_Fails()
+    public async Task Handle_FindByInvalidEmail_Fails()
     {
         // arrange
 
@@ -125,7 +127,7 @@ public class FindUserUseCaseUnitTests
     }
 
     [Fact]
-    public async void Handle_FindByMultipleParams_ShouldPassWithFindById()
+    public async Task Handle_FindByMultipleParams_ShouldPassWithFindById()
     {
         // arrange
 
@@ -154,7 +156,7 @@ public class FindUserUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_FindByInvalidEmptyParams_ShouldFail()
+    public async Task Handle_FindByInvalidEmptyParams_ShouldFail()
     {
         // arrange
 

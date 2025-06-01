@@ -3,6 +3,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
@@ -10,10 +11,11 @@ using Web.Api.Core.UseCases;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
 namespace Web.Api.Infrastructure.UnitTests.UserRepository;
+
 public class SignInUnitTests
 {
     [Fact]
-    public async void Handle_GivenValidCredentials_ShouldSucceed()
+    public async Task Handle_GivenValidCredentials_ShouldSucceed()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");
@@ -37,7 +39,7 @@ public class SignInUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_GivenIncompleteCredentials_ShouldFail()
+    public async Task Handle_GivenIncompleteCredentials_ShouldFail()
     {
         // arrange
         Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();
@@ -64,7 +66,7 @@ public class SignInUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_GivenUnknownCredentials_ShouldFail()
+    public async Task Handle_GivenUnknownCredentials_ShouldFail()
     {
         // arrange
         Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();
@@ -90,7 +92,7 @@ public class SignInUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_GivenInvalidPassword_ShouldFail()
+    public async Task Handle_GivenInvalidPassword_ShouldFail()
     {
         // arrange
         Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();

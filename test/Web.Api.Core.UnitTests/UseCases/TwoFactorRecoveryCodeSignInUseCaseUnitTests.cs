@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Moq;
 using Web.Api.Core.Domain.Entities;
@@ -10,10 +11,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class TwoFactorRecoveryCodeSignInUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_TwoFactorRecoveryCodeSignIn_WithInvalidCode_ShouldFail()
+    public async Task Handle_TwoFactorRecoveryCodeSignIn_WithInvalidCode_ShouldFail()
     {
         // arrange
 
@@ -43,7 +45,7 @@ public class TwoFactorRecoveryCodeSignInUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_TwoFactorRecoveryCodeSignIn_WithSignInManagerError_ShouldFail()
+    public async Task Handle_TwoFactorRecoveryCodeSignIn_WithSignInManagerError_ShouldFail()
     {
         // arrange
 
@@ -72,7 +74,7 @@ public class TwoFactorRecoveryCodeSignInUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_TwoFactorRecoveryCodeSignIn_ShouldSucceed()
+    public async Task Handle_TwoFactorRecoveryCodeSignIn_ShouldSucceed()
     {
         // arrange
 

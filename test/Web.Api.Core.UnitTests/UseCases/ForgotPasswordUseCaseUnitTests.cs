@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Moq;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.DTO.UseCaseResponses;
@@ -6,10 +7,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class ForgotPasswordUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_ForgotPassword_InvalidEmail_ShouldFail()
+    public async Task Handle_ForgotPassword_InvalidEmail_ShouldFail()
     {
         // arrange
 
@@ -38,7 +40,7 @@ public class ForgotPasswordUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_ForgotPassword_ValidEmail_ShouldSucceed()
+    public async Task Handle_ForgotPassword_ValidEmail_ShouldSucceed()
     {
         // arrange
 

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Castle.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -9,10 +10,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class ConfirmEmailUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_ConfirmEmail_ShouldSucceed()
+    public async Task Handle_ConfirmEmail_ShouldSucceed()
     {
         // arrange
 
@@ -42,7 +44,7 @@ public class ConfirmEmailUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_ConfirmEmail_InvalidCode_ShouldFail()
+    public async Task Handle_ConfirmEmail_InvalidCode_ShouldFail()
     {
         // arrange
 

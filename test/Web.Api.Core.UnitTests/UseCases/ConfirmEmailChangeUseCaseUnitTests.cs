@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Moq;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.UseCaseRequests;
@@ -7,10 +8,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class ConfirmEmailChangeUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_ConfirmEmailChange_ShouldSucceed()
+    public async Task Handle_ConfirmEmailChange_ShouldSucceed()
     {
         // arrange
 
@@ -39,7 +41,7 @@ public class ConfirmEmailChangeUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_ConfirmEmailChange_InvalidEmail_ShouldFail()
+    public async Task Handle_ConfirmEmailChange_InvalidEmail_ShouldFail()
     {
         // arrange
 
@@ -68,7 +70,7 @@ public class ConfirmEmailChangeUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_ConfirmEmailChange_InvalidCode_ShouldFail()
+    public async Task Handle_ConfirmEmailChange_InvalidCode_ShouldFail()
     {
         // arrange
 

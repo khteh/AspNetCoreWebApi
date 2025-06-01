@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Castle.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -12,10 +13,11 @@ using Web.Api.Core.Interfaces.Services;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class ExchangeRefreshTokenUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_ExchangeRefreshToken_ShouldSucceed()
+    public async Task Handle_ExchangeRefreshToken_ShouldSucceed()
     {
         // arrange
 
@@ -45,7 +47,7 @@ public class ExchangeRefreshTokenUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_ExchangeRefreshToken_InvalidInputParam_ShouldFail()
+    public async Task Handle_ExchangeRefreshToken_InvalidInputParam_ShouldFail()
     {
         // arrange
 

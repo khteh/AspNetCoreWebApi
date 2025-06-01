@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Castle.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -8,10 +9,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class RegistrationConfirmationUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_GivenValidRegistrationDetails_ShouldSucceed()
+    public async Task Handle_GivenValidRegistrationDetails_ShouldSucceed()
     {
         // arrange
 
@@ -41,7 +43,7 @@ public class RegistrationConfirmationUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_GivenInValidRegistrationDetails_ShouldFail()
+    public async Task Handle_GivenInValidRegistrationDetails_ShouldFail()
     {
         // arrange
 

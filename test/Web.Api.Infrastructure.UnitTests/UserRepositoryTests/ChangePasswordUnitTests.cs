@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Security.Claims;
 using System.Security.Permissions;
+using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 using Web.Api.Core.DTO.UseCaseRequests;
@@ -14,6 +15,7 @@ using Web.Api.Core.UseCases;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
 namespace Web.Api.Infrastructure.UnitTests.UserRepository;
+
 public class ChangePasswordUnitTests : IClassFixture<InfrastructureTestBase>
 {
     private InfrastructureTestBase _fixture;
@@ -21,7 +23,7 @@ public class ChangePasswordUnitTests : IClassFixture<InfrastructureTestBase>
     public ChangePasswordUnitTests(InfrastructureTestBase fixture) => _fixture = fixture;
 
     [Fact]
-    public async void Handle_ChangePassword_ShouldSucceed()
+    public async Task Handle_ChangePassword_ShouldSucceed()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");
@@ -40,7 +42,7 @@ public class ChangePasswordUnitTests : IClassFixture<InfrastructureTestBase>
         _fixture.UserManager.VerifyAll();
     }
     [Fact]
-    public async void Handle_ChangePassword_InvalidInputParams_ShouldFail()
+    public async Task Handle_ChangePassword_InvalidInputParams_ShouldFail()
     {
         // arrange
         AppUser appUser = new AppUser("", "", "", "");

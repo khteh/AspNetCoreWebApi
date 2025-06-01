@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Moq;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.UseCaseRequests;
@@ -9,10 +10,11 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class GenerateNew2FARecoveryCodesUseCaseUnitTests
 {
     [Fact]
-    public async void Handle_GenerateNew2FARecoveryCodes_ShouldSucceed()
+    public async Task Handle_GenerateNew2FARecoveryCodes_ShouldSucceed()
     {
         // arrange
 

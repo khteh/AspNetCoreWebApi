@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Web.Api.Core.DTO.UseCaseRequests;
@@ -6,6 +7,7 @@ using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.UseCases;
 using Xunit;
 namespace Web.Api.Core.UnitTests.UseCases;
+
 public class ResetPasswordUseCaseUnitTests
 {
     /*
@@ -15,7 +17,7 @@ public class ResetPasswordUseCaseUnitTests
             response = await _userRepository.ResetPassword(request.Email, request.NewPassword, request.Code);
     */
     [Fact]
-    public async void Handle_ResetPasswordUsingId_ShouldSucceed()
+    public async Task Handle_ResetPasswordUsingId_ShouldSucceed()
     {
         // arrange
 
@@ -45,7 +47,7 @@ public class ResetPasswordUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_ResetPasswordUsingId_InvalidPassword_ShouldFail()
+    public async Task Handle_ResetPasswordUsingId_InvalidPassword_ShouldFail()
     {
         // arrange
 
@@ -75,7 +77,7 @@ public class ResetPasswordUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_ResetPasswordUsingGeneratedCode_ShouldSucceed()
+    public async Task Handle_ResetPasswordUsingGeneratedCode_ShouldSucceed()
     {
         // arrange
 
@@ -105,7 +107,7 @@ public class ResetPasswordUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_ResetPasswordUsingGeneratedCode_InvalidEmail_ShouldFail()
+    public async Task Handle_ResetPasswordUsingGeneratedCode_InvalidEmail_ShouldFail()
     {
         // arrange
 
@@ -135,7 +137,7 @@ public class ResetPasswordUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_ResetPasswordUsingGeneratedCode_InvalidCode_ShouldFail()
+    public async Task Handle_ResetPasswordUsingGeneratedCode_InvalidCode_ShouldFail()
     {
         // arrange
 
@@ -165,7 +167,7 @@ public class ResetPasswordUseCaseUnitTests
         mockOutputPort.VerifyAll();
     }
     [Fact]
-    public async void Handle_ResetPasswordUsingGeneratedCode_InvalidPassword_ShouldFail()
+    public async Task Handle_ResetPasswordUsingGeneratedCode_InvalidPassword_ShouldFail()
     {
         // arrange
 
