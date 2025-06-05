@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 namespace Web.Api.Infrastructure.Auth;
+
 public class JwtIssuerOptions
 {
   /// <summary>
@@ -43,7 +44,7 @@ public class JwtIssuerOptions
   /// "jti" (JWT ID) Claim (default ID is a GUID)
   /// </summary>
   public Func<Task<string>> JtiGenerator =>
-    () => Task.FromResult(Guid.CreateVersion7(TimeProvider.System.GetUtcNow()).ToString());
+    () => Task.FromResult(Guid.CreateVersion7().ToString());
 
   /// <summary>
   /// The signing key to use when generating tokens.

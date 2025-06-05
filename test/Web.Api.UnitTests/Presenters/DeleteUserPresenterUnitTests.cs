@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Web.Api.Core.DTO;
@@ -10,18 +11,19 @@ using Web.Api.Models.Response;
 using Web.Api.Presenters;
 using Xunit;
 namespace Web.Api.UnitTests.Presenters;
+
 public class DeleteUserPresenterUnitTests
 {
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
         var logger = new Mock<ILogger<DeleteUserPresenter>>();
         var presenter = new DeleteUserPresenter(logger.Object);
 
         // act
-        Guid id = Guid.CreateVersion7(TimeProvider.System.GetUtcNow());
-        presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
+        Guid id = Guid.CreateVersion7();
+        await presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
 
         // assert
         DeleteUserResponse response = Serialization.JsonSerializer.DeSerializeObject<DeleteUserResponse>(presenter.ContentResult.Content);
@@ -31,14 +33,14 @@ public class DeleteUserPresenterUnitTests
         Assert.Null(response.Errors);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
         var logger = new Mock<ILogger<DeleteUserPresenter>>();
         var presenter = new DeleteUserPresenter(logger.Object);
 
         // act
-        presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid user!") }));
+        await presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid user!") }));
 
         // assert
         DeleteUserResponse response = Serialization.JsonSerializer.DeSerializeObject<DeleteUserResponse>(presenter.ContentResult.Content);

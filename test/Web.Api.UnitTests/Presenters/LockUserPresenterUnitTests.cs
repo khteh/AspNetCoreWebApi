@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Web.Api.Core.Domain.Entities;
@@ -12,18 +13,19 @@ using Web.Api.Presenters;
 using Web.Api.Serialization;
 using Xunit;
 namespace Web.Api.UnitTests.Presenters;
+
 public class LockUserPresenterUnitTests
 {
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
         var logger = new Mock<ILogger<LockUserPresenter>>();
         var presenter = new LockUserPresenter(logger.Object);
 
         // act
-        Guid id = Guid.CreateVersion7(TimeProvider.System.GetUtcNow());
-        presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
+        Guid id = Guid.CreateVersion7();
+        await presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
 
         // assert
         LockUserResponse data = JsonSerializer.DeSerializeObject<LockUserResponse>(presenter.ContentResult.Content);
@@ -31,14 +33,14 @@ public class LockUserPresenterUnitTests
         Assert.True(data.Success);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
         var logger = new Mock<ILogger<LockUserPresenter>>();
         var presenter = new LockUserPresenter(logger.Object);
 
         // act
-        presenter.Handle(new UseCaseResponseMessage(null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
+        await presenter.Handle(new UseCaseResponseMessage(null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
         // assert
         Models.Response.LockUserResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LockUserResponse>(presenter.ContentResult.Content);

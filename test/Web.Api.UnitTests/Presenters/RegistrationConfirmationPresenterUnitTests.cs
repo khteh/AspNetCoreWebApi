@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Web.Api.Core.DTO;
@@ -11,19 +12,21 @@ using Web.Api.Presenters;
 using Web.Api.Serialization;
 using Xunit;
 namespace Web.Api.UnitTests.Presenters;
+
 public class RegistrationConfirmationPresenterUnitTests
 {
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
         var logger = new Mock<ILogger<RegistrationConfirmationPresenter>>();
         var presenter = new RegistrationConfirmationPresenter(logger.Object);
 
         // act
-        Guid id = Guid.CreateVersion7(TimeProvider.System.GetUtcNow());
+        // https://learn.microsoft.com/en-us/dotnet/api/system.guid.createversion7?view=net-9.0#system-guid-createversion7
+        Guid id = Guid.CreateVersion7();
         string code = "1234";
-        presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(id.ToString(), code, true));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(id.ToString(), code, true));
 
         // assert
         CodeResponse response = JsonSerializer.DeSerializeObject<CodeResponse>(presenter.ContentResult.Content);
@@ -36,14 +39,14 @@ public class RegistrationConfirmationPresenterUnitTests
         Assert.True(response.Success);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
         var logger = new Mock<ILogger<RegistrationConfirmationPresenter>>();
         var presenter = new RegistrationConfirmationPresenter(logger.Object);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(string.Empty, string.Empty, false, "Invalid Email!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Email!") }));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(string.Empty, string.Empty, false, "Invalid Email!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Email!") }));
 
         // assert
         CodeResponse response = Serialization.JsonSerializer.DeSerializeObject<CodeResponse>(presenter.ContentResult.Content);

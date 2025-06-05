@@ -19,8 +19,8 @@ public class JwtFactoryUnitTests
     public async Task GenerateEncodedToken_GivenValidInputs_ReturnsExpectedTokenData()
     {
         // arrange
-        var token = Guid.CreateVersion7(TimeProvider.System.GetUtcNow()).ToString();
-        var id = Guid.CreateVersion7(TimeProvider.System.GetUtcNow()).ToString();
+        var token = Guid.CreateVersion7().ToString();
+        var id = Guid.CreateVersion7().ToString();
         var jwtIssuerOptions = new JwtIssuerOptions
         {
             Issuer = "",
@@ -44,8 +44,8 @@ public class JwtFactoryUnitTests
     public async Task GenerateEncodedToken_GivenInValidInputs_ReturnsNullTokenData()
     {
         // arrange
-        var token = Guid.CreateVersion7(TimeProvider.System.GetUtcNow()).ToString();
-        var id = Guid.CreateVersion7(TimeProvider.System.GetUtcNow()).ToString();
+        var token = Guid.CreateVersion7().ToString();
+        var id = Guid.CreateVersion7().ToString();
         var jwtIssuerOptions = new JwtIssuerOptions
         {
             Issuer = "",

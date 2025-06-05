@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Web.Api.Core.DTO;
@@ -9,10 +10,11 @@ using Web.Api.Presenters;
 using Web.Api.Serialization;
 using Xunit;
 namespace Web.Api.UnitTests.Presenters;
+
 public class LogInPresenterUnitTests
 {
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsAccessToken()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsAccessToken()
     {
         // arrange
         const string token = "777888AAABBB";
@@ -20,7 +22,7 @@ public class LogInPresenterUnitTests
         var presenter = new LogInPresenter(logger.Object);
 
         // act
-        presenter.Handle(new LogInResponse(new AccessToken(token, 0), string.Empty, true));
+        await presenter.Handle(new LogInResponse(new AccessToken(token, 0), string.Empty, true));
 
         // assert
         LogInResponse data = JsonSerializer.DeSerializeObject<LogInResponse>(presenter.ContentResult.Content);
@@ -28,14 +30,14 @@ public class LogInPresenterUnitTests
         Assert.Equal(token, data.AccessToken.Token);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
         var logger = new Mock<ILogger<LogInPresenter>>();
         var presenter = new LogInPresenter(logger.Object);
 
         // act
-        presenter.Handle(new LogInResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
+        await presenter.Handle(new LogInResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
         // assert
         Models.Response.LogInResponse response = JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(presenter.ContentResult.Content);

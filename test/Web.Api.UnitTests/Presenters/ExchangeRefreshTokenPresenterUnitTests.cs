@@ -8,11 +8,13 @@ using Web.Api.Presenters;
 using Web.Api.Serialization;
 using Web.Api.Models.Response;
 using Xunit;
+using System.Threading.Tasks;
 namespace Web.Api.UnitTests.Presenters;
+
 public class ExchangeRefreshTokenPresenterUnitTests
 {
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsAccessToken()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsAccessToken()
     {
         // arrange
         const string token = "777888AAABBB";
@@ -20,7 +22,7 @@ public class ExchangeRefreshTokenPresenterUnitTests
         var presenter = new ExchangeRefreshTokenPresenter(logger.Object);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new AccessToken(token, 0), string.Empty, true));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new AccessToken(token, 0), string.Empty, true));
 
         // assert
         ExchangeRefreshTokenResponse data = JsonSerializer.DeSerializeObject<ExchangeRefreshTokenResponse>(presenter.ContentResult.Content);
@@ -31,7 +33,7 @@ public class ExchangeRefreshTokenPresenterUnitTests
         Assert.Equal(token, data.AccessToken.Token);
     }
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsRefreshToken()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsRefreshToken()
     {
         // arrange
         const string token = "777888AAABBB";
@@ -39,7 +41,7 @@ public class ExchangeRefreshTokenPresenterUnitTests
         var presenter = new ExchangeRefreshTokenPresenter(logger.Object);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(null, token, true));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(null, token, true));
 
         // assert
         ExchangeRefreshTokenResponse data = JsonSerializer.DeSerializeObject<ExchangeRefreshTokenResponse>(presenter.ContentResult.Content);
@@ -49,14 +51,14 @@ public class ExchangeRefreshTokenPresenterUnitTests
         Assert.Equal(token, data.RefreshToken);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsError()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsError()
     {
         // arrange
         var logger = new Mock<ILogger<ExchangeRefreshTokenPresenter>>();
         var presenter = new ExchangeRefreshTokenPresenter(logger.Object);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Token!") }));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Token!") }));
 
         // assert
         Models.Response.ExchangeRefreshTokenResponse response = JsonSerializer.DeSerializeObject<Models.Response.ExchangeRefreshTokenResponse>(presenter.ContentResult.Content);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Web.Api.Core.DTO;
@@ -10,18 +11,19 @@ using Web.Api.Models.Response;
 using Web.Api.Presenters;
 using Xunit;
 namespace Web.Api.UnitTests.Presenters;
+
 public class ChangePasswordPresenterUnitTests
 {
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
         var logger = new Mock<ILogger<ChangePasswordPresenter>>();
         var presenter = new ChangePasswordPresenter(logger.Object);
 
         // act
-        Guid id = Guid.CreateVersion7(TimeProvider.System.GetUtcNow());
-        presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
+        Guid id = Guid.CreateVersion7();
+        await presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
 
         // assert
         ChangePasswordResponse response = Serialization.JsonSerializer.DeSerializeObject<ChangePasswordResponse>(presenter.ContentResult.Content);
@@ -31,14 +33,14 @@ public class ChangePasswordPresenterUnitTests
         Assert.True(response.Success);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
         var logger = new Mock<ILogger<ChangePasswordPresenter>>();
         var presenter = new ChangePasswordPresenter(logger.Object);
 
         // act
-        presenter.Handle(new UseCaseResponseMessage(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
+        await presenter.Handle(new UseCaseResponseMessage(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
         // assert
         ChangePasswordResponse response = Serialization.JsonSerializer.DeSerializeObject<ChangePasswordResponse>(presenter.ContentResult.Content);

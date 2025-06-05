@@ -10,18 +10,20 @@ using Web.Api.Presenters;
 using Web.Api.Serialization;
 using Web.Api.Models.Response;
 using Xunit;
+using System.Threading.Tasks;
 namespace Web.Api.UnitTests.Presenters;
+
 public class FindUserPresenterUnitTests
 {
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
         var logger = new Mock<ILogger<FindUserPresenter>>();
         var presenter = new FindUserPresenter(logger.Object);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.FindUserResponse(new User(), "1234", true));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.FindUserResponse(new User(), "1234", true));
 
         // assert
         Models.Response.FindUserResponse data = JsonSerializer.DeSerializeObject<Models.Response.FindUserResponse>(presenter.ContentResult.Content);
@@ -30,14 +32,14 @@ public class FindUserPresenterUnitTests
         Assert.Equal("1234", data.Id);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
         var logger = new Mock<ILogger<FindUserPresenter>>();
         var presenter = new FindUserPresenter(logger.Object);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.FindUserResponse(null, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.FindUserResponse(null, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
         // assert
         Models.Response.FindUserResponse response = JsonSerializer.DeSerializeObject<Models.Response.FindUserResponse>(presenter.ContentResult.Content);

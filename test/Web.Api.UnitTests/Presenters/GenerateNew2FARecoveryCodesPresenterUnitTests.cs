@@ -11,20 +11,22 @@ using Web.Api.Presenters;
 using Web.Api.Serialization;
 using Web.Api.Models.Response;
 using Xunit;
+using System.Threading.Tasks;
 namespace Web.Api.UnitTests.Presenters;
+
 public class GenerateNew2FARecoveryCodesPresenterUnitTests
 {
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
         var logger = new Mock<ILogger<GenerateNew2FARecoveryCodesPresenter>>();
         var presenter = new GenerateNew2FARecoveryCodesPresenter(logger.Object);
 
         // act
-        Guid id = Guid.CreateVersion7(TimeProvider.System.GetUtcNow());
+        Guid id = Guid.CreateVersion7();
         List<string> codes = new List<string>() { "123" };
-        presenter.Handle(new Core.DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse(id.ToString(), codes, true));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse(id.ToString(), codes, true));
 
         // assert
         Models.Response.GenerateNew2FARecoveryCodesResponse data = JsonSerializer.DeSerializeObject<Models.Response.GenerateNew2FARecoveryCodesResponse>(presenter.ContentResult.Content);
@@ -33,14 +35,14 @@ public class GenerateNew2FARecoveryCodesPresenterUnitTests
         Assert.Equal(codes, data.Codes);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
         var logger = new Mock<ILogger<GenerateNew2FARecoveryCodesPresenter>>();
         var presenter = new GenerateNew2FARecoveryCodesPresenter(logger.Object);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse(null, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse(null, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
         // assert
         Models.Response.GenerateNew2FARecoveryCodesResponse response = JsonSerializer.DeSerializeObject<Models.Response.GenerateNew2FARecoveryCodesResponse>(presenter.ContentResult.Content);

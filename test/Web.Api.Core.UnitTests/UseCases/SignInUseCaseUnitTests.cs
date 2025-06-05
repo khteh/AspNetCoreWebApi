@@ -54,7 +54,7 @@ public class SignInUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.SignInMobile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.SignInResponse(Guid.CreateVersion7(TimeProvider.System.GetUtcNow()), string.Empty, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.SignInResponse(Guid.CreateVersion7(), string.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new SignInUseCase(mockUserRepository.Object);
@@ -120,7 +120,7 @@ public class SignInUseCaseUnitTests
         // public async Task<SignInResponse> SignIn(string username, string password, string remoteIP, bool rememberMe, bool logoutOnFailure)
         mockUserRepository
               .Setup(repo => repo.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.SignInResponse(Guid.CreateVersion7(TimeProvider.System.GetUtcNow()), string.Empty, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.SignInResponse(Guid.CreateVersion7(), string.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new SignInUseCase(mockUserRepository.Object);
@@ -199,7 +199,7 @@ public class SignInUseCaseUnitTests
 
         // 4. We need a request model to carry data into the use case from the upper layer (UI, Controller etc.)
         // public SignInWithClaimsRequest(string identityId, List<Claim> claims, AuthenticationProperties authProperties)
-        var response = await useCase.Handle(new SignInWithClaimsRequest(Guid.CreateVersion7(TimeProvider.System.GetUtcNow()).ToString(), new List<Claim>() { }, new AuthenticationProperties()), mockOutputPort.Object);
+        var response = await useCase.Handle(new SignInWithClaimsRequest(Guid.CreateVersion7().ToString(), new List<Claim>() { }, new AuthenticationProperties()), mockOutputPort.Object);
 
         // assert
         Assert.False(response);
