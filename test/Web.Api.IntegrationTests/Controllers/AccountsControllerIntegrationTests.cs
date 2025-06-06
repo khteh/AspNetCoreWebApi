@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Xunit;
+using static System.Net.Mime.MediaTypeNames;
 namespace Web.Api.IntegrationTests.Controllers;
 
 public class AccountsControllerIntegrationTests
