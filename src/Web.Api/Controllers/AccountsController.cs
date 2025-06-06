@@ -6,7 +6,9 @@ using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Models.Response;
 using Web.Api.Presenters;
+using static System.Net.Mime.MediaTypeNames;
 namespace Web.Api.Controllers;
+
 [Route("api/[controller]")]
 [ApiController]
 public class AccountsController : ControllerBase
@@ -28,7 +30,7 @@ public class AccountsController : ControllerBase
 
     // POST api/accounts/register
     [HttpPost("register")]
-    [Consumes("application/json")]
+    [Consumes(Application.Json)]
     public async Task<ActionResult> Register([FromBody] Models.Request.RegisterUserRequest request)
     {
         if (!ModelState.IsValid)
@@ -43,7 +45,7 @@ public class AccountsController : ControllerBase
     }
     // POST api/accounts
     [HttpPost("changepassword")]
-    [Consumes("application/json")]
+    [Consumes(Application.Json)]
     public async Task<ActionResult> ChangePassword([FromBody] Models.Request.ChangePasswordRequest request)
     {
         if (!ModelState.IsValid)
@@ -52,7 +54,7 @@ public class AccountsController : ControllerBase
         return _mapper.Map<JsonContentResult>(response);
     }
     [HttpPost("resetpassword")]
-    [Consumes("application/json")]
+    [Consumes(Application.Json)]
     public async Task<ActionResult> ResetPassword([FromBody] Models.Request.ResetPasswordRequest request)
     {
         if (!ModelState.IsValid)

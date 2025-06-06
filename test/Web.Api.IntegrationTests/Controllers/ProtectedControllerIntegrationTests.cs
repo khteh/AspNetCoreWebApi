@@ -21,7 +21,7 @@ public class ProtectedControllerIntegrationTests
     [Fact]
     public async Task CanAccessProtectedResourceAfterLogin()
     {
-        var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LogInRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
+        var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LogInRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, Application.Json), TestContext.Current.CancellationToken);
         httpResponse.EnsureSuccessStatusCode();
         var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
