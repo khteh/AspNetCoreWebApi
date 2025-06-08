@@ -48,7 +48,7 @@ document.getElementById("loginButton").addEventListener("click", function (event
             $.ajax({
                 url: pathBase + "/api/auth/login",
                 type: "POST",
-                contentType: Application.Json,
+                contentType: "application/json",
                 dataType: "json",
                 data: JSON.stringify({ UserName: username, Password: password, RememberMe: true }),
                 processData: false,
