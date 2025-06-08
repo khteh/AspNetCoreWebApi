@@ -33,6 +33,12 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <!--
+      Add [ApplicationPart("Web.Api.IntegrationTests")] to the assembly so the controller is discovered.
+    -->
+    <AssemblyAttribute Include="Microsoft.AspNetCore.Mvc.ApplicationParts.ApplicationPartAttribute">
+      <_Parameter1>Web.Api.IntegrationTests</_Parameter1>
+    </AssemblyAttribute>
     <ProjectReference Include="..\..\src\Web.Api\Web.Api.csproj" />
   </ItemGroup>
 </Project>
