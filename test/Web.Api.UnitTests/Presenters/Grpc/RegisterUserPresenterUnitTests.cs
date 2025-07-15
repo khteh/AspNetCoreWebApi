@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Web.Api.Core.DTO;
 using Web.Api.Core.Interfaces;
 using Web.Api.Presenters.Grpc;
@@ -19,13 +20,13 @@ public class GRPCRegisterUserPresenterUnitTests
         _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
     }
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
     {
         // arrange
         var presenter = new UserPresenter(_mapper);
 
         // act
-        presenter.Handle(new UseCaseResponseMessage("", true));
+        await presenter.Handle(new UseCaseResponseMessage("", true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -34,13 +35,13 @@ public class GRPCRegisterUserPresenterUnitTests
         Assert.False(presenter.Response.Response.Errors.Any());
     }
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
         var presenter = new UserPresenter(_mapper);
 
         // act
-        presenter.Handle(new UseCaseResponseMessage("1234", true));
+        await presenter.Handle(new UseCaseResponseMessage("1234", true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -50,13 +51,13 @@ public class GRPCRegisterUserPresenterUnitTests
         Assert.Equal("1234", presenter.Response.Id);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
         var presenter = new UserPresenter(_mapper);
 
         // act
-        presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
+        await presenter.Handle(new UseCaseResponseMessage(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
         // assert
         Assert.NotNull(presenter.Response);

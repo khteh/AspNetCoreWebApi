@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Presenters.Grpc;
@@ -19,13 +20,13 @@ public class GRPCLogInPresenterUnitTests
         _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
     }
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
     {
         // arrange
         var presenter = new LogInPresenter(_mapper);
 
         // act
-        presenter.Handle(new LogInResponse(new AccessToken("", 0), "", true));
+        await presenter.Handle(new LogInResponse(new AccessToken("", 0), "", true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -34,14 +35,14 @@ public class GRPCLogInPresenterUnitTests
         Assert.False(presenter.Response.Response.Errors.Any());
     }
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsAccessToken()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsAccessToken()
     {
         // arrange
         const string token = "777888AAABBB";
         var presenter = new LogInPresenter(_mapper);
 
         // act
-        presenter.Handle(new LogInResponse(new AccessToken(token, 0), "", true));
+        await presenter.Handle(new LogInResponse(new AccessToken(token, 0), "", true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -51,13 +52,13 @@ public class GRPCLogInPresenterUnitTests
         Assert.Equal(token, presenter.Response.AccessToken.Token);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
         var presenter = new LogInPresenter(_mapper);
 
         // act
-        presenter.Handle(new LogInResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
+        await presenter.Handle(new LogInResponse(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
         // assert
         Assert.NotNull(presenter.Response);

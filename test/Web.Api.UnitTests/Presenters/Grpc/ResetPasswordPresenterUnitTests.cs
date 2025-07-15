@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Web.Api.Core.DTO;
 using Web.Api.Core.Interfaces;
 using Web.Api.Presenters.Grpc;
@@ -19,13 +20,13 @@ public class GRPCResetPasswordPresenterUnitTests
         _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
     }
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
     {
         // arrange
         var presenter = new ResetPasswordPresenter(_mapper);
 
         // act
-        presenter.Handle(new UseCaseResponseMessage("", true));
+        await presenter.Handle(new UseCaseResponseMessage("", true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -34,13 +35,13 @@ public class GRPCResetPasswordPresenterUnitTests
         Assert.False(presenter.Response.Errors.Any());
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
         var presenter = new ResetPasswordPresenter(_mapper);
 
         // act
-        presenter.Handle(new UseCaseResponseMessage(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
+        await presenter.Handle(new UseCaseResponseMessage(new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
         // assert
         Assert.NotNull(presenter.Response);

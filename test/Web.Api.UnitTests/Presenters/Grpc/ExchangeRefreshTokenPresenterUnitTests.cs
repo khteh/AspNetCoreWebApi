@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Web.Api.Core.DTO;
 using Web.Api.Presenters.Grpc;
 using Xunit;
@@ -18,14 +19,14 @@ public class GRPCExchangeRefreshTokenPresenterUnitTests
         _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
     }
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsAccessToken()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsAccessToken()
     {
         // arrange
         const string token = "777888AAABBB";
         var presenter = new ExchangeRefreshTokenPresenter(_mapper);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new AccessToken(token, 0), "", true));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new AccessToken(token, 0), "", true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -36,14 +37,14 @@ public class GRPCExchangeRefreshTokenPresenterUnitTests
         Assert.Equal(token, presenter.Response.AccessToken.Token);
     }
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsRefreshToken()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsRefreshToken()
     {
         // arrange
         const string token = "777888AAABBB";
         var presenter = new ExchangeRefreshTokenPresenter(_mapper);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(null, token, true));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(null, token, true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -53,13 +54,13 @@ public class GRPCExchangeRefreshTokenPresenterUnitTests
         Assert.Equal(token, presenter.Response.RefreshToken);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsError()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsError()
     {
         // arrange
         var presenter = new ExchangeRefreshTokenPresenter(_mapper);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Token!") }));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Token!") }));
 
         // assert
         Assert.NotNull(presenter.Response);

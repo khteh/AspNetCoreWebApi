@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO;
 using Web.Api.Core.DTO.UseCaseResponses;
@@ -20,13 +21,13 @@ public class GRPCFindUserPresenterUnitTests
         _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
     }
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsOKHttpStatusCode()
     {
         // arrange
         var presenter = new FindUserPresenter(_mapper);
 
         // act
-        presenter.Handle(new FindUserResponse(new User(), "", true, null, null));
+        await presenter.Handle(new FindUserResponse(new User(), "", true, null, null));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -35,13 +36,13 @@ public class GRPCFindUserPresenterUnitTests
         Assert.False(presenter.Response.Response.Errors.Any());
     }
     [Fact]
-    public void Handle_GivenSuccessfulUseCaseResponse_SetsId()
+    public async Task Handle_GivenSuccessfulUseCaseResponse_SetsId()
     {
         // arrange
         var presenter = new FindUserPresenter(_mapper);
 
         // act
-        presenter.Handle(new FindUserResponse(new User(), "1234", true));
+        await presenter.Handle(new FindUserResponse(new User(), "1234", true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -51,13 +52,13 @@ public class GRPCFindUserPresenterUnitTests
         Assert.Equal("1234", presenter.Response.Id);
     }
     [Fact]
-    public void Handle_GivenFailedUseCaseResponse_SetsErrors()
+    public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
     {
         // arrange
         var presenter = new FindUserPresenter(_mapper);
 
         // act
-        presenter.Handle(new FindUserResponse(null, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
+        await presenter.Handle(new FindUserResponse(null, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
         // assert
         Assert.NotNull(presenter.Response);

@@ -30,6 +30,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             // Create a new service provider.
             services.Configure<GrpcConfig>(context.Configuration.GetSection(nameof(GrpcConfig)));
             services.AddScoped<SignInManager<AppUser>>();
+            services.AddScoped<ILogger<CustomWebApplicationFactory<TStartup>>>(provider =>
+                {
+                    ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+                    return loggerFactory.CreateLogger<CustomWebApplicationFactory<TStartup>>();
+                });
         });
     }
     public async ValueTask InitializeAsync()
@@ -49,8 +54,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 var scopedServices = scope.ServiceProvider;
                 var appDb = scopedServices.GetRequiredService<AppDbContext>();
                 var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
-                ILoggerFactory loggerFactory = scopedServices.GetRequiredService<ILoggerFactory>();
-                ILogger logger = loggerFactory.CreateLogger<CustomWebApplicationFactory<TStartup>>();
+                ILogger logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
+                //ILogger logger = loggerFactory.CreateLogger<CustomWebApplicationFactory<TStartup>>();
                 // Ensure the database is created.
                 await appDb.Database.EnsureCreatedAsync();
                 await identityDb.Database.EnsureCreatedAsync();
