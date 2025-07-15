@@ -241,7 +241,12 @@ try
     builder.Services.AddOpenApi();
     builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
     //.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter())); Fixed in .Net Core 5
-    builder.Services.AddAutoMapper(new[] { typeof(IdentityProfile), typeof(GrpcProfile), typeof(ResponseProfile) });
+    builder.Services.AddAutoMapper(cfg =>
+    {
+        cfg.AddMaps(typeof(IdentityProfile).Assembly);
+        cfg.AddMaps(typeof(GrpcProfile).Assembly);
+        cfg.AddMaps(typeof(ResponseProfile).Assembly);
+    });
     builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
     builder.Services.AddScoped<IPipelineBehavior<ConfirmEmailCommand, ResponseBase>, LoggingBehavior<ConfirmEmailCommand, ResponseBase>>();
     builder.Services.AddScoped<IPipelineBehavior<ConfirmEmailChangeCommand, ResponseBase>, LoggingBehavior<ConfirmEmailChangeCommand, ResponseBase>>();

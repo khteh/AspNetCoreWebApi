@@ -8,13 +8,14 @@ using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Presenters.Grpc;
 using Xunit;
 namespace Web.Api.UnitTests.Presenters.Grpc;
+
 public class GRPCLogInPresenterUnitTests
 {
     private readonly IMapper _mapper;
     public GRPCLogInPresenterUnitTests()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddAutoMapper(typeof(GrpcProfile));
+        services.AddAutoMapper(cfg => cfg.AddMaps(typeof(GrpcProfile).Assembly));
         _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
     }
     [Fact]
@@ -24,7 +25,7 @@ public class GRPCLogInPresenterUnitTests
         var presenter = new LogInPresenter(_mapper);
 
         // act
-        presenter.Handle(new LogInResponse(new AccessToken("", 0),"", true));
+        presenter.Handle(new LogInResponse(new AccessToken("", 0), "", true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -40,7 +41,7 @@ public class GRPCLogInPresenterUnitTests
         var presenter = new LogInPresenter(_mapper);
 
         // act
-        presenter.Handle(new LogInResponse(new AccessToken(token, 0),"", true));
+        presenter.Handle(new LogInResponse(new AccessToken(token, 0), "", true));
 
         // assert
         Assert.NotNull(presenter.Response);

@@ -7,13 +7,14 @@ using Web.Api.Core.DTO;
 using Web.Api.Presenters.Grpc;
 using Xunit;
 namespace Web.Api.UnitTests.Presenters.Grpc;
+
 public class GRPCExchangeRefreshTokenPresenterUnitTests
 {
     private readonly IMapper _mapper;
     public GRPCExchangeRefreshTokenPresenterUnitTests()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddAutoMapper(typeof(GrpcProfile));
+        services.AddAutoMapper(cfg => cfg.AddMaps(typeof(GrpcProfile).Assembly));
         _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
     }
     [Fact]
@@ -58,7 +59,7 @@ public class GRPCExchangeRefreshTokenPresenterUnitTests
         var presenter = new ExchangeRefreshTokenPresenter(_mapper);
 
         // act
-        presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Token!")}));
+        presenter.Handle(new Core.DTO.UseCaseResponses.ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Token!") }));
 
         // assert
         Assert.NotNull(presenter.Response);
