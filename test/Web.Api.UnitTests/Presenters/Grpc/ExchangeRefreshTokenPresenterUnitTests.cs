@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -15,6 +16,12 @@ public class GRPCExchangeRefreshTokenPresenterUnitTests
     public GRPCExchangeRefreshTokenPresenterUnitTests()
     {
         IServiceCollection services = new ServiceCollection();
+        // Add logging services, which includes registering ILoggerFactory
+        services.AddLogging(builder =>
+        {
+            builder.AddConsole(); // Example: Add console logging
+            // You can add other providers like Debug, EventSource, etc.
+        });
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(GrpcProfile).Assembly));
         _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
     }
