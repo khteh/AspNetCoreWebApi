@@ -18,11 +18,7 @@ public class GRPCResetPasswordPresenterUnitTests
     {
         IServiceCollection services = new ServiceCollection();
         // Add logging services, which includes registering ILoggerFactory
-        services.AddLogging(builder =>
-        {
-            builder.AddConsole(); // Example: Add console logging
-            // You can add other providers like Debug, EventSource, etc.
-        });
+        services.AddLogging(builder => builder.AddConsole());
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(GrpcProfile).Assembly));
         _mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
     }
