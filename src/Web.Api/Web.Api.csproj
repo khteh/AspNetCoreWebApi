@@ -8,7 +8,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
-    <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)</OpenApiDocumentsDirectory>
   </PropertyGroup>  
   <ItemGroup>
     <Folder Include="wwwroot\" />
