@@ -18,7 +18,6 @@ global using Microsoft.Extensions.Diagnostics.HealthChecks;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.IdentityModel.Tokens;
-global using Microsoft.OpenApi.Models;
 global using Serilog;
 global using Serilog.Extensions;
 global using System;
@@ -256,51 +255,6 @@ try
     builder.Services.AddScoped<IPipelineBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>, LoggingBehavior<ExchangeRefreshTokenCommand, ExchangeRefreshTokenResponse>>();
     builder.Services.AddScoped<IPipelineBehavior<GenerateNew2FARecoveryCodesCommand, GenerateNew2FARecoveryCodesResponse>, LoggingBehavior<GenerateNew2FARecoveryCodesCommand, GenerateNew2FARecoveryCodesResponse>>();
     builder.Services.AddEndpointsApiExplorer();
-    // Register the Swagger generator, defining 1 or more Swagger documents
-    builder.Services.AddSwaggerGen(c =>
-    {
-        c.SwaggerDoc("v9.0", new OpenApiInfo
-        {
-            Title = "ASP.Net Core RESTful, SignalR and GRPC service",
-            Version = "v9.0",
-            Description = "An ASP.NET Core 9.0 Web API, SignalR and GRPC project to quickly bootstrap new projects.  Includes Identity, JWT authentication w/ refresh tokens.",
-            Contact = new OpenApiContact
-            {
-                Name = "Teh Kok How",
-                Email = "funcoolgeek@gmail.com",
-                Url = new Uri("https://github.com/khteh/AspNetCoreWebApi"),
-            },
-        });
-        // Swagger 2.+ support
-        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        {
-            Scheme = "Bearer",
-            In = ParameterLocation.Header,
-            Description = "Please insert JWT with Bearer into field",
-            Name = "Authorization",
-            Type = SecuritySchemeType.ApiKey
-        });
-        //c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
-        //{
-        //    { "Bearer", new string[] { } }
-        //});
-        c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                    {{ // NOT duplicate. Don't remove.
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            },
-                            Scheme = "oauth2",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header,
-                        },
-                        new List<string>()
-                    }});
-        c.CustomSchemaIds(i => i.FullName);
-    });
     builder.Services.AddGrpc();
     builder.Services.AddGrpcReflection();
     builder.Services.AddSignalR();
