@@ -237,7 +237,7 @@ try
                               });
         });
     builder.Services.AddControllersWithViews();
-    builder.Services.AddOpenApi();
+    builder.Services.AddOpenApi("AspNetCoreWebApi"); // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi?view=aspnetcore-9.0&tabs=visual-studio%2Cvisual-studio-code
     builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
     //.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter())); Fixed in .Net Core 5
     builder.Services.AddAutoMapper(cfg =>
@@ -357,6 +357,7 @@ try
     app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
     app.UseAuthorization();
     app.UseWebSockets();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint($"{pathBase}/openapi/AspNetCoreWebApi.json", "AspNetCoreWebApi V9.0"));
     app.Use(async (context, next) =>
     {
         /* Request method, scheme, and path
