@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 using System;
+using System.Reflection;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.Services;
 using Web.Api.Infrastructure.Auth;
@@ -15,6 +16,7 @@ using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.Infrastructure.Interfaces;
 namespace Microsoft.Extensions.DependencyInjection;
+
 public static class InfrastructureServices
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection service, IConfiguration configuration, IWebHostEnvironment env, bool isIntegrationTest = false)
@@ -47,7 +49,7 @@ public static class InfrastructureServices
                 options.LogTo(Console.WriteLine);
             }
         });
-        if (!isIntegrationTest && env.IsProduction())
+        if (!isIntegrationTest && env.IsProduction() && !Assembly.GetEntryAssembly().GetName().Name.Equals("GetDocument.Insider")) // XXX: Temporary fix until https://github.com/dotnet/aspnetcore/issues/54698 is fixed
         {
             service.AddStackExchangeRedisCache(options =>
             {
