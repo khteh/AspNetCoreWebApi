@@ -8,24 +8,24 @@
   <ItemGroup>
     <Protobuf Include="Protos/*.proto" GrpcServices="Client" />
     <RuntimeHostConfigurationOption Include="System.Net.SocketsHttpHandler.Http3Support" Value="true" />
-    <PackageReference Include="Elastic.CommonSchema.Serilog" Version="8.18.2" />
-    <PackageReference Include="Elastic.Serilog.Sinks" Version="8.18.2" />
+    <PackageReference Include="Elastic.CommonSchema.Serilog" Version="9.0.0" />
+    <PackageReference Include="Elastic.Serilog.Sinks" Version="9.0.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.71.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.9" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Serilog.Enrichers.HttpContext" Version="8.0.9" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
-    <PackageReference Include="xunit.v3" Version="3.0.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.3">
+    <PackageReference Include="xunit.v3" Version="3.1.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.9" />
     <PackageReference Include="Grpc.Net.ClientFactory" Version="2.71.0" />
     <PackageReference Include="Grpc.Tools" Version="2.72.0">
       <PrivateAssets>all</PrivateAssets>
