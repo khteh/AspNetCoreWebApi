@@ -4,6 +4,7 @@
     <LangVersion>13.0</LangVersion>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.Testing" Version="9.5.0" />
@@ -30,5 +31,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Web.Api\Web.Api.csproj" />
     <ProjectReference Include="..\..\src\Web.Api.Core\Web.Api.Core.csproj" />
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

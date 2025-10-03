@@ -5,6 +5,7 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <NoWarn>CS0436</NoWarn>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
   </PropertyGroup>
   <ItemGroup>
     <Protobuf Include="Protos/*.proto" GrpcServices="Client" />
@@ -40,5 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Web.Api\Web.Api.csproj" />
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
