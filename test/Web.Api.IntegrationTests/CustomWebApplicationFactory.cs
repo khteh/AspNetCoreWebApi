@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Web.Api.Core.Configuration;
@@ -19,7 +18,7 @@ namespace Web.Api.IntegrationTests;
 
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IAsyncLifetime where TStartup : class
 {
-    public HttpClient Client { get; set; }
+    public HttpClient Client { get; private set; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // Route the application's logs to the xunit output
