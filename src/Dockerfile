@@ -9,4 +9,5 @@ RUN openssl req -new -newkey rsa:4096 -x509 -nodes -days 365 -keyout server.key 
 RUN openssl pkcs12 -export -out /tmp/localhost.pfx -inkey server.key -in server.crt -passout pass:AspNetCoreWebApi
 ADD Web.Api/bin/Release/net9.0/publish/ .
 EXPOSE 443
-ENTRYPOINT ["dotnet", "Web.Api.dll"]
+#ENTRYPOINT ["dotnet", "Web.Api.dll"]
+ENTRYPOINT ["./Web.Api"]
