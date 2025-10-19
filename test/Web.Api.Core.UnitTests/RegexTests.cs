@@ -209,11 +209,14 @@ public class RegexTests
     public void StringContainsMoneyRegexTests(string input, bool expected)
     {
         string regex = @"\b\$?(\d*\.\d{1,2})|\b\$?(\d+)|\b\$?(\d+\.?)|\b\$?(\d{1,3},\d{3})*|\b\$?(\d{1,3},\d{3})*\.?|\b\$?(\d{1,3},\d{3})*\.\d{1,2}";
-        Regex r = new Regex(@"\b\$?(\d*\.\d{1,2})|\b\$?(\d+)|\b\$?(\d+\.?)|\b\$?(\d{1,3},\d{3})*|\b\$?(\d{1,3},\d{3})*\.?|\b\$?(\d{1,3},\d{3})*\.\d{1,2}");
         MatchCollection matches = Regex.Matches(input, regex);
+        bool found = false;
         foreach (Match match in matches)
+        {
             _output.WriteLine($"Match '{match.Value}' @ Position {match.Index}");
-        Assert.Equal(expected, r.IsMatch(input));
+            found |= !string.IsNullOrEmpty(match.Value);
+        }
+        Assert.Equal(expected, found);
     }
     [Theory]
     [InlineData("Sky is blue.", new string[] { "Sky", "is", "blue", "." })]
