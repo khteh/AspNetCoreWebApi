@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
 namespace Web.Api.Core.UnitTests;
-
+// https://regex101.com/ to test regex
 public class RegexTests
 {
     private readonly ITestOutputHelper _output;
