@@ -164,9 +164,10 @@ public class RegexTests
     public void UriRegexTests(string input, bool expected)
     {
         bool result = Uri.TryCreate(input, UriKind.Absolute, out Uri uri);
-        Assert.Equal(expected, result);
+        bool actual = result;
         if (result)
         {
+            actual = !string.Equals("Unknown", uri.HostNameType) && !string.IsNullOrEmpty(uri.Authority) && !string.IsNullOrEmpty(uri.Host) && uri.Port != -1;
             var parameters = QueryHelpers.ParseQuery(uri.Query);
             _output.WriteLine("");
             _output.WriteLine(@$"
@@ -180,6 +181,7 @@ public class RegexTests
             foreach (var param in parameters)
                 _output.WriteLine($"Query param: {param.Key}={param.Value}");
         }
+        Assert.Equal(expected, actual);
     }
     [Theory]
     [InlineData("$", false)]
