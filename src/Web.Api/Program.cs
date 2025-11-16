@@ -357,7 +357,7 @@ try
     app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
     app.UseAuthorization();
     app.UseWebSockets();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint($"{pathBase}/openapi/AspNetCoreWebApi.json", "AspNetCoreWebApi V9.0"));
+    app.UseSwaggerUI(c => c.SwaggerEndpoint($"{pathBase}/openapi/AspNetCoreWebApi.json", "AspNetCoreWebApi V10.0"));
     app.Use(async (context, next) =>
     {
         /* Request method, scheme, and path

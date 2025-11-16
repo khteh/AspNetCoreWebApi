@@ -1,8 +1,9 @@
 # AspNetCoreWebApi
 
-An ASP.NET 9.0 Web API, SignalR and GRPC project using Clean Architecture to quickly bootstrap new projects. Includes Identity, JWT authentication w/ refresh tokens. The design of the application is driven by both Domain-Driven-Design and Clean Architecture (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). It makes use of Command and Decorator pattern, and MediatR for in-process synchronous messaging.
+An ASP.NET 10.0 Web API, SignalR and GRPC project using Clean Architecture to quickly bootstrap new projects. Includes Identity, JWT authentication w/ refresh tokens. The design of the application is driven by both Domain-Driven-Design and Clean Architecture (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). It makes use of Command and Decorator pattern, and MediatR for in-process synchronous messaging.
 
 # Development environment
+
 - Copy `nuget.config.FIXME` to `nuget.config`
 - Add `Username` and access token from github Developer Settings
 
@@ -64,9 +65,11 @@ The available APIs include:
 - GET `/api/protected` - Protected controller for testing role-based authorization.
 
 # Logs
+
 - logs are available at `/var/log/aspnetcore/logYYYYMMDD_*`
 
 ## Windows 11
+
 - Enter powershell: `powershell`
 - `Get-Content -Path "c:\var\log\aspnetcore\logYYYYMMDD_<foo>" -Wait`
 
