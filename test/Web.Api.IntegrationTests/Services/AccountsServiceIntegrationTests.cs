@@ -11,10 +11,8 @@ namespace Web.Api.IntegrationTests.Services;
 [Collection("GRPC Test Collection")]
 public class AccountsServiceIntegrationTests : IntegrationTestBase
 {
-    public AccountsServiceIntegrationTests(GrpcTestFixture<Program> fixture, ITestOutputHelper outputHelper) : base(fixture, outputHelper)
-    {
-    }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    public AccountsServiceIntegrationTests(GrpcTestFixture<Program> fixture, ITestOutputHelper output) : base(fixture, output) { }
+    [Fact]
     public async Task CanRegisterUserWithValidAccountDetails()
     {
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
@@ -40,7 +38,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         Assert.Empty(response.Response.Errors);
         Assert.False(string.IsNullOrEmpty(response.Id));
     }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    [Fact]
     public async Task CanDeleteUserWithValidAccountDetails()
     {
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
@@ -53,7 +51,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         Assert.Empty(response.Response.Errors);
         Assert.False(string.IsNullOrEmpty(response.Id));
     }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    [Fact]
     public async Task CantRegisterUserWithInvalidAccountDetails()
     {
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
@@ -80,7 +78,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         Assert.Equal("InvalidUserName", response.Response.Errors.First().Code);
         //Assert.Equal("'Email' is not a valid email address.", response.Response.Errors.First().Description);
     }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    [Fact]
     public async Task CantDeleteUserWithInvalidAccountDetails()
     {
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
@@ -95,7 +93,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Response.Errors.First().Code);
         Assert.Equal("Invalid user!", response.Response.Errors.First().Description);
     }
-    [Theory(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    [Theory]
     [InlineData("CE73A87D-0AA6-4191-B65B-6B49F333E316")]
     [InlineData("3ABE9D63-777C-4865-8FA0-A53A657313D5")]
     public async Task CanFindById(string id)
@@ -111,7 +109,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         Assert.False(string.IsNullOrEmpty(response.Id));
         Assert.Equal(id, response.Id);
     }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    [Fact]
     public async Task CanFindByUsername()
     {
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
@@ -125,7 +123,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         Assert.False(string.IsNullOrEmpty(response.Id));
         Assert.Equal("CE73A87D-0AA6-4191-B65B-6B49F333E316", response.Id);
     }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    [Fact]
     public async Task CanFindByEmail()
     {
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
@@ -139,7 +137,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         Assert.False(string.IsNullOrEmpty(response.Id));
         Assert.Equal("CE73A87D-0AA6-4191-B65B-6B49F333E316", response.Id);
     }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    [Fact]
     public async Task CanChangePasswordWithValidAccountDetails()
     {
         //AccountsClient accountsClient = new AccountsClient(_factory.GrpcChannel);
@@ -220,7 +218,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         Assert.False(string.IsNullOrEmpty(loginResponse2.RefreshToken));
         Assert.Equal(7200, loginResponse2.AccessToken.ExpiresIn);
     }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    [Fact]
     public async Task CanResetPasswordWithValidAccountDetails()
     {
         //AccountsClient accountsClient = new AccountsClient(_factory.GrpcChannel);

@@ -7,6 +7,7 @@ using Xunit;
 
 public class IntegrationTestBase : IClassFixture<GrpcTestFixture<Program>>, IDisposable
 {
+    protected ITestOutputHelper _output;
     private GrpcChannel? _channel;
     private IDisposable? _testContext;
     protected GrpcTestFixture<Program> Fixture { get; set; }
@@ -24,10 +25,11 @@ public class IntegrationTestBase : IClassFixture<GrpcTestFixture<Program>>, IDis
         });
     }
 
-    public IntegrationTestBase(GrpcTestFixture<Program> fixture, ITestOutputHelper outputHelper)
+    public IntegrationTestBase(GrpcTestFixture<Program> fixture, ITestOutputHelper output)
     {
+        _output = output;
         Fixture = fixture;
-        _testContext = Fixture.GetTestContext(outputHelper);
+        _testContext = Fixture.GetTestContext(_output);
     }
 
     public void Dispose()

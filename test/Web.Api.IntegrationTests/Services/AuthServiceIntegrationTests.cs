@@ -9,10 +9,8 @@ namespace Web.Api.IntegrationTests.Services;
 [Collection("GRPC Test Collection")]
 public class AuthServiceIntegrationTests : IntegrationTestBase
 {
-    public AuthServiceIntegrationTests(GrpcTestFixture<Program> fixture, ITestOutputHelper outputHelper) : base(fixture, outputHelper)
-    {
-    }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    public AuthServiceIntegrationTests(GrpcTestFixture<Program> fixture, ITestOutputHelper output) : base(fixture, output) { }
+    [Fact]
     public async Task CanLoginWithValidCredentials()
     {
         //AuthClient client = new AuthClient(_factory.GrpcChannel);
@@ -32,7 +30,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         Assert.False(string.IsNullOrEmpty(response.RefreshToken));
         Assert.Equal(7200, response.AccessToken.ExpiresIn);
     }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    [Fact]
     public async Task CantLoginWithInvalidCredentials()
     {
         //AuthClient client = new AuthClient(_factory.GrpcChannel);
@@ -52,7 +50,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         Assert.Equal(HttpStatusCode.Unauthorized.ToString(), response.Response.Errors.First().Code);
         Assert.Equal("Invalid username or password!", response.Response.Errors.First().Description);
     }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    [Fact]
     public async Task CanExchangeValidRefreshToken()
     {
         //AuthClient client = new AuthClient(_factory.GrpcChannel);
@@ -86,7 +84,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         Assert.False(string.IsNullOrEmpty(response1.RefreshToken));
         Assert.Equal(7200, response1.AccessToken.ExpiresIn);
     }
-    [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/44906")]
+    [Fact]
     public async Task CantExchangeInvalidRefreshToken()
     {
         //AuthClient client = new AuthClient(_factory.GrpcChannel);

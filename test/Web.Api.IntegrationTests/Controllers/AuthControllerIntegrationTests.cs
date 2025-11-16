@@ -12,7 +12,8 @@ namespace Web.Api.IntegrationTests.Controllers;
 public class AuthControllerIntegrationTests
 {
     private readonly HttpClient _client;
-    public AuthControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) => _client = factory.CreateClient();
+    private readonly ITestOutputHelper _output;
+    public AuthControllerIntegrationTests(CustomWebApplicationFactory<Program> factory, ITestOutputHelper output) => (_output, _client) = (output, factory.Client);
 
     [Fact]
     public async Task CanLoginWithValidCredentials()
