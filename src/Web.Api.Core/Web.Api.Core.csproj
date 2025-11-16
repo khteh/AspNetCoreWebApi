@@ -7,8 +7,8 @@
     <Protobuf Include="Protos/*.proto" GrpcServices="Server" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Elastic.CommonSchema.Serilog" Version="9.0.0" />
-    <PackageReference Include="Elastic.Serilog.Sinks" Version="9.0.0" />
+    <PackageReference Include="Elastic.CommonSchema.Serilog" Version="10.0.0" />
+    <PackageReference Include="Elastic.Serilog.Sinks" Version="10.0.0" />
     <PackageReference Include="Mailkit" Version="4.14.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
