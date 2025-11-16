@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 MAINTAINER Kok How, Teh <funcoolgeek@gmail.com>
 RUN apt update -y
 RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata gnupg2 gnupg gnupg1
