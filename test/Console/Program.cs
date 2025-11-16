@@ -26,13 +26,11 @@ internal class Program
             WriteLine($"Environment: {environment}, server: {_grpcConfig.Endpoint}");
             // The port number must match the port of the gRPC server.
             RootCommand rootCommand = new RootCommand("Various commands which run on shell");
-            var tokenOption = new Option<string>(
-                       name: "--token",
-                       description: "Access Token");
+            Option<string> tokenOption = new("--token") { Description = "Access Token" };
             Command ping = new Command("ping", "Ping grpc service") { tokenOption };
-            rootCommand.AddCommand(ping);
-            ping.SetHandler(async (token) => { await PingHandler(token!); }, tokenOption);
-            return await rootCommand.InvokeAsync(args);
+            rootCommand.Add(ping);
+            ping.SetAction(parseResult => PingHandler(parseResult.GetValue(tokenOption)));
+            return await rootCommand.Parse(args).InvokeAsync();
         }
         catch (Exception e)
         {
