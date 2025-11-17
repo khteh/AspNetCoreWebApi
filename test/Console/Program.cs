@@ -17,7 +17,8 @@ internal class Program
         try
         {
             string contentRootFull = Path.GetFullPath(Directory.GetCurrentDirectory());
-            string environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT");
+            // $ DOTNET_ENVIRONMENT="Development" ./Console
+            string environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Development";
             IConfigurationRoot config = new ConfigurationBuilder()
                     .SetBasePath(contentRootFull)
                     .AddJsonFile($"appsettings.{environment}.json", false, true)
@@ -26,10 +27,10 @@ internal class Program
             WriteLine($"Environment: {environment}, server: {_grpcConfig.Endpoint}");
             // The port number must match the port of the gRPC server.
             RootCommand rootCommand = new RootCommand("Various commands which run on shell");
-            Option<string> tokenOption = new("--token") { Description = "Access Token" };
+            Option<string> tokenOption = new Option<string>("--token", "-t") { Description = "Access Token" };
             Command ping = new Command("ping", "Ping grpc service") { tokenOption };
             rootCommand.Add(ping);
-            ping.SetAction(parseResult => PingHandler(parseResult.GetValue(tokenOption)));
+            ping.SetAction(async parseResult => await PingAction(parseResult.GetValue(tokenOption)!));
             return await rootCommand.Parse(args).InvokeAsync();
         }
         catch (Exception e)
@@ -38,7 +39,7 @@ internal class Program
             return -1;
         }
     }
-    internal static async Task PingHandler(string token)
+    internal static async Task PingAction(string token)
     {
         WriteLine($"Press ENTER when the gRPC server @{_grpcConfig.Endpoint} is ready");
         ReadLine();
