@@ -17,7 +17,7 @@ internal class Program
         try
         {
             string contentRootFull = Path.GetFullPath(Directory.GetCurrentDirectory());
-            // $ DOTNET_ENVIRONMENT="Development" ./Console
+            // $ DOTNET_ENVIRONMENT=Development ./Console
             string environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Development";
             IConfigurationRoot config = new ConfigurationBuilder()
                     .SetBasePath(contentRootFull)
