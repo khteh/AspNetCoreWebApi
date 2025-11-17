@@ -14,6 +14,7 @@ using Web.Api.Infrastructure.Identity;
 using Web.Api.IntegrationTests.Services;
 
 namespace Web.Api.IntegrationTests;
+
 public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IDisposable where TStartup : class
 {
     private GrpcChannel _grpcChannel;
@@ -33,14 +34,14 @@ public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<T
             });
             services.AddDbContextPool<AppIdentityDbContext>(options =>
             {
-                options.UseNpgsql(context.Configuration.GetConnectionString("IntegrationTests"), b => b.MigrationsAssembly("Web.Api.Infrastructure"));
+                options.UseNpgsql(context.Configuration.GetConnectionString("IntegrationTests"), o => o.MigrationsAssembly("Web.Api.Infrastructure"));
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
                 options.LogTo(Console.WriteLine);
             })
                 .AddDbContextPool<AppDbContext>(options =>
                 {
-                    options.UseNpgsql(context.Configuration.GetConnectionString("IntegrationTests"), b => b.MigrationsAssembly("Web.Api.Infrastructure"));
+                    options.UseNpgsql(context.Configuration.GetConnectionString("IntegrationTests"), o => o.MigrationsAssembly("Web.Api.Infrastructure"));
                     options.EnableSensitiveDataLogging();
                     options.EnableDetailedErrors();
                     options.LogTo(Console.WriteLine);
