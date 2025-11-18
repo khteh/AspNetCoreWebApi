@@ -7,6 +7,7 @@ using System.IO;
  * https://docs.microsoft.com/en-us/ef/core/cli/dbcontext-creation?tabs=dotnet-core-cli
  */
 namespace Web.Api.Infrastructure.Shared;
+
 public abstract class DesignTimeDbContextFactoryBase<TContext> : IDesignTimeDbContextFactory<TContext> where TContext : DbContext
 {
     public TContext CreateDbContext(string[] args) => Create(Directory.GetCurrentDirectory(), Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
@@ -38,7 +39,7 @@ public abstract class DesignTimeDbContextFactoryBase<TContext> : IDesignTimeDbCo
         var optionsBuilder = new DbContextOptionsBuilder<TContext>();
         Console.WriteLine("DesignTimeDbContextFactory.Create(string): Connection string: {0}", connectionString);
         //optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.UseNpgsql(connectionString, o => o.SetPostgresVersion(18, 0));
         var options = optionsBuilder.Options;
         return CreateNewInstance(options);
     }

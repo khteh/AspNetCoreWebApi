@@ -63,14 +63,14 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
                         services.AddSingleton<ILoggerFactory>(LoggerFactory);
                         services.AddDbContextPool<AppIdentityDbContext>(options =>
                         {
-                            options.UseNpgsql(_connectionString);
+                            options.UseNpgsql(_connectionString, o => o.SetPostgresVersion(18, 0));
                             options.EnableSensitiveDataLogging();
                             options.EnableDetailedErrors();
                             options.LogTo(Console.WriteLine);
                         })
                             .AddDbContextPool<AppDbContext>(options =>
                             {
-                                options.UseNpgsql(_connectionString);
+                                options.UseNpgsql(_connectionString, o => o.SetPostgresVersion(18, 0));
                                 options.EnableSensitiveDataLogging();
                                 options.EnableDetailedErrors();
                                 options.LogTo(Console.WriteLine);
