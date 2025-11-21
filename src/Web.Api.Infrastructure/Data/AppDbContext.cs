@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.Shared;
 namespace Web.Api.Infrastructure.Data;
+
 public class AppDbContext : DbContext
 {
     public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -19,6 +20,7 @@ public class AppDbContext : DbContext
         var navigation = builder.Metadata.FindNavigation(nameof(User.RefreshTokens));
         //EF access the RefreshTokens collection property through its backing field
         navigation.SetPropertyAccessMode(PropertyAccessMode.Field);
+        builder.ComplexProperty(u => u.Address, a => a.ToJson());
     }
     public override int SaveChanges()
     {

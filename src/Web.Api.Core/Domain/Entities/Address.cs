@@ -1,11 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using Web.Api.Core.Shared;
+﻿namespace Web.Api.Core.Domain.Entities;
 
-namespace Web.Api.Core.Domain.Entities;
-
-[Owned]
-public class Address : ValueObject
+public class Address
 {
     public string Street { get; private set; }
     public string City { get; private set; }
@@ -20,14 +15,5 @@ public class Address : ValueObject
         State = state;
         Country = country;
         ZipCode = zipcode;
-    }
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        // Using a yield return statement to return each element one at a time
-        yield return Street;
-        yield return City;
-        yield return State;
-        yield return Country;
-        yield return ZipCode;
     }
 }
