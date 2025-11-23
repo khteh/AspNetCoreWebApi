@@ -13,7 +13,12 @@ public class IntegrationTestBase : IClassFixture<GrpcTestFixture<Program>>, IDis
     protected GrpcTestFixture<Program> Fixture { get; set; }
     protected ILoggerFactory LoggerFactory => Fixture.LoggerFactory;
     protected GrpcChannel Channel => _channel ??= CreateChannel();
-
+    public IntegrationTestBase(GrpcTestFixture<Program> fixture, ITestOutputHelper output)
+    {
+        _output = output;
+        Fixture = fixture;
+        _testContext = Fixture.GetTestContext(_output);
+    }
     protected GrpcChannel CreateChannel()
     {
         //return GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions
@@ -24,14 +29,6 @@ public class IntegrationTestBase : IClassFixture<GrpcTestFixture<Program>>, IDis
             //HttpHandler = Fixture.Handler
         });
     }
-
-    public IntegrationTestBase(GrpcTestFixture<Program> fixture, ITestOutputHelper output)
-    {
-        _output = output;
-        Fixture = fixture;
-        _testContext = Fixture.GetTestContext(_output);
-    }
-
     public void Dispose()
     {
         _testContext?.Dispose();

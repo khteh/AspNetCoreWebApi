@@ -1,3 +1,4 @@
+using Elastic.CommonSchema;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.TestHost;
@@ -13,13 +14,19 @@ namespace Web.Api.IntegrationTests.SignalR;
 //[Collection(SignalRTestsCollection.Name)]
 public class ChatHubTests
 {
+    private readonly HttpClient _client;
     private readonly TestServer _testServer;
-    public ChatHubTests(CustomWebApplicationFactory<Program> factory) => _testServer = factory.Server;
+    private readonly ITestOutputHelper _output;
+    public ChatHubTests(ITestOutputHelper output, CustomWebApplicationFactory<Program> factory)
+    {
+        _output = output;
+        _client = factory.Client;
+        _testServer = factory.Server;
+    }
     private async Task<string> AccessTokenProvider()
     {
-        HttpClient client = _testServer.CreateClient();
-        Assert.NotNull(client);
-        var httpResponse = await client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LogInRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, Application.Json));
+        Assert.NotNull(_client);
+        var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LogInRequest("testuser", "P@$$w0rd")), Encoding.UTF8, Application.Json));
         httpResponse.EnsureSuccessStatusCode();
         LogInResponse response = Serialization.JsonSerializer.DeSerializeObject<LogInResponse>(await httpResponse.Content.ReadAsStringAsync());
         Assert.NotNull(response);

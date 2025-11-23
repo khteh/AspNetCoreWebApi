@@ -115,7 +115,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
         var client = new AccountsClient(Channel);
         Assert.NotNull(client);
-        FindUserResponse response = await client.FindByUserNameAsync(new StringInputParameter() { Value = "mickeymousegrpc" }, null, null, TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        FindUserResponse response = await client.FindByUserNameAsync(new StringInputParameter() { Value = "testusergrpc" }, null, null, TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -129,7 +129,7 @@ public class AccountsServiceIntegrationTests : IntegrationTestBase
         //AccountsClient client = new AccountsClient(_factory.GrpcChannel);
         var client = new AccountsClient(Channel);
         Assert.NotNull(client);
-        FindUserResponse response = await client.FindByEmailAsync(new StringInputParameter() { Value = "mickeygrpc@mouse.com" }, null, null, TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        FindUserResponse response = await client.FindByEmailAsync(new StringInputParameter() { Value = "testusergrpc@email.com" }, null, null, TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);

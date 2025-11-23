@@ -18,7 +18,7 @@ public class AuthControllerIntegrationTests
     [Fact]
     public async Task CanLoginWithValidCredentials()
     {
-        var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LogInRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, Application.Json), TestContext.Current.CancellationToken);
+        var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LogInRequest("testuser", "P@$$w0rd")), Encoding.UTF8, Application.Json), TestContext.Current.CancellationToken);
         httpResponse.EnsureSuccessStatusCode();
         var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
@@ -38,7 +38,7 @@ public class AuthControllerIntegrationTests
     [Fact]
     public async Task CanExchangeValidRefreshToken()
     {
-        var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LogInRequest("mickeymouse", "P@$$w0rd")), Encoding.UTF8, Application.Json), TestContext.Current.CancellationToken);
+        var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LogInRequest("testuser", "P@$$w0rd")), Encoding.UTF8, Application.Json), TestContext.Current.CancellationToken);
         httpResponse.EnsureSuccessStatusCode();
         var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);

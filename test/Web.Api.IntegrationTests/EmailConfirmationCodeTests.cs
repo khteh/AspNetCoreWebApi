@@ -21,7 +21,7 @@ public class EmailConfirmationCodeTests
             {
                 var scopedServices = scope.ServiceProvider;
                 UserManager<AppUser> um = scopedServices.GetRequiredService<UserManager<AppUser>>();
-                AppUser user = await um.FindByNameAsync("mickeymouse");
+                AppUser user = await um.FindByNameAsync("testuser");
                 Assert.NotNull(user);
                 string code = await um.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -43,7 +43,7 @@ public class EmailConfirmationCodeTests
             {
                 var scopedServices = scope.ServiceProvider;
                 UserManager<AppUser> um = scopedServices.GetRequiredService<UserManager<AppUser>>();
-                AppUser user = await um.FindByNameAsync("mickeymouse");
+                AppUser user = await um.FindByNameAsync("testuser");
                 Assert.NotNull(user);
                 string code = await um.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

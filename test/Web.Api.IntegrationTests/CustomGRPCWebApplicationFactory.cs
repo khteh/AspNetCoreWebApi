@@ -32,28 +32,6 @@ public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<T
                 LoggerFactory = new LoggerFactory(),
                 HttpClient = client
             });
-            services.AddDbContextPool<AppIdentityDbContext>(options =>
-            {
-                options.UseNpgsql(context.Configuration.GetConnectionString("IntegrationTests"), o => { o.SetPostgresVersion(18, 0); o.MigrationsAssembly("Web.Api.Infrastructure"); });
-                options.EnableSensitiveDataLogging();
-                options.EnableDetailedErrors();
-                options.LogTo(Console.WriteLine);
-            })
-                .AddDbContextPool<AppDbContext>(options =>
-                {
-                    options.UseNpgsql(context.Configuration.GetConnectionString("IntegrationTests"), o => { o.SetPostgresVersion(18, 0); o.MigrationsAssembly("Web.Api.Infrastructure"); });
-                    options.EnableSensitiveDataLogging();
-                    options.EnableDetailedErrors();
-                    options.LogTo(Console.WriteLine);
-                });
-            services.AddScoped<SignInManager<AppUser>>();
-            services.AddScoped<ILogger<UserRepository>>(provider =>
-                {
-                    ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-                    return loggerFactory.CreateLogger<UserRepository>();
-                });
-            services.AddDistributedMemoryCache();
-            services.AddOptions();
             services.Configure<GrpcConfig>(context.Configuration.GetSection(nameof(GrpcConfig)));
             // Build the service provider.
             _services = services;

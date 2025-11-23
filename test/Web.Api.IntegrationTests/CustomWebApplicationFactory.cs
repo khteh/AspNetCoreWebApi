@@ -40,8 +40,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     {
         Client = CreateClient(new WebApplicationFactoryClientOptions
         {
-            BaseAddress = new Uri("https://localhost:4433")
+            BaseAddress = new Uri("https://localhost:4433"),
         });
+        Client.Timeout = TimeSpan.FromSeconds(10);
         /* https://github.com/dotnet/aspnetcore/issues/61871
          * The HttpClient used with WebApplicationFactory uses an in-memory transport, so no actual network communication happens so I don't think it'll make any difference if you change it.
          */

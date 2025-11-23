@@ -99,7 +99,7 @@ public class AccountsControllerIntegrationTests
     [Fact]
     public async Task CanFindByUsername()
     {
-        var httpResponse = await _client.GetAsync("/api/accounts/username/mickeymouse", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        var httpResponse = await _client.GetAsync("/api/accounts/username/testuser", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
         var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.True((bool)result["success"]);

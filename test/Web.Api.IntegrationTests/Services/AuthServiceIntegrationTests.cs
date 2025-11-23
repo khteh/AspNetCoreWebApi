@@ -18,7 +18,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         Assert.NotNull(client);
         LogInResponse response = await client.LogInAsync(new LogInRequest()
         {
-            UserName = "mickeymousegrpc",
+            UserName = "testusergrpc",
             Password = "P@$$w0rd"
         }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response);
@@ -58,7 +58,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         Assert.NotNull(client);
         LogInResponse response = await client.LogInAsync(new LogInRequest()
         {
-            UserName = "mickeymousegrpc",
+            UserName = "testusergrpc",
             Password = "P@$$w0rd"
         }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response);

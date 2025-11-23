@@ -39,10 +39,10 @@ public class EmailChangeConfirmationTests
             {
                 var scopedServices = scope.ServiceProvider;
                 UserManager<AppUser> um = scopedServices.GetRequiredService<UserManager<AppUser>>();
-                AppUser user = await um.FindByNameAsync("mickeymouse");
+                AppUser user = await um.FindByNameAsync("testuser");
                 Assert.NotNull(user);
-                string code = await um.GenerateChangeEmailTokenAsync(user, "mickey_new@mouse.com");
-                IdentityResult identityResult = await um.ChangeEmailAsync(user, "mickey_should_fail@mouse.com", code);
+                string code = await um.GenerateChangeEmailTokenAsync(user, "testuser_new@email.com");
+                IdentityResult identityResult = await um.ChangeEmailAsync(user, "testuser_should_fail@email.com", code);
                 Assert.False(identityResult.Succeeded);
             }
             catch (Exception ex)

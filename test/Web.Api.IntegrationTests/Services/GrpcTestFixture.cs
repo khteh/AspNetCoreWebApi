@@ -58,7 +58,7 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
             try
             {
                 var builder = new HostBuilder()
-                    .ConfigureServices((context, services) =>
+                    .ConfigureServices(async (context, services) =>
                     {
                         services.AddSingleton<ILoggerFactory>(LoggerFactory);
                         services.AddDbContextPool<AppIdentityDbContext>(options =>
@@ -100,7 +100,8 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
                             try
                             {
                                 // Seed the database with test data.
-                                SeedData.PopulateGrpcTestData(identityDb, appDb);
+                                logger.LogDebug($"{nameof(EnsureServer)} populate test data...");
+                                await SeedData.PopulateTestData(identityDb, appDb);
                             }
                             catch (Exception ex)
                             {
@@ -113,6 +114,10 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
                         webHost.UseTestServer().UseStartup<TStartup>();
                         _configureWebHost?.Invoke(webHost);
                     });
+                /*
+                 * https://github.com/dotnet/aspnetcore/issues/44906
+                 * https://github.com/dotnet/aspnetcore/issues/64500
+                 */
                 _host = builder.Start();
                 _server = _host.GetTestServer();
                 _server.BaseAddress = new Uri(GrpcConfig.Endpoint);

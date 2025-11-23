@@ -10,7 +10,7 @@ public static class SeedData
 {
     public static async Task CleanUpTestData(AppIdentityDbContext dbIdentityContext, AppDbContext dbContext)
     {
-        AppUser appUser = await dbIdentityContext.Users.FirstOrDefaultAsync(i => i.UserName.Equals("mickeymouse"));
+        AppUser appUser = await dbIdentityContext.Users.FirstOrDefaultAsync(i => i.UserName.Equals("testuser"));
         if (appUser != null)
         {
             User user = await dbContext.Users.FirstOrDefaultAsync(i => i.IdentityId.Equals(appUser.Id));
@@ -55,7 +55,7 @@ public static class SeedData
     }
     public static async Task PopulateTestData(AppIdentityDbContext dbIdentityContext, AppDbContext dbContext)
     {
-        AppUser appUser = await dbIdentityContext.Users.FirstOrDefaultAsync(i => i.UserName.Equals("mickeymouse"));
+        AppUser appUser = await dbIdentityContext.Users.FirstOrDefaultAsync(i => i.UserName.Equals("testuser"));
         if (appUser == null)
             await dbIdentityContext.Users.AddAsync(new AppUser
             {
@@ -67,8 +67,8 @@ public static class SeedData
                 PasswordHash = "AQAAAAEAACcQAAAAEKof9i25YVCmttE29Fr40Pa4LLOeQeQQQP2NRLv0IGRapPY1pkCbsleOqEHKEtuEtA==",
                 SecurityStamp = "YIJZLWUFIIDD3IZSFDD7OQWG6D4QIYPB",
                 ConcurrencyStamp = "e432007d-0a54-4332-9212-ca9d7e757275",
-                FirstName = "Micky",
-                LastName = "Mouse"
+                FirstName = "User",
+                LastName = "Test"
             });
         appUser = await dbIdentityContext.Users.FirstOrDefaultAsync(i => i.UserName.Equals("deleteme"));
         if (appUser == null)
@@ -89,7 +89,7 @@ public static class SeedData
         User user = await dbContext.Users.FirstOrDefaultAsync(i => i.IdentityId.Equals("41532945-599e-4910-9599-0e7402017fbe"));
         if (user == null)
         {
-            user = new User("Mickey", "Mouse", "41532945-599e-4910-9599-0e7402017fbe", "mickeymouse", "mickey@email.com", string.Empty);
+            user = new User("Mickey", "Mouse", "41532945-599e-4910-9599-0e7402017fbe", "testuser", "mickey@email.com", string.Empty);
             //user.Id = 1;
             user.AddRefreshToken("cvVsJXuuvb+gTyz+Rk0mBbitkw3AaLgsLecU3cwsUXU=", "127.0.0.1");
             await dbContext.Users.AddAsync(user);
@@ -108,7 +108,7 @@ public static class SeedData
     }
     public static async Task CleanUpGrpcTestData(AppIdentityDbContext dbIdentityContext, AppDbContext dbContext)
     {
-        AppUser appUser = await dbIdentityContext.Users.FirstOrDefaultAsync(i => i.UserName.Equals("mickeymousegrpc"));
+        AppUser appUser = await dbIdentityContext.Users.FirstOrDefaultAsync(i => i.UserName.Equals("testusergrpc"));
         if (appUser != null)
         {
             User user = await dbContext.Users.FirstOrDefaultAsync(i => i.IdentityId.Equals(appUser.Id));
@@ -174,15 +174,15 @@ public static class SeedData
         await dbIdentityContext.Users.AddAsync(new AppUser
         {
             Id = "CE73A87D-0AA6-4191-B65B-6B49F333E316",
-            UserName = "mickeymousegrpc",
-            NormalizedUserName = "MICKEYMOUSEGRPC",
-            Email = "mickeygrpc@mouse.com",
-            NormalizedEmail = "MICKEYGRPC@MOUSE.COM",
+            UserName = "testusergrpc",
+            NormalizedUserName = "TESTUSERGRPC",
+            Email = "testusergrpc@email.com",
+            NormalizedEmail = "TESTUSERGRPC@EMAIL.COM",
             PasswordHash = "AQAAAAEAACcQAAAAEKof9i25YVCmttE29Fr40Pa4LLOeQeQQQP2NRLv0IGRapPY1pkCbsleOqEHKEtuEtA==",
             SecurityStamp = "YIJZLWUFIIDD3IZSFDD7OQWG6D4QIYPB",
             ConcurrencyStamp = "e432007d-0a54-4332-9212-ca9d7e757275",
-            FirstName = "Micky Grpc",
-            LastName = "Mouse"
+            FirstName = "Test Grpc",
+            LastName = "User"
         });
         await dbIdentityContext.Users.AddAsync(new AppUser
         {
@@ -198,7 +198,7 @@ public static class SeedData
             LastName = "Me"
         });
 
-        var user = new User("Mickey Grpc", "Mouse", "CE73A87D-0AA6-4191-B65B-6B49F333E316", "mickeymousegrpc", "mickey@email.com", string.Empty);
+        var user = new User("Test Grpc", "User", "CE73A87D-0AA6-4191-B65B-6B49F333E316", "testusergrpc", "testuser@email.com", string.Empty);
         //user.Id = 1;
         user.AddRefreshToken("cvVsJXuuvb+gTyz+Rk0mBbitkw3AaLgsLecU3cwsUXU=", "127.0.0.1");
         await dbContext.Users.AddAsync(user);
