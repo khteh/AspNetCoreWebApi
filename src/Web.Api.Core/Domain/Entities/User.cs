@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Web.Api.Core.Shared;
@@ -19,7 +18,6 @@ public class User : BaseEntity
     public string Email { get; set; }
     [NotMapped]
     public string PhoneNumber { get; set; }
-    [Required]
     public Address Address { get; set; }
     private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
     public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
