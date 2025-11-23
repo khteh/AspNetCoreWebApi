@@ -60,10 +60,10 @@ public static class SeedData
             await dbIdentityContext.Users.AddAsync(new AppUser
             {
                 Id = "41532945-599e-4910-9599-0e7402017fbe",
-                UserName = "mickeymouse",
-                NormalizedUserName = "MICKEYMOUSE",
-                Email = "mickey@mouse.com",
-                NormalizedEmail = "MICKEY@MOUSE.COM",
+                UserName = "testuser",
+                NormalizedUserName = "TESTUSER",
+                Email = "testuser@email.com",
+                NormalizedEmail = "TESTUSER@EMAIL.COM",
                 PasswordHash = "AQAAAAEAACcQAAAAEKof9i25YVCmttE29Fr40Pa4LLOeQeQQQP2NRLv0IGRapPY1pkCbsleOqEHKEtuEtA==",
                 SecurityStamp = "YIJZLWUFIIDD3IZSFDD7OQWG6D4QIYPB",
                 ConcurrencyStamp = "e432007d-0a54-4332-9212-ca9d7e757275",

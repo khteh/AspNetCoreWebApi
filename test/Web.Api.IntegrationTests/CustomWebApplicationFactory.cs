@@ -63,7 +63,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 await SeedData.PopulateTestData(identityDb, appDb);
             }
             catch (Exception ex)
-            {
+            {                                                                                               
                 Console.WriteLine($"{nameof(InitializeAsync)} exception! {ex}");
                 throw;
             }

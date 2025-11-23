@@ -111,8 +111,8 @@ public class AccountsControllerIntegrationTests
     [Fact]
     public async Task CanFindByEmail()
     {
-        //var httpResponse = await _client.GetAsync(WebUtility.UrlEncode("/api/accounts/email/mickey@mouse.com")); // UserManager is NOT case sensitive!
-        var httpResponse = await _client.GetAsync("/api/accounts/email/mickey@mouse.com", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        //var httpResponse = await _client.GetAsync(WebUtility.UrlEncode("/api/accounts/email/testuser@email.com")); // UserManager is NOT case sensitive!
+        var httpResponse = await _client.GetAsync("/api/accounts/email/testuser@email.com", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
         var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.True((bool)result["success"]);
