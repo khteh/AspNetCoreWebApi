@@ -158,9 +158,5 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
 #endif
         GC.SuppressFinalize(this);
     }
-
-    public IDisposable GetTestContext(ITestOutputHelper outputHelper)
-    {
-        return new GrpcTestContext<TStartup>(this, outputHelper);
-    }
+    public IDisposable GetTestContext(ITestOutputHelper outputHelper) => new GrpcTestContext<TStartup>(this, outputHelper);
 }
