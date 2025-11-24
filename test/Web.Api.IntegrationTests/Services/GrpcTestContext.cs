@@ -19,7 +19,7 @@ internal class GrpcTestContext<TStartup> : IDisposable where TStartup : class
     }
     private void WriteMessage(LogLevel logLevel, string category, EventId eventId, string message, Exception? exception)
     {
-        var log = $"{_stopwatch.Elapsed.TotalSeconds:N3}s {category} - {logLevel}: {message}";
+        string log = $"{_stopwatch.Elapsed.TotalSeconds:N3}s {category} - {logLevel}: {message}";
         if (exception != null)
             log += Environment.NewLine + exception.ToString();
         _outputHelper.WriteLine(log);

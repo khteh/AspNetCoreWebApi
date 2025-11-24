@@ -111,6 +111,7 @@ try
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddRazorPages();
     builder.Services.AddOptions();
+    // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration
     builder.Services.Configure<CookiePolicyOptions>(options =>
                 {
                     // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -131,8 +132,6 @@ try
     // Configure JwtIssuerOptions
     builder.Services.Configure<JwtIssuerOptions>(options =>
     {
-        options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
-        options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
         options.SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha512);
     });
 

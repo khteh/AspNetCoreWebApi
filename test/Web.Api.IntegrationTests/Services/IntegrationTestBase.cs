@@ -19,16 +19,14 @@ public class IntegrationTestBase : IClassFixture<GrpcTestFixture<Program>>, IDis
         Fixture = fixture;
         _testContext = Fixture.GetTestContext(_output);
     }
-    protected GrpcChannel CreateChannel()
-    {
+    protected GrpcChannel CreateChannel() =>
         //return GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions
-        return GrpcChannel.ForAddress(new Uri(Fixture.GrpcConfig.Endpoint), new GrpcChannelOptions
+        GrpcChannel.ForAddress(new Uri(Fixture.GrpcConfig.Endpoint), new GrpcChannelOptions
         {
             LoggerFactory = LoggerFactory,
             HttpHandler = new Http3Handler(Fixture.Handler)
             //HttpHandler = Fixture.Handler
         });
-    }
     public void Dispose()
     {
         _testContext?.Dispose();

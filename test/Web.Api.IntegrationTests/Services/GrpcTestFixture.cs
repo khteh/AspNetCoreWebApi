@@ -43,13 +43,9 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
         _grpcConfig = config.GetSection(nameof(GrpcConfig)).Get<GrpcConfig>();
         _connectionString = config.GetConnectionString("IntegrationTests");
         LoggerFactory = new LoggerFactory();
-        LoggerFactory.AddProvider(new ForwardingLoggerProvider((logLevel, category, eventId, message, exception) =>
-        {
-            LoggedMessage?.Invoke(logLevel, category, eventId, message, exception);
-        }));
+        LoggerFactory.AddProvider(new ForwardingLoggerProvider((logLevel, category, eventId, message, exception) => LoggedMessage?.Invoke(logLevel, category, eventId, message, exception)));
         _logger = LoggerFactory.CreateLogger<GrpcTestFixture<TStartup>>();
     }
-
     public void ConfigureWebHost(Action<IWebHostBuilder> configure) => _configureWebHost = configure;
 
     private void EnsureServer()
