@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Web.Api.Core.Configuration;
@@ -43,6 +44,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         {
             BaseAddress = new Uri("https://localhost:4433"),
         });
+        Client.DefaultRequestVersion = HttpVersion.Version30; // Configure for HTTP/3
+        Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact; // Ensure HTTP/3 is used        
         Client.Timeout = TimeSpan.FromSeconds(10);
         /* https://github.com/dotnet/aspnetcore/issues/61871
          * The HttpClient used with WebApplicationFactory uses an in-memory transport, so no actual network communication happens so I don't think it'll make any difference if you change it.
@@ -65,7 +68,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 await SeedData.PopulateTestData(identityDb, appDb);
             }
             catch (Exception ex)
-            {                                                                                               
+            {
                 WriteLine($"{nameof(InitializeAsync)} exception! {ex}");
                 throw;
             }
