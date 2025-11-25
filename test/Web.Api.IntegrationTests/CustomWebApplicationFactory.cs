@@ -43,6 +43,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         Client = CreateClient(new WebApplicationFactoryClientOptions
         {
             BaseAddress = new Uri("https://localhost:4433"),
+            AllowAutoRedirect = false
         });
         /*
          * https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/http3?view=aspnetcore-10.0
