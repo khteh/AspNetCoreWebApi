@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Security;
 using System.Threading.Tasks;
 using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
@@ -40,11 +41,18 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     }
     public async ValueTask InitializeAsync()
     {
+        // If you need explicit certificate validation handling in tests:
+        var handler = new HttpClientHandler();
+        handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
+        {
+            // Logic to accept your self-signed certificate
+            return errors == SslPolicyErrors.None || cert.Subject.Contains("AspNetCoreWebApi");
+        };
         Client = CreateClient(new WebApplicationFactoryClientOptions
         {
             BaseAddress = new Uri("https://localhost:4433"),
             AllowAutoRedirect = false
-        });
+        }, handler);
         /*
          * https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/http3?view=aspnetcore-10.0
          * Client.DefaultRequestVersion = HttpVersion.Version30; // Configure for HTTP/3
