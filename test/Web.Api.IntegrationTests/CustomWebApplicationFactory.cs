@@ -44,14 +44,15 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         {
             BaseAddress = new Uri("https://localhost:4433"),
         });
-        Client.DefaultRequestVersion = HttpVersion.Version30; // Configure for HTTP/3
-        Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact; // Ensure HTTP/3 is used        
+        /*
+         * https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/http3?view=aspnetcore-10.0
+         * Client.DefaultRequestVersion = HttpVersion.Version30; // Configure for HTTP/3
+         * Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact; // Ensure HTTP/3 is used
+        */
         Client.Timeout = TimeSpan.FromSeconds(10);
         /* https://github.com/dotnet/aspnetcore/issues/61871
          * The HttpClient used with WebApplicationFactory uses an in-memory transport, so no actual network communication happens so I don't think it'll make any difference if you change it.
          */
-        /*Client.DefaultRequestVersion = HttpVersion.Version30;
-        Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact;*/
         using (var scope = Services.CreateScope())
             try
             {
