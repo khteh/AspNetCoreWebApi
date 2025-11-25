@@ -16,16 +16,17 @@ using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
+using Web.Api.IntegrationTests;
 using Web.Api.IntegrationTests.Services;
 using Xunit;
 using static System.Console;
+
+// https://github.com/xunit/xunit/issues/3305
+//[assembly: AssemblyFixture(typeof(CustomGRPCWebApplicationFactory<Program>))]
 namespace Web.Api.IntegrationTests;
 
 public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IAsyncLifetime where TStartup : class
 {
-    private TestServer? _server;
-    private IHost? _host;
-    private HttpMessageHandler? _handler;
     private GrpcChannel _grpcChannel;
     public GrpcChannel GrpcChannel { get => _grpcChannel; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -39,10 +40,11 @@ public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<T
             GrpcConfig grpcConfig = context.Configuration.GetSection(nameof(GrpcConfig)).Get<GrpcConfig>();
             var client = CreateDefaultClient(new Http3Handler());
             client.BaseAddress = new Uri(grpcConfig.Endpoint);
+            Server.BaseAddress = new Uri(grpcConfig.Endpoint);
             _grpcChannel = GrpcChannel.ForAddress(client.BaseAddress, new GrpcChannelOptions
             {
                 LoggerFactory = new LoggerFactory(),
-                HttpClient = client
+                HttpHandler = new Http3Handler(Server.CreateHandler())
             });
             // Create a new service provider.
             services.Configure<GrpcConfig>(context.Configuration.GetSection(nameof(GrpcConfig)));
@@ -73,7 +75,7 @@ public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<T
         }
         catch (Exception ex)
         {
-                WriteLine($"{nameof(InitializeAsync)} exception! {ex}");
+            WriteLine($"{nameof(InitializeAsync)} exception! {ex}");
         }
     }
     public async override ValueTask DisposeAsync()

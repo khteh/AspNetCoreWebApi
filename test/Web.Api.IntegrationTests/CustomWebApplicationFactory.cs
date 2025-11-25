@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Grpc.Net.Client;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,9 +15,10 @@ using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.IntegrationTests;
+using Web.Api.IntegrationTests.Services;
 using Xunit;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 using static System.Console;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 // https://github.com/xunit/xunit/issues/3305
 [assembly: AssemblyFixture(typeof(CustomWebApplicationFactory<Program>))]
 namespace Web.Api.IntegrationTests;
@@ -22,13 +26,18 @@ namespace Web.Api.IntegrationTests;
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IAsyncLifetime where TStartup : class
 {
     public HttpClient Client { get; private set; }
+    private GrpcConfig _grpcConfig;
+    private GrpcChannel _grpcChannel;
+    public GrpcChannel GrpcChannel { get => _grpcChannel; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // Route the application's logs to the xunit output
         builder.UseEnvironment("IntegrationTests");
         builder.ConfigureLogging((p) => p.SetMinimumLevel(LogLevel.Debug));
+        builder.UseTestServer();
         builder.ConfigureServices((context, services) =>
         {
+            _grpcConfig = context.Configuration.GetSection(nameof(GrpcConfig)).Get<GrpcConfig>();
             // Create a new service provider.
             services.Configure<GrpcConfig>(context.Configuration.GetSection(nameof(GrpcConfig)));
             services.AddScoped<SignInManager<AppUser>>();
@@ -37,28 +46,58 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                     ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
                     return loggerFactory.CreateLogger<CustomWebApplicationFactory<TStartup>>();
                 });
+            services.AddHttpClient("AspNetCoreWebApi")
+                .ConfigurePrimaryHttpMessageHandler(() =>
+                {
+                    // Create and configure your custom HttpClientHandler
+                    var handler = new HttpClientHandler
+                    {
+                        AllowAutoRedirect = false, // Example customization
+                        UseCookies = false, // Another example customization
+                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                    };
+                    return handler;
+                });
         });
     }
     public async ValueTask InitializeAsync()
     {
         // If you need explicit certificate validation handling in tests:
-        var handler = new HttpClientHandler();
-        handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
-        {
-            // Logic to accept your self-signed certificate
-            return errors == SslPolicyErrors.None || cert.Subject.Contains("AspNetCoreWebApi");
+        var handler = new HttpClientHandler() {
+            ServerCertificateCustomValidationCallback =
+            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         };
+        var handler1 = new HttpClientHandler()
+        {
+            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
+            {
+                // Logic to accept your self-signed certificate
+                return errors == SslPolicyErrors.None || cert.Subject.Contains("AspNetCoreWebApi");
+            }
+        };
+        var handler2 = Server.CreateHandler();
+        // Client = new HttpClient(...) No connection could be made because the target machine actively refused it. (localhost:4433)
         Client = CreateClient(new WebApplicationFactoryClientOptions
         {
-            BaseAddress = new Uri("https://localhost:4433"),
-            AllowAutoRedirect = false
-        }, handler);
+            BaseAddress = new Uri("https://localhost:4433")
+        });
+        Client.DefaultRequestVersion = HttpVersion.Version30;
         /*
-         * https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/http3?view=aspnetcore-10.0
+         * https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/http3
          * Client.DefaultRequestVersion = HttpVersion.Version30; // Configure for HTTP/3
          * Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact; // Ensure HTTP/3 is used
         */
         Client.Timeout = TimeSpan.FromSeconds(10);
+        Server.BaseAddress = new Uri(_grpcConfig.Endpoint);
+        _grpcChannel = GrpcChannel.ForAddress(Server.BaseAddress, new GrpcChannelOptions
+        {
+            HttpVersion = HttpVersion.Version30,
+            LoggerFactory = new LoggerFactory(),
+            //HttpHandler = new Http3Handler(Server.CreateHandler())
+            HttpHandler = new Http3Handler(handler2)
+            //HttpHandler = handler
+            //HttpHandler = Server.CreateHandler()
+        });
         /* https://github.com/dotnet/aspnetcore/issues/61871
          * The HttpClient used with WebApplicationFactory uses an in-memory transport, so no actual network communication happens so I don't think it'll make any difference if you change it.
          */
