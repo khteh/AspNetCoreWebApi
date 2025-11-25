@@ -12,6 +12,7 @@ using Web.Api.Infrastructure.Identity;
 using Web.Api.IntegrationTests;
 using Xunit;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using static System.Console;
 // https://github.com/xunit/xunit/issues/3305
 [assembly: AssemblyFixture(typeof(CustomWebApplicationFactory<Program>))]
 namespace Web.Api.IntegrationTests;
@@ -65,7 +66,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             }
             catch (Exception ex)
             {                                                                                               
-                Console.WriteLine($"{nameof(InitializeAsync)} exception! {ex}");
+                WriteLine($"{nameof(InitializeAsync)} exception! {ex}");
                 throw;
             }
     }

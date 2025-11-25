@@ -2,26 +2,38 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net.Http;
+using System.Reflection.Metadata;
+using System.Threading.Tasks;
 using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.IntegrationTests.Services;
-
+using Xunit;
+using static System.Console;
 namespace Web.Api.IntegrationTests;
 
-public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IDisposable where TStartup : class
+public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IAsyncLifetime where TStartup : class
 {
+    private TestServer? _server;
+    private IHost? _host;
+    private HttpMessageHandler? _handler;
     private GrpcChannel _grpcChannel;
-    private IServiceCollection _services;
     public GrpcChannel GrpcChannel { get => _grpcChannel; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        // Route the application's logs to the xunit output
+        builder.UseEnvironment("IntegrationTests");
+        builder.ConfigureLogging((p) => p.SetMinimumLevel(LogLevel.Debug));
+        builder.UseTestServer();
         builder.ConfigureServices((context, services) =>
         {
             GrpcConfig grpcConfig = context.Configuration.GetSection(nameof(GrpcConfig)).Get<GrpcConfig>();
@@ -32,44 +44,49 @@ public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<T
                 LoggerFactory = new LoggerFactory(),
                 HttpClient = client
             });
+            // Create a new service provider.
             services.Configure<GrpcConfig>(context.Configuration.GetSection(nameof(GrpcConfig)));
-            // Build the service provider.
-            _services = services;
-            IServiceProvider ServiceProvider = services.BuildServiceProvider();
-            // Create a scope to obtain a reference to the database contexts
-            using (var scope = ServiceProvider.CreateScope())
+            services.AddScoped<SignInManager<AppUser>>();
+            services.AddScoped<ILogger<CustomWebApplicationFactory<TStartup>>>(provider =>
             {
-                var scopedServices = scope.ServiceProvider;
-                var appDb = scopedServices.GetRequiredService<AppDbContext>();
-                var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
-                var logger = scopedServices.GetRequiredService<ILogger<CustomGRPCWebApplicationFactory<TStartup>>>();
-                // Ensure the database is created.
-                appDb.Database.EnsureCreated();
-                identityDb.Database.EnsureCreated();
-                try
-                {
-                    // Seed the database with test data.
-                    SeedData.PopulateGrpcTestData(identityDb, appDb);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, $"An error occurred seeding the database with test messages. Error: {ex.Message}");
-                }
-            }
+                ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+                return loggerFactory.CreateLogger<CustomWebApplicationFactory<TStartup>>();
+            });
         });
     }
-    public new void Dispose()
+    public async ValueTask InitializeAsync() 
     {
-        var sp = _services.BuildServiceProvider();
         // Create a scope to obtain a reference to the database contexts
-        using (var scope = sp.CreateScope())
+        using (var scope = Services.CreateScope())
+        try
         {
             var scopedServices = scope.ServiceProvider;
             var appDb = scopedServices.GetRequiredService<AppDbContext>();
             var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
-            SeedData.CleanUpGrpcTestData(identityDb, appDb);
+            var logger = scopedServices.GetRequiredService<ILogger<CustomGRPCWebApplicationFactory<TStartup>>>();
+            // Ensure the database is created.
+            appDb.Database.EnsureCreated();
+            identityDb.Database.EnsureCreated();
+            // Seed the database with test data.
+            logger.LogDebug($"{nameof(InitializeAsync)} populate test data...");
+            await SeedData.PopulateGrpcTestData(identityDb, appDb);
         }
-        base.Dispose();
+        catch (Exception ex)
+        {
+                WriteLine($"{nameof(InitializeAsync)} exception! {ex}");
+        }
+    }
+    public async override ValueTask DisposeAsync()
+    {
+        // Create a scope to obtain a reference to the database contexts
+        using (var scope = Services.CreateScope())
+        {
+            var scopedServices = scope.ServiceProvider;
+            var appDb = scopedServices.GetRequiredService<AppDbContext>();
+            var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
+            await SeedData.CleanUpGrpcTestData(identityDb, appDb);
+        }
+        await base.DisposeAsync();
         GC.SuppressFinalize(this);
     }
 }
