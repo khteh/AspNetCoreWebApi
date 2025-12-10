@@ -24,7 +24,14 @@ public class User : BaseEntity
     private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
     public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
     [SetsRequiredMembers]
-    public User() { /* Required by EF */ }
+    public User()
+    { /* Required by EF */
+        IdentityId = string.Empty;
+        FirstName = string.Empty;
+        LastName = string.Empty;
+        UserName = string.Empty;
+        Email = string.Empty;
+    }
     [SetsRequiredMembers]
     public User(string firstName, string lastName, string identityId, string userName, string email, string? phoneNumber)
     {

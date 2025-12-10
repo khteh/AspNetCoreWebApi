@@ -90,7 +90,7 @@ try
     }, preserveStaticLogger: true);
     int originalMinWorker, originalMinIOC;
     int minWorker = 1000;
-    string strMinWorkerThreads = Environment.GetEnvironmentVariable("COMPlus_ThreadPool_ForceMinWorkerThreads");
+    string? strMinWorkerThreads = Environment.GetEnvironmentVariable("COMPlus_ThreadPool_ForceMinWorkerThreads");
     if (!string.IsNullOrEmpty(strMinWorkerThreads) && Int32.TryParse(strMinWorkerThreads, out int minWorkerThreads))
         minWorker = minWorkerThreads;
     // Get the current settings.
@@ -104,7 +104,7 @@ try
     else
         // The minimum number of threads was not changed.
         Log.Error($"Failed to set {minWorker} threads. Using original {originalMinWorker} threads");
-    string pathBase = Environment.GetEnvironmentVariable("PATH_BASE");
+    string? pathBase = Environment.GetEnvironmentVariable("PATH_BASE");
     Log.Information($"Using PathBase: {pathBase}");
     // Add services to the container.
     // Ensure that we make the HttpContextAccessor resolvable through the configuration
@@ -176,8 +176,8 @@ try
             {
                 if (context.Request.Path.StartsWithSegments("/chatHub"))
                 {
-                    string accessToken = context.Request.Query["access_token"];
-                    if (string.IsNullOrEmpty(accessToken) && context.Request.Headers.ContainsKey("Authorization"))
+                    string? accessToken = context.Request.Query["access_token"];
+                    if (!string.IsNullOrEmpty(accessToken) && context.Request.Headers.ContainsKey("Authorization"))
                     {
                         accessToken = context.Request.Headers["Authorization"];
                         accessToken = accessToken.Split(" ")[1];
@@ -365,16 +365,16 @@ try
          * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext : outputTemplate: "[{Timestamp:HH:mm:ss}] {Level:u3} ClientIP: {ClientIp} CorrelationId: {CorrelationId} header-name: {headername} {Message:lj}{NewLine}{Exception}"
          * https://github.com/elastic/ecs-dotnet
          */
-        RequestLog requestLog = new RequestLog(context?.Request?.Method,
-                                            context?.Request?.Scheme,
-                                            context?.Request?.Protocol,
-                                            context?.Request?.PathBase,
-                                            context?.Request?.Path,
-                                            context?.Request?.Host.ToString()
-                                            /*context?.Request?.ContentLength,
-                                            context?.Connection?.RemoteIpAddress?.ToString(), Use Serilog.Enrichers.HttpContext.WithClientIp
-                                            context?.Request?.QueryString.ToString(), WithRequestQuery 
-                                            context?.Request?.ContentType,*/
+        RequestLog requestLog = new RequestLog(context.Request.Method,
+                                            context.Request.Scheme,
+                                            context.Request.Protocol,
+                                            context.Request.PathBase,
+                                            context.Request.Path,
+                                            context.Request.Host.ToString()
+                                            /*context.Request.ContentLength,
+                                            context.Connection?.RemoteIpAddress?.ToString(), Use Serilog.Enrichers.HttpContext.WithClientIp
+                                            context.Request.QueryString.ToString(), WithRequestQuery 
+                                            context.Request.ContentType,*/
                                             );
         app.Logger.LogInformation(JsonSerializer.Serialize(requestLog)); // geoip works with JSON format
         // Headers

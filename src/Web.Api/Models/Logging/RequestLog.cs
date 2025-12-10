@@ -1,4 +1,5 @@
 namespace Web.Api.Models.Logging;
+
 public record RequestLog
 {
     public string Method { get; init; }

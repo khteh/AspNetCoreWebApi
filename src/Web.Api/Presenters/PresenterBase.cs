@@ -26,12 +26,7 @@ public abstract class PresenterBase<T, TResponse> : IOutputPort<T> where T : Use
     public TResponse Response { get; set; }
     public JsonContentResult ContentResult { get; } = new JsonContentResult();
     protected readonly Microsoft.Extensions.Logging.ILogger _logger;
-    [SetsRequiredMembers]
-    public PresenterBase(Microsoft.Extensions.Logging.ILogger logger)
-    {
-        _logger = logger;
-        Response = (TResponse)Activator.CreateInstance(typeof(TResponse), new object[] { false, null });
-    }
+    public PresenterBase(Microsoft.Extensions.Logging.ILogger logger) => _logger = logger;
     public virtual async Task Handle(T response) => await BuildResponse(response, response.Success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
     protected async Task Handle(T response, HttpStatusCode success = HttpStatusCode.OK, HttpStatusCode failure = HttpStatusCode.BadRequest) => await BuildResponse(response, response.Success ? success : failure);
     private async Task BuildResponse(T response, HttpStatusCode status)

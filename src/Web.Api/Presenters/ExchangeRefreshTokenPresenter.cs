@@ -3,9 +3,9 @@ using System.Net;
 using Web.Api.Core.DTO.UseCaseResponses;
 using Web.Api.Serialization;
 namespace Web.Api.Presenters;
+
 public sealed class ExchangeRefreshTokenPresenter : PresenterBase<ExchangeRefreshTokenResponse, Models.Response.ExchangeRefreshTokenResponse>
 {
-    [SetsRequiredMembers]
     public ExchangeRefreshTokenPresenter(ILogger<ExchangeRefreshTokenPresenter> logger) : base(logger) { }
     public override async Task Handle(ExchangeRefreshTokenResponse response)
     {

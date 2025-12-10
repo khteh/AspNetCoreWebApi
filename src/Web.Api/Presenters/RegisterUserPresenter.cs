@@ -7,7 +7,6 @@ namespace Web.Api.Presenters;
 
 public sealed class RegisterUserPresenter : PresenterBase<UseCaseResponseMessage, RegisterUserResponse>
 {
-    [SetsRequiredMembers]
     public RegisterUserPresenter(ILogger<RegisterUserPresenter> logger) : base(logger) { }
     public override async Task Handle(UseCaseResponseMessage response)
     {

@@ -6,7 +6,6 @@ namespace Web.Api.Presenters;
 
 public class SignInPresenter : PresenterBase<SignInResponse, Models.Response.SignInResponse>
 {
-    [SetsRequiredMembers]
     public SignInPresenter(ILogger<SignInPresenter> logger) : base(logger) { }
     public override async Task Handle(SignInResponse response) =>
         await Handle(response, HttpStatusCode.OK, HttpStatusCode.Unauthorized);

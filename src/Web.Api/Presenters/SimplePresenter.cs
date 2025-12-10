@@ -5,6 +5,5 @@ namespace Web.Api.Presenters;
 
 public class SimplePresenter : PresenterBase<UseCaseResponseMessage, ResponseBase>
 {
-    [SetsRequiredMembers]
     public SimplePresenter(ILogger<SimplePresenter> logger) : base(logger) { }
 }
