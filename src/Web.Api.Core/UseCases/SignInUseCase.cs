@@ -15,12 +15,12 @@ public class SignInUseCase : ISignInUseCase
     public SignInUseCase(IUserRepository repo) => _userRepository = repo;
     public async Task<bool> Handle(SignInRequest message, IOutputPort<SignInResponse> outputPort)
     {
-        DTO.GatewayResponses.Repositories.SignInResponse result = null;
+        DTO.GatewayResponses.Repositories.SignInResponse? result = null;
         if (!string.IsNullOrEmpty(message.UserName) && !string.IsNullOrEmpty(message.Password))
         {
             result = message.IsMobileApp ? await _userRepository.SignInMobile(message.UserName, message.Password, message.LockOutOnFailure)
                                             : await _userRepository.SignIn(message.UserName, message.Password, message.RemoteIpAddress, message.RememberMe, message.LockOutOnFailure);
-            if (result != null && result.Success && result.UserId != Guid.Empty)
+            if (result != null && result.Success && result.UserId != Guid.Empty && !string.IsNullOrEmpty(result.UserName))
             {
                 // public SignInResponse(Guid id, string username, bool success = false, string message = null)
                 await outputPort.Handle(new SignInResponse(result.UserId, result.UserName, true, "Signed in successfully!"));

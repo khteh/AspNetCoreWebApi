@@ -1,5 +1,6 @@
 namespace Web.Api.Core.Configuration;
+
 public class GrpcConfig
 {
-    public string Endpoint {get; set;}
+    public required string Endpoint { get; set; }
 }

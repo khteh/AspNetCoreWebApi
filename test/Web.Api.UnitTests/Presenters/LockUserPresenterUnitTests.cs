@@ -25,7 +25,7 @@ public class LockUserPresenterUnitTests
 
         // act
         Guid id = Guid.CreateVersion7();
-        await presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
+        await presenter.Handle(new UseCaseResponseMessage(id, true));
 
         // assert
         LockUserResponse data = JsonSerializer.DeSerializeObject<LockUserResponse>(presenter.ContentResult.Content);
@@ -40,7 +40,7 @@ public class LockUserPresenterUnitTests
         var presenter = new LockUserPresenter(logger.Object);
 
         // act
-        await presenter.Handle(new UseCaseResponseMessage(null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
+        await presenter.Handle(new UseCaseResponseMessage(Guid.Empty, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
         // assert
         Models.Response.LockUserResponse response = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LockUserResponse>(presenter.ContentResult.Content);

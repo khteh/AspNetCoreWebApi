@@ -26,7 +26,7 @@ public class RegistrationConfirmationPresenterUnitTests
         // https://learn.microsoft.com/en-us/dotnet/api/system.guid.createversion7?view=net-9.0#system-guid-createversion7
         Guid id = Guid.CreateVersion7();
         string code = "1234";
-        await presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(id.ToString(), code, true));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(id, code, true));
 
         // assert
         CodeResponse response = JsonSerializer.DeSerializeObject<CodeResponse>(presenter.ContentResult.Content);
@@ -46,7 +46,7 @@ public class RegistrationConfirmationPresenterUnitTests
         var presenter = new RegistrationConfirmationPresenter(logger.Object);
 
         // act
-        await presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(string.Empty, string.Empty, false, "Invalid Email!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Email!") }));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(Guid.Empty, string.Empty, false, "Invalid Email!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid Email!") }));
 
         // assert
         CodeResponse response = Serialization.JsonSerializer.DeSerializeObject<CodeResponse>(presenter.ContentResult.Content);

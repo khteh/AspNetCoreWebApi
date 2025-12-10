@@ -1,5 +1,6 @@
 namespace Web.Api.Infrastructure.Auth;
+
 public class AuthSettings
 {
-    public string SecretKey { get; set; }
+    public required string SecretKey { get; set; }
 }

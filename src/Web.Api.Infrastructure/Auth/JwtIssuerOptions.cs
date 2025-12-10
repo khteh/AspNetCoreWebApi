@@ -8,17 +8,17 @@ public class JwtIssuerOptions
   /// <summary>
   /// 4.1.1.  "iss" (Issuer) Claim - The "iss" (issuer) claim identifies the principal that issued the JWT.
   /// </summary>
-  public string Issuer { get; set; }
+  public required string Issuer { get; set; }
 
   /// <summary>
   /// 4.1.2.  "sub" (Subject) Claim - The "sub" (subject) claim identifies the principal that is the subject of the JWT.
   /// </summary>
-  public string Subject { get; set; }
+  public string? Subject { get; set; }
 
   /// <summary>
   /// 4.1.3.  "aud" (Audience) Claim - The "aud" (audience) claim identifies the recipients that the JWT is intended for.
   /// </summary>
-  public string Audience { get; set; }
+  public required string Audience { get; set; }
 
   /// <summary>
   /// 4.1.4.  "exp" (Expiration Time) Claim - The "exp" (expiration time) claim identifies the expiration time on or after which the JWT MUST NOT be accepted for processing.
@@ -49,5 +49,5 @@ public class JwtIssuerOptions
   /// <summary>
   /// The signing key to use when generating tokens.
   /// </summary>
-  public SigningCredentials SigningCredentials { get; set; }
+  public required SigningCredentials SigningCredentials { get; set; }
 }

@@ -23,7 +23,7 @@ public class DeleteUserPresenterUnitTests
 
         // act
         Guid id = Guid.CreateVersion7();
-        await presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
+        await presenter.Handle(new UseCaseResponseMessage(id, true));
 
         // assert
         DeleteUserResponse response = Serialization.JsonSerializer.DeSerializeObject<DeleteUserResponse>(presenter.ContentResult.Content);

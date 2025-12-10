@@ -20,7 +20,7 @@ public class ConfirmEmailChangeUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ConfirmEmailChange(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse(Guid.Empty, new Mock<User>().Object, true));
 
         // 2. The use case and star of this test
         var useCase = new ConfirmEmailChangeUseCase(mockUserRepository.Object);
@@ -49,7 +49,7 @@ public class ConfirmEmailChangeUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ConfirmEmailChange(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse(Guid.Empty, new Mock<User>().Object, true));
 
         // 2. The use case and star of this test
         var useCase = new ConfirmEmailChangeUseCase(mockUserRepository.Object);
@@ -78,7 +78,7 @@ public class ConfirmEmailChangeUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ConfirmEmailChange(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse(Guid.Empty, new Mock<User>().Object, true));
 
         // 2. The use case and star of this test
         var useCase = new ConfirmEmailChangeUseCase(mockUserRepository.Object);

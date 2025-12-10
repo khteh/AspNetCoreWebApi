@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -10,6 +11,7 @@ using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.UseCases;
 namespace Web.Api.Core.UseCases;
+
 public sealed class ForgotPasswordUseCase : IForgotPasswordUseCase
 {
     private readonly IUserRepository _userRepository;
@@ -25,7 +27,7 @@ public sealed class ForgotPasswordUseCase : IForgotPasswordUseCase
         }
         else
         {
-            await outputPort.Handle(new CodeResponse(string.Empty, string.Empty, false, $"Invalid email {message.Email}!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid email {message.Email}!") }));
+            await outputPort.Handle(new CodeResponse(Guid.Empty, string.Empty, false, $"Invalid email {message.Email}!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid email {message.Email}!") }));
             return false;
         }
     }

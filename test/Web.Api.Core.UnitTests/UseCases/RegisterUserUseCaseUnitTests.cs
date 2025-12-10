@@ -1,5 +1,6 @@
-using System.Threading.Tasks;
 using Moq;
+using System;
+using System.Threading.Tasks;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces;
@@ -19,7 +20,7 @@ public class RegisterUserUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new CreateUserResponse("", true));
+              .ReturnsAsync(new CreateUserResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new RegisterUserUseCase(mockUserRepository.Object);
@@ -48,7 +49,7 @@ public class RegisterUserUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new CreateUserResponse("", true));
+              .ReturnsAsync(new CreateUserResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new RegisterUserUseCase(mockUserRepository.Object);

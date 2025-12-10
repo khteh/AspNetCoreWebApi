@@ -3,6 +3,7 @@ using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Models.Response;
 using Web.Api.Presenters;
 namespace Web.Api.Commands;
+
 public class SignInCommandHandler : IRequestHandler<SignInCommand, SignInResponse>
 {
     private readonly ILogger<SignInCommandHandler> _logger;

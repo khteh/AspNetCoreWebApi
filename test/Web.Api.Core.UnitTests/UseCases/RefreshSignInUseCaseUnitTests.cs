@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Moq;
 using Web.Api.Core.Domain.Entities;
@@ -19,7 +20,7 @@ public class RefreshSignInUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.RefreshSignIn(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("id", new Mock<User>().Object, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse(Guid.NewGuid(), new Mock<User>().Object, true));
 
         // 2. The use case and star of this test
         var useCase = new RefreshSignInUseCase(mockUserRepository.Object);

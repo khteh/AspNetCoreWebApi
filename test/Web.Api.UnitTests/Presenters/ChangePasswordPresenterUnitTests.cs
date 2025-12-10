@@ -23,7 +23,7 @@ public class ChangePasswordPresenterUnitTests
 
         // act
         Guid id = Guid.CreateVersion7();
-        await presenter.Handle(new UseCaseResponseMessage(id.ToString(), true));
+        await presenter.Handle(new UseCaseResponseMessage(id, true));
 
         // assert
         ChangePasswordResponse response = Serialization.JsonSerializer.DeSerializeObject<ChangePasswordResponse>(presenter.ContentResult.Content);

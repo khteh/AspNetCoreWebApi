@@ -1,6 +1,7 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System;
+using System.Threading.Tasks;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
@@ -26,7 +27,7 @@ public class ResetPasswordUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ResetPassword(It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new ResetPasswordUseCase(mockLogger.Object, mockUserRepository.Object);
@@ -56,7 +57,7 @@ public class ResetPasswordUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ResetPassword(It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new ResetPasswordUseCase(mockLogger.Object, mockUserRepository.Object);
@@ -86,7 +87,7 @@ public class ResetPasswordUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ResetPassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new ResetPasswordUseCase(mockLogger.Object, mockUserRepository.Object);
@@ -116,7 +117,7 @@ public class ResetPasswordUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ResetPassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new ResetPasswordUseCase(mockLogger.Object, mockUserRepository.Object);
@@ -146,7 +147,7 @@ public class ResetPasswordUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ResetPassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new ResetPasswordUseCase(mockLogger.Object, mockUserRepository.Object);
@@ -176,7 +177,7 @@ public class ResetPasswordUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ResetPassword(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.PasswordResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new ResetPasswordUseCase(mockLogger.Object, mockUserRepository.Object);

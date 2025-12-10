@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -19,8 +20,8 @@ public class RefreshSignInUseCase : IRefreshSignInUseCase
     public RefreshSignInUseCase(IUserRepository repo) => _userRepository = repo;
     public async Task<bool> Handle(RefreshSignInRequest message, IOutputPort<UseCaseResponseMessage> outputPort)
     {
-        DTO.GatewayResponses.Repositories.FindUserResponse result = await _userRepository.RefreshSignIn(message.Id);
-        if (result != null && result.Success && !string.IsNullOrEmpty(result.Id))
+        FindUserResponse result = await _userRepository.RefreshSignIn(message.Id);
+        if (result != null && result.Success && result.Id != Guid.Empty)
         {
             await outputPort.Handle(new UseCaseResponseMessage(result.Id, true, "Signed in successfully!"));
             return true;
@@ -31,7 +32,7 @@ public class RefreshSignInUseCase : IRefreshSignInUseCase
             await outputPort.Handle(new UseCaseResponseMessage(result.Id, result.Success, errMsg, result.Errors));
         }
         else
-            await outputPort.Handle(new UseCaseResponseMessage(string.Empty, false, "Invalid username or password.", new List<DTO.Error>() { new DTO.Error(HttpStatusCode.InternalServerError.ToString(), "Failed to refresh sign in!") }));
+            await outputPort.Handle(new UseCaseResponseMessage(Guid.Empty, false, "Invalid username or password.", new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), "Failed to refresh sign in!") }));
         return false;
     }
 }

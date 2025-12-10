@@ -8,6 +8,7 @@ using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.UseCases;
 namespace Web.Api.Core.UseCases;
+
 public sealed class ExchangeRefreshTokenUseCase : IExchangeRefreshTokenUseCase
 {
     private readonly IUserRepository _userRepository;
@@ -20,7 +21,7 @@ public sealed class ExchangeRefreshTokenUseCase : IExchangeRefreshTokenUseCase
             return false;
         }
         DTO.GatewayResponses.Repositories.ExchangeRefreshTokenResponse response = await _userRepository.ExchangeRefreshToken(message.AccessToken, message.RefreshToken, message.SigningKey);
-        await outputPort.Handle(response.Success ? new ExchangeRefreshTokenResponse(response.AccessToken, response.RefreshToken, true) : new ExchangeRefreshTokenResponse(response.Errors));
+        await outputPort.Handle(response.Success && response.AccessToken != null && response.RefreshToken != null ? new ExchangeRefreshTokenResponse(response.AccessToken, response.RefreshToken, true) : new ExchangeRefreshTokenResponse(response.Errors));
         return response.Success;
     }
 }

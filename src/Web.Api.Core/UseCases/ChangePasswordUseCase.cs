@@ -7,6 +7,7 @@ using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.UseCases;
 namespace Web.Api.Core.UseCases;
+
 public class ChangePasswordUseCase : IChangePasswordUseCase
 {
     private readonly IUserRepository _userRepository;
@@ -19,7 +20,7 @@ public class ChangePasswordUseCase : IChangePasswordUseCase
             return false;
         }
         var response = await _userRepository.ChangePassword(message.IdentityId, message.OldPassword, message.NewPassword);
-        await outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors));
+        await outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors!));
         return response.Success;
     }
 }

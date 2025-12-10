@@ -1,11 +1,14 @@
-﻿using MediatR;
+﻿using Humanizer;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
+using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Models.Response;
 using Web.Api.Presenters;
 namespace Web.Api.Commands;
+
 public class LockUserCommandHandler : IRequestHandler<LockUserCommand, LockUserResponse>
 {
     private readonly ILogger<LockUserCommandHandler> _logger;
@@ -19,7 +22,15 @@ public class LockUserCommandHandler : IRequestHandler<LockUserCommand, LockUserR
     }
     public async Task<LockUserResponse> Handle(LockUserCommand request, CancellationToken cancellationToken)
     {
-        bool response = await _useCase.Lock(request.Id, _presenter);
-        return _presenter.Response;
+        if (Guid.TryParse(request.Id, out Guid id))
+        {
+            bool response = await _useCase.Lock(id, _presenter);
+            return _presenter.Response;
+        }
+        else
+        {
+            await _presenter.Handle(new UseCaseResponseMessage(Guid.Empty, false, $"Failed to lock user! Invalid id {request.Id}!", new List<Core.DTO.Error>() { new Core.DTO.Error("Failed to lock user!", $"Invalid id {request.Id}!") }));
+            return _presenter.Response;
+        }
     }
 }

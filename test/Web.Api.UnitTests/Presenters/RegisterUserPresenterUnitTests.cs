@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -22,13 +23,14 @@ public class RegisterUserPresenterUnitTests
         var presenter = new RegisterUserPresenter(logger.Object);
 
         // act
-        await presenter.Handle(new UseCaseResponseMessage("1234", true));
+        Guid id = Guid.CreateVersion7();
+        await presenter.Handle(new UseCaseResponseMessage(id, true));
 
         // assert
         RegisterUserResponse data = JsonSerializer.DeSerializeObject<RegisterUserResponse>(presenter.ContentResult.Content);
         Assert.Equal((int)HttpStatusCode.Created, presenter.ContentResult.StatusCode);
         Assert.True(data.Success);
-        Assert.Equal("1234", data.Id);
+        Assert.Equal(id, Guid.Parse(data.Id));
     }
     [Fact]
     public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()

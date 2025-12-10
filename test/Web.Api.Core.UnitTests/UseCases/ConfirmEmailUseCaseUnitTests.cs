@@ -22,7 +22,7 @@ public class ConfirmEmailUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ConfirmEmail(It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse(Guid.Empty, new Mock<User>().Object, true));
 
         var mockLogger = new Mock<ILogger<ConfirmEmailUseCase>>();
         // 2. The use case and star of this test
@@ -52,7 +52,7 @@ public class ConfirmEmailUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ConfirmEmail(It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse("", new Mock<User>().Object, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.FindUserResponse(Guid.Empty, new Mock<User>().Object, true));
 
         var mockLogger = new Mock<ILogger<ConfirmEmailUseCase>>();
         // 2. The use case and star of this test

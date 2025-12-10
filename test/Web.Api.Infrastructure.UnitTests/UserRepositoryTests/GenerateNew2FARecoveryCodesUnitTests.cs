@@ -29,7 +29,7 @@ public class GenerateNew2FARecoveryCodesUseCaseUnitTests
         userManager.Setup(i => i.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(appUser);
         userManager.Setup(i => i.GenerateNewTwoFactorRecoveryCodesAsync(It.IsAny<AppUser>(), It.IsAny<int>())).ReturnsAsync(new List<string>() { "GenerateNew2FARecoveryCodes_Code" });
         var mockUserRepository = new Mock<IUserRepository>();
-        mockUserRepository.Setup(repo => repo.GenerateNew2FARecoveryCodes(It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.GenerateNew2FARecoveryCodesResponse(appUser.Id.ToString(), new List<string>() { "GenerateNew2FARecoveryCodes_Code" }, true));
+        mockUserRepository.Setup(repo => repo.GenerateNew2FARecoveryCodes(It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.GenerateNew2FARecoveryCodesResponse(Guid.Parse(appUser.Id), new List<string>() { "GenerateNew2FARecoveryCodes_Code" }, true));
         var mockLogger = new Mock<ILogger<GenerateNew2FARecoveryCodesUseCase>>();
         var useCase = new GenerateNew2FARecoveryCodesUseCase(mockUserRepository.Object);
         var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
@@ -54,7 +54,7 @@ public class GenerateNew2FARecoveryCodesUseCaseUnitTests
         userManager.Setup(i => i.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(appUser);
         userManager.Setup(i => i.GenerateNewTwoFactorRecoveryCodesAsync(It.IsAny<AppUser>(), It.IsAny<int>())).ReturnsAsync(new List<string>() { });
         var mockUserRepository = new Mock<IUserRepository>();
-        mockUserRepository.Setup(repo => repo.GenerateNew2FARecoveryCodes(It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.GenerateNew2FARecoveryCodesResponse(appUser.Id.ToString(), new List<string>() { }, false));
+        mockUserRepository.Setup(repo => repo.GenerateNew2FARecoveryCodes(It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.GenerateNew2FARecoveryCodesResponse(Guid.Parse(appUser.Id), new List<string>() { }, false));
 
         var mockLogger = new Mock<ILogger<GenerateNew2FARecoveryCodesUseCase>>();
         var useCase = new GenerateNew2FARecoveryCodesUseCase(mockUserRepository.Object);

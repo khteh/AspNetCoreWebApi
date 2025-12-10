@@ -6,5 +6,5 @@ public class GenerateNew2FARecoveryCodesRequest : IUseCaseRequest<GenerateNew2FA
 {
     public string Id { get; }
     public int Codes { get; }
-    public GenerateNew2FARecoveryCodesRequest(string id, int codes) => (Id, Codes) = (Id, codes);
+    public GenerateNew2FARecoveryCodesRequest(string id, int codes) => (Id, Codes) = (id, codes);
 }

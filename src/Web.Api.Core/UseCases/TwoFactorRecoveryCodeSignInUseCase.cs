@@ -15,13 +15,13 @@ public class TwoFactorRecoveryCodeSignInUseCase : ITwoFactorRecoveryCodeSignInUs
     public TwoFactorRecoveryCodeSignInUseCase(IUserRepository repo) => _userRepository = repo;
     public async Task<bool> Handle(TwoFactorRecoveryCodeSignInRequest message, IOutputPort<SignInResponse> outputPort)
     {
-        DTO.GatewayResponses.Repositories.SignInResponse result = null;
+        DTO.GatewayResponses.Repositories.SignInResponse? result = null;
         if (!string.IsNullOrEmpty(message.Code))
         {
             result = await _userRepository.TwoFactorRecoveryCodeSignIn(message.Code);
             if (result != null && result.Success && result.UserId != Guid.Empty)
             {
-                await outputPort.Handle(new SignInResponse(result.UserId, result.UserName, true, "Signed in successfully!"));
+                await outputPort.Handle(new SignInResponse(result.UserId, result.UserName!, true, "Signed in successfully!"));
                 return true;
             }
         }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -29,7 +30,7 @@ public class GRPCRegisterUserPresenterUnitTests
         var presenter = new UserPresenter(_mapper);
 
         // act
-        await presenter.Handle(new UseCaseResponseMessage("", true));
+        await presenter.Handle(new UseCaseResponseMessage(Guid.Empty, true));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -44,14 +45,15 @@ public class GRPCRegisterUserPresenterUnitTests
         var presenter = new UserPresenter(_mapper);
 
         // act
-        await presenter.Handle(new UseCaseResponseMessage("1234", true));
+        Guid id = Guid.CreateVersion7();
+        await presenter.Handle(new UseCaseResponseMessage(id, true));
 
         // assert
         Assert.NotNull(presenter.Response);
         Assert.NotNull(presenter.Response.Response);
         Assert.True(presenter.Response.Response.Success);
         Assert.False(presenter.Response.Response.Errors.Any());
-        Assert.Equal("1234", presenter.Response.Id);
+        Assert.Equal(id.ToString(), presenter.Response.Id);
     }
     [Fact]
     public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()

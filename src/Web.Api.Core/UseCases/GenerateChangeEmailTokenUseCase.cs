@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -26,7 +27,7 @@ public class GenerateChangeEmailTokenUseCase : IGenerateChangeEmailTokenUseCase
         }
         else
         {
-            await outputPort.Handle(new CodeResponse(string.Empty, string.Empty, false, $"Invalid email {message.Email}!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid email {message.Email}!") }));
+            await outputPort.Handle(new CodeResponse(Guid.Empty, string.Empty, false, $"Invalid email {message.Email}!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid email {message.Email}!") }));
             return false;
         }
 
