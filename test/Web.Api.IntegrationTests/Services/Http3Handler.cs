@@ -12,11 +12,6 @@ public class Http3Handler : DelegatingHandler
     {
         request.Version = HttpVersion.Version30;
         request.VersionPolicy = HttpVersionPolicy.RequestVersionExact;
-#if false
-            var response = await base.SendAsync(request, cancellationToken);
-            response.Version = request.Version;
-            return response;
-#endif
         return await base.SendAsync(request, cancellationToken);
     }
 }

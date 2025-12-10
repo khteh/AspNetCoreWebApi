@@ -63,6 +63,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public async ValueTask InitializeAsync()
     {
         // If you need explicit certificate validation handling in tests:
+        /* "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it. (localhost:5001)
         var handler = new HttpClientHandler() {
             ServerCertificateCustomValidationCallback =
             HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
@@ -74,8 +75,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 // Logic to accept your self-signed certificate
                 return errors == SslPolicyErrors.None || cert.Subject.Contains("AspNetCoreWebApi");
             }
-        };
-        var handler2 = Server.CreateHandler();
+        };*/
         // Client = new HttpClient(...) No connection could be made because the target machine actively refused it. (localhost:4433)
         Client = CreateClient(new WebApplicationFactoryClientOptions
         {
@@ -91,12 +91,10 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         Server.BaseAddress = new Uri(_grpcConfig.Endpoint);
         _grpcChannel = GrpcChannel.ForAddress(Server.BaseAddress, new GrpcChannelOptions
         {
-            HttpVersion = HttpVersion.Version30,
+            //HttpVersion = HttpVersion.Version30,
             LoggerFactory = new LoggerFactory(),
             //HttpHandler = new Http3Handler(Server.CreateHandler())
-            HttpHandler = new Http3Handler(handler2)
-            //HttpHandler = handler
-            //HttpHandler = Server.CreateHandler()
+            HttpHandler = Server.CreateHandler()
         });
         /* https://github.com/dotnet/aspnetcore/issues/61871
          * The HttpClient used with WebApplicationFactory uses an in-memory transport, so no actual network communication happens so I don't think it'll make any difference if you change it.
