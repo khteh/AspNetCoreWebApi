@@ -23,6 +23,7 @@ public class User : BaseEntity
     public Address? Address { get; set; }
     private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
     public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
+    [SetsRequiredMembers]
     public User() { /* Required by EF */ }
     [SetsRequiredMembers]
     public User(string firstName, string lastName, string identityId, string userName, string email, string? phoneNumber)

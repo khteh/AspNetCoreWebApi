@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -29,7 +30,7 @@ public class GRPCChangePasswordPresenterUnitTests
         var presenter = new ChangePasswordPresenter(_mapper);
 
         // act
-        await presenter.Handle(new UseCaseResponseMessage("", true));
+        await presenter.Handle(new UseCaseResponseMessage(Guid.Empty, true));
 
         // assert
         Assert.NotNull(presenter.Response);

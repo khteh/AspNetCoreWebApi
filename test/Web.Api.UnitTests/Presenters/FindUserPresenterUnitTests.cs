@@ -11,6 +11,7 @@ using Web.Api.Serialization;
 using Web.Api.Models.Response;
 using Xunit;
 using System.Threading.Tasks;
+using System;
 namespace Web.Api.UnitTests.Presenters;
 
 public class FindUserPresenterUnitTests
@@ -23,13 +24,14 @@ public class FindUserPresenterUnitTests
         var presenter = new FindUserPresenter(logger.Object);
 
         // act
-        await presenter.Handle(new Core.DTO.UseCaseResponses.FindUserResponse(new User(), "1234", true));
+        Guid id = Guid.CreateVersion7();
+        await presenter.Handle(new Core.DTO.UseCaseResponses.FindUserResponse(new User(), id, true));
 
         // assert
         Models.Response.FindUserResponse data = JsonSerializer.DeSerializeObject<Models.Response.FindUserResponse>(presenter.ContentResult.Content);
         Assert.Equal((int)HttpStatusCode.OK, presenter.ContentResult.StatusCode);
         Assert.True(data.Success);
-        Assert.Equal("1234", data.Id);
+        Assert.Equal(id, data.Id);
     }
     [Fact]
     public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
@@ -39,7 +41,7 @@ public class FindUserPresenterUnitTests
         var presenter = new FindUserPresenter(logger.Object);
 
         // act
-        await presenter.Handle(new Core.DTO.UseCaseResponses.FindUserResponse(null, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.FindUserResponse(null, Guid.Empty, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
         // assert
         Models.Response.FindUserResponse response = JsonSerializer.DeSerializeObject<Models.Response.FindUserResponse>(presenter.ContentResult.Content);

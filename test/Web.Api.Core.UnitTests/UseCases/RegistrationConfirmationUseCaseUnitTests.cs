@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Castle.Core.Logging;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ public class RegistrationConfirmationUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.RegistrationConfirmation(It.IsAny<string>()))
-              .ReturnsAsync(new CodeResponse(string.Empty, string.Empty, true));
+              .ReturnsAsync(new CodeResponse(Guid.Empty, string.Empty, true));
 
         var mockLogger = new Mock<ILogger<RegistrationConfirmationUseCase>>();
         // 2. The use case and star of this test
@@ -51,7 +52,7 @@ public class RegistrationConfirmationUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.RegistrationConfirmation(It.IsAny<string>()))
-              .ReturnsAsync(new CodeResponse(string.Empty, string.Empty, true));
+              .ReturnsAsync(new CodeResponse(Guid.Empty, string.Empty, true));
 
         var mockLogger = new Mock<ILogger<RegistrationConfirmationUseCase>>();
         // 2. The use case and star of this test

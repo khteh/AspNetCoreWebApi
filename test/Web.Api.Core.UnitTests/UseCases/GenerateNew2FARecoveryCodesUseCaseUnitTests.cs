@@ -22,7 +22,7 @@ public class GenerateNew2FARecoveryCodesUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.GenerateNew2FARecoveryCodes(It.IsAny<string>(), It.IsAny<int>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.GenerateNew2FARecoveryCodesResponse(string.Empty, new List<string>() { }, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.GenerateNew2FARecoveryCodesResponse(Guid.Empty, new List<string>() { }, true));
 
         // 2. The use case and star of this test
         var useCase = new GenerateNew2FARecoveryCodesUseCase(mockUserRepository.Object);

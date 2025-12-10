@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
-using Moq;
+﻿using Moq;
+using System;
+using System.Threading.Tasks;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
@@ -18,7 +19,7 @@ public class DeleteUserUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.Delete(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.DeleteUserResponse("", true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.DeleteUserResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new DeleteUserUseCase(mockUserRepository.Object);

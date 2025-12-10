@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Moq;
 using Web.Api.Core.DTO.UseCaseRequests;
@@ -19,7 +20,7 @@ public class ForgotPasswordUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ForgotPassword(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.CodeResponse(string.Empty, string.Empty, false));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.CodeResponse(Guid.Empty, string.Empty, false));
 
         // 2. The use case and star of this test
         var useCase = new ForgotPasswordUseCase(mockUserRepository.Object);
@@ -48,7 +49,7 @@ public class ForgotPasswordUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.ForgotPassword(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.CodeResponse(string.Empty, string.Empty, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.CodeResponse(Guid.Empty, string.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new ForgotPasswordUseCase(mockUserRepository.Object);

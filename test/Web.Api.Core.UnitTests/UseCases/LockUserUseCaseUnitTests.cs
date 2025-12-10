@@ -18,8 +18,8 @@ public class LockUserUseCaseUnitTests
         // 1. We need to store the user data somehow
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
-              .Setup(repo => repo.LockUser(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.LockUserResponse("", true));
+              .Setup(repo => repo.LockUser(It.IsAny<Guid>()))
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.LockUserResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new LockUserUseCase(mockUserRepository.Object);
@@ -44,8 +44,8 @@ public class LockUserUseCaseUnitTests
         // 1. We need to store the user data somehow
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
-              .Setup(repo => repo.LockUser(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.LockUserResponse("", true));
+              .Setup(repo => repo.LockUser(It.IsAny<Guid>()))
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.LockUserResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new LockUserUseCase(mockUserRepository.Object);
@@ -58,7 +58,7 @@ public class LockUserUseCaseUnitTests
         // act
 
         // 4. We need a request model to carry data into the use case from the upper layer (UI, Controller etc.)
-        var response = await useCase.Lock("id", mockOutputPort.Object);
+        var response = await useCase.Lock(Guid.NewGuid(), mockOutputPort.Object);
 
         // assert
         Assert.True(response);
@@ -73,8 +73,8 @@ public class LockUserUseCaseUnitTests
         // 1. We need to store the user data somehow
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
-              .Setup(repo => repo.UnLockUser(It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.LockUserResponse("", true));
+              .Setup(repo => repo.UnLockUser(It.IsAny<Guid>()))
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.LockUserResponse(Guid.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new LockUserUseCase(mockUserRepository.Object);
@@ -87,7 +87,7 @@ public class LockUserUseCaseUnitTests
         // act
 
         // 4. We need a request model to carry data into the use case from the upper layer (UI, Controller etc.)
-        var response = await useCase.UnLock("id", mockOutputPort.Object);
+        var response = await useCase.UnLock(Guid.NewGuid(), mockOutputPort.Object);
 
         // assert
         Assert.True(response);

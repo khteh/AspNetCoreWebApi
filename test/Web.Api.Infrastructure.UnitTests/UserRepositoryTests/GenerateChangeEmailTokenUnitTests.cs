@@ -29,7 +29,7 @@ public class GenerateChangeEmailTokenUnitTests
         userManager.Setup(i => i.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(appUser);
         userManager.Setup(i => i.GenerateChangeEmailTokenAsync(It.IsAny<AppUser>(), It.IsAny<string>())).ReturnsAsync("GenerateChangeEmailToken_Code");
         var mockUserRepository = new Mock<IUserRepository>();
-        mockUserRepository.Setup(repo => repo.GenerateChangeEmailToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.CodeResponse(appUser.Id.ToString(), "GenerateChangeEmailToken_Code", true));
+        mockUserRepository.Setup(repo => repo.GenerateChangeEmailToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.CodeResponse(Guid.Parse(appUser.Id), "GenerateChangeEmailToken_Code", true));
         var mockLogger = new Mock<ILogger<GenerateChangeEmailTokenUseCase>>();
         var useCase = new GenerateChangeEmailTokenUseCase(mockUserRepository.Object);
         var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
@@ -54,7 +54,7 @@ public class GenerateChangeEmailTokenUnitTests
         userManager.Setup(i => i.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(appUser);
         userManager.Setup(i => i.GenerateChangeEmailTokenAsync(It.IsAny<AppUser>(), It.IsAny<string>())).ReturnsAsync("GenerateChangeEmailToken_Code");
         var mockUserRepository = new Mock<IUserRepository>();
-        mockUserRepository.Setup(repo => repo.GenerateChangeEmailToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.CodeResponse(appUser.Id.ToString(), "GenerateChangeEmailToken_Code", true));
+        mockUserRepository.Setup(repo => repo.GenerateChangeEmailToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.CodeResponse(Guid.Parse(appUser.Id), "GenerateChangeEmailToken_Code", true));
         var mockLogger = new Mock<ILogger<GenerateChangeEmailTokenUseCase>>();
         var useCase = new GenerateChangeEmailTokenUseCase(mockUserRepository.Object);
         var mockOutputPort = new Mock<IOutputPort<UseCaseResponseMessage>>();
@@ -79,7 +79,7 @@ public class GenerateChangeEmailTokenUnitTests
         userManager.Setup(i => i.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(appUser);
         userManager.Setup(i => i.GenerateChangeEmailTokenAsync(It.IsAny<AppUser>(), It.IsAny<string>())).ReturnsAsync(string.Empty);
         var mockUserRepository = new Mock<IUserRepository>();
-        mockUserRepository.Setup(repo => repo.GenerateChangeEmailToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.CodeResponse(appUser.Id.ToString(), string.Empty, false));
+        mockUserRepository.Setup(repo => repo.GenerateChangeEmailToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Core.DTO.GatewayResponses.Repositories.CodeResponse(Guid.Parse(appUser.Id), string.Empty, false));
 
         var mockLogger = new Mock<ILogger<GenerateChangeEmailTokenUseCase>>();
         var useCase = new GenerateChangeEmailTokenUseCase(mockUserRepository.Object);

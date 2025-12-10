@@ -26,7 +26,7 @@ public class GenerateNew2FARecoveryCodesPresenterUnitTests
         // act
         Guid id = Guid.CreateVersion7();
         List<string> codes = new List<string>() { "123" };
-        await presenter.Handle(new Core.DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse(id.ToString(), codes, true));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse(id, codes, true));
 
         // assert
         Models.Response.GenerateNew2FARecoveryCodesResponse data = JsonSerializer.DeSerializeObject<Models.Response.GenerateNew2FARecoveryCodesResponse>(presenter.ContentResult.Content);
@@ -42,7 +42,7 @@ public class GenerateNew2FARecoveryCodesPresenterUnitTests
         var presenter = new GenerateNew2FARecoveryCodesPresenter(logger.Object);
 
         // act
-        await presenter.Handle(new Core.DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse(null, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse(Guid.Empty, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
         // assert
         Models.Response.GenerateNew2FARecoveryCodesResponse response = JsonSerializer.DeSerializeObject<Models.Response.GenerateNew2FARecoveryCodesResponse>(presenter.ContentResult.Content);

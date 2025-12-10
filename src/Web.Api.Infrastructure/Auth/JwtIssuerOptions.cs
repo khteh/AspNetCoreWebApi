@@ -13,7 +13,7 @@ public class JwtIssuerOptions
   /// <summary>
   /// 4.1.2.  "sub" (Subject) Claim - The "sub" (subject) claim identifies the principal that is the subject of the JWT.
   /// </summary>
-  public required string Subject { get; set; }
+  public string? Subject { get; set; }
 
   /// <summary>
   /// 4.1.3.  "aud" (Audience) Claim - The "aud" (audience) claim identifies the recipients that the JWT is intended for.

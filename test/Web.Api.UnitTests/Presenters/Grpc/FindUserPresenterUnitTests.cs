@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -30,7 +31,7 @@ public class GRPCFindUserPresenterUnitTests
         var presenter = new FindUserPresenter(_mapper);
 
         // act
-        await presenter.Handle(new FindUserResponse(new User(), "", true, null, null));
+        await presenter.Handle(new FindUserResponse(new User(), Guid.Empty, true, null, null));
 
         // assert
         Assert.NotNull(presenter.Response);
@@ -45,14 +46,15 @@ public class GRPCFindUserPresenterUnitTests
         var presenter = new FindUserPresenter(_mapper);
 
         // act
-        await presenter.Handle(new FindUserResponse(new User(), "1234", true));
+        Guid id = Guid.CreateVersion7();
+        await presenter.Handle(new FindUserResponse(new User(), id, true));
 
         // assert
         Assert.NotNull(presenter.Response);
         Assert.NotNull(presenter.Response.Response);
         Assert.True(presenter.Response.Response.Success);
         Assert.False(presenter.Response.Response.Errors.Any());
-        Assert.Equal("1234", presenter.Response.Id);
+        Assert.Equal(id.ToString(), presenter.Response.Id);
     }
     [Fact]
     public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()
@@ -61,7 +63,7 @@ public class GRPCFindUserPresenterUnitTests
         var presenter = new FindUserPresenter(_mapper);
 
         // act
-        await presenter.Handle(new FindUserResponse(null, null, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
+        await presenter.Handle(new FindUserResponse(null, Guid.Empty, false, null, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "missing first name") }));
 
         // assert
         Assert.NotNull(presenter.Response);

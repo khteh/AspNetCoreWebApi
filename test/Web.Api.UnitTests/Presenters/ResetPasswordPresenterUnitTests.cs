@@ -1,9 +1,10 @@
+using Microsoft.Extensions.Logging;
+using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Moq;
 using Web.Api.Core.DTO;
 using Web.Api.Core.Interfaces;
 using Web.Api.Models.Response;
@@ -21,7 +22,8 @@ public class ResetPasswordPresenterUnitTests
         var presenter = new ResetPasswordPresenter(logger.Object);
 
         // act
-        await presenter.Handle(new UseCaseResponseMessage("1234", true));
+        Guid id = Guid.CreateVersion7();
+        await presenter.Handle(new UseCaseResponseMessage(id, true));
 
         // assert
         ResetPasswordResponse response = Serialization.JsonSerializer.DeSerializeObject<ResetPasswordResponse>(presenter.ContentResult.Content);

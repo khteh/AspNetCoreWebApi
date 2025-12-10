@@ -21,7 +21,7 @@ public class GenerateChangeEmailTokenUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.GenerateChangeEmailToken(It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.CodeResponse(string.Empty, string.Empty, true));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.CodeResponse(Guid.Empty, string.Empty, true));
 
         // 2. The use case and star of this test
         var useCase = new GenerateChangeEmailTokenUseCase(mockUserRepository.Object);
@@ -50,7 +50,7 @@ public class GenerateChangeEmailTokenUseCaseUnitTests
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
               .Setup(repo => repo.GenerateChangeEmailToken(It.IsAny<string>(), It.IsAny<string>()))
-              .ReturnsAsync(new DTO.GatewayResponses.Repositories.CodeResponse(string.Empty, string.Empty, false));
+              .ReturnsAsync(new DTO.GatewayResponses.Repositories.CodeResponse(Guid.Empty, string.Empty, false));
 
         // 2. The use case and star of this test
         var useCase = new GenerateChangeEmailTokenUseCase(mockUserRepository.Object);

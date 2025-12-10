@@ -25,7 +25,7 @@ public class CodePresenterUnitTests
         // act
         Guid id = Guid.CreateVersion7();
         string code = "1234";
-        await presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(id.ToString(), code, true));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(id, code, true));
 
         // assert
         CodeResponse response = Serialization.JsonSerializer.DeSerializeObject<CodeResponse>(presenter.ContentResult.Content);
@@ -45,7 +45,7 @@ public class CodePresenterUnitTests
         var presenter = new CodePresenter(logger.Object);
 
         // act
-        await presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(string.Empty, string.Empty, false, "Invalid username/password", new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
+        await presenter.Handle(new Core.DTO.UseCaseResponses.CodeResponse(Guid.Empty, string.Empty, false, "Invalid username/password", new List<Error> { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid username/password") }));
 
         // assert
         CodeResponse response = Serialization.JsonSerializer.DeSerializeObject<CodeResponse>(presenter.ContentResult.Content);

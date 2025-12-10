@@ -23,7 +23,7 @@ public class RegisterUserPresenterUnitTests
         var presenter = new RegisterUserPresenter(logger.Object);
 
         // act
-        Guid id = Guid.NewGuid();
+        Guid id = Guid.CreateVersion7();
         await presenter.Handle(new UseCaseResponseMessage(id, true));
 
         // assert
