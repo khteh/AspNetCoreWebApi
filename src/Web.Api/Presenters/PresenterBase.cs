@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using Web.Api.Core.Interfaces;
@@ -25,6 +26,7 @@ public abstract class PresenterBase<T, TResponse> : IOutputPort<T> where T : Use
     public TResponse Response { get; set; }
     public JsonContentResult ContentResult { get; } = new JsonContentResult();
     protected readonly Microsoft.Extensions.Logging.ILogger _logger;
+    [SetsRequiredMembers]
     public PresenterBase(Microsoft.Extensions.Logging.ILogger logger)
     {
         _logger = logger;

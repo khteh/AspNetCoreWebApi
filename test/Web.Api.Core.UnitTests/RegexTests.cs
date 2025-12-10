@@ -163,8 +163,8 @@ public class RegexTests
     [InlineData("https://[::1]:4433", true)]
     public void UriRegexTests(string input, bool expected)
     {
-        bool result = Uri.TryCreate(input, UriKind.Absolute, out Uri uri);
-        if (result)
+        bool result = Uri.TryCreate(input, UriKind.Absolute, out Uri? uri);
+        if (result && uri != null)
         {
             result = !string.Equals("Unknown", uri.HostNameType) && !string.IsNullOrEmpty(uri.Authority) && !string.IsNullOrEmpty(uri.Host) && uri.Port != -1;
             var parameters = QueryHelpers.ParseQuery(uri.Query);
