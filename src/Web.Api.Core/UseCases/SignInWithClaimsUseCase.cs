@@ -15,11 +15,11 @@ public class SignInWithClaimsUseCase : ISignInWithClaimsUseCase
     public SignInWithClaimsUseCase(IUserRepository repo) => _userRepository = repo;
     public async Task<bool> Handle(SignInWithClaimsRequest message, IOutputPort<SignInResponse> outputPort)
     {
-        DTO.GatewayResponses.Repositories.SignInResponse result = null;
+        DTO.GatewayResponses.Repositories.SignInResponse? result = null;
         if (!string.IsNullOrEmpty(message.IdentityId))
         {
             result = await _userRepository.SignInWithClaims(message.IdentityId, message.Claims, message.AuthProperties);
-            if (result != null && result.Success && result.UserId != Guid.Empty)
+            if (result != null && result.Success && result.UserId != Guid.Empty && !string.IsNullOrEmpty(result.UserName))
             {
                 await outputPort.Handle(new SignInResponse(result.UserId, result.UserName, true, "Signed in successfully!"));
                 return true;

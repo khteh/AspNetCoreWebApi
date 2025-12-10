@@ -1,5 +1,6 @@
 namespace Web.Api.Core.Configuration;
+
 public sealed class Cors
 {
-    public string Domains { get; init; }
+    public required string Domains { get; init; }
 }

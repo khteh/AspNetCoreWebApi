@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 namespace Web.Api.Infrastructure.Data.Repositories;
+
 public class CacheRepository : ICacheRepository
 {
     //private readonly IMapper _mapper;
@@ -35,13 +36,13 @@ public class CacheRepository : ICacheRepository
         return false;
     }
 
-    public async Task<T> GetAsync<T>(string key)
+    public async Task<T?> GetAsync<T>(string key)
     {
         if (!string.IsNullOrEmpty(key))
         {
             try
             {
-                byte[] cacheValue = await _cache.GetAsync(key);
+                byte[]? cacheValue = await _cache.GetAsync(key);
                 if (cacheValue == null) return default(T);
                 return JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(cacheValue));
             }

@@ -10,13 +10,13 @@ namespace Web.Api.Infrastructure.Shared;
 
 public abstract class DesignTimeDbContextFactoryBase<TContext> : IDesignTimeDbContextFactory<TContext> where TContext : DbContext
 {
-    public TContext CreateDbContext(string[] args) => Create(Directory.GetCurrentDirectory(), Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
+    public TContext CreateDbContext(string[] args) => Create(Directory.GetCurrentDirectory(), Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!);
     protected abstract TContext CreateNewInstance(DbContextOptions<TContext> options);
     public TContext Create()
     {
         var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         var basePath = AppContext.BaseDirectory;
-        return Create(basePath, environmentName);
+        return Create(basePath, environmentName!);
     }
     private TContext Create(string basePath, string environmentName)
     {

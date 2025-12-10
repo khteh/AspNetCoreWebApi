@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
 using Web.Api.Core.DTO.GatewayResponses.Repositories;
 namespace Web.Api.Core.Interfaces.Gateways.Repositories;
+
 public interface IUserRepository : IRepository<User>
 {
     Task<CreateUserResponse> Create(string firstName, string lastName, string email, string userName, string password);
@@ -30,7 +31,7 @@ public interface IUserRepository : IRepository<User>
     Task<FindUserResponse> ConfirmEmail(string id, string code);
     Task<CodeResponse> GenerateChangeEmailToken(string identityId, string email);
     Task<FindUserResponse> ConfirmEmailChange(string identityId, string email, string code);
-    Task<LockUserResponse> LockUser(string id);
-    Task<LockUserResponse> UnLockUser(string id);
+    Task<LockUserResponse> LockUser(Guid id);
+    Task<LockUserResponse> UnLockUser(Guid id);
     Task<FindResponse<User>> FindUsers(int page = 0, int pageSize = 100);
 }

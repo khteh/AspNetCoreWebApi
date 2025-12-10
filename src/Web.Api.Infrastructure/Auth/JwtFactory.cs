@@ -9,6 +9,7 @@ using Web.Api.Core.DTO;
 using Web.Api.Core.Interfaces.Services;
 using Web.Api.Infrastructure.Interfaces;
 namespace Web.Api.Infrastructure.Auth;
+
 public sealed class JwtFactory : IJwtFactory
 {
     private readonly ILogger<IJwtFactory> _logger;
@@ -21,7 +22,7 @@ public sealed class JwtFactory : IJwtFactory
         _jwtOptions = jwtOptions.Value;
         ThrowIfInvalidOptions(_jwtOptions);
     }
-    public async Task<AccessToken> GenerateEncodedToken(string id, string userName)
+    public async Task<AccessToken?> GenerateEncodedToken(string id, string userName)
     {
         if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(userName))
         {
@@ -29,25 +30,30 @@ public sealed class JwtFactory : IJwtFactory
             return null;
         }
         var identity = GenerateClaimsIdentity(id, userName);
-        var claims = new[]
+        if (identity != null)
         {
-            new Claim(JwtRegisteredClaimNames.Sub, userName),
-            new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
-            new Claim(JwtRegisteredClaimNames.Iat, _jwtOptions.IssuedAt.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-            identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol),
-            identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Id)
-        };
-        // Create the JWT security token and encode it.
-        var jwt = new JwtSecurityToken(
-                _jwtOptions.Issuer,
-                _jwtOptions.Audience,
-                claims,
-                _jwtOptions.NotBefore.UtcDateTime,
-                _jwtOptions.Expiration.UtcDateTime,
-                _jwtOptions.SigningCredentials);
-        return new AccessToken(_jwtTokenHandler.WriteToken(jwt), (int)_jwtOptions.ValidFor.TotalSeconds);
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, userName),
+                new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
+                new Claim(JwtRegisteredClaimNames.Iat, _jwtOptions.IssuedAt.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+                identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol),
+                identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Id)
+            };
+            // Create the JWT security token and encode it.
+            var jwt = new JwtSecurityToken(
+                    _jwtOptions.Issuer,
+                    _jwtOptions.Audience,
+                    claims,
+                    _jwtOptions.NotBefore.UtcDateTime,
+                    _jwtOptions.Expiration.UtcDateTime,
+                    _jwtOptions.SigningCredentials);
+            return new AccessToken(_jwtTokenHandler.WriteToken(jwt), (int)_jwtOptions.ValidFor.TotalSeconds);
+        }
+        _logger.LogError($@"{nameof(JwtFactory)}.{nameof(GenerateEncodedToken)} Invalid id ""{id}"" / username ""{userName}""!");
+        return null;
     }
-    private static ClaimsIdentity GenerateClaimsIdentity(string id, string userName) =>
+    private static ClaimsIdentity? GenerateClaimsIdentity(string id, string userName) =>
         !string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(userName) ? new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
             {
                 new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),

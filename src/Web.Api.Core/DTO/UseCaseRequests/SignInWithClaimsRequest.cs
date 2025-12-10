@@ -8,10 +8,9 @@ namespace Web.Api.Core.DTO.UseCaseRequests;
 
 public class SignInWithClaimsRequest : IUseCaseRequest<SignInResponse>
 {
-    public string IdentityId { get; init; }
+    public required string IdentityId { get; init; }
     public List<Claim> Claims { get; init; }
     public AuthenticationProperties AuthProperties { get; init; }
-    public SignInWithClaimsRequest() { }
     public SignInWithClaimsRequest(string identityId, List<Claim> claims, AuthenticationProperties authProperties)
     {
         IdentityId = identityId;

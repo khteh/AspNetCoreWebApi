@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -11,6 +12,7 @@ using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.UseCases;
 namespace Web.Api.Core.UseCases;
+
 public class ConfirmEmailUseCase : IConfirmEmailUseCase
 {
     private readonly ILogger<ConfirmEmailUseCase> _logger;
@@ -30,12 +32,12 @@ public class ConfirmEmailUseCase : IConfirmEmailUseCase
                     sb.Append($"{error.Code} {error.Description}");
                 _logger.LogError($"{nameof(ConfirmEmailUseCase)} Failed to confirm email of user id: {message.IdentityId}, code: {message.Code}, reasons: {sb.ToString()}");
             }
-            await outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors));
+            await outputPort.Handle(response.Success ? new UseCaseResponseMessage(response.Id, true) : new UseCaseResponseMessage(response.Errors!));
             return response.Success;
         }
         else
         {
-            await outputPort.Handle(new UseCaseResponseMessage(string.Empty, false, $"Invalid Code {message.Code}!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid Code {message.Code}!") }));
+            await outputPort.Handle(new UseCaseResponseMessage(Guid.Empty, false, $"Invalid Code {message.Code}!", new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid Code {message.Code}!") }));
             return false;
         }
     }

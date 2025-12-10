@@ -9,7 +9,7 @@ public class SignInResponse : BaseGatewayResponse
     public bool IsLockedOut { get; }
     public Guid UserId { get; init; }
     public string? UserName { get; init; }
-    public SignInResponse(Guid userId, string? username, bool success = false, bool requires2fa = false, bool lockedout = false, List<Error> errors = null) : base(success, errors)
+    public SignInResponse(Guid userId, string? username, bool success = false, bool requires2fa = false, bool lockedout = false, List<Error>? errors = null) : base(success, errors)
     {
         UserId = userId;
         UserName = username;

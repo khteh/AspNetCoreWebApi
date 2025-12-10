@@ -1,20 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Web.Api.Core.DTO;
 namespace Web.Api.Core.Interfaces;
+
 public class UseCaseResponseMessage
 {
-    public string Id { get; init; } = string.Empty;
+    public Guid Id { get; init; } = Guid.Empty;
     public bool Success { get; init; } = false;
-    public string Message { get; init; } = string.Empty;
-    public List<Error> Errors { get; init; } = new List<Error>();
+    public string? Message { get; init; }
+    public List<Error>? Errors { get; init; }
     [JsonConstructor]
-    public UseCaseResponseMessage(string id, bool success = false, string message = null, List<Error> errors = null)
+    public UseCaseResponseMessage(Guid id, bool success = false, string? message = null, List<Error>? errors = null)
     {
         Id = id;
         Success = success;
         Message = message;
-        Errors = errors;
+        Errors = errors ?? new List<Error>();
     }
     public UseCaseResponseMessage(string message, List<Error> errors)
     {
@@ -25,6 +27,6 @@ public class UseCaseResponseMessage
     public UseCaseResponseMessage(string message)
     {
         Message = message;
-        Errors.Add(new Error(string.Empty, message));
+        Errors!.Add(new Error(string.Empty, message));
     }
 }

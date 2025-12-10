@@ -6,6 +6,9 @@
     <IsTestProject>true</IsTestProject>
     <NoWarn>CS0436</NoWarn>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <Protobuf Include="Protos/*.proto" GrpcServices="Client" />

@@ -5,7 +5,6 @@ namespace Web.Api.Core.DTO.UseCaseRequests;
 
 public class TwoFactorRecoveryCodeSignInRequest : IUseCaseRequest<SignInResponse>
 {
-    public string Code { get; set; }
-    public TwoFactorRecoveryCodeSignInRequest() { }
+    public required string Code { get; set; }
     public TwoFactorRecoveryCodeSignInRequest(string code) => Code = code;
 }

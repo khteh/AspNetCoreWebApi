@@ -8,7 +8,7 @@ public sealed class FindResponse<T> : BaseGatewayResponse where T : BaseEntity
 {
     public Guid Id { get; }
     public List<T> Result { get; }
-    public FindResponse(Guid id, List<T> result, bool success = false, List<Error> errors = null) : base(success, errors)
+    public FindResponse(Guid id, List<T> result, bool success = false, List<Error>? errors = null) : base(success, errors)
     {
         Id = id;
         Result = result;

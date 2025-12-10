@@ -1,8 +1,10 @@
 using Grpc.Core;
+using Web.Api.Core.Interfaces;
 using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Identity.Accounts;
 using Web.Api.Presenters.Grpc;
 namespace Web.Api.Services;
+
 public class AccountsService : Accounts.AccountsBase
 {
     private readonly ILogger<AccountsService> _logger;
@@ -101,12 +103,28 @@ public class AccountsService : Accounts.AccountsBase
     }
     public async override Task<Web.Api.Identity.Response> Lock(StringInputParameter id, ServerCallContext context)
     {
-        await _lockUserUseCase.Lock(id.Value, _lockUserPresenter);
-        return _lockUserPresenter.Response;
+        if (Guid.TryParse(id.Value, out Guid guid))
+        {
+            await _lockUserUseCase.Lock(guid, _lockUserPresenter);
+            return _lockUserPresenter.Response;
+        }
+        else
+        {
+            await _lockUserPresenter.Handle(new UseCaseResponseMessage(Guid.Empty, false, $"Failed to lock user! Invalid id {id.Value}!", new List<Core.DTO.Error>() { new Core.DTO.Error("Failed to lock user!", $"Invalid id {id.Value}!") }));
+            return _lockUserPresenter.Response;
+        }
     }
     public async override Task<Web.Api.Identity.Response> UnLock(StringInputParameter id, ServerCallContext context)
     {
-        await _lockUserUseCase.UnLock(id.Value, _lockUserPresenter);
-        return _lockUserPresenter.Response;
+        if (Guid.TryParse(id.Value, out Guid guid))
+        {
+            await _lockUserUseCase.UnLock(guid, _lockUserPresenter);
+            return _lockUserPresenter.Response;
+        }
+        else
+        {
+            await _lockUserPresenter.Handle(new UseCaseResponseMessage(Guid.Empty, false, $"Failed to unlock user! Invalid id {id.Value}!", new List<Core.DTO.Error>() { new Core.DTO.Error("Failed to unlock user!", $"Invalid id {id.Value}!") }));
+            return _lockUserPresenter.Response;
+        }
     }
 }

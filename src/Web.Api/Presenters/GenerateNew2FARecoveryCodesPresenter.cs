@@ -7,7 +7,7 @@ public class GenerateNew2FARecoveryCodesPresenter : PresenterBase<Core.DTO.UseCa
     public override async Task Handle(Core.DTO.UseCaseResponses.GenerateNew2FARecoveryCodesResponse response)
     {
         await base.Handle(response);
-        Response.Id = Guid.TryParse(response.Id, out Guid id) ? id.ToString() : string.Empty;
+        Response.Id = response.Id;
         Response.Codes = response.Codes;
         ContentResult.Content = JsonSerializer.SerializeObject(Response);
     }

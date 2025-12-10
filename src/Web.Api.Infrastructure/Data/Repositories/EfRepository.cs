@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Shared;
 namespace Web.Api.Infrastructure.Data.Repositories;
+
 public abstract class EfRepository<T> : IDisposable, IRepository<T> where T : BaseEntity
 {
     protected readonly AppDbContext _appDbContext;
     protected EfRepository(AppDbContext appDbContext) => _appDbContext = appDbContext;
-    public virtual async Task<T> GetById(int id) => await _appDbContext.Set<T>().FindAsync(id);
+    public virtual async Task<T?> GetById(int id) => await _appDbContext.Set<T>().FindAsync(id);
     public virtual async Task<List<T>> ListAll() => await _appDbContext.Set<T>().ToListAsync();
-    public virtual async Task<T> GetSingleBySpec(ISpecification<T> spec)
+    public virtual async Task<T?> GetSingleBySpec(ISpecification<T> spec)
     {
         IQueryable<T> result = await Aggregate(spec);
         return result.FirstOrDefault();
