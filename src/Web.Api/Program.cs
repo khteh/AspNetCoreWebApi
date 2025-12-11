@@ -236,7 +236,7 @@ try
                               });
         });
     builder.Services.AddControllersWithViews();
-    builder.Services.AddOpenApi("AspNetCoreWebApi"); // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi?view=aspnetcore-9.0&tabs=visual-studio%2Cvisual-studio-code
+    builder.Services.AddOpenApi("AspNetCoreWebApi"); // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi
     builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
     //.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter())); Fixed in .Net Core 5
     builder.Services.AddAutoMapper(cfg =>

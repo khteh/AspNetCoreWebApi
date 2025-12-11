@@ -19,7 +19,8 @@
                 "build",
                 "${workspaceFolder}/src/Web.Api/Web.Api.csproj",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary",
+                "-tlp:v=d"
             ],
             "problemMatcher": "$msCompile"
         },
