@@ -22,7 +22,12 @@
                 "/consoleloggerparameters:NoSummary",
                 "-tlp:v=d"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "options": {
+                "env": {
+                  "ASPNETCORE_ENVIRONMENT": "IntegrationTests"
+                }
+             }        
         },
         {
             "label": "build Release",
