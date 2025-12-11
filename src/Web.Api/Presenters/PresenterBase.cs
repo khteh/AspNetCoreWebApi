@@ -23,7 +23,7 @@ public abstract class PresenterBase<T> : IOutputPort<T> where T : UseCaseRespons
 }
 public abstract class PresenterBase<T, TResponse> : IOutputPort<T> where T : UseCaseResponseMessage where TResponse : ResponseBase
 {
-    public TResponse Response { get; set; }
+    public TResponse? Response { get; set; }
     public JsonContentResult ContentResult { get; } = new JsonContentResult();
     protected readonly Microsoft.Extensions.Logging.ILogger _logger;
     public PresenterBase(Microsoft.Extensions.Logging.ILogger logger) => _logger = logger;
@@ -32,10 +32,12 @@ public abstract class PresenterBase<T, TResponse> : IOutputPort<T> where T : Use
     private async Task BuildResponse(T response, HttpStatusCode status)
     {
         if (!response.Success)
-            _logger.LogError($"{nameof(PresenterBase<T, TResponse>)} operation failed! {response.Errors?.FirstOrDefault().Description}");
+            _logger.LogError($"{nameof(PresenterBase<T, TResponse>)} operation failed! {response.Errors?.FirstOrDefault()?.Description}");
         else
             _logger.LogDebug($"{nameof(PresenterBase<T, TResponse>)} operation succeeded!");
         Response = (TResponse)Activator.CreateInstance(typeof(TResponse), new object[] { response.Success, response.Errors });
+        if (Response == null)
+            throw new InvalidOperationException($"{nameof(PresenterBase<T, TResponse>)} Failed to create instance of type {typeof(TResponse).FullName}");
         ContentResult.StatusCode = (int)status;
         ContentResult.Content = JsonSerializer.SerializeObject(Response);
     }

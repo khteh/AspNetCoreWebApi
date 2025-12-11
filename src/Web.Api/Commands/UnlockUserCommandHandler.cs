@@ -23,7 +23,7 @@ public class UnlockUserCommandHandler : IRequestHandler<UnlockUserCommand, LockU
     {
         if (Guid.TryParse(request.Id, out Guid id))
         {
-            bool response = await _useCase.UnLock(id, _presenter);
+            await _useCase.UnLock(id, _presenter);
             return _presenter.Response;
         }
         else

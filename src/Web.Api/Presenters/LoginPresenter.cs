@@ -9,8 +9,9 @@ public sealed class LogInPresenter : PresenterBase<LogInResponse, Models.Respons
     public override async Task Handle(LogInResponse response)
     {
         await Handle(response, HttpStatusCode.OK, HttpStatusCode.Unauthorized);
-        Response.AccessToken = response.AccessToken;
-        Response.RefreshToken = response.RefreshToken;
-        ContentResult.Content = JsonSerializer.SerializeObject(Response);
+        Response?.AccessToken = response.AccessToken;
+        Response?.RefreshToken = response.RefreshToken;
+        if (Response != null)
+            ContentResult.Content = JsonSerializer.SerializeObject(Response);
     }
 }

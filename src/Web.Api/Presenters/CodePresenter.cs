@@ -10,8 +10,9 @@ public class CodePresenter : PresenterBase<Core.DTO.UseCaseResponses.CodeRespons
     public override async Task Handle(Core.DTO.UseCaseResponses.CodeResponse response)
     {
         await base.Handle(response);
-        Response.Id = response.Id;
-        Response.Code = response.Code;
-        ContentResult.Content = JsonSerializer.SerializeObject(Response);
+        Response?.Id = response.Id;
+        Response?.Code = response.Code;
+        if (Response != null)
+            ContentResult.Content = JsonSerializer.SerializeObject(Response);
     }
 }

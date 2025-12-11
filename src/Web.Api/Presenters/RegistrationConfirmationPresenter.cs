@@ -8,8 +8,9 @@ public class RegistrationConfirmationPresenter : PresenterBase<Core.DTO.UseCaseR
     public override async Task Handle(Core.DTO.UseCaseResponses.CodeResponse response)
     {
         await Handle(response, HttpStatusCode.Created, HttpStatusCode.BadRequest);
-        Response.Id = response.Id;
-        Response.Code = response.Code;
-        ContentResult.Content = JsonSerializer.SerializeObject(Response);
+        Response?.Id = response.Id;
+        Response?.Code = response.Code;
+        if (Response != null)
+            ContentResult.Content = JsonSerializer.SerializeObject(Response);
     }
 }

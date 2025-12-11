@@ -11,7 +11,8 @@ public sealed class RegisterUserPresenter : PresenterBase<UseCaseResponseMessage
     public override async Task Handle(UseCaseResponseMessage response)
     {
         await Handle(response, HttpStatusCode.Created, HttpStatusCode.BadRequest);
-        Response.Id = response.Id.ToString();
-        ContentResult.Content = JsonSerializer.SerializeObject(Response);
+        Response?.Id = response.Id.ToString();
+        if (Response != null)
+            ContentResult.Content = JsonSerializer.SerializeObject(Response);
     }
 }

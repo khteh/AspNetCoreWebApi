@@ -10,8 +10,9 @@ public class FindUserPresenter : PresenterBase<FindUserResponse, Models.Response
     public override async Task Handle(FindUserResponse response)
     {
         await base.Handle(response);
-        Response.Id = response.Id;
-        Response.User = response.User;
-        ContentResult.Content = JsonSerializer.SerializeObject(Response);
+        Response?.Id = response.Id;
+        Response?.User = response.User;
+        if (Response != null)
+            ContentResult.Content = JsonSerializer.SerializeObject(Response);
     }
 }

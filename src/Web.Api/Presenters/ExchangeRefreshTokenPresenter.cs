@@ -10,8 +10,9 @@ public sealed class ExchangeRefreshTokenPresenter : PresenterBase<ExchangeRefres
     public override async Task Handle(ExchangeRefreshTokenResponse response)
     {
         await base.Handle(response);
-        Response.AccessToken = response.AccessToken;
-        Response.RefreshToken = response.RefreshToken;
-        ContentResult.Content = JsonSerializer.SerializeObject(Response);
+        Response?.AccessToken = response.AccessToken;
+        Response?.RefreshToken = response.RefreshToken;
+        if (Response != null)
+            ContentResult.Content = JsonSerializer.SerializeObject(Response);
     }
 }

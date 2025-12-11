@@ -31,6 +31,7 @@ using Elastic.CommonSchema.Serilog;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Reflection;
+using System.Security;
 using System.Text.Json;
 using Web.Api;
 using Web.Api.Behaviours;
@@ -122,7 +123,7 @@ try
     // Add framework builder.Services.
     // The following are done in builder.Services.AddInfrastructure()
     // Register the ConfigurationBuilder instance of AuthSettings
-    var authSettings = builder.Configuration.GetSection(nameof(AuthSettings));
+    IConfigurationSection authSettings = builder.Configuration.GetSection(nameof(AuthSettings));
     builder.Services.Configure<AuthSettings>(authSettings);
     var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings[nameof(AuthSettings.SecretKey)]));
     // jwt wire up
@@ -180,6 +181,8 @@ try
                     if (!string.IsNullOrEmpty(accessToken) && context.Request.Headers.ContainsKey("Authorization"))
                     {
                         accessToken = context.Request.Headers["Authorization"];
+                        if (string.IsNullOrEmpty(accessToken))
+                            throw new SecurityException($"Invalid Authorization header value!");
                         accessToken = accessToken.Split(" ")[1];
                     }
                     if (!string.IsNullOrEmpty(accessToken))
@@ -276,6 +279,8 @@ try
     // EmailBasedUserIdProvider, but do not use both. 
     // Register Infrastructure Services
     builder.Services.AddInfrastructure(builder.Configuration, env, _isIntegrationTests).AddCore().AddOutputPorts();
+    if (string.IsNullOrEmpty(builder.Configuration["ConnectionStrings:Default"]))
+        throw new ArgumentNullException($"Invalid connection string!");
     builder.Services.AddHealthChecks()
         .AddLivenessHealthCheck("Liveness", HealthStatus.Unhealthy, new List<string>() { "live" })
         .AddReadinessHealthCheck("Readiness", HealthStatus.Unhealthy, new List<string> { "ready" })
