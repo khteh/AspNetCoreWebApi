@@ -236,7 +236,8 @@ try
                               {
                                   policy.WithOrigins(builder.Configuration["Cors:Domains"]!.Split(','))
                                   .AllowAnyHeader()
-                                  .AllowAnyMethod();
+                                  .AllowAnyMethod()
+                                  .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
                               });
         });
     builder.Services.AddControllersWithViews();
@@ -275,6 +276,20 @@ try
         // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm?view=aspnetcore-7.0&tabs=visual-studio#change-email-and-activity-timeout
         o.ExpireTimeSpan = TimeSpan.FromHours(1); // The default inactivity timeout is 14 days.
         o.SlidingExpiration = true;
+    });
+    // https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output?view=aspnetcore-10.0
+    /*
+        By default, output caching follows these rules:
+
+        Only HTTP 200 responses are cached.
+        Only HTTP GET or HEAD requests are cached.
+        Responses that set cookies aren't cached.
+        Responses to authenticated requests aren't cached.
+        The following code applies all of the default caching rules to all of an app's endpoints:    
+    */
+    builder.Services.AddOutputCache(o =>
+    {
+        o.AddBasePolicy(builder => { builder.Expire(TimeSpan.FromSeconds(10)); builder.Cache(); });
     });
     // WARNING: use *either* the NameUserIdProvider *or* the 
     // EmailBasedUserIdProvider, but do not use both. 
@@ -356,13 +371,16 @@ try
             }
         );
     //app.UseHttpLogging(); https://github.com/dotnet/aspnetcore/issues/39317
-    app.UseResponseCaching();
     app.UseForwardedHeaders();
     app.UseHttpsRedirection();
     app.UseStaticFiles();
     app.UseCookiePolicy(new CookiePolicyOptions() { HttpOnly = HttpOnlyPolicy.Always, Secure = CookieSecurePolicy.Always });
     app.UsePathBase(pathBase);
     app.UseRouting();
+    app.UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true }); // Must be added between UseRouting and UseEndpoints
+    app.UseCors(); // UseCors must be called before UseResponseCaching, after UseRouting, but before UseAuthorization
+    app.UseOutputCache(); // UseOutputCache must be called after UseCors.
+    app.UseResponseCaching();
     app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
     app.UseAuthorization();
     app.UseWebSockets();

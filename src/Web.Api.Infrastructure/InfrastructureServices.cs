@@ -65,10 +65,6 @@ public static class InfrastructureServices
                 options.Configuration = configuration["RedisCache:Connection"];
                 options.InstanceName = configuration["RedisCache:InstanceName"];
             });
-            service.AddOutputCache(options =>
-            {
-                options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromSeconds(10)));
-            });
             service.AddSingleton<IConnectionMultiplexer>(sp =>
                  ConnectionMultiplexer.Connect(new ConfigurationOptions
                  {
