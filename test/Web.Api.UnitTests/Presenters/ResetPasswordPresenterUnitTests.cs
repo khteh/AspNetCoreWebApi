@@ -29,7 +29,7 @@ public class ResetPasswordPresenterUnitTests
         ResetPasswordResponse response = Serialization.JsonSerializer.DeSerializeObject<ResetPasswordResponse>(presenter.ContentResult.Content);
         Assert.Equal((int)HttpStatusCode.OK, presenter.ContentResult.StatusCode);
         Assert.NotNull(response);
-        Assert.Null(response.Errors);
+        Assert.Empty(response.Errors);
         Assert.True(response.Success);
     }
     [Fact]

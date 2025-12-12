@@ -30,7 +30,7 @@ public class DeleteUserPresenterUnitTests
         Assert.Equal((int)HttpStatusCode.NoContent, presenter.ContentResult.StatusCode);
         Assert.NotNull(response);
         Assert.True(response.Success);
-        Assert.Null(response.Errors);
+        Assert.Empty(response.Errors);
     }
     [Fact]
     public async Task Handle_GivenFailedUseCaseResponse_SetsErrors()

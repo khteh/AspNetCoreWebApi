@@ -34,7 +34,7 @@ public class CodePresenterUnitTests
         Assert.Equal(id, response.Id);
         Assert.False(string.IsNullOrEmpty(response.Code));
         Assert.Equal(code, response.Code);
-        Assert.Null(response.Errors);
+        Assert.Empty(response.Errors);
         Assert.True(response.Success);
     }
     [Fact]

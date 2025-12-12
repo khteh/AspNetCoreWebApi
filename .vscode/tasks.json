@@ -41,7 +41,12 @@
                 "-c",
                 "Release"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "options": {
+                "env": {
+                  "ASPNETCORE_ENVIRONMENT": "IntegrationTests"
+                }
+             }        
         },
         {
             "label": "publish Release",
@@ -49,6 +54,8 @@
             "type": "process",
             "args": [
                 "publish",
+                "--no-restore",
+                "--no-build",
                 "${workspaceFolder}/src/Web.Api/Web.Api.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary",
@@ -83,7 +90,12 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "options": {
+                "env": {
+                  "ASPNETCORE_ENVIRONMENT": "IntegrationTests"
+                }
+             }        
         },
         {
             "label": "build_core_unit_tests",
@@ -95,7 +107,12 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "options": {
+                "env": {
+                  "ASPNETCORE_ENVIRONMENT": "IntegrationTests"
+                }
+             }        
         },
         {
             "label": "build_infrastructure_unit_tests",
@@ -107,7 +124,12 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "options": {
+                "env": {
+                  "ASPNETCORE_ENVIRONMENT": "IntegrationTests"
+                }
+             }        
         },
         {
             "label": "build_integration_tests",
@@ -119,7 +141,12 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "options": {
+                "env": {
+                  "ASPNETCORE_ENVIRONMENT": "IntegrationTests"
+                }
+             }        
         },
         {
             "label": "publish",
@@ -127,6 +154,8 @@
             "type": "process",
             "args": [
                 "publish",
+                "--no-restore",
+                "--no-build",
                 "${workspaceFolder}/src/Web.Api/Web.Api.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
