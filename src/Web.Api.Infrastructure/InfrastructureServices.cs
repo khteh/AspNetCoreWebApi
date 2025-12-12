@@ -59,13 +59,27 @@ public static class InfrastructureServices
                 options.Configuration = configuration["RedisCache:Connection"];
                 options.InstanceName = configuration["RedisCache:InstanceName"];
             });
+            // https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output?view=aspnetcore-10.0
+            service.AddStackExchangeRedisOutputCache(options =>
+            {
+                options.Configuration = configuration["RedisCache:Connection"];
+                options.InstanceName = configuration["RedisCache:InstanceName"];
+            });
+            service.AddOutputCache(options =>
+            {
+                options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromSeconds(10)));
+            });
             service.AddSingleton<IConnectionMultiplexer>(sp =>
                  ConnectionMultiplexer.Connect(new ConfigurationOptions
                  {
                      EndPoints = { configuration["RedisCache:Connection"] },
                      AbortOnConnectFail = false,
                  }));
-            var redis = ConnectionMultiplexer.Connect(configuration["RedisCache:Connection"]);
+            var redis = ConnectionMultiplexer.Connect(new ConfigurationOptions
+            {
+                EndPoints = { configuration["RedisCache:Connection"] },
+                AbortOnConnectFail = false,
+            });
             service.AddDataProtection().PersistKeysToStackExchangeRedis(redis, "AspNetCoreWebApi");
         }
         else
