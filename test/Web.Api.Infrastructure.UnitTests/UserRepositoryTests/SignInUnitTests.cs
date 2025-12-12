@@ -18,7 +18,7 @@ public class SignInUnitTests
     public async Task Handle_GivenValidCredentials_ShouldSucceed()
     {
         // arrange
-        AppUser appUser = new AppUser("", "", "", "");
+        AppUser appUser = new AppUser("UserName", "", "", "");
         List<Claim> claims = new List<Claim>();
         Mock<UserManager<AppUser>> userManager = new Mock<UserManager<AppUser>>();
         userManager.Setup(i => i.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(appUser);
@@ -30,7 +30,7 @@ public class SignInUnitTests
         mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<UseCaseResponseMessage>()));
 
         // act
-        var response = await useCase.Handle(new SignInRequest("userName", "password", "whatever", true, true, false), mockOutputPort.Object);
+        var response = await useCase.Handle(new SignInRequest("UserName", "password", "whatever", true, true, false), mockOutputPort.Object);
 
         // assert
         Assert.True(response);

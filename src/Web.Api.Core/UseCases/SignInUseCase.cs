@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.DTO.UseCaseResponses;
@@ -27,7 +28,7 @@ public class SignInUseCase : ISignInUseCase
                 return true;
             }
         }
-        if (result != null)
+        if (result != null && result.Errors != null && result.Errors.Any())
             await outputPort.Handle(new SignInResponse(result.RequiresTwoFactor, result.IsLockedOut, result.Errors));
         else
             await outputPort.Handle(new SignInResponse(false, false, new List<DTO.Error>() { new DTO.Error("login_failure", "Invalid username or password.") }));

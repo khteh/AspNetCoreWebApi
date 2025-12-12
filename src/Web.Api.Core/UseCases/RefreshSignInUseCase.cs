@@ -26,7 +26,7 @@ public class RefreshSignInUseCase : IRefreshSignInUseCase
             await outputPort.Handle(new UseCaseResponseMessage(result.Id, true, "Signed in successfully!"));
             return true;
         }
-        if (result != null)
+        if (result != null && result.Errors != null && result.Errors.Any())
         {
             string errMsg = result.Errors != null && result.Errors.Any() ? result.Errors.First().Description : string.Empty;
             await outputPort.Handle(new UseCaseResponseMessage(result.Id, result.Success, errMsg, result.Errors));

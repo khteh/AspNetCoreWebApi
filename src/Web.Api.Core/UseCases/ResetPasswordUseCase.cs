@@ -46,7 +46,7 @@ public class ResetPasswordUseCase : IResetPasswordUseCase
                     sb.Append($"{error.Code} {error.Description}");
                 _logger.LogError($"User {request.Email} failed to reset password! {sb.ToString()}");
             }
-            await outputPort.Handle(response.Success ? new UseCaseResponseMessage(Guid.Parse(request.Id!), true, null) : new UseCaseResponseMessage(response.Errors!));
+            await outputPort.Handle(response.Success ? new UseCaseResponseMessage(Guid.TryParse(request.Id, out Guid id) ? id : Guid.Empty, true, null) : new UseCaseResponseMessage(response.Errors!));
         }
         return response.Success;
     }

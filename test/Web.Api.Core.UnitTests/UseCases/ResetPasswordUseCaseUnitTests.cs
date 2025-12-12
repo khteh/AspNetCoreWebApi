@@ -21,7 +21,7 @@ public class ResetPasswordUseCaseUnitTests
     public async Task Handle_ResetPasswordUsingId_ShouldSucceed()
     {
         // arrange
-
+        string id = Guid.CreateVersion7().ToString();
         // 1. We need to store the user data somehow
         var mockLogger = new Mock<ILogger<ResetPasswordUseCase>>();
         var mockUserRepository = new Mock<IUserRepository>();
@@ -40,7 +40,7 @@ public class ResetPasswordUseCaseUnitTests
         // act
 
         // 4. We need a request model to carry data into the use case from the upper layer (UI, Controller etc.)
-        var response = await useCase.Handle(new ResetPasswordRequest("id", null, "newPassword", null), mockOutputPort.Object);
+        var response = await useCase.Handle(new ResetPasswordRequest(id, null, "newPassword", null), mockOutputPort.Object);
 
         // assert
         Assert.True(response);
@@ -51,6 +51,7 @@ public class ResetPasswordUseCaseUnitTests
     public async Task Handle_ResetPasswordUsingId_InvalidPassword_ShouldFail()
     {
         // arrange
+        string id = Guid.CreateVersion7().ToString();
 
         // 1. We need to store the user data somehow
         var mockLogger = new Mock<ILogger<ResetPasswordUseCase>>();
@@ -70,7 +71,7 @@ public class ResetPasswordUseCaseUnitTests
         // act
 
         // 4. We need a request model to carry data into the use case from the upper layer (UI, Controller etc.)
-        var response = await useCase.Handle(new ResetPasswordRequest("id", null, string.Empty, null), mockOutputPort.Object);
+        var response = await useCase.Handle(new ResetPasswordRequest(id, null, string.Empty, null), mockOutputPort.Object);
 
         // assert
         Assert.False(response);
