@@ -60,6 +60,7 @@ public static class InfrastructureServices
                 options.InstanceName = configuration["RedisCache:InstanceName"];
             });
             // https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output?view=aspnetcore-10.0
+            // https://stackexchange.github.io/StackExchange.Redis/Configuration.html
             service.AddStackExchangeRedisOutputCache(options =>
             {
                 options.Configuration = configuration["RedisCache:Connection"];
