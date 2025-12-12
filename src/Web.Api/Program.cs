@@ -41,6 +41,7 @@ using Web.Api.Extensions;
 using Web.Api.HealthChecks;
 using Web.Api.Helpers;
 using Web.Api.Hubs;
+using Web.Api.Infrastructure;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Mapping;
@@ -318,6 +319,10 @@ try
     if (!string.IsNullOrEmpty(env.EnvironmentName) && string.Equals(env.EnvironmentName, "Production"))
         builder.Services.AddAllElasticApm();
     var app = builder.Build();
+    // dump the snapshot differences
+    var init = app.Services.GetRequiredService<DbInitializer>();
+    init.DumpPendingChanges();
+
     app.UseSerilogRequestLogging();
     app.UseSerilogMemoryUsageExact();
     // Configure the HTTP request pipeline.

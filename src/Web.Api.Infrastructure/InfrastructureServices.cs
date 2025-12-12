@@ -10,6 +10,7 @@ using System;
 using System.Reflection;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 using Web.Api.Core.Interfaces.Services;
+using Web.Api.Infrastructure;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
@@ -49,6 +50,7 @@ public static class InfrastructureServices
                 options.LogTo(Console.WriteLine);
             }
         });
+        service.AddScoped<DbInitializer>();
         //if (!isIntegrationTest && env.IsProduction() && Assembly.GetEntryAssembly().GetName().Name.Equals("GetDocument.Insider")) // XXX: Temporary fix until https://github.com/dotnet/aspnetcore/issues/54698 is fixed
         if (!isIntegrationTest && env.IsProduction()) // XXX: Temporary fix until https://github.com/dotnet/aspnetcore/issues/54698 is fixed
         {
