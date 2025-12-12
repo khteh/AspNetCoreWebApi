@@ -50,7 +50,7 @@ public static class InfrastructureServices
                 options.LogTo(Console.WriteLine);
             }
         });
-        service.AddScoped<DbInitializer>();
+        service.AddScoped<DbInitializer>(); // https://github.com/dotnet/efcore/issues/35285
         //if (!isIntegrationTest && env.IsProduction() && Assembly.GetEntryAssembly().GetName().Name.Equals("GetDocument.Insider")) // XXX: Temporary fix until https://github.com/dotnet/aspnetcore/issues/54698 is fixed
         if (!isIntegrationTest && env.IsProduction()) // XXX: Temporary fix until https://github.com/dotnet/aspnetcore/issues/54698 is fixed
         {

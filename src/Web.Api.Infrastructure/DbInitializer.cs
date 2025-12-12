@@ -11,7 +11,7 @@ using System.Text;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Migrations;
 namespace Web.Api.Infrastructure;
-
+// https://github.com/dotnet/efcore/issues/35285
 public class DbInitializer
 {
     private readonly AppDbContext _ctx;
