@@ -24,7 +24,8 @@ public class ProtectedControllerIntegrationTests
     {
         var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(new Models.Request.LogInRequest("testuser", "P@$$w0rd")), Encoding.UTF8, Application.Json), TestContext.Current.CancellationToken);
         httpResponse.EnsureSuccessStatusCode();
-        var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        string stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        Assert.False(string.IsNullOrEmpty(stringResponse));
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.NotNull(result["accessToken"]);
         Assert.False(string.IsNullOrEmpty((string)result["accessToken"]["token"]));
