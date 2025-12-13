@@ -238,7 +238,7 @@ try
                                       .AllowAnyMethod()
                                       .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
                               }));
-    builder.Services.AddControllersWithViews().ConfigureApiBehaviorOptions(options =>
+    builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
     {
         // https://learn.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-10.0
         // To preserve the default behavior, capture the original delegate to call later.
