@@ -6,6 +6,7 @@ using Web.Api.Commands;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Models.Response;
 using Web.Api.Presenters;
+using static System.Net.Mime.MediaTypeNames;
 namespace Web.Api.Controllers;
 
 [Route("api/[controller]")]
@@ -23,7 +24,10 @@ public class AuthController : ControllerBase
     }
     // POST api/auth/login
     [HttpPost("login")]
-    [AllowAnonymous]
+	[Consumes(Application.Json)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[AllowAnonymous]
     //[ValidateAntiForgeryToken]
     public async Task<IActionResult> Login([FromBody] Models.Request.LogInRequest request)
     {
@@ -33,7 +37,11 @@ public class AuthController : ControllerBase
     }
     // POST api/auth/refreshtoken
     [HttpPost("refreshtoken")]
-    public async Task<IActionResult> RefreshToken([FromBody] Models.Request.ExchangeRefreshTokenRequest request)
+	[Consumes(Application.Json)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	public async Task<IActionResult> RefreshToken([FromBody] Models.Request.ExchangeRefreshTokenRequest request)
     {
         if (!ModelState.IsValid) { return BadRequest(ModelState); }
         ExchangeRefreshTokenResponse response = await _mediator.Send(new ExchangeRefreshTokenCommand(request.AccessToken, request.RefreshToken, _authSettings.SecretKey));

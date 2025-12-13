@@ -31,6 +31,8 @@ public class AccountsController : ControllerBase
     // POST api/accounts/register
     [HttpPost("register")]
     [Consumes(Application.Json)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] Models.Request.RegisterUserRequest request)
     {
         if (!ModelState.IsValid)

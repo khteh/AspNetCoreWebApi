@@ -10,6 +10,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Security;
+using System.Threading;
 using System.Threading.Tasks;
 using Web.Api.Core.Configuration;
 using Web.Api.Infrastructure.Data;
@@ -46,17 +47,30 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                     ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
                     return loggerFactory.CreateLogger<CustomWebApplicationFactory<TStartup>>();
                 });
-            services.AddHttpClient("AspNetCoreWebApi")
+            services.AddHttpClient("AspNetCoreWebApi",  httpClient => {
+                httpClient.BaseAddress = new Uri("https://localhost:4433");
+                httpClient.DefaultRequestVersion = HttpVersion.Version30;
+                httpClient.Timeout = TimeSpan.FromSeconds(10);
+            })
                 .ConfigurePrimaryHttpMessageHandler(() =>
                 {
                     // Create and configure your custom HttpClientHandler
-                    var handler = new HttpClientHandler
+                    return new HttpClientHandler
                     {
-                        AllowAutoRedirect = false, // Example customization
+                        AllowAutoRedirect = true, // Example customization
+                        UseDefaultCredentials = true,
                         UseCookies = false, // Another example customization
-                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                        CheckCertificateRevocationList = false,
+                        //ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                        //ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                        ServerCertificateCustomValidationCallback = (sender, cert, chain, errors) =>
+                        {
+                            WriteLine($"SSL Errors: {errors}");
+                            foreach (var status in chain.ChainStatus)
+                                WriteLine($"Chain Status: {status.Status} - {status.StatusInformation}");
+                            return true; // Temporary for testing
+                        }
                     };
-                    return handler;
                 });
         });
     }
@@ -64,11 +78,18 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     {
         // If you need explicit certificate validation handling in tests:
         var handler = new HttpClientHandler() {
-            ServerCertificateCustomValidationCallback =
-            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            AllowAutoRedirect = true, // Example customization
+            UseDefaultCredentials = true,
+            UseCookies = false, // Another example customization
+            CheckCertificateRevocationList = false,
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         };
         var handler1 = new HttpClientHandler()
         {
+            AllowAutoRedirect = true, // Example customization
+            UseDefaultCredentials = true,
+            UseCookies = false, // Another example customization
+            CheckCertificateRevocationList = false,
             ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
             {
                 // Logic to accept your self-signed certificate
@@ -88,6 +109,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
          * Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact; // Ensure HTTP/3 is used
         */
         Client.Timeout = TimeSpan.FromSeconds(10);
+
         Server.BaseAddress = new Uri(_grpcConfig.Endpoint);
         _grpcChannel = GrpcChannel.ForAddress(Server.BaseAddress, new GrpcChannelOptions
         {

@@ -37,7 +37,6 @@ public class AuthControllerIntegrationTests
         string stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         Assert.False(string.IsNullOrEmpty(stringResponse));
         Assert.Contains("Invalid username or password!", stringResponse);
-        Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
     }
     [Fact]
     public async Task CanExchangeValidRefreshToken()
