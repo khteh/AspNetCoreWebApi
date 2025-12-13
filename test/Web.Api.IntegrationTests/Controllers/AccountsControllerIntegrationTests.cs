@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using Microsoft.Net.Http.Headers;
+using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -87,6 +89,8 @@ public class AccountsControllerIntegrationTests
     [Fact]
     public async Task CanFindById()
     {
+        DateTimeOffset dt = DateTimeOffset.UtcNow;
+        // _client.DefaultRequestHeaders.Add(HeaderNames.IfModifiedSince, dt.ToString()); https://github.com/dotnet/aspnetcore/issues/64762
         var httpResponse = await _client.GetAsync("/api/accounts/id/41532945-599e-4910-9599-0e7402017fbe", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
         var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
@@ -95,6 +99,11 @@ public class AccountsControllerIntegrationTests
         Assert.False(string.IsNullOrEmpty(id));
         Assert.Equal("41532945-599e-4910-9599-0e7402017fbe", id);
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        /*
+        httpResponse = await _client.GetAsync("/api/accounts/id/41532945-599e-4910-9599-0e7402017fbe", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        result = JsonNode.Parse(stringResponse);
+        */
     }
     [Fact]
     public async Task CanFindByUsername()
