@@ -336,9 +336,18 @@ try
         builder.Services.AddAllElasticApm();
     var app = builder.Build();
     // dump the snapshot differences - https://github.com/dotnet/efcore/issues/35285
-    var init = app.Services.GetRequiredService<DbInitializer>();
-    init.DumpPendingChanges();
-
+    using (var scope = app.Services.CreateScope())
+        try
+        {
+            var scopedServices = scope.ServiceProvider;
+            var init = scopedServices.GetRequiredService<DbInitializer>();
+            init.DumpPendingChanges();
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal($"{nameof(Program)} exception! {ex}");
+            throw;
+        }
     app.UseSerilogRequestLogging();
     app.UseSerilogMemoryUsageExact();
     // Configure the HTTP request pipeline.
