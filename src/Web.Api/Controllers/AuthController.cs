@@ -25,7 +25,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     [AllowAnonymous]
     //[ValidateAntiForgeryToken]
-    public async Task<ActionResult> Login([FromBody] Models.Request.LogInRequest request)
+    public async Task<IActionResult> Login([FromBody] Models.Request.LogInRequest request)
     {
         if (!ModelState.IsValid) { return BadRequest(ModelState); }
         LogInResponse response = await _mediator.Send(new LogInCommand(request.UserName, request.Password, Request.HttpContext.Connection.RemoteIpAddress?.ToString()));
@@ -33,7 +33,7 @@ public class AuthController : ControllerBase
     }
     // POST api/auth/refreshtoken
     [HttpPost("refreshtoken")]
-    public async Task<ActionResult> RefreshToken([FromBody] Models.Request.ExchangeRefreshTokenRequest request)
+    public async Task<IActionResult> RefreshToken([FromBody] Models.Request.ExchangeRefreshTokenRequest request)
     {
         if (!ModelState.IsValid) { return BadRequest(ModelState); }
         ExchangeRefreshTokenResponse response = await _mediator.Send(new ExchangeRefreshTokenCommand(request.AccessToken, request.RefreshToken, _authSettings.SecretKey));

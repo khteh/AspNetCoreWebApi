@@ -31,7 +31,7 @@ public class AccountsController : ControllerBase
     // POST api/accounts/register
     [HttpPost("register")]
     [Consumes(Application.Json)]
-    public async Task<ActionResult> Register([FromBody] Models.Request.RegisterUserRequest request)
+    public async Task<IActionResult> Register([FromBody] Models.Request.RegisterUserRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -46,7 +46,7 @@ public class AccountsController : ControllerBase
     // POST api/accounts
     [HttpPost("changepassword")]
     [Consumes(Application.Json)]
-    public async Task<ActionResult> ChangePassword([FromBody] Models.Request.ChangePasswordRequest request)
+    public async Task<IActionResult> ChangePassword([FromBody] Models.Request.ChangePasswordRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -55,7 +55,7 @@ public class AccountsController : ControllerBase
     }
     [HttpPost("resetpassword")]
     [Consumes(Application.Json)]
-    public async Task<ActionResult> ResetPassword([FromBody] Models.Request.ResetPasswordRequest request)
+    public async Task<IActionResult> ResetPassword([FromBody] Models.Request.ResetPasswordRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -64,41 +64,41 @@ public class AccountsController : ControllerBase
     }
     // POST api/accounts
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(string id)
+    public async Task<IActionResult> Delete(string id)
     {
         DeleteUserResponse response = await _mediator.Send(new DeleteUserCommand(id));
         return _mapper.Map<JsonContentResult>(response);
     }
     // POST api/accounts/id/{id}
     [HttpGet("id/{id}")]
-    public async Task<ActionResult> FindById(string id)
+    public async Task<IActionResult> FindById(string id)
     {
         await _findUserUseCase.Handle(new FindUserRequest(string.Empty, string.Empty, id), _findUserPresenter);
         return _findUserPresenter.ContentResult;
     }
     // POST api/accounts/username/{username}
     [HttpGet("username/{username}")]
-    public async Task<ActionResult> FindByUserName(string username)
+    public async Task<IActionResult> FindByUserName(string username)
     {
         await _findUserUseCase.Handle(new FindUserRequest(string.Empty, username, string.Empty), _findUserPresenter);
         return _findUserPresenter.ContentResult;
     }
     // POST api/accounts/FindByEmail
     [HttpGet("email/{email}")]
-    public async Task<ActionResult> FindByEmail(string email)
+    public async Task<IActionResult> FindByEmail(string email)
     {
         await _findUserUseCase.Handle(new FindUserRequest(email, string.Empty, string.Empty), _findUserPresenter);
         return _findUserPresenter.ContentResult;
     }
     [HttpGet("lock/{id}")]
-    public async Task<ActionResult> Lock(string id)
+    public async Task<IActionResult> Lock(string id)
     {
         //=> _service.Lock(id);
         LockUserResponse response = await _mediator.Send(new LockUserCommand(id));
         return _mapper.Map<JsonContentResult>(response);
     }
     [HttpGet("unlock/{id}")]
-    public async Task<ActionResult> Unlock(string id)
+    public async Task<IActionResult> Unlock(string id)
     {
         //_service.Unlock(id);
         LockUserResponse response = await _mediator.Send(new UnlockUserCommand(id));
