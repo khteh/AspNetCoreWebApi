@@ -30,6 +30,7 @@ global using System.Threading.Tasks;
 using Elastic.CommonSchema.Serilog;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Security;
 using System.Text.Json;
@@ -230,16 +231,13 @@ try
     identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
     identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();//.AddDefaultUI();
     if (!string.IsNullOrEmpty(builder.Configuration["Cors:Domains"]))
-        builder.Services.AddCors(options =>
-        {
-            options.AddDefaultPolicy(policy =>
+        builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
                               {
                                   policy.WithOrigins(builder.Configuration["Cors:Domains"]!.Split(','))
-                                  .AllowAnyHeader()
-                                  .AllowAnyMethod()
-                                  .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
-                              });
-        });
+                                      .AllowAnyHeader()
+                                      .AllowAnyMethod()
+                                      .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+                              }));
     builder.Services.AddControllersWithViews();
     builder.Services.AddOpenApi("AspNetCoreWebApi"); // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi
     builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
@@ -262,23 +260,25 @@ try
     builder.Services.AddGrpc();
     builder.Services.AddGrpcReflection();
     builder.Services.AddSignalR();
-    // Change to use Name as the user identifier for SignalR
-    // WARNING: This requires that the source of your JWT token 
-    // ensures that the Name claim is unique!
-    // If the Name claim isn't unique, users could receive messages 
-    // intended for a different user!
+    /* Change to use Name as the user identifier for SignalR
+       WARNING: This requires that the source of your JWT token 
+       ensures that the Name claim is unique!
+       If the Name claim isn't unique, users could receive messages 
+       intended for a different user!
+    */
     builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
     builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
     // Change to use email as the user identifier for SignalR
     // builder.Services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
     builder.Services.ConfigureApplicationCookie(o =>
     {
-        // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm?view=aspnetcore-7.0&tabs=visual-studio#change-email-and-activity-timeout
+        // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm
         o.ExpireTimeSpan = TimeSpan.FromHours(1); // The default inactivity timeout is 14 days.
         o.SlidingExpiration = true;
     });
-    // https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output?view=aspnetcore-10.0
     /*
+     *  https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output
+     *  options: https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.outputcaching.outputcacheoptions
         By default, output caching follows these rules:
 
         Only HTTP 200 responses are cached.
@@ -287,9 +287,10 @@ try
         Responses to authenticated requests aren't cached.
         The following code applies all of the default caching rules to all of an app's endpoints:    
     */
-    builder.Services.AddOutputCache(o =>
+    builder.Services.AddOutputCache(option =>
     {
-        o.AddBasePolicy(builder => { builder.Expire(TimeSpan.FromSeconds(10)); builder.Cache(); });
+        option.AddBasePolicy(builder => builder.Tag("tag-all")); // a way to evict all cache entries for all endpoints.
+        option.AddBasePolicy(builder => builder.AddPolicy<OutputCachePolicy>().Cache(), true);
     });
     // WARNING: use *either* the NameUserIdProvider *or* the 
     // EmailBasedUserIdProvider, but do not use both. 
@@ -379,7 +380,7 @@ try
     app.UseRouting();
     app.UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true }); // Must be added between UseRouting and UseEndpoints
     app.UseCors(); // UseCors must be called before UseResponseCaching, after UseRouting, but before UseAuthorization
-    app.UseOutputCache(); // UseOutputCache must be called after UseCors.
+    app.UseOutputCache(); // UseOutputCache must be called after UseCors an after UseRouting.
     app.UseResponseCaching();
     app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
     app.UseAuthorization();
