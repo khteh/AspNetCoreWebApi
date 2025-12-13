@@ -238,7 +238,24 @@ try
                                       .AllowAnyMethod()
                                       .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
                               }));
-    builder.Services.AddControllersWithViews();
+    builder.Services.AddControllersWithViews().ConfigureApiBehaviorOptions(options =>
+    {
+        // https://learn.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-10.0
+        // To preserve the default behavior, capture the original delegate to call later.
+        var builtInFactory = options.InvalidModelStateResponseFactory;
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            // Perform logging here.
+            logger.LogError($"ModelState: {context.ModelState}");
+
+            // Invoke the default behavior, which produces a ValidationProblemDetails
+            // response.
+            // To produce a custom response, return a different implementation of 
+            // IActionResult instead.
+            return builtInFactory(context);
+        };
+    });
     builder.Services.AddOpenApi("AspNetCoreWebApi"); // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi
     builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
     //.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter())); Fixed in .Net Core 5
