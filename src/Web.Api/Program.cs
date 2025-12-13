@@ -289,8 +289,8 @@ try
     */
     builder.Services.AddOutputCache(option =>
     {
-        option.AddBasePolicy(builder => builder.Tag("tag-all")); // a way to evict all cache entries for all endpoints.
-        option.AddBasePolicy(builder => builder.AddPolicy<OutputCachePolicy>().Cache(), true);
+        option.AddBasePolicy(builder => builder.Tag("tag-all").Cache()); // a way to evict all cache entries for all endpoints.
+        option.AddBasePolicy(builder => builder.AddPolicy<OutputCachePolicy>().Cache(), false);
     });
     // WARNING: use *either* the NameUserIdProvider *or* the 
     // EmailBasedUserIdProvider, but do not use both. 

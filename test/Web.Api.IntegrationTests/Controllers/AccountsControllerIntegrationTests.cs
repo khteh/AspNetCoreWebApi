@@ -1,5 +1,6 @@
 ﻿using Microsoft.Net.Http.Headers;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -90,45 +91,45 @@ public class AccountsControllerIntegrationTests
     public async Task CanFindById()
     {
         DateTimeOffset dt = DateTimeOffset.UtcNow;
-        // _client.DefaultRequestHeaders.Add(HeaderNames.IfModifiedSince, dt.ToString()); https://github.com/dotnet/aspnetcore/issues/64762
+        _client.DefaultRequestHeaders.Add(HeaderNames.IfModifiedSince, dt.ToString("R", CultureInfo.InvariantCulture));
         var httpResponse = await _client.GetAsync("/api/accounts/id/41532945-599e-4910-9599-0e7402017fbe", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
         var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.True((bool)result["success"]);
         string id = (string)result["id"];
         Assert.False(string.IsNullOrEmpty(id));
         Assert.Equal("41532945-599e-4910-9599-0e7402017fbe", id);
-        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
-        /*
         httpResponse = await _client.GetAsync("/api/accounts/id/41532945-599e-4910-9599-0e7402017fbe", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        // This can only be tested once since _client is shared.
+        Assert.Equal(HttpStatusCode.NotModified, httpResponse.StatusCode);
         stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        result = JsonNode.Parse(stringResponse);
-        */
+        Assert.Empty(stringResponse);
     }
     [Fact]
     public async Task CanFindByUsername()
     {
         var httpResponse = await _client.GetAsync("/api/accounts/username/testuser", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
         var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.True((bool)result["success"]);
         string id = (string)result["id"];
         Assert.False(string.IsNullOrEmpty(id));
         Assert.Equal("41532945-599e-4910-9599-0e7402017fbe", id);
-        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
     }
     [Fact]
     public async Task CanFindByEmail()
     {
         //var httpResponse = await _client.GetAsync(WebUtility.UrlEncode("/api/accounts/email/testuser@email.com")); // UserManager is NOT case sensitive!
         var httpResponse = await _client.GetAsync("/api/accounts/email/testuser@email.com", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
         var stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.True((bool)result["success"]);
         string id = (string)result["id"];
         Assert.False(string.IsNullOrEmpty(id));
         Assert.Equal("41532945-599e-4910-9599-0e7402017fbe", id);
-        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
     }
     [Fact]
     public async Task CanChangePasswordWithValidAccountDetails()
