@@ -279,6 +279,8 @@ try
     /*
      *  https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output
      *  options: https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.outputcaching.outputcacheoptions
+        builder: https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.outputcaching.outputcachepolicybuilder
+        
         By default, output caching follows these rules:
 
         Only HTTP 200 responses are cached.
@@ -290,7 +292,10 @@ try
     builder.Services.AddOutputCache(option =>
     {
         option.AddBasePolicy(builder => builder.Tag("tag-all").Cache()); // a way to evict all cache entries for all endpoints.
-        option.AddBasePolicy(builder => builder.AddPolicy<OutputCachePolicy>().Cache(), false);
+        option.AddBasePolicy(builder => builder.AddPolicy<OutputCachePolicy>().Cache(), false); // Enables caching for the current request if not already enabled.
+        option.AddPolicy("Query", builder => builder.SetVaryByQuery("culture"));
+        option.AddPolicy("NoCache", builder => builder.NoCache());
+        option.AddPolicy("NoLock", builder => builder.SetLocking(false));
     });
     // WARNING: use *either* the NameUserIdProvider *or* the 
     // EmailBasedUserIdProvider, but do not use both. 
