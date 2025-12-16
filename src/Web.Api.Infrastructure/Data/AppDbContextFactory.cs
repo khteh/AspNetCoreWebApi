@@ -1,13 +1,10 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System;
-using System.Configuration;
 using System.IO;
 using Web.Api.Infrastructure.Email;
 using Web.Api.Infrastructure.Identity;
