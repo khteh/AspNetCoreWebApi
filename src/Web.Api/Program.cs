@@ -46,6 +46,7 @@ using Web.Api.Infrastructure;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Mapping;
+using Web.Api.Infrastructure.Email;
 using Web.Api.Infrastructure.Helpers;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.Models.Logging;
@@ -57,7 +58,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateBootstrapLogger();
 try
 {
-    var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationOptions
     {
         ApplicationName = typeof(Program).Assembly.GetName().Name,
         ContentRootPath = Path.GetFullPath(Directory.GetCurrentDirectory()),
@@ -221,8 +222,6 @@ try
         o.Tokens.ProviderMap.Add("IAMEmailConfirmation", new TokenProviderDescriptor(typeof(CustomEmailConfirmationTokenProvider<AppUser>)));
         o.Tokens.EmailConfirmationTokenProvider = "IAMEmailConfirmation";
     });
-
-    builder.Services.AddTransient<CustomEmailConfirmationTokenProvider<AppUser>>();
     var emailSettings = builder.Configuration.GetSection(nameof(EmailSettings));
     builder.Services.Configure<EmailSettings>(emailSettings);
     builder.Services.AddTransient<IEmailSender, EmailSender>();
@@ -358,18 +357,8 @@ try
         builder.Services.AddAllElasticApm();
     var app = builder.Build();
     // dump the snapshot differences - https://github.com/dotnet/efcore/issues/35285
-    using (var scope = app.Services.CreateScope())
-        try
-        {
-            var scopedServices = scope.ServiceProvider;
-            var init = scopedServices.GetRequiredService<DbInitializer>();
-            init.DumpPendingChanges();
-        }
-        catch (Exception ex)
-        {
-            Log.Fatal($"{nameof(Program)} exception! {ex}");
-            throw;
-        }
+    DbInitializer init = app.Services.GetRequiredService<DbInitializer>();
+    init.DumpPendingChanges();
     app.UseSerilogRequestLogging();
     app.UseSerilogMemoryUsageExact();
     // Configure the HTTP request pipeline.

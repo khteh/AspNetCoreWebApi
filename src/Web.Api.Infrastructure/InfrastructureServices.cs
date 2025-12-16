@@ -14,6 +14,7 @@ using Web.Api.Infrastructure;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
+using Web.Api.Infrastructure.Email;
 using Web.Api.Infrastructure.Identity;
 using Web.Api.Infrastructure.Interfaces;
 namespace Microsoft.Extensions.DependencyInjection;
@@ -50,7 +51,8 @@ public static class InfrastructureServices
                 options.LogTo(Console.WriteLine);
             }
         });
-        service.AddScoped<DbInitializer>(); // https://github.com/dotnet/efcore/issues/35285
+        service.AddTransient<DbInitializer>(); // https://github.com/dotnet/efcore/issues/35285
+        service.AddTransient<CustomEmailConfirmationTokenProvider<AppUser>>();
         //if (!isIntegrationTest && env.IsProduction() && Assembly.GetEntryAssembly().GetName().Name.Equals("GetDocument.Insider")) // XXX: Temporary fix until https://github.com/dotnet/aspnetcore/issues/54698 is fixed
         if (!isIntegrationTest && env.IsProduction()) // XXX: Temporary fix until https://github.com/dotnet/aspnetcore/issues/54698 is fixed
         {

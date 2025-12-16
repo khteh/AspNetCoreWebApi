@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-
-namespace Web.Api.Helpers;
-public class CustomEmailConfirmationTokenProvider<TUser>
-                              :  DataProtectorTokenProvider<TUser> where TUser : class
+using System;
+namespace Web.Api.Infrastructure.Email;
+public class CustomEmailConfirmationTokenProvider<TUser> :  DataProtectorTokenProvider<TUser> where TUser : class
 {
     public CustomEmailConfirmationTokenProvider(
         IDataProtectionProvider dataProtectionProvider,
