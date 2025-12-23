@@ -356,9 +356,6 @@ try
     if (!string.IsNullOrEmpty(env.EnvironmentName) && string.Equals(env.EnvironmentName, "Production"))
         builder.Services.AddAllElasticApm();
     var app = builder.Build();
-    // dump the snapshot differences - https://github.com/dotnet/efcore/issues/35285
-    DbInitializer init = app.Services.GetRequiredService<DbInitializer>();
-    init.DumpPendingChanges();
     app.UseSerilogRequestLogging();
     app.UseSerilogMemoryUsageExact();
     // Configure the HTTP request pipeline.
