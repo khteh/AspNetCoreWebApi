@@ -69,12 +69,12 @@ public static class InfrastructureServices
                  ConnectionMultiplexer.Connect(new ConfigurationOptions
                  {
                      EndPoints = { configuration["RedisCache:Connection"] },
-                     AbortOnConnectFail = false,
+                     AbortOnConnectFail = false // https://github.com/dotnet/aspnetcore/issues/64721
                  }));
             var redis = ConnectionMultiplexer.Connect(new ConfigurationOptions
             {
                 EndPoints = { configuration["RedisCache:Connection"] },
-                AbortOnConnectFail = false,
+                AbortOnConnectFail = false // https://github.com/dotnet/aspnetcore/issues/64721
             });
             service.AddDataProtection().PersistKeysToStackExchangeRedis(redis, "AspNetCoreWebApi");
         }
