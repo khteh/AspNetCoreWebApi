@@ -27,7 +27,7 @@ public class CacheRepository : ICacheRepository
     /// <param name="expiry"></param>
     /// <param name="token"></param>
     /// <returns>The object of type T</returns>
-    public async Task<T> GetOrCreate<T>(string key, Func<CancellationToken, ValueTask<T>> factory, List<string> tags, TimeSpan expiry, CancellationToken token = default)
+    public async Task<T?> GetOrCreate<T>(string key, Func<CancellationToken, ValueTask<T>> factory, List<string> tags, TimeSpan expiry, CancellationToken token = default)
     {
         if (!string.IsNullOrEmpty(key))
         {
@@ -53,7 +53,7 @@ public class CacheRepository : ICacheRepository
         }
         else
             _logger.LogError($"{nameof(GetOrCreate)} Cannot add cache entry with empty key!");
-        return false;
+        return default;
     }
 
     public async Task<bool> Remove(List<string> keys, CancellationToken token = default)
