@@ -30,6 +30,7 @@ global using System.Threading.Tasks;
 using Elastic.CommonSchema.Serilog;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Security;
@@ -221,6 +222,16 @@ try
         o.Password.RequiredLength = 6;
         o.Tokens.ProviderMap.Add("IAMEmailConfirmation", new TokenProviderDescriptor(typeof(CustomEmailConfirmationTokenProvider<AppUser>)));
         o.Tokens.EmailConfirmationTokenProvider = "IAMEmailConfirmation";
+    });
+    builder.Services.AddHybridCache(options =>
+    {
+        options.MaximumPayloadBytes = 100 * 1024 * 1024;
+        options.MaximumKeyLength = 1024;
+        options.DefaultEntryOptions = new HybridCacheEntryOptions
+        {
+            Expiration = TimeSpan.FromMinutes(5),
+            LocalCacheExpiration = TimeSpan.FromMinutes(5)
+        };
     });
     var emailSettings = builder.Configuration.GetSection(nameof(EmailSettings));
     builder.Services.Configure<EmailSettings>(emailSettings);

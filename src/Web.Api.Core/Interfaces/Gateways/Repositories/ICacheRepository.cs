@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Web.Api.Core.Interfaces.Gateways.Repositories;
 
 public interface ICacheRepository
 {
-    Task<bool> AddOrUpdate<T>(string key, T value, TimeSpan expiry);
-    Task<T?> GetAsync<T>(string key);
+    Task<bool> AddOrCreate<T>(string key, T value, List<string> tags, TimeSpan expiry, CancellationToken token = default);
+    Task<bool> Remove(List<string> keys, CancellationToken token = default);
+    Task<bool> RemoveByTags(List<string> keys, CancellationToken token = default);
 }

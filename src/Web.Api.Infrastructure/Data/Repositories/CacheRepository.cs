@@ -1,8 +1,12 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Web.Api.Core.Interfaces.Gateways.Repositories;
 namespace Web.Api.Infrastructure.Data.Repositories;
@@ -11,48 +15,72 @@ public class CacheRepository : ICacheRepository
 {
     //private readonly IMapper _mapper;
     private readonly ILogger<CacheRepository> _logger;
-    private readonly IDistributedCache _cache;
-    public CacheRepository(ILogger<CacheRepository> logger, IDistributedCache cache) => (_logger, _cache) = (logger, cache);
+    private readonly HybridCache _cache;
+    public CacheRepository(ILogger<CacheRepository> logger, HybridCache cache) => (_logger, _cache) = (logger, cache);
 
-    public async Task<bool> AddOrUpdate<T>(string key, T value, TimeSpan expiry)
+    public async Task<bool> AddOrCreate<T>(string key, T value, List<string> tags, TimeSpan expiry, CancellationToken token = default)
     {
         if (!string.IsNullOrEmpty(key))
         {
             try
             {
-                string strValue = JsonSerializer.Serialize(value);
-                byte[] valueBytes = Encoding.UTF8.GetBytes(strValue);
-                var options = new DistributedCacheEntryOptions().SetSlidingExpiration(expiry);
-                await _cache.SetAsync(key, valueBytes, options);
+                var options = new HybridCacheEntryOptions()
+                {
+                    Expiration = expiry,
+                    LocalCacheExpiration = expiry
+                };
+                await _cache.GetOrCreateAsync(
+                    key, // Unique key to the cache entry
+                    async cancel => value,
+                    options,
+                    tags,
+                    cancellationToken: token
+                );
                 return true;
             }
             catch (Exception e)
             {
-                _logger.LogCritical($"{nameof(AddOrUpdate)} Failed to add cache key! {e}");
+                _logger.LogCritical($"{nameof(AddOrCreate)} Failed to add cache key! {e}");
             }
         }
         else
-            _logger.LogError($"{nameof(AddOrUpdate)} Cannot add cache entry with empty key!");
+            _logger.LogError($"{nameof(AddOrCreate)} Cannot add cache entry with empty key!");
         return false;
     }
 
-    public async Task<T?> GetAsync<T>(string key)
+    public async Task<bool> Remove(List<string> keys, CancellationToken token = default)
     {
-        if (!string.IsNullOrEmpty(key))
+        if (keys != null && keys.Any())
         {
             try
             {
-                byte[]? cacheValue = await _cache.GetAsync(key);
-                if (cacheValue == null) return default(T);
-                return JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(cacheValue));
+                await _cache.RemoveAsync(keys);
             }
             catch (Exception e)
             {
-                _logger.LogCritical($"{nameof(GetAsync)} Failed to retrieve cache key! {e}");
+                _logger.LogCritical($"{nameof(Remove)} Failed to add cache key! {e}");
             }
         }
         else
-            _logger.LogError($"{nameof(GetAsync)} Cannot retrieve cache entry with empty key!");
-        return default(T);
+            _logger.LogError($"{nameof(Remove)} Cannot add cache entry with empty key!");
+        return false;
+    }
+    public async Task<bool> RemoveByTags(List<string> tags, CancellationToken token = default)
+    {
+        if (tags != null && tags.Any())
+        {
+            try
+            {
+                await _cache.RemoveByTagAsync(tags);
+            }
+            catch (Exception e)
+            {
+                _logger.LogCritical($"{nameof(RemoveByTags)} Failed to add cache key! {e}");
+            }
+        }
+        else
+            _logger.LogError($"{nameof(RemoveByTags)} Cannot add cache entry with empty key!");
+        return false;
+
     }
 }
