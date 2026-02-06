@@ -18,8 +18,11 @@ public class CacheRepository : ICacheRepository
     private readonly HybridCache _cache;
     public CacheRepository(ILogger<CacheRepository> logger, HybridCache cache) => (_logger, _cache) = (logger, cache);
 
-    public async Task<bool> AddOrCreate<T>(string key, T value, List<string> tags, TimeSpan expiry, CancellationToken token = default)
+    public async Task<bool> GetOrCreate<T>(string key, T value, List<string> tags, TimeSpan expiry, CancellationToken token = default)
     {
+        // TODO: Redesign this for GET and SET new cache entry using the HybridCache.GetOrCreateAsync
+        // The challenge is the factory method to get and create the object for the new cache entry in the case of cache miss.
+        // May need to subclass this for different types of objects as the cache values.
         if (!string.IsNullOrEmpty(key))
         {
             try
@@ -40,11 +43,11 @@ public class CacheRepository : ICacheRepository
             }
             catch (Exception e)
             {
-                _logger.LogCritical($"{nameof(AddOrCreate)} Failed to add cache key! {e}");
+                _logger.LogCritical($"{nameof(GetOrCreate)} Failed to add cache key! {e}");
             }
         }
         else
-            _logger.LogError($"{nameof(AddOrCreate)} Cannot add cache entry with empty key!");
+            _logger.LogError($"{nameof(GetOrCreate)} Cannot add cache entry with empty key!");
         return false;
     }
 
