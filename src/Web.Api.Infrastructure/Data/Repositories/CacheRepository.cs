@@ -17,12 +17,18 @@ public class CacheRepository : ICacheRepository
     private readonly ILogger<CacheRepository> _logger;
     private readonly HybridCache _cache;
     public CacheRepository(ILogger<CacheRepository> logger, HybridCache cache) => (_logger, _cache) = (logger, cache);
-
-    public async Task<bool> GetOrCreate<T>(string key, T value, List<string> tags, TimeSpan expiry, CancellationToken token = default)
+    /// <summary>
+    /// Get or create a new cache entry
+    /// </summary>
+    /// <typeparam name="T">The type of the cache value</typeparam>
+    /// <param name="key"></param>
+    /// <param name="factory">Factory method used to create the object for the new cache entry in case of cache miss</param>
+    /// <param name="tags"></param>
+    /// <param name="expiry"></param>
+    /// <param name="token"></param>
+    /// <returns>The object of type T</returns>
+    public async Task<T> GetOrCreate<T>(string key, Func<CancellationToken, ValueTask<T>> factory, List<string> tags, TimeSpan expiry, CancellationToken token = default)
     {
-        // TODO: Redesign this for GET and SET new cache entry using the HybridCache.GetOrCreateAsync
-        // The challenge is the factory method to get and create the object for the new cache entry in the case of cache miss.
-        // May need to subclass this for different types of objects as the cache values.
         if (!string.IsNullOrEmpty(key))
         {
             try
@@ -32,14 +38,13 @@ public class CacheRepository : ICacheRepository
                     Expiration = expiry,
                     LocalCacheExpiration = expiry
                 };
-                await _cache.GetOrCreateAsync(
+                return await _cache.GetOrCreateAsync(
                     key, // Unique key to the cache entry
-                    async cancel => value,
+                    async cancel => await factory(cancel),
                     options,
                     tags,
                     cancellationToken: token
                 );
-                return true;
             }
             catch (Exception e)
             {
