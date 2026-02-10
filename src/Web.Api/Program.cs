@@ -225,6 +225,10 @@ try
     });
     builder.Services.AddHybridCache(options =>
     {
+        /*
+        https://github.com/dotnet/AspNetCore.Docs/issues/36758
+        https://github.com/dotnet/AspNetCore.Docs/issues/36757
+        */
         options.MaximumPayloadBytes = 100 * 1024 * 1024;
         options.MaximumKeyLength = 1024;
         options.DefaultEntryOptions = new HybridCacheEntryOptions

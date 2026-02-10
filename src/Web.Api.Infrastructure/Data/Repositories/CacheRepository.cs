@@ -13,8 +13,11 @@ namespace Web.Api.Infrastructure.Data.Repositories;
 
 public class CacheRepository : ICacheRepository
 {
-    //private readonly IMapper _mapper;
     private readonly ILogger<CacheRepository> _logger;
+    /// <summary>
+    /// https://github.com/dotnet/AspNetCore.Docs/issues/36757
+    /// https://github.com/dotnet/AspNetCore.Docs/issues/36758
+    /// </summary>
     private readonly HybridCache _cache;
     public CacheRepository(ILogger<CacheRepository> logger, HybridCache cache) => (_logger, _cache) = (logger, cache);
     /// <summary>
