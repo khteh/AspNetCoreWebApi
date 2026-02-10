@@ -21,7 +21,10 @@ public class CacheRepository : ICacheRepository
     private readonly HybridCache _cache;
     public CacheRepository(ILogger<CacheRepository> logger, HybridCache cache) => (_logger, _cache) = (logger, cache);
     /// <summary>
-    /// Get or create a new cache entry
+    /// Get or create a new cache entry.
+    /// XXX: There are 2 ways to implement this for different Func:
+    /// (1) Overloading for different input parameters of Func<>
+    /// (2) Subclassing / using different implementations of ICacheRepository for different types of Func<> or, in this case, don't need Func<> at all as the different implementations will have a way to get the data from underlying storage to hydrate the cache
     /// </summary>
     /// <typeparam name="T">The type of the cache value</typeparam>
     /// <param name="key"></param>
