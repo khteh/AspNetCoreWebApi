@@ -25,6 +25,7 @@ public class CacheRepository : ICacheRepository
     /// XXX: There are 2 ways to implement this for different Func:
     /// (1) Overloading for different input parameters of Func<>
     /// (2) Subclassing / using different implementations of ICacheRepository for different types of Func<> or, in this case, don't need Func<> at all as the different implementations will have a way to get the data from underlying storage to hydrate the cache
+    /// (3) A combination of both (1) and (2). For example, one subclass implementation for every I<foo>Repository and GetOrCreate<T> overloading within the subclass implementation for different parameterized filters to obtain the desired data from the Repository based on the use cases.
     /// </summary>
     /// <typeparam name="T">The type of the cache value</typeparam>
     /// <param name="key"></param>
