@@ -426,6 +426,7 @@ try
          * https://www.nuget.org/packages/Serilog.Enrichers.HttpContext : outputTemplate: "[{Timestamp:HH:mm:ss}] {Level:u3} ClientIP: {ClientIp} CorrelationId: {CorrelationId} header-name: {headername} {Message:lj}{NewLine}{Exception}"
          * https://github.com/elastic/ecs-dotnet
          */
+        context.Request.EnableBuffering(); // Note: If controllers or model binding read the body before logging, add middleware at the start of the pipeline to enable buffering:
         RequestLog requestLog = new RequestLog(context.Request.Method,
                                             context.Request.Scheme,
                                             context.Request.Protocol,
