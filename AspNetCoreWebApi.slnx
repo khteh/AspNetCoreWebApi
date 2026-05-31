@@ -1,0 +1,10 @@
+﻿<Solution>
+	<Project Path="src\Web.Api\Web.Api.csproj"/>
+	<Project Path="src\Web.Api.Infrastructure\Web.Api.Infrastructure.csproj"/>
+	<Project Path="src\Web.Api.Core\Web.Api.Core.csproj"/>
+	<Project Path="test\Console\Console.csproj"/>
+	<Project Path="test\Web.Api.Core.UnitTests\Web.Api.Core.UnitTests.csproj"/>
+	<Project Path="test\Web.Api.Infrastructure.UnitTests\Web.Api.Infrastructure.UnitTests.csproj"/>
+	<Project Path="test\Web.Api.IntegrationTests\Web.Api.IntegrationTests.csproj"/>
+	<Project Path="test\Web.Api.UnitTests\Web.Api.UnitTests.csproj"/>	
+</Solution>
