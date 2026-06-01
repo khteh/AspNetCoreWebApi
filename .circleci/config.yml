@@ -106,7 +106,8 @@ jobs:
       - run:
           name: Update Application
           command: |
-            kubectl patch statefulset aspnetcorewebapi --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"'$AWS_ACCOUNT_ID'.dkr.ecr.ap-southeast-1.amazonaws.com/aspnetcorewebapi:'$CIRCLE_BUILD_NUM_DOCKER'"}]'
+            #kubectl patch statefulset aspnetcorewebapi --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"'$AWS_ACCOUNT_ID'.dkr.ecr.ap-southeast-1.amazonaws.com/aspnetcorewebapi:'$CIRCLE_BUILD_NUM_DOCKER'"}]'
+            kubectl set image sts/aspnetcorewebapi aspnetcorewebapi=$AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com/aspnetcorewebapi:$CIRCLE_BUILD_NUM_DOCKER
 workflows:
   main:
     jobs:
