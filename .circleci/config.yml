@@ -131,6 +131,6 @@ workflows:
 #              only: master
 #      - notification:
 #          context: slack-secrets
-#          name: BuyerPortal2.0
+#          name: ASP.NET Core Web API Deployment Notification
 #          requires:
 #            - BuildTestAndDeploy
