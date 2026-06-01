@@ -117,6 +117,20 @@ jobs:
           command: |
             #kubectl patch statefulset aspnetcorewebapi --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"'$AWS_ACCOUNT_ID'.dkr.ecr.ap-southeast-1.amazonaws.com/aspnetcorewebapi:'$CIRCLE_BUILD_NUM_DOCKER'"}]'
             kubectl set image sts/aspnetcorewebapi aspnetcorewebapi=$AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com/aspnetcorewebapi:$CIRCLE_BUILD_NUM_DOCKER
+  notification:
+    docker:
+      - image: "cimg/base:stable"
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS # context / project UI env-var reference
+    steps:
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+
 workflows:
   main:
     jobs:
@@ -127,3 +141,8 @@ workflows:
 #          filters:
 #            branches:
 #              only: master
+#      - notification:
+#          context: slack-secrets
+#          name: BuyerPortal2.0
+#          requires:
+#            - BuildTestAndDeploy
