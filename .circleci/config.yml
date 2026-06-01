@@ -86,32 +86,20 @@ jobs:
           paths:
             - docker-build_number.txt
   deploy-eks:
+    executor: aws-cli/default
     <<: *defaults
-    docker:
-      - image: khteh/ubuntu:latest
     steps:
-      - attach_workspace:
-          at: /tmp
+      - *attach_workspace
       - setup_remote_docker:
           docker_layer_caching: true
+      - aws-cli/setup:
+          profile-name: default
       - run:
           name: Use the saved build number here
           command: |
             echo 'export CIRCLE_BUILD_NUM_DOCKER="$(cat /tmp/docker-build_number.txt)"' >> $BASH_ENV
             . $BASH_ENV
             echo CIRCLE_BUILD_NUM_DOCKER: $CIRCLE_BUILD_NUM_DOCKER
-      - run:
-          name: Set Default AWS Region
-          command: aws configure set default.region $AWS_REGION
-      - run:
-          name: Set AWS Access Key
-          command: aws configure set aws_access_key_id $AWS_ACCESS_KEY
-      - run:
-          name: Set AWS Secret Key
-          command: aws configure set aws_secret_access_key $AWS_SECRET_KEY
-      - run:
-          name: Update Kubectl Configuration with cluster name
-          command: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME
       - run:
           name: Update Application
           command: |
