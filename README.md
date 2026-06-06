@@ -34,7 +34,7 @@ An ASP.NET 10.0 Web API, SignalR and GRPC project using Clean Architecture to qu
 # Visual Studio
 
 - Generate TLS cert and put the `localhost.pfx` into `/tmp`
-- Open the solution file <code>AspNetCoreWebApi.sln</code> and build/run.
+- Open the solution file <code>AspNetCoreWebApi.slnx</code> and build/run.
 
 # Visual Studio Code
 
