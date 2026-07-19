@@ -2,15 +2,17 @@ using StackExchange.Redis;
 using Microsoft.Extensions.Options;
 using Web.Api.Core.Configuration;
 namespace Web.Api.HealthChecks;
+
 public class RedisHealthCheck : IHealthCheck
 {
     private readonly IConnectionMultiplexer _redisCache;
     private readonly RedisCache _config;
-    public RedisHealthCheck(IOptions<RedisCache> config, IConnectionMultiplexer redisCache) => (_config, _redisCache) = (config.Value, redisCache);
+    private readonly ILogger<RedisHealthCheck> _logger;
+    public RedisHealthCheck(IOptions<RedisCache> config, IConnectionMultiplexer redisCache, ILogger<RedisHealthCheck> logger) => (_config, _redisCache, _logger) = (config.Value, redisCache, logger);
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         // Some Liveness check
-        Console.WriteLine($"Redis Health check executed. {_config.Connection}");
+        _logger.LogInformation($"Redis Health check executed. {_config.Connection}");
         try
         {
             foreach (var endPoint in _redisCache.GetEndPoints(configuredOnly: true))
@@ -27,10 +29,16 @@ public class RedisHealthCheck : IHealthCheck
                     if (clusterInfo is object && !clusterInfo.IsNull)
                     {
                         if (!clusterInfo.ToString()!.Contains("cluster_state:ok"))
+                        {
+                            _logger.LogError($"CLUSTER is not healthy for endpoint {endPoint}");
                             return new HealthCheckResult(context.Registration.FailureStatus, description: $"CLUSTER is not is healthy for endpoint {endPoint}");
+                        }
                     }
                     else
+                    {
+                        _logger.LogError($"CLUSTER is unhealthy for endpoint {endPoint}");
                         return new HealthCheckResult(context.Registration.FailureStatus, description: $"CLUSTER unhealthy for endpoint {endPoint}");
+                    }
                 }
             }
             return HealthCheckResult.Healthy();
