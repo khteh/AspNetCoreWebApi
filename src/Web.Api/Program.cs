@@ -240,7 +240,8 @@ try
     var emailSettings = builder.Configuration.GetSection(nameof(EmailSettings));
     builder.Services.Configure<EmailSettings>(emailSettings);
     builder.Services.AddTransient<IEmailSender, EmailSender>();
-    var redisCacheConfig = builder.Configuration.GetSection(nameof(RedisCache));
+    IConfigurationSection redisCacheConfig = builder.Configuration.GetSection(nameof(RedisCache));
+    Log.Information($"RedisCacheConfigSection: {redisCacheConfig.Value}", redisCacheConfig.Value);
     builder.Services.Configure<RedisCache>(redisCacheConfig);
     identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
     identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();//.AddDefaultUI();
