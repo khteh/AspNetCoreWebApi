@@ -51,7 +51,7 @@ public static class InfrastructureServices
         });
         service.AddTransient<CustomEmailConfirmationTokenProvider<AppUser>>();
         //if (!isIntegrationTest && env.IsProduction() && Assembly.GetEntryAssembly().GetName().Name.Equals("GetDocument.Insider")) // XXX: Temporary fix until https://github.com/dotnet/aspnetcore/issues/54698 is fixed
-        if (!isIntegrationTest && env.IsProduction()) // XXX: Temporary fix until https://github.com/dotnet/aspnetcore/issues/54698 is fixed
+        if (!isIntegrationTest && (env.IsProduction() || env.IsStaging())) // XXX: Temporary fix until https://github.com/dotnet/aspnetcore/issues/54698 is fixed
         {
             service.AddStackExchangeRedisCache(options =>
             {
