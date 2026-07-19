@@ -12,7 +12,7 @@ public class RedisHealthCheck : IHealthCheck
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         // Some Liveness check
-        _logger.LogInformation($"Redis Health check executed. {_config.Connection}");
+        _logger.LogInformation($"{nameof(RedisHealthCheck)} Redis Health check executed. {_config.Connection}");
         try
         {
             foreach (var endPoint in _redisCache.GetEndPoints(configuredOnly: true))
@@ -30,13 +30,13 @@ public class RedisHealthCheck : IHealthCheck
                     {
                         if (!clusterInfo.ToString()!.Contains("cluster_state:ok"))
                         {
-                            _logger.LogError($"CLUSTER is not healthy for endpoint {endPoint}");
+                            _logger.LogError($"{nameof(RedisHealthCheck)} CLUSTER is not healthy for endpoint {endPoint}");
                             return new HealthCheckResult(context.Registration.FailureStatus, description: $"CLUSTER is not is healthy for endpoint {endPoint}");
                         }
                     }
                     else
                     {
-                        _logger.LogError($"CLUSTER is unhealthy for endpoint {endPoint}");
+                        _logger.LogError($"{nameof(RedisHealthCheck)} CLUSTER is unhealthy for endpoint {endPoint}");
                         return new HealthCheckResult(context.Registration.FailureStatus, description: $"CLUSTER unhealthy for endpoint {endPoint}");
                     }
                 }
