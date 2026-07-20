@@ -1,39 +1,39 @@
 ﻿@page
-    <div class="container">
-        <div class="row">&nbsp;</div>
-        <div class="row">
-            <div class="col-4">
-                UserName: <input type="text" id="username" />
-            </div>
-            <div class="col-4">
-                Password: <input type="password" id="password" />
-            </div>
-            <div class="col-4">
-                <input type="button" id="loginButton" value="Login" />
-            </div>
+<div class="container">
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-4">
+            UserName: <input type="text" id="username" />
         </div>
-        <div class="row">
-            <div class="col-12">
-                <hr />
-            </div>
+        <div class="col-4">
+            Password: <input type="password" id="password" />
         </div>
-        <div class="row">
-            <div class="col-12">
-                Message........<input type="text" id="messageInput" />
-                <input type="button" id="sendButton" value="Send Message" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <hr />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-6">&nbsp;</div>
-            <div class="col-6">
-                <ul id="messageList"></ul>
-            </div>
+        <div class="col-4">
+            <input type="button" id="loginButton" value="Login" />
         </div>
     </div>
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            Message........<input type="text" id="messageInput" />
+            <input type="button" id="sendButton" value="Send Message" required />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">&nbsp;</div>
+        <div class="col-6">
+            <ul id="messageList"></ul>
+        </div>
+    </div>
+</div>
 <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/chat.js"></script>

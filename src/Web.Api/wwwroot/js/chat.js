@@ -30,20 +30,33 @@ connection.on("ReceiveMessage", function (message) {
 //}).catch(function (err) {
 //    return console.error(err);
 //});
+
+// Wait until the page loads
+document.addEventListener("DOMContentLoaded", function () {
+    let inputElement = document.getElementById("messageInput");
+    // Listen for the keyup event
+    inputElement.addEventListener("keyup", function (event) {
+        // Get the current text typed in the box
+        const currentText = inputElement.value.trim();
+        //console.log(`keyup value: ${currentText}, length: ${currentText.length}`)
+        document.getElementById("sendButton").disabled = currentText.length === 0;
+    });
+});
 document.getElementById("sendButton").addEventListener("click", function (event) {
-    let user = document.getElementById("username").value;
-    let message = document.getElementById("messageInput").value;
+    const user = document.getElementById("username").value;
+    const message = document.getElementById("messageInput").value;
     if (user)
         connection.invoke("ReceiveMessageFromUser", user, message).catch(function (err) { return console.error(err.toString()); });
     else
         connection.invoke("ReceiveMessage", message).catch(function (err) { return console.error(err.toString()); });
+    document.getElementById("messageInput").value = "";
     event.preventDefault();
 });
 document.getElementById("loginButton").addEventListener("click", function (event) {
-    let btn = document.getElementById("loginButton").value;
+    const btn = document.getElementById("loginButton").value;
     if (btn === "Login") {
-        let username = document.getElementById("username").value;
-        let password = document.getElementById("password").value;
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
         if (username && password) {
             $.ajax({
                 url: pathBase + "/api/auth/login",
@@ -59,7 +72,8 @@ document.getElementById("loginButton").addEventListener("click", function (event
                         token = data.accessToken.token;
                         connection.start().then(function (message) {
                             console.log("SignalR connection started successfully!");
-                            document.getElementById("sendButton").disabled = false;
+                            const messageInput = document.getElementById("messageInput").value.trim();
+                            document.getElementById("sendButton").disabled = messageInput.length === 0;
                             document.getElementById("loginButton").value = "Logout";
                         }).catch(function (err) {
                             return console.error("Invalid user! "+username+" "+err);
@@ -76,7 +90,8 @@ document.getElementById("loginButton").addEventListener("click", function (event
         }
     } else if (btn === "Logout") {
         token = null;
-        document.getElementById("sendButton").disabled = true;
+        const messageInput = document.getElementById("messageInput").value.trim();
+        document.getElementById("sendButton").disabled = messageInput.length === 0;
         connection.stop().then(function () {
             document.getElementById("loginButton").value = "Login";
         }).catch(function (err) {
