@@ -371,13 +371,16 @@ try
     });
     if (!string.IsNullOrEmpty(env.EnvironmentName) && string.Equals(env.EnvironmentName, "Production"))
         builder.Services.AddAllElasticApm();
+    builder.Services.AddMcpServer()
+        .WithHttpTransport()   // stateless by default now
+        .WithToolsFromAssembly();
     var app = builder.Build();
     app.UseSerilogRequestLogging();
     app.UseSerilogMemoryUsageExact();
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        app.MapOpenApi();
+        app.MapOpenApi().CacheOutput();
         app.UseDeveloperExceptionPage();
         app.MapGrpcReflectionService();
     }
@@ -466,6 +469,7 @@ try
         }
         await next(context);
     });
+    app.MapMcp();
     app.MapRazorPages();
     app.MapControllers();
     app.MapHub<ChatHub>($"/chatHub", o => o.Transports = HttpTransportType.WebSockets);
