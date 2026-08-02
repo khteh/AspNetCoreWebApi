@@ -469,10 +469,10 @@ try
         }
         await next(context);
     });
-    app.MapMcp();
+    app.MapMcp("/mcp");
     app.MapRazorPages();
     app.MapControllers();
-    app.MapHub<ChatHub>($"/chatHub", o => o.Transports = HttpTransportType.WebSockets);
+    app.MapHub<ChatHub>("/chatHub", o => o.Transports = HttpTransportType.WebSockets);
     app.MapGrpcService<AccountsService>();
     app.MapGrpcService<AuthService>();
     app.MapGrpcService<PingService>();
