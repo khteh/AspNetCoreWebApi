@@ -1,7 +1,10 @@
 ﻿using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
-using System.Numerics;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using Web.Api.Core.Domain;
 namespace Web.Api.MCPServer;
 
 [McpServerToolType]
@@ -28,5 +31,39 @@ public class MCPServerTools
             b = tmp;
         }
         return b;
+    }
+    [McpServerTool]
+    [Description("Retrieves hardware, OS, and environmental system information from the host server.")]
+    public static async Task<SystemInformation> GetSystemInformation()
+    {
+        var process = Process.GetCurrentProcess();
+        return new SystemInformation
+        {
+            OperatingSystem = RuntimeInformation.OSDescription,
+            Architecture = RuntimeInformation.OSArchitecture.ToString(),
+            FrameworkDescription = RuntimeInformation.FrameworkDescription,
+            ProcessorCount = Environment.ProcessorCount,
+            TotalMemoryAllocatedMB = GC.GetTotalMemory(false) / (1024 * 1024),
+            TotalMemoryMB = GC.GetTotalMemory(false) / (1024 * 1024),
+            UptimeSeconds = (DateTime.UtcNow - process.StartTime.ToUniversalTime()).TotalSeconds
+        };
+    }
+    [McpServerTool]
+    [Description("Returns available and total storage space for all ready drives.")]
+    public static async Task<List<DiskDriveInfo>> GetDiskInfo()
+    {
+        var drives = new List<DiskDriveInfo>();
+        foreach (var drive in DriveInfo.GetDrives())
+            if (drive.IsReady)
+            {
+                drives.Add(new DiskDriveInfo
+                {
+                    DriveName = drive.Name,
+                    DriveType = drive.DriveType.ToString(),
+                    TotalSizeGB = drive.TotalSize / (1024 * 1024 * 1024),
+                    AvailableFreeSpaceGB = drive.AvailableFreeSpace / (1024 * 1024 * 1024)
+                });
+            }
+        return drives;
     }
 }

@@ -15,6 +15,7 @@ using Web.Api.Models.Response;
 using Web.Api.Presenters;
 using Web.Api.MCPServer;
 using Xunit;
+using Web.Api.Core.Domain;
 namespace Web.Api.UnitTests.MCPServerTools;
 
 public class MCPServerToolsTests
@@ -76,5 +77,33 @@ public class MCPServerToolsTests
         BigInteger result = await MCPServer.MCPServerTools.Fibonacci(mcpServer.Object, requestContext, 25);
         // assert
         Assert.Equal(75025, result);
+    }
+    [Fact]
+    public static async Task GetSystemInformationTest()
+    {
+        // act
+        SystemInformation result = await MCPServer.MCPServerTools.GetSystemInformation();
+        // assert
+        Assert.NotNull(result);
+        Assert.False(string.IsNullOrEmpty(result.OperatingSystem));
+        Assert.False(string.IsNullOrEmpty(result.Architecture));
+        Assert.False(string.IsNullOrEmpty(result.FrameworkDescription));
+        Assert.True(result.ProcessorCount > 0);
+        Assert.True(result.TotalMemoryMB > 0);
+        Assert.True(result.TotalMemoryAllocatedMB > 0);
+        Assert.True(result.UptimeSeconds >= 0);
+    }
+    [Fact]
+    public static async Task GetDiskInfoTest()
+    {
+        // act
+        List<DiskDriveInfo> result = await MCPServer.MCPServerTools.GetDiskInfo();
+        // assert
+        Assert.NotNull(result);
+        Assert.True(result.Count > 0);
+        Assert.DoesNotContain(result, d => string.IsNullOrEmpty(d.DriveName));
+        Assert.DoesNotContain(result, d => string.IsNullOrEmpty(d.DriveType));
+        Assert.True(result.All(d => d.TotalSizeGB >= 0));
+        Assert.True(result.All(d => d.AvailableFreeSpaceGB >= 0));
     }
 }
