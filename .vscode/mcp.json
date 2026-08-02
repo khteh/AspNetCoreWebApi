@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "aspnetcorewebapi": {
+      "type": "http",
+      "url" : "https://10.152.183.134/mcp"
+    }
+  },
+  "sandbox": {
+    "filesystem": {
+      "allowWrite": ["${workspaceFolder}"]
+    },
+    "network": {
+      "allowedDomains": ["api.example.com"]
+    }
+  }
+}
