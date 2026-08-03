@@ -372,7 +372,9 @@ try
     if (!string.IsNullOrEmpty(env.EnvironmentName) && string.Equals(env.EnvironmentName, "Production"))
         builder.Services.AddAllElasticApm();
     builder.Services.AddMcpServer()
-        .WithHttpTransport()   // stateless by default now
+        .WithHttpTransport(o =>         // Stateless is recommended for cloud hosting (e.g., Azure Container Apps)
+                                        // Eliminates the need for sticky sessions/session affinity across instances
+        o.Stateless = true)   // stateless by default now
         .WithToolsFromAssembly();
     var app = builder.Build();
     app.UseSerilogRequestLogging();
