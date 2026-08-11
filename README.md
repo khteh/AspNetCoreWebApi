@@ -42,6 +42,19 @@ An ASP.NET 10.0 Web API, SignalR and GRPC project using Clean Architecture to qu
 - Generate TLS cert and put the `localhost.pfx` into `/tmp`
 - `F5` to start debug session
 
+## Copilot connection to HTTPS MCP server endpoint
+
+- Configure VS Code to ignore strict SSL errors specifically for its background processes:
+  - Open Settings (Ctrl+, or Cmd+,).
+  - Search for Http: Proxy Strict SSL.
+  - Uncheck the box to disable strict SSL verification.
+- Environment variables:
+
+```
+export NODE_OPTIONS="--use-system-ca"
+export NODE_TLS_REJECT_UNAUTHORIZED="0"
+```
+
 ## Unit Testing
 
 - Install .Net Core Test Explorer
