@@ -35,6 +35,7 @@ using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Security;
 using System.Text.Json;
+using ModelContextProtocol.AspNetCore;
 using Web.Api;
 using Web.Api.Behaviours;
 using Web.Api.Commands;
@@ -372,9 +373,13 @@ try
     if (!string.IsNullOrEmpty(env.EnvironmentName) && string.Equals(env.EnvironmentName, "Production"))
         builder.Services.AddAllElasticApm();
     builder.Services.AddMcpServer()
-        .WithHttpTransport(o =>         // Stateless is recommended for cloud hosting (e.g., Azure Container Apps)
-                                        // Eliminates the need for sticky sessions/session affinity across instances
-        o.Stateless = true)   // stateless by default now
+        .WithHttpTransport(o =>
+        {
+            o.Stateless = true;
+            // https://github.com/modelcontextprotocol/csharp-sdk/blob/main/docs/concepts/transports/transports.md
+            // Set SessionMode = HttpServerSessionMode.Stateful explicitly when your server needs stateful sessions for unsolicited notifications, resource subscriptions, or per-client isolation.
+            o.SessionMode = HttpServerSessionMode.Stateless;
+        })   // stateless by default now
         .WithToolsFromAssembly();
     var app = builder.Build();
     app.UseSerilogRequestLogging();
