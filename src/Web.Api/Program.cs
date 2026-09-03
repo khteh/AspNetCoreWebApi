@@ -380,7 +380,8 @@ try
             // Set SessionMode = HttpServerSessionMode.Stateful explicitly when your server needs stateful sessions for unsolicited notifications, resource subscriptions, or per-client isolation.
             o.SessionMode = HttpServerSessionMode.Stateless;
         })   // stateless by default now
-        .WithToolsFromAssembly();
+             //.WithToolsFromAssembly();
+        .WithTools<MCPServerTools>();
     var app = builder.Build();
     app.UseSerilogRequestLogging();
     app.UseSerilogMemoryUsageExact();
