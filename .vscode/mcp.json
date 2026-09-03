@@ -2,7 +2,11 @@
   "servers": {
     "aspnetcorewebapi": {
       "type": "http",
-      "url" : "https://10.152.183.184/mcp"
+      "url" : "https://10.152.183.134/mcp"
+    },
+    "aspnetcorewebapi-localhost": {
+      "type": "http",
+      "url" : "https://localhost:443/mcp"
     }
   },
   "sandbox": {

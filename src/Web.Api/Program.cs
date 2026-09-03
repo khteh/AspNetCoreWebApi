@@ -23,6 +23,7 @@ global using Serilog.Extensions;
 global using System;
 global using System.Collections.Generic;
 global using System.IO;
+global using System.Linq;
 global using System.Net;
 global using System.Text;
 global using System.Threading;
@@ -36,6 +37,7 @@ using System.Reflection;
 using System.Security;
 using System.Text.Json;
 using ModelContextProtocol.AspNetCore;
+using ModelContextProtocol.Server;
 using Web.Api;
 using Web.Api.Behaviours;
 using Web.Api.Commands;
@@ -380,9 +382,7 @@ try
             // https://github.com/modelcontextprotocol/csharp-sdk/blob/main/docs/concepts/transports/transports.md
             // Set SessionMode = HttpServerSessionMode.Stateful explicitly when your server needs stateful sessions for unsolicited notifications, resource subscriptions, or per-client isolation.
             o.SessionMode = HttpServerSessionMode.Stateless;
-        })   // stateless by default now
-             //.WithToolsFromAssembly();
-        .WithTools<MCPServerTools>();
+        }).WithToolsFromAssembly();
     var app = builder.Build();
     app.UseSerilogRequestLogging();
     app.UseSerilogMemoryUsageExact();
@@ -478,6 +478,11 @@ try
         }
         await next(context);
     });
+    // Print registered tool count at startup
+    var toolCount = typeof(Program).Assembly.GetTypes()
+        .SelectMany(t => t.GetMethods())
+        .Count(m => m.GetCustomAttributes(typeof(ModelContextProtocol.Server.McpServerToolAttribute), true).Any());
+    app.Logger.LogInformation($"Starting MCP Server with {toolCount} registered tools.");
     app.MapMcp("/mcp");
     app.MapRazorPages();
     app.MapControllers();
