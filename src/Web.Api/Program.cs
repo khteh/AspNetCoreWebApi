@@ -55,6 +55,7 @@ using Web.Api.Models.Logging;
 using Web.Api.Models.Response;
 using Web.Api.Presenters.Grpc;
 using Web.Api.Services;
+using Web.Api.MCPServer;
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console(new EcsTextFormatter())
     .CreateBootstrapLogger();
