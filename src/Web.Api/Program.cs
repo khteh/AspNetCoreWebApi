@@ -381,7 +381,7 @@ try
             o.Stateless = true;
             // https://github.com/modelcontextprotocol/csharp-sdk/blob/main/docs/concepts/transports/transports.md
             // Set SessionMode = HttpServerSessionMode.Stateful explicitly when your server needs stateful sessions for unsolicited notifications, resource subscriptions, or per-client isolation.
-            o.SessionMode = HttpServerSessionMode.Stateless;
+            //o.SessionMode = HttpServerSessionMode.Stateless;
         }).WithToolsFromAssembly();
     var app = builder.Build();
     app.UseSerilogRequestLogging();
@@ -483,7 +483,7 @@ try
         .SelectMany(t => t.GetMethods())
         .Count(m => m.GetCustomAttributes(typeof(ModelContextProtocol.Server.McpServerToolAttribute), true).Any());
     app.Logger.LogInformation($"Starting MCP Server with {toolCount} registered tools.");
-    app.MapMcp("/mcp");
+    app.MapMcp("/mcp").RequireAuthorization();
     app.MapRazorPages();
     app.MapControllers();
     app.MapHub<ChatHub>("/chatHub", o => o.Transports = HttpTransportType.WebSockets);
