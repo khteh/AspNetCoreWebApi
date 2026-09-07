@@ -380,8 +380,9 @@ try
         {
             o.Stateless = true;
             // https://github.com/modelcontextprotocol/csharp-sdk/blob/main/docs/concepts/transports/transports.md
+            // https://github.com/modelcontextprotocol/csharp-sdk/issues/1785
             // Set SessionMode = HttpServerSessionMode.Stateful explicitly when your server needs stateful sessions for unsolicited notifications, resource subscriptions, or per-client isolation.
-            //o.SessionMode = HttpServerSessionMode.Stateless;
+            o.SessionMode = HttpServerSessionMode.Stateless;
         }).WithToolsFromAssembly();
     var app = builder.Build();
     app.UseSerilogRequestLogging();
