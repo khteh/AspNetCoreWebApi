@@ -484,7 +484,7 @@ try
         .SelectMany(t => t.GetMethods())
         .Count(m => m.GetCustomAttributes(typeof(ModelContextProtocol.Server.McpServerToolAttribute), true).Any());
     app.Logger.LogInformation($"Starting MCP Server with {toolCount} registered tools.");
-    app.MapMcp("/mcp").RequireAuthorization();
+    app.MapMcp("/mcp");
     app.MapRazorPages();
     app.MapControllers();
     app.MapHub<ChatHub>("/chatHub", o => o.Transports = HttpTransportType.WebSockets);
