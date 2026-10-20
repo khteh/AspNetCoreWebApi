@@ -11,6 +11,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="11.0.0-rc.2.26504.105" />
     <Protobuf Include="Protos/*.proto" GrpcServices="Client" />
     <RuntimeHostConfigurationOption Include="System.Net.SocketsHttpHandler.Http3Support" Value="true" />
     <PackageReference Include="coverlet.collector" Version="10.1.0">
@@ -27,7 +28,6 @@
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
-    <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
     <PackageReference Include="xunit.v3" Version="4.0.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0">
       <PrivateAssets>all</PrivateAssets>

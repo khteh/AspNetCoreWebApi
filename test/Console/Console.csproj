@@ -10,6 +10,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="11.0.0-rc.2.26504.105" />
     <Protobuf Include="Protos/*.proto" GrpcServices="Client" />
     <PackageReference Include="Elastic.CommonSchema.Serilog" Version="9.0.0" />
     <PackageReference Include="Elastic.Serilog.Sinks" Version="9.0.0" />
