@@ -208,6 +208,8 @@ try
             policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess);
         });
     });
+    // The automatic CSRF protection is the recommended defense, and most apps no longer need the token-based antiforgery system.
+#if false
     builder.Services.AddAntiforgery(options =>
     {
         // Set Cookie properties using CookieBuilder properties†.
@@ -215,6 +217,7 @@ try
         options.HeaderName = "X-CSRF-TOKEN-HEADERNAME";
         options.SuppressXFrameOptionsHeader = false;
     });
+#endif
     // add identity
     var identityBuilder = builder.Services.AddIdentityCore<AppUser>(o =>
     {
@@ -468,6 +471,8 @@ try
             MaxAge = TimeSpan.FromSeconds(10)
         };
         context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] = new string[] { "Accept-Encoding" };
+        // The automatic CSRF protection is the recommended defense, and most apps no longer need the token-based antiforgery system.
+#if false
         if (string.Equals(context.Request.Path.Value, "/", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(context.Request.Path.Value, "/index.html", StringComparison.OrdinalIgnoreCase))
         {
@@ -477,6 +482,7 @@ try
             var tokens = antiforgery.GetAndStoreTokens(context);
             context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken!, new CookieOptions() { HttpOnly = false, Secure = true });
         }
+#endif
         await next(context);
     });
     // Print registered tool count at startup
