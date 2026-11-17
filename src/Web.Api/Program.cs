@@ -58,6 +58,7 @@ using Web.Api.Models.Response;
 using Web.Api.Presenters.Grpc;
 using Web.Api.Services;
 using Web.Api.MCPServer;
+using System.Security.Claims;
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console(new EcsTextFormatter())
     .CreateBootstrapLogger();
@@ -434,7 +435,7 @@ try
     app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
     app.UseAuthorization();
     app.UseWebSockets();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint($"{pathBase}/openapi/AspNetCoreWebApi.json", "AspNetCoreWebApi V10.0"));
+    app.UseSwaggerUI(c => c.SwaggerEndpoint($"{pathBase}/openapi/AspNetCoreWebApi.json", "AspNetCoreWebApi V11.0"));
     app.Use(async (context, next) =>
     {
         /* Request method, scheme, and path
@@ -493,7 +494,25 @@ try
     app.MapMcp("/mcp").RequireAuthorization();
     app.MapRazorPages();
     app.MapControllers();
-    app.MapHub<ChatHub>("/chatHub", o => o.Transports = HttpTransportType.WebSockets);
+    app.MapHub<ChatHub>("/chatHub", o =>
+    {
+        o.Transports = HttpTransportType.WebSockets;
+        o.EnableAuthenticationRefresh = true;
+        o.CloseOnAuthenticationExpiration = true;
+
+        // Optional: inspect the refreshed identity and decide whether to accept it.
+        o.OnAuthenticationRefresh = context =>
+        {
+            var previousSubject = context.PreviousUser.FindFirstValue("sub")
+                ?? context.PreviousUser.FindFirstValue(ClaimTypes.NameIdentifier);
+            var newSubject = context.NewUser.FindFirstValue("sub")
+                ?? context.NewUser.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            return Task.FromResult(
+                previousSubject is not null &&
+                string.Equals(previousSubject, newSubject, StringComparison.Ordinal));
+        };
+    });
     app.MapGrpcService<AccountsService>();
     app.MapGrpcService<AuthService>();
     app.MapGrpcService<PingService>();
