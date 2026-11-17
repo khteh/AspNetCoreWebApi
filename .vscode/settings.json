@@ -2,6 +2,8 @@
     "explorer.confirmDelete": false,
     "[csharp]": {},
     "window.zoomLevel": -1,
+    "chat.plugins.enabled": true,
+    "chat.plugins.marketplaces": ["dotnet/skills"],    
     "dotnet-test-explorer.autoExpandTree": false,
     "dotnet-test-explorer.autoWatch": false,
     "dotnet-test-explorer.enableTelemetry": false,
