@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MailKit;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -32,13 +33,30 @@ public class EmailHelper : IEmail
                 bodyBuilder.HtmlBody = htmlBody;
                 bodyBuilder.TextBody = textBody;
                 message.Body = bodyBuilder.ToMessageBody();
+                // Wrap the MimeMessage in an SmtpSendRequest
+                SmtpSendRequest request = new SmtpSendRequest(message)
+                {
+                    EnvelopeId = message.MessageId,
+                    DeliveryStatusNotifications = DeliveryStatusNotification.Failure | DeliveryStatusNotification.Delay,
+                    DeliveryStatusNotificationType = DeliveryStatusNotificationType.HeadersOnly
+                };
                 using (SmtpClient client = new SmtpClient())
                 {
                     await client.ConnectAsync(_config.Server, _config.Port, _config.TLS);
                     await client.AuthenticateAsync(_config.UserName, _config.Password);
-                    await client.SendAsync(message);
+                    try
+                    {
+                        // https://mimekit.net/docs/html/Sending-Messages-With-SMTP.htm
+                        SmtpSendResult result = (SmtpSendResult)await client.SendAsync(new SmtpLenientSendRequest(_logger, message));
+                        foreach (MailboxAddress recipient in result.RejectedRecipients)
+                            _logger.LogWarning($"{nameof(SendEmailAsync)} Not delivered to: {recipient}");
+                    }
+                    catch (SmtpCommandException ex) when (ex.ErrorCode == SmtpErrorCode.MessageNotAccepted)
+                    {
+                        // If *none* of the recipients were accepted, an SmtpCommandException is still thrown.
+                        _logger.LogError($"{nameof(SendEmailAsync)} None of the recipients were accepted.");
+                    }
                     await client.DisconnectAsync(true);
-                    _logger.LogInformation($"{nameof(SendEmailAsync)} Successfully sent email to {recipientEmail}");
                 }
             }
             catch (Exception e)
@@ -73,14 +91,31 @@ public class EmailHelper : IEmail
                 bodyBuilder.HtmlBody = email.HtmlBody;
                 bodyBuilder.TextBody = email.TextBody;
                 message.Body = bodyBuilder.ToMessageBody();
+                // Wrap the MimeMessage in an SmtpSendRequest
+                SmtpSendRequest request = new SmtpSendRequest(message)
+                {
+                    EnvelopeId = message.MessageId,
+                    DeliveryStatusNotifications = DeliveryStatusNotification.Failure | DeliveryStatusNotification.Delay,
+                    DeliveryStatusNotificationType = DeliveryStatusNotificationType.HeadersOnly
+                };
                 if (_isProduction)
                     using (SmtpClient client = new SmtpClient())
                     {
                         await client.ConnectAsync(_config.Server, _config.Port, _config.TLS);
                         await client.AuthenticateAsync(_config.UserName, _config.Password);
-                        await client.SendAsync(message);
+                        try
+                        {
+                            // https://mimekit.net/docs/html/Sending-Messages-With-SMTP.htm
+                            SmtpSendResult result = (SmtpSendResult)await client.SendAsync(new SmtpLenientSendRequest(_logger, message));
+                            foreach (MailboxAddress recipient in result.RejectedRecipients)
+                                _logger.LogWarning($"{nameof(SendEmailAsync)} Not delivered to: {recipient}");
+                        }
+                        catch (SmtpCommandException ex) when (ex.ErrorCode == SmtpErrorCode.MessageNotAccepted)
+                        {
+                            // If *none* of the recipients were accepted, an SmtpCommandException is still thrown.
+                            _logger.LogError($"{nameof(SendEmailAsync)} None of the recipients were accepted.");
+                        }
                         await client.DisconnectAsync(true);
-                        _logger.LogInformation($"{nameof(SendEmailAsync)} Successfully sent email to {email.Recipient}");
                     }
                 return true;
             }

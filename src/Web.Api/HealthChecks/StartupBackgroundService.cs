@@ -3,7 +3,7 @@ namespace Web.Api.HealthChecks;
 internal class StartupBackgroundService : BackgroundService
 {
     //private readonly int _delaySeconds = 10;
-    private readonly ILogger _logger;
+    private readonly ILogger<StartupBackgroundService> _logger;
     private readonly ReadinessHealthCheck _healthCheck;
     public StartupBackgroundService(ILogger<StartupBackgroundService> logger,
             ReadinessHealthCheck healthCheck)
