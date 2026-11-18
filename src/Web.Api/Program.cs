@@ -134,10 +134,10 @@ try
     // Register the ConfigurationBuilder instance of AuthSettings
     IConfigurationSection authSettings = builder.Configuration.GetSection(nameof(AuthSettings));
     builder.Services.Configure<AuthSettings>(authSettings);
-    var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings[nameof(AuthSettings.SecretKey)]));
+    SymmetricSecurityKey? signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings[nameof(AuthSettings.SecretKey)]));
     // jwt wire up
     // Get options from app settings
-    var jwtAppSettingOptions = builder.Configuration.GetSection(nameof(JwtIssuerOptions));
+    IConfigurationSection? jwtAppSettingOptions = builder.Configuration.GetSection(nameof(JwtIssuerOptions));
     builder.Services.Configure<JwtIssuerOptions>(jwtAppSettingOptions);
     // Configure JwtIssuerOptions
     builder.Services.Configure<JwtIssuerOptions>(options =>
@@ -497,17 +497,15 @@ try
     app.MapHub<ChatHub>("/chatHub", o =>
     {
         o.Transports = HttpTransportType.WebSockets;
+        // https://learn.microsoft.com/en-gb/aspnet/core/signalr/authn-and-authz?view=aspnetcore-11.0#authentication-refresh
         o.EnableAuthenticationRefresh = true;
         o.CloseOnAuthenticationExpiration = true;
 
         // Optional: inspect the refreshed identity and decide whether to accept it.
         o.OnAuthenticationRefresh = context =>
         {
-            var previousSubject = context.PreviousUser.FindFirstValue("sub")
-                ?? context.PreviousUser.FindFirstValue(ClaimTypes.NameIdentifier);
-            var newSubject = context.NewUser.FindFirstValue("sub")
-                ?? context.NewUser.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            string? previousSubject = context.PreviousUser.FindFirstValue("sub") ?? context.PreviousUser.FindFirstValue(ClaimTypes.NameIdentifier);
+            string? newSubject = context.NewUser.FindFirstValue("sub") ?? context.NewUser.FindFirstValue(ClaimTypes.NameIdentifier);
             return Task.FromResult(
                 previousSubject is not null &&
                 string.Equals(previousSubject, newSubject, StringComparison.Ordinal));
