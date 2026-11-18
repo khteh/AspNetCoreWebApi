@@ -33,7 +33,7 @@ jobs:
       - checkout:
           method: full
       - run: dotnet restore
-      - run: dotnet build -c Release --no-restore /p:Version=10.0 --version-suffix $CIRCLE_BUILD_NUM
+      - run: dotnet build -c Release --no-restore /p:Version=11.0 --version-suffix $CIRCLE_BUILD_NUM
       - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.Core.UnitTests/Web.Api.Core.UnitTests.csproj
       - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.UnitTests/Web.Api.UnitTests.csproj
       - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.Infrastructure.UnitTests/Web.Api.Infrastructure.UnitTests.csproj
@@ -61,7 +61,7 @@ jobs:
       - run:
           name: Extract FileVersion from published binary
           command: |
-            exiftool src/Web.Api/bin/Release/net10.0/publish/Web.Api.dll | grep "File Version" | awk -F":" '{ print $2 }' | xargs echo -n > version.txt
+            exiftool src/Web.Api/bin/Release/net11.0/publish/Web.Api.dll | grep "File Version" | awk -F":" '{ print $2 }' | xargs echo -n > version.txt
       - run:
           name: Build docker image
           command: |

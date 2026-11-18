@@ -55,14 +55,22 @@ public class ChatHubTests
                     var url = $"{context.Uri}?access_token={await AccessTokenProvider()}";
                     return await wsClient.ConnectAsync(new Uri(url), cancellationToken);
                 };
+            }).WithAuthenticationRefresh(options =>
+            {
+                // EnableAutoRefresh is true by default.
+                options.RefreshBeforeExpiration = TimeSpan.FromMinutes(1);
             }).Build();
         connection.On<string>("ReceiveMessage", i =>
         {
             echo = i;
             messageReceivedEvent.Set();
         });
+        connection.AuthenticationRefreshed += context => Task.CompletedTask;
+        connection.AuthenticationRefreshFailed += context => Task.CompletedTask;
         await connection.StartAsync(TestContext.Current.CancellationToken);
         Assert.Equal(HubConnectionState.Connected, connection.State);
+        // Refresh immediately after acquiring a token with updated claims.
+        await connection.RefreshAuthenticationAsync(TestContext.Current.CancellationToken);
         await connection.InvokeAsync("ReceiveMessage", message, TestContext.Current.CancellationToken);
         messageReceivedEvent.WaitOne();
         Assert.False(string.IsNullOrEmpty(echo));
@@ -89,6 +97,10 @@ public class ChatHubTests
                     var url = $"{context.Uri}?access_token={await AccessTokenProvider()}";
                     return await wsClient.ConnectAsync(new Uri(url), cancellationToken);
                 };
+            }).WithAuthenticationRefresh(options =>
+            {
+                // EnableAutoRefresh is true by default.
+                options.RefreshBeforeExpiration = TimeSpan.FromMinutes(1);
             }).Build();
         connection.On<string, string>("ReceiveMessageFromUser", (u, i) =>
         {
@@ -96,8 +108,12 @@ public class ChatHubTests
             echo = i;
             messageReceivedEvent.Set();
         });
+        connection.AuthenticationRefreshed += context => Task.CompletedTask;
+        connection.AuthenticationRefreshFailed += context => Task.CompletedTask;
         await connection.StartAsync(TestContext.Current.CancellationToken);
         Assert.Equal(HubConnectionState.Connected, connection.State);
+        // Refresh immediately after acquiring a token with updated claims.
+        await connection.RefreshAuthenticationAsync(TestContext.Current.CancellationToken);
         await connection.InvokeAsync("ReceiveMessageFromUser", sender, message, TestContext.Current.CancellationToken);
         messageReceivedEvent.WaitOne();
         Assert.False(string.IsNullOrEmpty(user));

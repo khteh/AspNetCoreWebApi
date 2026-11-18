@@ -8,6 +8,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+    <OpenApiGenerationEnvironment>Development</OpenApiGenerationEnvironment>
   </PropertyGroup>  
   <ItemGroup>
     <Folder Include="wwwroot\" />
