@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.SignalR;
 namespace Web.Api;
 
+/// <summary>
+/// SignalR user identifier (Context.UserIdentifier, Clients.User(...)) = the JWT "sub" claim (username, issued by JwtFactory).
+/// Reads the claim explicitly so it does not depend on inbound claim mapping (MapInboundClaims = false) or NameClaimType.
+/// </summary>
 public class NameUserIdProvider : IUserIdProvider
 {
-    //Rather than ClaimTypes.Name, you can use any value from the User(such as the Windows SID identifier, etc.).
-    public string? GetUserId(HubConnectionContext connection) => connection.User?.Identity?.Name;
+    public string? GetUserId(HubConnectionContext connection) => connection.User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
 }

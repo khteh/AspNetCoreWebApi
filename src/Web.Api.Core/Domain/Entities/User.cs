@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text.Json.Serialization;
+using Web.Api.Core.Helpers;
 using Web.Api.Core.Shared;
 namespace Web.Api.Core.Domain.Entities;
 
@@ -22,6 +24,7 @@ public class User : BaseEntity
     public string? PhoneNumber { get; set; }
     public Address? Address { get; set; }
     private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
+    [JsonIgnore] // Never serialize refresh tokens (even hashed) into API responses or logs.
     public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
     [SetsRequiredMembers]
     public User()
@@ -42,9 +45,19 @@ public class User : BaseEntity
         Email = email;
         PhoneNumber = phoneNumber;
     }
-    public bool HasValidRefreshToken(string refreshToken) => _refreshTokens.Any(rt => rt.Token == refreshToken && rt.Active);
+    // Refresh tokens are persisted as SHA-256 hashes (RefreshToken.Token holds the hash). Callers always pass the raw token.
+    public bool HasValidRefreshToken(string refreshToken) => _refreshTokens.Any(rt => rt.Active && RefreshTokenHasher.Matches(refreshToken, rt.Token));
     public void AddRefreshToken(string token, string? remoteIpAddress, double daysToExpire = 5) =>
-        _refreshTokens.Add(new RefreshToken(token, DateTimeOffset.UtcNow.AddDays(daysToExpire), Id, remoteIpAddress));
-    public void RemoveRefreshToken(string refreshToken) =>
-        _refreshTokens.Remove(_refreshTokens.First(t => t.Token == refreshToken));
+        _refreshTokens.Add(new RefreshToken(RefreshTokenHasher.Hash(token), DateTimeOffset.UtcNow.AddDays(daysToExpire), Id, remoteIpAddress));
+    public void RemoveRefreshToken(string refreshToken)
+    {
+        RefreshToken? token = _refreshTokens.FirstOrDefault(t => RefreshTokenHasher.Matches(refreshToken, t.Token));
+        if (token != null)
+            _refreshTokens.Remove(token);
+    }
+    /// <summary>
+    /// Revokes every refresh token of this user. Used when a refresh token that is not (or no longer) valid is presented
+    /// together with a genuinely signed access token, which indicates the token may have been stolen and replayed.
+    /// </summary>
+    public void RevokeAllRefreshTokens() => _refreshTokens.Clear();
 }

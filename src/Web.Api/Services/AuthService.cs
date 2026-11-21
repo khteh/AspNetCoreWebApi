@@ -1,10 +1,15 @@
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Web.Api.Core.Interfaces.UseCases;
 using Web.Api.Identity.Auth;
 using Web.Api.Infrastructure.Auth;
+using Web.Api.Helpers;
 using Web.Api.Presenters.Grpc;
 namespace Web.Api.Services;
+[AllowAnonymous] // Login and refresh token exchange are the credential endpoints
+[EnableRateLimiting(RateLimitPolicies.Auth)]
 public class AuthService : Auth.AuthBase
 {
     private readonly ILogger<AuthService> _logger;

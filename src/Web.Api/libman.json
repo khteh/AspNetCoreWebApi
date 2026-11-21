@@ -4,7 +4,7 @@
   "libraries": [
     {
       "provider": "unpkg",
-      "library": "@microsoft/signalr@latest",
+      "library": "@microsoft/signalr@11.0.0",
       "destination": "wwwroot/lib/microsoft/signalr/",
       "files": [
         "dist/browser/signalr.js",

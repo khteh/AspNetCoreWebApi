@@ -81,4 +81,52 @@ public class AuthControllerIntegrationTests
         Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Errors.First().Code);
         Assert.Equal("Invalid credential!", response.Errors.First().Description);
     }
+    private async Task<(string AccessToken, string RefreshToken)> LogIn(string userName)
+    {
+        var httpResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonSerializer.Serialize(new Models.Request.LogInRequest(userName, "P@$$w0rd")), Encoding.UTF8, Application.Json), TestContext.Current.CancellationToken);
+        httpResponse.EnsureSuccessStatusCode();
+        JsonNode result = JsonNode.Parse(await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        return ((string)result["accessToken"]["token"], (string)result["refreshToken"]);
+    }
+    private async Task<(HttpStatusCode Status, Models.Response.ExchangeRefreshTokenResponse Response)> Refresh(string accessToken, string refreshToken)
+    {
+        var httpResponse = await _client.PostAsync("/api/auth/refreshtoken", new StringContent(JsonSerializer.Serialize(new Models.Request.ExchangeRefreshTokenRequest(accessToken, refreshToken)), Encoding.UTF8, Application.Json), TestContext.Current.CancellationToken);
+        string body = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        return (httpResponse.StatusCode, Serialization.JsonSerializer.DeSerializeObject<Models.Response.ExchangeRefreshTokenResponse>(body));
+    }
+    [Fact]
+    public async Task RefreshTokenIsRotatedAndTheNewOneCanBeExchanged()
+    {
+        (string accessToken, string refreshToken0) = await LogIn("testuser");
+
+        (HttpStatusCode status1, Models.Response.ExchangeRefreshTokenResponse response1) = await Refresh(accessToken, refreshToken0);
+        Assert.Equal(HttpStatusCode.OK, status1);
+        Assert.False(string.IsNullOrEmpty(response1.RefreshToken));
+        Assert.NotEqual(refreshToken0, response1.RefreshToken); // a new refresh token is issued on every exchange
+
+        // The returned refresh token must be usable for the next exchange.
+        (HttpStatusCode status2, Models.Response.ExchangeRefreshTokenResponse response2) = await Refresh(response1.AccessToken.Token, response1.RefreshToken);
+        Assert.Equal(HttpStatusCode.OK, status2);
+        Assert.NotNull(response2.AccessToken);
+        Assert.False(string.IsNullOrEmpty(response2.RefreshToken));
+        Assert.NotEqual(response1.RefreshToken, response2.RefreshToken);
+    }
+    [Fact]
+    public async Task ReusedRefreshTokenIsRejectedAndRevokesAllRefreshTokens()
+    {
+        (string accessToken, string refreshToken0) = await LogIn("refreshreuseuser");
+        (HttpStatusCode status1, Models.Response.ExchangeRefreshTokenResponse response1) = await Refresh(accessToken, refreshToken0);
+        Assert.Equal(HttpStatusCode.OK, status1);
+
+        // Replaying the already-exchanged refresh token is rejected...
+        (HttpStatusCode status2, Models.Response.ExchangeRefreshTokenResponse response2) = await Refresh(accessToken, refreshToken0);
+        Assert.Equal(HttpStatusCode.BadRequest, status2);
+        Assert.Null(response2.AccessToken);
+        Assert.NotNull(response2.Errors);
+        Assert.Equal("Invalid refresh token!", response2.Errors.First().Description);
+
+        // ...and revokes every refresh token of the user, including the newest one.
+        (HttpStatusCode status3, _) = await Refresh(response1.AccessToken.Token, response1.RefreshToken);
+        Assert.Equal(HttpStatusCode.BadRequest, status3);
+    }
 }

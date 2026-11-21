@@ -22,6 +22,6 @@ public class GrpcProfile : Profile
                 .ForMember(i => i.UserName, o => o.MapFrom(src => !string.IsNullOrEmpty(src.UserName) ? src.UserName : string.Empty))
                 .ForMember(i => i.Email, o => o.MapFrom(src => !string.IsNullOrEmpty(src.Email) ? src.Email : string.Empty))
                 .ForMember(i => i.PhoneNumber, o => o.MapFrom(src => !string.IsNullOrEmpty(src.PhoneNumber) ? src.PhoneNumber : string.Empty))
-                .ForMember(i => i.RefreshTokens, o => o.MapFrom(src => src.RefreshTokens));
+                .ForMember(i => i.RefreshTokens, o => o.Ignore()); // Never expose refresh tokens (even hashed) through the API.
     }
 }

@@ -60,9 +60,20 @@ export NODE_USE_SYSTEM_CA=1
 
 ## Unit Testing
 
+- 270 test cases and counting!
 - Install .Net Core Test Explorer
 - `echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p`
 - https://github.com/dotnet/aspnetcore/issues/8449
+
+# JWT Signing Key
+
+The HMAC-SHA512 key that signs and validates JWTs (`AuthSettings:SecretKey`) is **not** stored in this repository.
+
+- Development: if no key is configured, a random 64-byte key is generated on first run and kept outside the repository at `~/.local/share/AspNetCoreWebApi/jwt-signing-key` (Linux) or `%LOCALAPPDATA%\AspNetCoreWebApi\jwt-signing-key` (Windows). Delete the file to get a new key. Alternatively: `dotnet user-secrets set "AuthSettings:SecretKey" "<key>"` from `src/Web.Api`.
+- Every other environment: set the environment variable `AuthSettings__SecretKey` (e.g. from a Kubernetes Secret or a vault). Startup fails if it is missing or shorter than 64 bytes.
+- Generate a key: `openssl rand -base64 64 | tr -d '\n'` (Linux) or `[Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(64))` (PowerShell).
+
+Refresh tokens are stored as SHA-256 hashes, are single-use (rotated on every exchange), and presenting an invalid refresh token with a valid access token revokes all of that user's refresh tokens. `/api/auth/login`, `/api/auth/refreshtoken` and the gRPC `Auth` service are rate limited per client IP.
 
 # Swagger Enabled
 

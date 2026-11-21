@@ -42,6 +42,14 @@ public static class SeedData
             if (user != null)
                 dbContext.Users.Remove(user);
         }
+        appUser = await dbIdentityContext.Users.FirstOrDefaultAsync(i => i.UserName.Equals("refreshreuseuser"));
+        if (appUser != null)
+        {
+            User user = await dbContext.Users.FirstOrDefaultAsync(i => i.IdentityId.Equals(appUser.Id));
+            dbIdentityContext.Users.Remove(appUser);
+            if (user != null)
+                dbContext.Users.Remove(user);
+        }
         appUser = await dbIdentityContext.Users.FirstOrDefaultAsync(i => i.UserName.Equals("johndoe"));
         if (appUser != null)
         {
@@ -86,6 +94,23 @@ public static class SeedData
                 LastName = "Me"
             });
 
+        // Dedicated user for the refresh token reuse test, which revokes all of the user's refresh tokens.
+        appUser = await dbIdentityContext.Users.FirstOrDefaultAsync(i => i.UserName.Equals("refreshreuseuser"));
+        if (appUser == null)
+            await dbIdentityContext.Users.AddAsync(new AppUser
+            {
+                Id = "5D3A1B7E-2C4F-4E8A-9B6D-0F1E2A3B4C5D",
+                UserName = "refreshreuseuser",
+                NormalizedUserName = "REFRESHREUSEUSER",
+                Email = "refreshreuse@email.com",
+                NormalizedEmail = "REFRESHREUSE@EMAIL.COM",
+                PasswordHash = "AQAAAAEAACcQAAAAEKof9i25YVCmttE29Fr40Pa4LLOeQeQQQP2NRLv0IGRapPY1pkCbsleOqEHKEtuEtA==",
+                SecurityStamp = "YIJZLWUFIIDD3IZSFDD7OQWG6D4QIYPB",
+                ConcurrencyStamp = "0B1C2D3E-4F5A-4B6C-8D7E-9F0A1B2C3D4E",
+                FirstName = "Refresh",
+                LastName = "Reuse"
+            });
+
         User user = await dbContext.Users.FirstOrDefaultAsync(i => i.IdentityId.Equals("41532945-599e-4910-9599-0e7402017fbe"));
         if (user == null)
         {
@@ -101,6 +126,12 @@ public static class SeedData
             user = new User("Delete", "Me", "7B697F98-AE31-41E7-BE13-20C63314ABF9", "deleteme", string.Empty, string.Empty);
             //user1.Id = 2;
             user.AddRefreshToken("whatever", "127.0.0.1");
+            await dbContext.Users.AddAsync(user);
+        }
+        user = await dbContext.Users.FirstOrDefaultAsync(i => i.IdentityId.Equals("5D3A1B7E-2C4F-4E8A-9B6D-0F1E2A3B4C5D"));
+        if (user == null)
+        {
+            user = new User("Refresh", "Reuse", "5D3A1B7E-2C4F-4E8A-9B6D-0F1E2A3B4C5D", "refreshreuseuser", "refreshreuse@email.com", string.Empty);
             await dbContext.Users.AddAsync(user);
         }
         await dbIdentityContext.SaveChangesAsync();

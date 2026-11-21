@@ -34,7 +34,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 using System.Reflection;
-using System.Security;
 using System.Text.Json;
 using ModelContextProtocol.AspNetCore;
 using ModelContextProtocol.Server;
@@ -59,6 +58,8 @@ using Web.Api.Presenters.Grpc;
 using Web.Api.Services;
 using Web.Api.MCPServer;
 using System.Security.Claims;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console(new EcsTextFormatter())
     .CreateBootstrapLogger();
@@ -132,9 +133,14 @@ try
     // Add framework builder.Services.
     // The following are done in builder.Services.AddInfrastructure()
     // Register the ConfigurationBuilder instance of AuthSettings
+    // JWT signing key: configured value (env var AuthSettings__SecretKey / user secrets / secret store) or, in Development only,
+    // a per-machine generated key stored outside the repository. Startup fails elsewhere if it is missing or shorter than 64 bytes.
+    string jwtSigningKey = JwtSigningKey.GetOrCreate(builder.Configuration, env);
+    // Highest-priority configuration source, so IOptions<AuthSettings>.SecretKey (AuthController, AuthService) sees the same key.
+    builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?> { [JwtSigningKey.ConfigurationKey] = jwtSigningKey });
     IConfigurationSection authSettings = builder.Configuration.GetSection(nameof(AuthSettings));
     builder.Services.Configure<AuthSettings>(authSettings);
-    SymmetricSecurityKey? signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings[nameof(AuthSettings.SecretKey)]));
+    SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey));
     // jwt wire up
     // Get options from app settings
     IConfigurationSection? jwtAppSettingOptions = builder.Configuration.GetSection(nameof(JwtIssuerOptions));
@@ -158,7 +164,10 @@ try
 
         RequireExpirationTime = true,
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+        // Claims keep their JWT names (MapInboundClaims = false below): User.Identity.Name = "sub", roles = "rol".
+        NameClaimType = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub,
+        RoleClaimType = Constants.Strings.JwtClaimIdentifiers.Rol
     };
     builder.Services.AddAuthentication(options =>
     {
@@ -170,6 +179,8 @@ try
         configureOptions.ClaimsIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
         configureOptions.TokenValidationParameters = tokenValidationParameters;
         configureOptions.SaveToken = true;
+        // Do not rename JWT claims to legacy WS-Federation URIs (e.g. sub -> ClaimTypes.NameIdentifier).
+        configureOptions.MapInboundClaims = false;
         configureOptions.Events = new JwtBearerEvents
         {
             OnAuthenticationFailed = context =>
@@ -178,25 +189,17 @@ try
                     context.Response.Headers.Append("Token-Expired", "true");
                 return Task.CompletedTask;
             },
-            // We have to hook the OnMessageReceived event in order to
-            // allow the JWT authentication handler to read the access
-            // token from the query string when a WebSocket or 
-            // Server-Sent Events request comes in.
-            OnMessageReceived = async (context) =>
+            // Browsers cannot set the Authorization header on WebSocket / Server-Sent Events requests, so the SignalR
+            // JavaScript client sends the token as ?access_token=. Accept it only for the hub and only when no
+            // Authorization header is present; negotiate and /chatHub/refresh are plain HTTP and use the header.
+            OnMessageReceived = context =>
             {
-                if (context.Request.Path.StartsWithSegments("/chatHub"))
-                {
-                    string? accessToken = context.Request.Query["access_token"];
-                    if (!string.IsNullOrEmpty(accessToken) && context.Request.Headers.ContainsKey("Authorization"))
-                    {
-                        accessToken = context.Request.Headers["Authorization"];
-                        if (string.IsNullOrEmpty(accessToken))
-                            throw new SecurityException($"Invalid Authorization header value!");
-                        accessToken = accessToken.Split(" ")[1];
-                    }
-                    if (!string.IsNullOrEmpty(accessToken))
-                        context.Token = accessToken;
-                }
+                string? accessToken = context.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    string.IsNullOrEmpty(context.Request.Headers.Authorization) &&
+                    context.HttpContext.Request.Path.StartsWithSegments("/chatHub"))
+                    context.Token = accessToken;
+                return Task.CompletedTask;
             }
         };
     });
@@ -208,6 +211,18 @@ try
             policy.RequireAuthenticatedUser();
             policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess);
         });
+    });
+    builder.Services.AddRateLimiter(options =>
+    {
+        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        options.AddPolicy(RateLimitPolicies.Auth, context => RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = _isIntegrationTests ? 10000 : 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
     });
     // The automatic CSRF protection is the recommended defense, and most apps no longer need the token-based antiforgery system.
 #if false
@@ -434,6 +449,7 @@ try
     app.UseResponseCaching();
     app.UseAuthentication(); // The order in which you register the SignalR and ASP.NET Core authentication middleware matters. Always call UseAuthentication before UseSignalR so that SignalR has a user on the HttpContext.
     app.UseAuthorization();
+    app.UseRateLimiter(); // After UseRouting so [EnableRateLimiting] endpoint metadata is available
     app.UseWebSockets();
     app.UseSwaggerUI(c => c.SwaggerEndpoint($"{pathBase}/openapi/AspNetCoreWebApi.json", "AspNetCoreWebApi V11.0"));
     app.Use(async (context, next) =>
@@ -504,8 +520,8 @@ try
         // Optional: inspect the refreshed identity and decide whether to accept it.
         o.OnAuthenticationRefresh = context =>
         {
-            string? previousSubject = context.PreviousUser.FindFirstValue("sub") ?? context.PreviousUser.FindFirstValue(ClaimTypes.NameIdentifier);
-            string? newSubject = context.NewUser.FindFirstValue("sub") ?? context.NewUser.FindFirstValue(ClaimTypes.NameIdentifier);
+            string? previousSubject = context.PreviousUser.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
+            string? newSubject = context.NewUser.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
             return Task.FromResult(
                 previousSubject is not null &&
                 string.Equals(previousSubject, newSubject, StringComparison.Ordinal));

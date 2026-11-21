@@ -92,36 +92,45 @@ public class UserRepository : EfRepository<User>, IUserRepository
     }
     public async Task<ExchangeRefreshTokenResponse> ExchangeRefreshToken(string accessToken, string refreshToken, string signingKey)
     {
-        ExchangeRefreshTokenResponse response = new ExchangeRefreshTokenResponse(null, null, false);
         try
         {
+            // Signature, issuer and audience are validated; lifetime is not, so an expired access token can be exchanged.
             ClaimsPrincipal? cp = _jwtTokenValidator.GetPrincipalFromToken(accessToken, signingKey);
             // invalid token/signing key was passed and we can't extract user claims
-            if (cp != null)
-            {
-                Claim claim = cp.Claims.First(c => c.Type == "id");
-                User? user = await getUser(await _userManager.FindByIdAsync(claim.Value));
-                if (user != null && user.HasValidRefreshToken(refreshToken))
-                {
-                    AccessToken? jwtToken = await _jwtFactory.GenerateEncodedToken(user.IdentityId, user.UserName);
-                    string newRefreshToken = _tokenFactory.GenerateToken();
-                    user.RemoveRefreshToken(refreshToken); // delete the token we've exchanged
-                    user.AddRefreshToken(newRefreshToken, ""); // add the new one
-                    await Update(user);
-                    response = new ExchangeRefreshTokenResponse(jwtToken, refreshToken, true);
-                }
-                else if (user == null)
-                    return new ExchangeRefreshTokenResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid user!") });
-            }
-            else
+            if (cp == null)
                 return new ExchangeRefreshTokenResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid credential!") });
+            Claim? claim = cp.Claims.FirstOrDefault(c => c.Type == "id");
+            if (claim == null || string.IsNullOrEmpty(claim.Value))
+                return new ExchangeRefreshTokenResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid credential!") });
+            AppUser? appUser = await _userManager.FindByIdAsync(claim.Value);
+            User? user = appUser == null ? null : await getUser(appUser);
+            if (user == null)
+                return new ExchangeRefreshTokenResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid user!") });
+            if (!user.HasValidRefreshToken(refreshToken))
+            {
+                // A genuinely signed access token with an unknown, already-exchanged or expired refresh token:
+                // treat it as possible refresh token theft/replay and revoke every refresh token of this user.
+                _logger.LogWarning($"{nameof(UserRepository)}.{nameof(ExchangeRefreshToken)} Invalid refresh token presented for user {user.IdentityId}. Revoking all refresh tokens.");
+                user.RevokeAllRefreshTokens();
+                await Update(user);
+                return new ExchangeRefreshTokenResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Invalid refresh token!") });
+            }
+            AccessToken? jwtToken = await _jwtFactory.GenerateEncodedToken(user.IdentityId, user.UserName);
+            if (jwtToken == null)
+                return new ExchangeRefreshTokenResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), "Unable to exchange refresh token!") });
+            // Rotate: the presented refresh token is single-use.
+            string newRefreshToken = _tokenFactory.GenerateToken();
+            user.RemoveRefreshToken(refreshToken); // delete the token we've exchanged
+            user.AddRefreshToken(newRefreshToken, ""); // add the new one
+            await Update(user);
+            return new ExchangeRefreshTokenResponse(jwtToken, newRefreshToken, true);
         }
         catch (Exception e)
         {
             _logger.LogCritical($"{nameof(UserRepository)}.{nameof(ExchangeRefreshToken)} Exception! {e.Message}");
-            return new ExchangeRefreshTokenResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), e.Message) });
+            // Do not leak exception details to the (anonymous) caller.
+            return new ExchangeRefreshTokenResponse(null, null, false, new List<Error>() { new Error(HttpStatusCode.InternalServerError.ToString(), "Unable to exchange refresh token!") });
         }
-        return response;
     }
     public async Task<User> FindUserByName(string userName) => await getUser(await _userManager.FindByNameAsync(userName));
     public async Task<FindUserResponse> FindByName(string userName) => await getFindUserResponse(await _userManager.FindByNameAsync(userName));

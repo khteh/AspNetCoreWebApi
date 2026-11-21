@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Web.Api.Commands;
+using Web.Api.Helpers;
 using Web.Api.Infrastructure.Auth;
 using Web.Api.Models.Response;
 using Web.Api.Presenters;
@@ -11,6 +13,7 @@ namespace Web.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[EnableRateLimiting(RateLimitPolicies.Auth)]
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -41,10 +44,11 @@ public class AuthController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[AllowAnonymous] // The refresh token is the credential; the access token may already be expired.
 	public async Task<IActionResult> RefreshToken([FromBody] Models.Request.ExchangeRefreshTokenRequest request)
     {
         if (!ModelState.IsValid) { return BadRequest(ModelState); }
-        ExchangeRefreshTokenResponse response = await _mediator.Send(new ExchangeRefreshTokenCommand(request.AccessToken, request.RefreshToken, _authSettings.SecretKey));
+        ExchangeRefreshTokenResponse response = await _mediator.Send(new ExchangeRefreshTokenCommand(request.AccessToken, request.RefreshToken));
         return _mapper.Map<JsonContentResult>(response);
     }
 }

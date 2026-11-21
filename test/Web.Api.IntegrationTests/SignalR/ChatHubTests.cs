@@ -47,12 +47,13 @@ public class ChatHubTests
             {
                 o.Transports = HttpTransportType.WebSockets;
                 o.AccessTokenProvider = async () => await AccessTokenProvider();
-                o.SkipNegotiation = true;
+                // Negotiation is required for authentication refresh (connection token + token lifetime come from the negotiate response).
                 o.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
                 o.WebSocketFactory = async (context, cancellationToken) =>
                 {
                     var wsClient = _testServer.CreateWebSocketClient();
-                    var url = $"{context.Uri}?access_token={await AccessTokenProvider()}";
+                    string separator = string.IsNullOrEmpty(context.Uri.Query) ? "?" : "&"; // negotiate adds ?id=<connection token>
+                    var url = $"{context.Uri}{separator}access_token={Uri.EscapeDataString(await AccessTokenProvider())}";
                     return await wsClient.ConnectAsync(new Uri(url), cancellationToken);
                 };
             }).WithAuthenticationRefresh(options =>
@@ -89,12 +90,13 @@ public class ChatHubTests
             {
                 o.Transports = HttpTransportType.WebSockets;
                 o.AccessTokenProvider = async () => await AccessTokenProvider();
-                o.SkipNegotiation = true;
+                // Negotiation is required for authentication refresh (connection token + token lifetime come from the negotiate response).
                 o.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
                 o.WebSocketFactory = async (context, cancellationToken) =>
                 {
                     var wsClient = _testServer.CreateWebSocketClient();
-                    var url = $"{context.Uri}?access_token={await AccessTokenProvider()}";
+                    string separator = string.IsNullOrEmpty(context.Uri.Query) ? "?" : "&"; // negotiate adds ?id=<connection token>
+                    var url = $"{context.Uri}{separator}access_token={Uri.EscapeDataString(await AccessTokenProvider())}";
                     return await wsClient.ConnectAsync(new Uri(url), cancellationToken);
                 };
             }).WithAuthenticationRefresh(options =>
