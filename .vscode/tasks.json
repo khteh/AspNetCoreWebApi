@@ -20,6 +20,7 @@
                 "${workspaceFolder}/src/Web.Api/Web.Api.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary",
+                "-p:RefreshLibMan=true",
                 "-tlp:v=d"
             ],
             "problemMatcher": "$msCompile",

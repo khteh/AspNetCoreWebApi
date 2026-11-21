@@ -16,7 +16,18 @@ public sealed class JwtTokenHandler : IJwtTokenHandler
         _jwtSecurityTokenHandler ??= new JwtSecurityTokenHandler();
         _logger = logger;
     }
+    /// <summary>
+    /// JwtFactory calls it to sign and serialize new access tokens at login and at refresh.
+    /// </summary>
+    /// <param name="jwt"></param>
+    /// <returns></returns>
     public string WriteToken(JwtSecurityToken jwt) => _jwtSecurityTokenHandler.WriteToken(jwt);
+    /// <summary>
+    /// Reads the identity out of an expired access token so /api/auth/refreshtoken can issue a new one.
+    /// </summary>
+    /// <param name="token"></param>
+    /// <param name="tokenValidationParameters"></param>
+    /// <returns></returns>
     public ClaimsPrincipal? ValidateToken(string token, TokenValidationParameters tokenValidationParameters)
     {
         try

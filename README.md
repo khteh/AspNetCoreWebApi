@@ -31,6 +31,10 @@ An ASP.NET 11.0 Web API, SignalR and GRPC project using Clean Architecture to qu
 - `npm install @microsoft/signalr`
 - Copy content of `node_modules\@microsoft\signalr\dist\browser` to `wwwroot/lib/signalr`
 
+## JWT login, connect and authenticaion refresh
+
+![SignalR JWT](./signalr-jwt-sequence.jpg?raw=true "SignalR JWT")
+
 # Visual Studio
 
 - Generate TLS cert and put the `localhost.pfx` into `/tmp`

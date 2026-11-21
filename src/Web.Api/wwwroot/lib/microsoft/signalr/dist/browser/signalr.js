@@ -11,16 +11,31 @@
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	// The require scope
-/******/ 	var __webpack_require__ = {};
+/******/ 	const __webpack_require__ = {};
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -47,7 +62,7 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
 /******/ 		__webpack_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			if(Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
@@ -55,32 +70,32 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "AbortError": () => (/* reexport */ AbortError),
-  "DefaultHttpClient": () => (/* reexport */ DefaultHttpClient),
-  "HttpClient": () => (/* reexport */ HttpClient),
-  "HttpError": () => (/* reexport */ HttpError),
-  "HttpResponse": () => (/* reexport */ HttpResponse),
-  "HttpTransportType": () => (/* reexport */ HttpTransportType),
-  "HubConnection": () => (/* reexport */ HubConnection),
-  "HubConnectionBuilder": () => (/* reexport */ HubConnectionBuilder),
-  "HubConnectionState": () => (/* reexport */ HubConnectionState),
-  "JsonHubProtocol": () => (/* reexport */ JsonHubProtocol),
-  "LogLevel": () => (/* reexport */ LogLevel),
-  "MessageType": () => (/* reexport */ MessageType),
-  "NullLogger": () => (/* reexport */ NullLogger),
-  "Subject": () => (/* reexport */ Subject),
-  "TimeoutError": () => (/* reexport */ TimeoutError),
-  "TransferFormat": () => (/* reexport */ TransferFormat),
-  "VERSION": () => (/* reexport */ VERSION)
+  AbortError: () => (/* reexport */ AbortError),
+  DefaultHttpClient: () => (/* reexport */ DefaultHttpClient),
+  HttpClient: () => (/* reexport */ HttpClient),
+  HttpError: () => (/* reexport */ HttpError),
+  HttpResponse: () => (/* reexport */ HttpResponse),
+  HttpTransportType: () => (/* reexport */ HttpTransportType),
+  HubConnection: () => (/* reexport */ HubConnection),
+  HubConnectionBuilder: () => (/* reexport */ HubConnectionBuilder),
+  HubConnectionState: () => (/* reexport */ HubConnectionState),
+  JsonHubProtocol: () => (/* reexport */ JsonHubProtocol),
+  LogLevel: () => (/* reexport */ LogLevel),
+  MessageType: () => (/* reexport */ MessageType),
+  NullLogger: () => (/* reexport */ NullLogger),
+  Subject: () => (/* reexport */ Subject),
+  TimeoutError: () => (/* reexport */ TimeoutError),
+  TransferFormat: () => (/* reexport */ TransferFormat),
+  VERSION: () => (/* reexport */ VERSION)
 });
 
-;// CONCATENATED MODULE: ./src/Errors.ts
+;// ./src/Errors.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 /** Error thrown when an HTTP request fails. */
@@ -215,7 +230,7 @@ class AggregateErrors extends Error {
     }
 }
 
-;// CONCATENATED MODULE: ./src/HttpClient.ts
+;// ./src/HttpClient.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 /** Represents an HTTP response. */
@@ -263,7 +278,7 @@ class HttpClient {
     }
 }
 
-;// CONCATENATED MODULE: ./src/ILogger.ts
+;// ./src/ILogger.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // These values are designed to match the ASP.NET Log Levels since that's the pattern we're emulating here.
@@ -289,7 +304,7 @@ var LogLevel;
     LogLevel[LogLevel["None"] = 6] = "None";
 })(LogLevel || (LogLevel = {}));
 
-;// CONCATENATED MODULE: ./src/Loggers.ts
+;// ./src/Loggers.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 /** A logger that does nothing when log messages are sent to it. */
@@ -303,14 +318,19 @@ class NullLogger {
 /** The singleton instance of the {@link @microsoft/signalr.NullLogger}. */
 NullLogger.instance = new NullLogger();
 
-;// CONCATENATED MODULE: ./src/Utils.ts
+;// ./src/pkg-version.ts
+const VERSION = '11.0.0';
+
+;// ./src/Utils.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 
+
+
 // Version token that will be replaced by the prepack command
 /** The version of the SignalR client. */
-const VERSION = "8.0.0";
+
 /** @private */
 class Arg {
     static isRequired(val, name) {
@@ -377,7 +397,7 @@ function formatArrayBuffer(data) {
         str += `0x${pad}${num.toString(16)} `;
     });
     // Trim of trailing space.
-    return str.substr(0, str.length - 1);
+    return str.substring(0, str.length - 1);
 }
 // Also in signalr-protocol-msgpack/Utils.ts
 /** @private */
@@ -386,6 +406,17 @@ function isArrayBuffer(val) {
         (val instanceof ArrayBuffer ||
             // Sometimes we get an ArrayBuffer that doesn't satisfy instanceof
             (val.constructor && val.constructor.name === "ArrayBuffer"));
+}
+/** @internal */
+function isSuccessStatusCode(statusCode) {
+    return statusCode >= 200 && statusCode < 300;
+}
+/** @internal */
+function getHttpResponseError(response) {
+    const errorMessage = typeof response.content === "string" && response.content
+        ? response.content
+        : response.statusText || "";
+    return new HttpError(errorMessage, response.statusCode);
 }
 /** @private */
 async function sendMessage(logger, transportName, httpClient, url, content, options) {
@@ -401,6 +432,9 @@ async function sendMessage(logger, transportName, httpClient, url, content, opti
         timeout: options.timeout,
         withCredentials: options.withCredentials,
     });
+    if (!isSuccessStatusCode(response.statusCode)) {
+        throw getHttpResponseError(response);
+    }
     logger.log(LogLevel.Trace, `(${transportName} transport) request complete. Response status: ${response.statusCode}.`);
 }
 /** @private */
@@ -491,8 +525,7 @@ function constructUserAgent(version, os, runtime, runtimeVersion) {
     userAgent += ")";
     return userAgent;
 }
-// eslint-disable-next-line spaced-comment
-/*#__PURE__*/ function getOsName() {
+function getOsName() {
     if (Platform.isNode) {
         switch (process.platform) {
             case "win32":
@@ -509,8 +542,7 @@ function constructUserAgent(version, os, runtime, runtimeVersion) {
         return "";
     }
 }
-// eslint-disable-next-line spaced-comment
-/*#__PURE__*/ function getRuntimeVersion() {
+function getRuntimeVersion() {
     if (Platform.isNode) {
         return process.versions.node;
     }
@@ -552,30 +584,9 @@ function getGlobalThis() {
     throw new Error("could not find global");
 }
 
-;// CONCATENATED MODULE: ./src/DynamicImports.browser.ts
+;// ./src/FetchHttpClient.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-/** @private */
-function configureFetch() {
-    return false;
-}
-/** @private */
-function configureAbortController() {
-    return false;
-}
-/** @private */
-function getWS() {
-    throw new Error("Trying to import 'ws' in the browser.");
-}
-/** @private */
-function getEventSource() {
-    throw new Error("Trying to import 'eventsource' in the browser.");
-}
-
-;// CONCATENATED MODULE: ./src/FetchHttpClient.ts
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-
 
 
 
@@ -584,19 +595,37 @@ class FetchHttpClient extends HttpClient {
     constructor(logger) {
         super();
         this._logger = logger;
-        // This is how you do "reference" arguments
-        const fetchObj = { _fetchType: undefined, _jar: undefined };
-        if (configureFetch(fetchObj)) {
-            this._fetchType = fetchObj._fetchType;
-            this._jar = fetchObj._jar;
+        // Node added a fetch implementation to the global scope starting in v18.
+        // We need to add a cookie jar in node to be able to share cookies with WebSocket
+        if (typeof fetch === "undefined" || Platform.isNode) {
+            // In order to ignore the dynamic require in webpack builds we need to do this magic
+            // @ts-ignore: TS doesn't know about these names
+            const requireFunc =  true ? require : 0;
+            // Cookies aren't automatically handled in Node so we need to add a CookieJar to preserve cookies across requests
+            this._jar = new (requireFunc("tough-cookie")).CookieJar();
+            if (typeof fetch === "undefined") {
+                this._fetchType = requireFunc("node-fetch");
+            }
+            else {
+                // Use fetch from Node if available
+                this._fetchType = fetch;
+            }
+            // node-fetch doesn't have a nice API for getting and setting cookies
+            // fetch-cookie will wrap a fetch implementation with a default CookieJar or a provided one
+            this._fetchType = requireFunc("fetch-cookie")(this._fetchType, this._jar);
         }
         else {
             this._fetchType = fetch.bind(getGlobalThis());
         }
-        this._abortControllerType = AbortController;
-        const abortObj = { _abortControllerType: this._abortControllerType };
-        if (configureAbortController(abortObj)) {
-            this._abortControllerType = abortObj._abortControllerType;
+        if (typeof AbortController === "undefined") {
+            // In order to ignore the dynamic require in webpack builds we need to do this magic
+            // @ts-ignore: TS doesn't know about these names
+            const requireFunc =  true ? require : 0;
+            // Node needs EventListener methods on AbortController which our custom polyfill doesn't provide
+            this._abortControllerType = requireFunc("abort-controller");
+        }
+        else {
+            this._abortControllerType = AbortController;
         }
     }
     /** @inheritDoc */
@@ -675,10 +704,6 @@ class FetchHttpClient extends HttpClient {
                 request.abortSignal.onabort = null;
             }
         }
-        if (!response.ok) {
-            const errorMessage = await deserializeContent(response, "text");
-            throw new HttpError(errorMessage || response.statusText, response.status);
-        }
         const content = deserializeContent(response, request.responseType);
         const payload = await content;
         return new HttpResponse(response.status, response.statusText, payload);
@@ -712,7 +737,7 @@ function deserializeContent(response, responseType) {
     return content;
 }
 
-;// CONCATENATED MODULE: ./src/XhrHttpClient.ts
+;// ./src/XhrHttpClient.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -776,12 +801,7 @@ class XhrHttpClient extends HttpClient {
                 if (request.abortSignal) {
                     request.abortSignal.onabort = null;
                 }
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    resolve(new HttpResponse(xhr.status, xhr.statusText, xhr.response || xhr.responseText));
-                }
-                else {
-                    reject(new HttpError(xhr.response || xhr.responseText || xhr.statusText, xhr.status));
-                }
+                resolve(new HttpResponse(xhr.status, xhr.statusText, xhr.response || xhr.responseText));
             };
             xhr.onerror = () => {
                 this._logger.log(LogLevel.Warning, `Error from HTTP request. ${xhr.status}: ${xhr.statusText}.`);
@@ -796,7 +816,7 @@ class XhrHttpClient extends HttpClient {
     }
 }
 
-;// CONCATENATED MODULE: ./src/DefaultHttpClient.ts
+;// ./src/DefaultHttpClient.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -838,7 +858,7 @@ class DefaultHttpClient extends HttpClient {
     }
 }
 
-;// CONCATENATED MODULE: ./src/TextMessageFormat.ts
+;// ./src/TextMessageFormat.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // Not exported from index
@@ -859,7 +879,7 @@ class TextMessageFormat {
 TextMessageFormat.RecordSeparatorCode = 0x1e;
 TextMessageFormat.RecordSeparator = String.fromCharCode(TextMessageFormat.RecordSeparatorCode);
 
-;// CONCATENATED MODULE: ./src/HandshakeProtocol.ts
+;// ./src/HandshakeProtocol.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -911,7 +931,7 @@ class HandshakeProtocol {
     }
 }
 
-;// CONCATENATED MODULE: ./src/IHubProtocol.ts
+;// ./src/IHubProtocol.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 /** Defines the type of a Hub Message. */
@@ -935,7 +955,7 @@ var MessageType;
     MessageType[MessageType["Sequence"] = 9] = "Sequence";
 })(MessageType || (MessageType = {}));
 
-;// CONCATENATED MODULE: ./src/Subject.ts
+;// ./src/Subject.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -969,7 +989,7 @@ class Subject {
     }
 }
 
-;// CONCATENATED MODULE: ./src/MessageBuffer.ts
+;// ./src/MessageBuffer.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -1164,7 +1184,7 @@ class BufferedItem {
     }
 }
 
-;// CONCATENATED MODULE: ./src/HubConnection.ts
+;// ./src/HubConnection.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -1177,6 +1197,8 @@ class BufferedItem {
 const DEFAULT_TIMEOUT_IN_MS = 30 * 1000;
 const DEFAULT_PING_INTERVAL_IN_MS = 15 * 1000;
 const DEFAULT_STATEFUL_RECONNECT_BUFFER_SIZE = 100000;
+const DEFAULT_AUTHENTICATION_REFRESH_BEFORE_EXPIRATION_IN_MS = 5 * 60 * 1000;
+const MAX_AUTHENTICATION_REFRESH_INTERVAL_IN_MS = 2147483647;
 /** Describes the current state of the {@link HubConnection} to the server. */
 var HubConnectionState;
 (function (HubConnectionState) {
@@ -1198,10 +1220,10 @@ class HubConnection {
     // create method that can be used by HubConnectionBuilder. An "internal" constructor would just
     // be stripped away and the '.d.ts' file would have no constructor, which is interpreted as a
     // public parameter-less constructor.
-    static create(connection, logger, protocol, reconnectPolicy, serverTimeoutInMilliseconds, keepAliveIntervalInMilliseconds, statefulReconnectBufferSize) {
-        return new HubConnection(connection, logger, protocol, reconnectPolicy, serverTimeoutInMilliseconds, keepAliveIntervalInMilliseconds, statefulReconnectBufferSize);
+    static create(connection, logger, protocol, reconnectPolicy, serverTimeoutInMilliseconds, keepAliveIntervalInMilliseconds, statefulReconnectBufferSize, authenticationRefreshOptions) {
+        return new HubConnection(connection, logger, protocol, reconnectPolicy, serverTimeoutInMilliseconds, keepAliveIntervalInMilliseconds, statefulReconnectBufferSize, authenticationRefreshOptions);
     }
-    constructor(connection, logger, protocol, reconnectPolicy, serverTimeoutInMilliseconds, keepAliveIntervalInMilliseconds, statefulReconnectBufferSize) {
+    constructor(connection, logger, protocol, reconnectPolicy, serverTimeoutInMilliseconds, keepAliveIntervalInMilliseconds, statefulReconnectBufferSize, authenticationRefreshOptions) {
         this._nextKeepAlive = 0;
         this._freezeEventListener = () => {
             this._logger.log(LogLevel.Warning, "The page is being frozen, this will likely lead to the connection being closed and messages being lost. For more information see the docs at https://learn.microsoft.com/aspnet/core/signalr/javascript-client#bsleep");
@@ -1212,6 +1234,8 @@ class HubConnection {
         this.serverTimeoutInMilliseconds = serverTimeoutInMilliseconds !== null && serverTimeoutInMilliseconds !== void 0 ? serverTimeoutInMilliseconds : DEFAULT_TIMEOUT_IN_MS;
         this.keepAliveIntervalInMilliseconds = keepAliveIntervalInMilliseconds !== null && keepAliveIntervalInMilliseconds !== void 0 ? keepAliveIntervalInMilliseconds : DEFAULT_PING_INTERVAL_IN_MS;
         this._statefulReconnectBufferSize = statefulReconnectBufferSize !== null && statefulReconnectBufferSize !== void 0 ? statefulReconnectBufferSize : DEFAULT_STATEFUL_RECONNECT_BUFFER_SIZE;
+        this._authenticationRefreshOptions = authenticationRefreshOptions;
+        this._validateAuthenticationRefreshOptions();
         this._logger = logger;
         this._protocol = protocol;
         this.connection = connection;
@@ -1224,6 +1248,8 @@ class HubConnection {
         this._closedCallbacks = [];
         this._reconnectingCallbacks = [];
         this._reconnectedCallbacks = [];
+        this._authenticationRefreshedCallbacks = [];
+        this._authenticationRefreshFailedCallbacks = [];
         this._invocationId = 0;
         this._receivedHandshakeResponse = false;
         this._connectionState = HubConnectionState.Disconnected;
@@ -1339,6 +1365,7 @@ class HubConnection {
             if (!this.connection.features.inherentKeepAlive) {
                 await this._sendMessage(this._cachedPingMessage);
             }
+            this._scheduleAuthenticationRefreshIfNeeded();
         }
         catch (e) {
             this._logger.log(LogLevel.Debug, `Hub handshake failed with error '${e}' during start(). Stopping HubConnection.`);
@@ -1358,6 +1385,7 @@ class HubConnection {
         // Capture the start promise before the connection might be restarted in an onclose callback.
         const startPromise = this._startPromise;
         this.connection.features.reconnect = false;
+        this._cleanupAuthenticationRefreshTimer();
         this._stopPromise = this._stopInternal();
         await this._stopPromise;
         try {
@@ -1396,6 +1424,7 @@ class HubConnection {
         }
         this._cleanupTimeout();
         this._cleanupPingTimer();
+        this._cleanupAuthenticationRefreshTimer();
         this._stopDuringStartError = error || new AbortError("The connection was stopped before the hub handshake could complete.");
         // HttpConnection.stop() should not complete until after either HttpConnection.start() fails
         // or the onclose callback is invoked. The onclose callback will transition the HubConnection
@@ -1598,6 +1627,53 @@ class HubConnection {
             this._reconnectedCallbacks.push(callback);
         }
     }
+    /** Registers a handler that will be invoked after authentication refresh completes successfully.
+     *
+     * @param {Function} callback The handler that will be invoked after authentication refresh completes successfully.
+     */
+    onAuthenticationRefreshed(callback) {
+        if (callback) {
+            this._authenticationRefreshedCallbacks.push(callback);
+        }
+    }
+    /** Registers a handler that will be invoked when an authentication refresh attempt fails.
+     *
+     * @param {Function} callback The handler that will be invoked when an authentication refresh attempt fails.
+     */
+    onAuthenticationRefreshFailed(callback) {
+        if (callback) {
+            this._authenticationRefreshFailedCallbacks.push(callback);
+        }
+    }
+    /** Refreshes the authentication state for this connection.
+     *
+     * @returns A Promise that resolves with the new server-reported token lifetime in seconds, or undefined when the server does not report one.
+     */
+    async refreshAuthentication() {
+        if (this._connectionState !== HubConnectionState.Connected) {
+            throw new Error("Cannot refresh authentication when the connection is not active.");
+        }
+        const authenticationRefreshFeature = this.connection.features.authenticationRefresh;
+        if (!authenticationRefreshFeature) {
+            throw new Error("Authentication refresh is only supported with HTTP-based connections.");
+        }
+        let newTokenLifetimeInSeconds;
+        try {
+            newTokenLifetimeInSeconds = await authenticationRefreshFeature.refreshAuthentication();
+        }
+        catch (e) {
+            this._invokeAuthenticationRefreshFailed(e);
+            throw e;
+        }
+        if (this._connectionState === HubConnectionState.Connected &&
+            this.connection.features.authenticationRefresh === authenticationRefreshFeature &&
+            this._isAutoAuthenticationRefreshEnabled() &&
+            isValidAuthenticationTokenLifetime(newTokenLifetimeInSeconds)) {
+            this._scheduleAuthenticationRefresh(newTokenLifetimeInSeconds);
+        }
+        this._invokeAuthenticationRefreshed(newTokenLifetimeInSeconds);
+        return newTokenLifetimeInSeconds;
+    }
     _processIncomingData(data) {
         this._cleanupTimeout();
         if (!this._receivedHandshakeResponse) {
@@ -1615,8 +1691,10 @@ class HubConnection {
                 }
                 switch (message.type) {
                     case MessageType.Invocation:
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                        this._invokeClientMethod(message);
+                        this._invokeClientMethod(message)
+                            .catch((e) => {
+                            this._logger.log(LogLevel.Error, `Invoke client method threw error: ${getErrorString(e)}`);
+                        });
                         break;
                     case MessageType.StreamItem:
                     case MessageType.Completion: {
@@ -1709,23 +1787,24 @@ class HubConnection {
         if (!this.connection.features || !this.connection.features.inherentKeepAlive) {
             // Set the timeout timer
             this._timeoutHandle = setTimeout(() => this.serverTimeout(), this.serverTimeoutInMilliseconds);
+            // Immediately fire Keep-Alive ping if nextPing is overdue to avoid dependency on JS timers
+            let nextPing = this._nextKeepAlive - new Date().getTime();
+            if (nextPing < 0) {
+                if (this._connectionState === HubConnectionState.Connected) {
+                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                    this._trySendPingMessage();
+                }
+                return;
+            }
             // Set keepAlive timer if there isn't one
             if (this._pingServerHandle === undefined) {
-                let nextPing = this._nextKeepAlive - new Date().getTime();
                 if (nextPing < 0) {
                     nextPing = 0;
                 }
                 // The timer needs to be set from a networking callback to avoid Chrome timer throttling from causing timers to run once a minute
                 this._pingServerHandle = setTimeout(async () => {
                     if (this._connectionState === HubConnectionState.Connected) {
-                        try {
-                            await this._sendMessage(this._cachedPingMessage);
-                        }
-                        catch {
-                            // We don't care about the error. It should be seen elsewhere in the client.
-                            // The connection is probably in a bad or closed state now, cleanup the timer so it stops triggering
-                            this._cleanupPingTimer();
-                        }
+                        await this._trySendPingMessage();
                     }
                 }, nextPing);
             }
@@ -1810,6 +1889,7 @@ class HubConnection {
         this._cancelCallbacksWithError(error || new Error("Invocation canceled due to the underlying connection being closed."));
         this._cleanupTimeout();
         this._cleanupPingTimer();
+        this._cleanupAuthenticationRefreshTimer();
         if (this._connectionState === HubConnectionState.Disconnecting) {
             this._completeClose(error);
         }
@@ -1849,7 +1929,7 @@ class HubConnection {
         const reconnectStartTime = Date.now();
         let previousReconnectAttempts = 0;
         let retryError = error !== undefined ? error : new Error("Attempting to reconnect due to a unknown error.");
-        let nextRetryDelay = this._getNextRetryDelay(previousReconnectAttempts++, 0, retryError);
+        let nextRetryDelay = this._getNextRetryDelay(previousReconnectAttempts, 0, retryError);
         if (nextRetryDelay === null) {
             this._logger.log(LogLevel.Debug, "Connection not reconnecting because the IRetryPolicy returned null on the first reconnect attempt.");
             this._completeClose(error);
@@ -1876,7 +1956,7 @@ class HubConnection {
             }
         }
         while (nextRetryDelay !== null) {
-            this._logger.log(LogLevel.Information, `Reconnect attempt number ${previousReconnectAttempts} will start in ${nextRetryDelay} ms.`);
+            this._logger.log(LogLevel.Information, `Reconnect attempt number ${previousReconnectAttempts + 1} will start in ${nextRetryDelay} ms.`);
             await new Promise((resolve) => {
                 this._reconnectDelayHandle = setTimeout(resolve, nextRetryDelay);
             });
@@ -1909,8 +1989,9 @@ class HubConnection {
                     }
                     return;
                 }
+                previousReconnectAttempts++;
                 retryError = e instanceof Error ? e : new Error(e.toString());
-                nextRetryDelay = this._getNextRetryDelay(previousReconnectAttempts++, Date.now() - reconnectStartTime, retryError);
+                nextRetryDelay = this._getNextRetryDelay(previousReconnectAttempts, Date.now() - reconnectStartTime, retryError);
             }
         }
         this._logger.log(LogLevel.Information, `Reconnect retries have been exhausted after ${Date.now() - reconnectStartTime} ms and ${previousReconnectAttempts} failed attempts. Connection disconnecting.`);
@@ -1927,6 +2008,104 @@ class HubConnection {
         catch (e) {
             this._logger.log(LogLevel.Error, `IRetryPolicy.nextRetryDelayInMilliseconds(${previousRetryCount}, ${elapsedMilliseconds}) threw error '${e}'.`);
             return null;
+        }
+    }
+    _validateAuthenticationRefreshOptions() {
+        if (!this._authenticationRefreshOptions) {
+            return;
+        }
+        const refreshBeforeExpirationInMilliseconds = this._authenticationRefreshOptions.refreshBeforeExpirationInMilliseconds;
+        if (refreshBeforeExpirationInMilliseconds !== undefined &&
+            (typeof refreshBeforeExpirationInMilliseconds !== "number" ||
+                !Number.isFinite(refreshBeforeExpirationInMilliseconds) ||
+                refreshBeforeExpirationInMilliseconds < 0)) {
+            throw new Error("Authentication refreshBeforeExpirationInMilliseconds must be a finite number greater than or equal to 0.");
+        }
+    }
+    _scheduleAuthenticationRefreshIfNeeded() {
+        if (!this._isAutoAuthenticationRefreshEnabled()) {
+            return;
+        }
+        const authenticationRefreshFeature = this.connection.features.authenticationRefresh;
+        const initialTokenLifetimeInSeconds = authenticationRefreshFeature === null || authenticationRefreshFeature === void 0 ? void 0 : authenticationRefreshFeature.initialTokenLifetimeInSeconds;
+        if (isValidAuthenticationTokenLifetime(initialTokenLifetimeInSeconds)) {
+            this._scheduleAuthenticationRefresh(initialTokenLifetimeInSeconds);
+        }
+    }
+    _isAutoAuthenticationRefreshEnabled() {
+        return !!this._authenticationRefreshOptions && this._authenticationRefreshOptions.enableAutoRefresh !== false;
+    }
+    _scheduleAuthenticationRefresh(tokenLifetimeInSeconds) {
+        var _a, _b;
+        const refreshBeforeExpirationInMilliseconds = (_b = (_a = this._authenticationRefreshOptions) === null || _a === void 0 ? void 0 : _a.refreshBeforeExpirationInMilliseconds) !== null && _b !== void 0 ? _b : DEFAULT_AUTHENTICATION_REFRESH_BEFORE_EXPIRATION_IN_MS;
+        const tokenLifetimeInMilliseconds = tokenLifetimeInSeconds * 1000;
+        let refreshIn;
+        if (tokenLifetimeInMilliseconds <= refreshBeforeExpirationInMilliseconds * 2) {
+            refreshIn = tokenLifetimeInMilliseconds / 2;
+        }
+        else {
+            refreshIn = tokenLifetimeInMilliseconds - refreshBeforeExpirationInMilliseconds;
+        }
+        this._scheduleAuthenticationRefreshAt(refreshIn);
+    }
+    _scheduleAuthenticationRefreshAt(refreshIn) {
+        this._cleanupAuthenticationRefreshTimer();
+        refreshIn = Math.min(refreshIn, MAX_AUTHENTICATION_REFRESH_INTERVAL_IN_MS);
+        this._authenticationRefreshTimerHandle = setTimeout(() => {
+            this._authenticationRefreshTimerHandle = undefined;
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            this._onAuthenticationRefreshTimerFired();
+        }, refreshIn);
+    }
+    _cleanupAuthenticationRefreshTimer() {
+        if (this._authenticationRefreshTimerHandle) {
+            clearTimeout(this._authenticationRefreshTimerHandle);
+            this._authenticationRefreshTimerHandle = undefined;
+        }
+    }
+    async _onAuthenticationRefreshTimerFired() {
+        if (this._connectionState !== HubConnectionState.Connected) {
+            this._logger.log(LogLevel.Debug, "Skipping authentication refresh because the connection is not active.");
+            return;
+        }
+        try {
+            this._logger.log(LogLevel.Debug, "Refreshing authentication.");
+            const newTokenLifetimeInSeconds = await this.refreshAuthentication();
+            this._logger.log(LogLevel.Debug, `Authentication refresh completed. New token lifetime: ${newTokenLifetimeInSeconds}.`);
+        }
+        catch (e) {
+            this._logger.log(LogLevel.Error, `Authentication refresh failed: ${getErrorString(e)}`);
+        }
+    }
+    _invokeAuthenticationRefreshed(newTokenLifetimeInSeconds) {
+        if (this._authenticationRefreshedCallbacks.length === 0) {
+            return;
+        }
+        const context = {
+            connection: this,
+            newTokenLifetimeInSeconds,
+            refreshedAt: new Date(),
+        };
+        try {
+            this._authenticationRefreshedCallbacks.forEach((c) => c.apply(this, [context]));
+        }
+        catch (e) {
+            this._logger.log(LogLevel.Error, `An onAuthenticationRefreshed callback threw error '${getErrorString(e)}'.`);
+        }
+    }
+    _invokeAuthenticationRefreshFailed(error) {
+        if (this._authenticationRefreshFailedCallbacks.length === 0) {
+            return;
+        }
+        const context = {
+            connection: this,
+            error: error instanceof Error ? error : new Error(getErrorString(error)),
+        };
+        try {
+            this._authenticationRefreshFailedCallbacks.forEach((c) => c.apply(this, [context]));
+        }
+        catch (e) {
+            this._logger.log(LogLevel.Error, `An onAuthenticationRefreshFailed callback threw error '${getErrorString(e)}'.`);
         }
     }
     _cancelCallbacksWithError(error) {
@@ -1958,16 +2137,16 @@ class HubConnection {
         if (nonblocking) {
             if (streamIds.length !== 0) {
                 return {
+                    target: methodName,
                     arguments: args,
                     streamIds,
-                    target: methodName,
                     type: MessageType.Invocation,
                 };
             }
             else {
                 return {
-                    arguments: args,
                     target: methodName,
+                    arguments: args,
                     type: MessageType.Invocation,
                 };
             }
@@ -1977,18 +2156,18 @@ class HubConnection {
             this._invocationId++;
             if (streamIds.length !== 0) {
                 return {
+                    target: methodName,
                     arguments: args,
                     invocationId: invocationId.toString(),
                     streamIds,
-                    target: methodName,
                     type: MessageType.Invocation,
                 };
             }
             else {
                 return {
+                    target: methodName,
                     arguments: args,
                     invocationId: invocationId.toString(),
-                    target: methodName,
                     type: MessageType.Invocation,
                 };
             }
@@ -2054,18 +2233,18 @@ class HubConnection {
         this._invocationId++;
         if (streamIds.length !== 0) {
             return {
+                target: methodName,
                 arguments: args,
                 invocationId: invocationId.toString(),
                 streamIds,
-                target: methodName,
                 type: MessageType.StreamInvocation,
             };
         }
         else {
             return {
+                target: methodName,
                 arguments: args,
                 invocationId: invocationId.toString(),
-                target: methodName,
                 type: MessageType.StreamInvocation,
             };
         }
@@ -2100,9 +2279,24 @@ class HubConnection {
     _createCloseMessage() {
         return { type: MessageType.Close };
     }
+    async _trySendPingMessage() {
+        try {
+            await this._sendMessage(this._cachedPingMessage);
+        }
+        catch {
+            // We don't care about the error. It should be seen elsewhere in the client.
+            // The connection is probably in a bad or closed state now, cleanup the timer so it stops triggering
+            this._cleanupPingTimer();
+        }
+    }
+}
+function isValidAuthenticationTokenLifetime(tokenLifetimeInSeconds) {
+    return typeof tokenLifetimeInSeconds === "number" &&
+        Number.isFinite(tokenLifetimeInSeconds) &&
+        tokenLifetimeInSeconds > 0;
 }
 
-;// CONCATENATED MODULE: ./src/DefaultReconnectPolicy.ts
+;// ./src/DefaultReconnectPolicy.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // 0, 2, 10, 30 second delays before reconnect attempts.
@@ -2117,15 +2311,16 @@ class DefaultReconnectPolicy {
     }
 }
 
-;// CONCATENATED MODULE: ./src/HeaderNames.ts
+;// ./src/HeaderNames.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 class HeaderNames {
 }
 HeaderNames.Authorization = "Authorization";
+HeaderNames.ConnectionToken = "X-SignalR-Connection-Token";
 HeaderNames.Cookie = "Cookie";
 
-;// CONCATENATED MODULE: ./src/AccessTokenHttpClient.ts
+;// ./src/AccessTokenHttpClient.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -2134,31 +2329,61 @@ HeaderNames.Cookie = "Cookie";
 class AccessTokenHttpClient extends HttpClient {
     constructor(innerClient, accessTokenFactory) {
         super();
+        this._refreshRequestTokens = new WeakMap();
         this._innerClient = innerClient;
         this._accessTokenFactory = accessTokenFactory;
+        this._refreshAccessTokenFactory = accessTokenFactory;
     }
     async send(request) {
         let allowRetry = true;
-        if (this._accessTokenFactory && (!this._accessToken || (request.url && request.url.indexOf("/negotiate?") > 0))) {
+        const accessTokenRequest = request;
+        const isNegotiate = accessTokenRequest._negotiate === true;
+        const isRefresh = accessTokenRequest._authenticationRefresh === true;
+        let accessToken = isRefresh ? undefined : this._accessToken;
+        if (isRefresh && this._refreshAccessTokenFactory) {
+            // Refresh belongs to the application auth plane. Do not overwrite the cached transport token until the server accepts the refresh.
+            allowRetry = false;
+            accessToken = await this._refreshAccessTokenFactory();
+        }
+        else if (this._accessTokenFactory && (!this._accessToken || isNegotiate)) {
             // don't retry if the request is a negotiate or if we just got a potentially new token from the access token factory
             allowRetry = false;
-            this._accessToken = await this._accessTokenFactory();
+            accessToken = await this._accessTokenFactory();
+            this._accessToken = accessToken;
         }
-        this._setAuthorizationHeader(request);
+        this._setAuthorizationHeader(request, accessToken);
         const response = await this._innerClient.send(request);
+        if (isRefresh) {
+            this._refreshRequestTokens.set(response, accessToken);
+        }
         if (allowRetry && response.statusCode === 401 && this._accessTokenFactory) {
             this._accessToken = await this._accessTokenFactory();
-            this._setAuthorizationHeader(request);
+            this._setAuthorizationHeader(request, this._accessToken);
             return await this._innerClient.send(request);
         }
         return response;
     }
-    _setAuthorizationHeader(request) {
+    markNegotiateRequest(request) {
+        request._negotiate = true;
+    }
+    markAuthenticationRefreshRequest(request) {
+        request._authenticationRefresh = true;
+    }
+    setRefreshAccessTokenFactory(accessTokenFactory) {
+        this._refreshAccessTokenFactory = accessTokenFactory;
+    }
+    updateCachedToken(accessToken) {
+        this._accessToken = accessToken;
+    }
+    getRefreshRequestToken(response) {
+        return this._refreshRequestTokens.get(response);
+    }
+    _setAuthorizationHeader(request, accessToken) {
         if (!request.headers) {
             request.headers = {};
         }
-        if (this._accessToken) {
-            request.headers[HeaderNames.Authorization] = `Bearer ${this._accessToken}`;
+        if (accessToken) {
+            request.headers[HeaderNames.Authorization] = `Bearer ${accessToken}`;
         }
         // don't remove the header if there isn't an access token factory, the user manually added the header in this case
         else if (this._accessTokenFactory) {
@@ -2172,7 +2397,7 @@ class AccessTokenHttpClient extends HttpClient {
     }
 }
 
-;// CONCATENATED MODULE: ./src/ITransport.ts
+;// ./src/ITransport.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // This will be treated as a bit flag in the future, so we keep it using power-of-two values.
@@ -2197,7 +2422,7 @@ var TransferFormat;
     TransferFormat[TransferFormat["Binary"] = 2] = "Binary";
 })(TransferFormat || (TransferFormat = {}));
 
-;// CONCATENATED MODULE: ./src/AbortController.ts
+;// ./src/AbortController.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // Rough polyfill of https://developer.mozilla.org/en-US/docs/Web/API/AbortController
@@ -2226,7 +2451,7 @@ class AbortController_AbortController {
     }
 }
 
-;// CONCATENATED MODULE: ./src/LongPollingTransport.ts
+;// ./src/LongPollingTransport.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -2234,6 +2459,7 @@ class AbortController_AbortController {
 
 
 
+const AUTHENTICATION_REFRESH_REQUIRED = "authentication_refresh_required";
 // Not exported from 'index', this type is internal.
 /** @private */
 class LongPollingTransport {
@@ -2241,11 +2467,12 @@ class LongPollingTransport {
     get pollAborted() {
         return this._pollAbort.aborted;
     }
-    constructor(httpClient, logger, options) {
+    constructor(httpClient, logger, options, authenticationRefresh) {
         this._httpClient = httpClient;
         this._logger = logger;
         this._pollAbort = new AbortController_AbortController();
         this._options = options;
+        this._authenticationRefresh = authenticationRefresh;
         this._running = false;
         this.onreceive = null;
         this.onclose = null;
@@ -2288,13 +2515,45 @@ class LongPollingTransport {
         }
         this._receiving = this._poll(this._url, pollOptions);
     }
+    _isAuthenticationRefreshRequired(response) {
+        if (response.statusCode !== 409 || response.content === undefined) {
+            return false;
+        }
+        try {
+            const content = typeof response.content === "string"
+                ? response.content
+                : String.fromCharCode.apply(null, Array.prototype.slice.call(new Uint8Array(response.content)));
+            const payload = JSON.parse(content);
+            return payload !== null
+                && typeof payload === "object"
+                && payload.error === AUTHENTICATION_REFRESH_REQUIRED;
+        }
+        catch {
+            return false;
+        }
+    }
     async _poll(url, pollOptions) {
+        let authenticationRefreshAttempted = false;
         try {
             while (this._running) {
                 try {
                     const pollUrl = `${url}&_=${Date.now()}`;
                     this._logger.log(LogLevel.Trace, `(LongPolling transport) polling: ${pollUrl}.`);
                     const response = await this._httpClient.get(pollUrl, pollOptions);
+                    if (!authenticationRefreshAttempted
+                        && this._authenticationRefresh
+                        && this._isAuthenticationRefreshRequired(response)) {
+                        authenticationRefreshAttempted = true;
+                        try {
+                            await this._authenticationRefresh();
+                        }
+                        catch (e) {
+                            this._closeError = e;
+                            this._running = false;
+                        }
+                        continue;
+                    }
+                    authenticationRefreshAttempted = false;
                     if (response.statusCode === 204) {
                         this._logger.log(LogLevel.Information, "(LongPolling transport) Poll terminated by server.");
                         this._running = false;
@@ -2372,7 +2631,10 @@ class LongPollingTransport {
             };
             let error;
             try {
-                await this._httpClient.delete(this._url, deleteOptions);
+                const response = await this._httpClient.delete(this._url, deleteOptions);
+                if (!isSuccessStatusCode(response.statusCode)) {
+                    error = getHttpResponseError(response);
+                }
             }
             catch (err) {
                 error = err;
@@ -2410,7 +2672,7 @@ class LongPollingTransport {
     }
 }
 
-;// CONCATENATED MODULE: ./src/ServerSentEventsTransport.ts
+;// ./src/ServerSentEventsTransport.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -2514,7 +2776,7 @@ class ServerSentEventsTransport {
     }
 }
 
-;// CONCATENATED MODULE: ./src/WebSocketTransport.ts
+;// ./src/WebSocketTransport.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -2670,7 +2932,7 @@ class WebSocketTransport {
     }
 }
 
-;// CONCATENATED MODULE: ./src/HttpConnection.ts
+;// ./src/HttpConnection.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -2684,10 +2946,13 @@ class WebSocketTransport {
 
 
 const MAX_REDIRECTS = 100;
+const MAX_TOKEN_LIFETIME_IN_SECONDS = Math.floor(Number.MAX_SAFE_INTEGER / 1000);
 /** @private */
 class HttpConnection {
     constructor(url, options = {}) {
         this._stopPromiseResolver = () => { };
+        this._transportAccessTokenFromServer = false;
+        this._connectionGeneration = 0;
         this.features = {};
         this._negotiateVersion = 1;
         Arg.isRequired(url, "url");
@@ -2705,8 +2970,11 @@ class HttpConnection {
         let webSocketModule = null;
         let eventSourceModule = null;
         if (Platform.isNode && "function" !== "undefined") {
-            webSocketModule = getWS();
-            eventSourceModule = getEventSource();
+            // In order to ignore the dynamic require in webpack builds we need to do this magic
+            // @ts-ignore: TS doesn't know about these names
+            const requireFunc =  true ? require : 0;
+            webSocketModule = requireFunc("ws");
+            eventSourceModule = requireFunc("eventsource");
         }
         if (!Platform.isNode && typeof WebSocket !== "undefined" && !options.WebSocket) {
             options.WebSocket = WebSocket;
@@ -2778,6 +3046,7 @@ class HttpConnection {
             return this._stopPromise;
         }
         this._connectionState = "Disconnecting" /* ConnectionState.Disconnecting */;
+        this._connectionGeneration++;
         this._stopPromise = new Promise((resolve) => {
             // Don't complete stop() until stopConnection() completes.
             this._stopPromiseResolver = resolve;
@@ -2818,8 +3087,15 @@ class HttpConnection {
         // Store the original base url and the access token factory since they may change
         // as part of negotiating
         let url = this.baseUrl;
+        this._connectionGeneration++;
+        this._connectionToken = undefined;
+        this._connectionUrl = undefined;
+        this._initialTokenLifetimeInSeconds = undefined;
+        this._transportAccessTokenFromServer = false;
+        delete this.features.authenticationRefresh;
         this._accessTokenFactory = this._options.accessTokenFactory;
         this._httpClient._accessTokenFactory = this._accessTokenFactory;
+        this._httpClient.setRefreshAccessTokenFactory(this._options.accessTokenFactory);
         try {
             if (this._options.skipNegotiation) {
                 if (this._options.transport === HttpTransportType.WebSockets) {
@@ -2854,18 +3130,15 @@ class HttpConnection {
                     if (negotiateResponse.accessToken) {
                         // Replace the current access token factory with one that uses
                         // the returned access token
-                        const accessToken = negotiateResponse.accessToken;
-                        this._accessTokenFactory = () => accessToken;
-                        // set the factory to undefined so the AccessTokenHttpClient won't retry with the same token, since we know it won't change until a connection restart
-                        this._httpClient._accessToken = accessToken;
-                        this._httpClient._accessTokenFactory = undefined;
+                        this._setTransportAccessToken(negotiateResponse.accessToken);
                     }
                     redirects++;
                 } while (negotiateResponse.url && redirects < MAX_REDIRECTS);
                 if (redirects === MAX_REDIRECTS && negotiateResponse.url) {
                     throw new Error("Negotiate redirection limit exceeded.");
                 }
-                await this._createTransport(url, this._options.transport, negotiateResponse, transferFormat);
+                const finalNegotiateResponse = await this._createTransport(url, this._options.transport, negotiateResponse, transferFormat);
+                this._configureAuthenticationRefresh(finalNegotiateResponse);
             }
             if (this.transport instanceof LongPollingTransport) {
                 this.features.inherentKeepAlive = true;
@@ -2896,13 +3169,18 @@ class HttpConnection {
         const negotiateUrl = this._resolveNegotiateUrl(url);
         this._logger.log(LogLevel.Debug, `Sending negotiation request: ${negotiateUrl}.`);
         try {
-            const response = await this._httpClient.post(negotiateUrl, {
+            const request = {
                 content: "",
                 headers: { ...headers, ...this._options.headers },
                 timeout: this._options.timeout,
                 withCredentials: this._options.withCredentials,
-            });
+            };
+            this._httpClient.markNegotiateRequest(request);
+            const response = await this._httpClient.post(negotiateUrl, request);
             if (response.statusCode !== 200) {
+                if (response.statusText || (typeof response.content === "string" && response.content)) {
+                    throw getHttpResponseError(response);
+                }
                 return Promise.reject(new Error(`Unexpected status code returned from negotiate '${response.statusCode}'`));
             }
             const negotiateResponse = JSON.parse(response.content);
@@ -2913,6 +3191,10 @@ class HttpConnection {
             }
             if (negotiateResponse.useStatefulReconnect && this._options._useStatefulReconnect !== true) {
                 return Promise.reject(new FailedToNegotiateWithServerError("Client didn't negotiate Stateful Reconnect but the server did."));
+            }
+            const tokenLifetimeInSeconds = getAuthenticationTokenLifetimeInSeconds(negotiateResponse.tokenLifetimeSeconds);
+            if (tokenLifetimeInSeconds !== undefined) {
+                this._initialTokenLifetimeInSeconds = tokenLifetimeInSeconds;
             }
             return negotiateResponse;
         }
@@ -2933,6 +3215,77 @@ class HttpConnection {
         }
         return url + (url.indexOf("?") === -1 ? "?" : "&") + `id=${connectionToken}`;
     }
+    _createRefreshUrl(url) {
+        const refreshUrl = new URL(url);
+        if (refreshUrl.pathname.endsWith("/")) {
+            refreshUrl.pathname += "refresh";
+        }
+        else {
+            refreshUrl.pathname += "/refresh";
+        }
+        return refreshUrl.toString();
+    }
+    _configureAuthenticationRefresh(negotiateResponse) {
+        this._connectionToken = negotiateResponse.connectionToken;
+        this._connectionUrl = this.baseUrl;
+        const authenticationRefreshFeature = {
+            initialTokenLifetimeInSeconds: this._initialTokenLifetimeInSeconds,
+            refreshAuthentication: () => this._refreshAuthentication(),
+        };
+        this.features.authenticationRefresh = authenticationRefreshFeature;
+    }
+    async _refreshAuthentication() {
+        if (!this._connectionToken || !this._connectionUrl) {
+            throw new Error("Cannot refresh authentication before the connection is started.");
+        }
+        const connectionGeneration = this._connectionGeneration;
+        const headers = {};
+        const [name, value] = getUserAgentHeader();
+        headers[name] = value;
+        const refreshUrl = this._createRefreshUrl(this._connectionUrl);
+        this._logger.log(LogLevel.Debug, `Sending authentication refresh request: ${refreshUrl}.`);
+        const request = {
+            content: "",
+            headers: {
+                ...headers,
+                ...this._options.headers,
+                [HeaderNames.ConnectionToken]: this._connectionToken,
+            },
+            timeout: this._options.timeout,
+            withCredentials: this._options.withCredentials,
+        };
+        this._httpClient.markAuthenticationRefreshRequest(request);
+        const response = await this._httpClient.post(refreshUrl, request);
+        if (response.statusCode !== 200) {
+            throw new Error(`Unexpected status code returned from authentication refresh '${response.statusCode}'`);
+        }
+        if (typeof response.content !== "string") {
+            throw new Error("Invalid authentication refresh response received: expected JSON content.");
+        }
+        if (connectionGeneration !== this._connectionGeneration) {
+            return undefined;
+        }
+        const refreshResponse = JSON.parse(response.content);
+        if (typeof refreshResponse.accessToken === "string" && refreshResponse.accessToken) {
+            // Redirecting servers can return a transport token that should replace the current cached token.
+            this._setTransportAccessToken(refreshResponse.accessToken);
+        }
+        else if (!this._transportAccessTokenFromServer) {
+            // Without a server-provided transport token, reuse the app token that successfully authenticated refresh.
+            const refreshRequestToken = this._httpClient.getRefreshRequestToken(response);
+            if (refreshRequestToken) {
+                this._httpClient.updateCachedToken(refreshRequestToken);
+            }
+        }
+        return getAuthenticationTokenLifetimeInSeconds(refreshResponse.tokenLifetimeSeconds);
+    }
+    _setTransportAccessToken(accessToken) {
+        this._httpClient.updateCachedToken(accessToken);
+        this._transportAccessTokenFromServer = true;
+        this._accessTokenFactory = () => this._httpClient._accessToken;
+        // set the factory to undefined so the AccessTokenHttpClient won't retry with the same token, since we know it won't change until a connection restart
+        this._httpClient._accessTokenFactory = undefined;
+    }
     async _createTransport(url, requestedTransport, negotiateResponse, requestedTransferFormat) {
         let connectUrl = this._createConnectUrl(url, negotiateResponse.connectionToken);
         if (this._isITransport(requestedTransport)) {
@@ -2940,7 +3293,7 @@ class HttpConnection {
             this.transport = requestedTransport;
             await this._startTransport(connectUrl, requestedTransferFormat);
             this.connectionId = negotiateResponse.connectionId;
-            return;
+            return negotiateResponse;
         }
         const transportExceptions = [];
         const transports = negotiateResponse.availableTransports || [];
@@ -2966,7 +3319,7 @@ class HttpConnection {
                 try {
                     await this._startTransport(connectUrl, requestedTransferFormat);
                     this.connectionId = negotiate.connectionId;
-                    return;
+                    return negotiate;
                 }
                 catch (ex) {
                     this._logger.log(LogLevel.Error, `Failed to start the transport '${endpoint.transport}': ${ex}`);
@@ -2998,7 +3351,7 @@ class HttpConnection {
                 }
                 return new ServerSentEventsTransport(this._httpClient, this._httpClient._accessToken, this._logger, this._options);
             case HttpTransportType.LongPolling:
-                return new LongPollingTransport(this._httpClient, this._logger, this._options);
+                return new LongPollingTransport(this._httpClient, this._logger, this._options, () => this._refreshAuthentication());
             default:
                 throw new Error(`Unknown transport: ${transport}.`);
         }
@@ -3086,6 +3439,7 @@ class HttpConnection {
             this._logger.log(LogLevel.Warning, `Call to HttpConnection.stopConnection(${error}) was ignored because the connection is still in the connecting state.`);
             throw new Error(`HttpConnection.stopConnection(${error}) was called while the connection is still in the connecting state.`);
         }
+        this._connectionGeneration++;
         if (this._connectionState === "Disconnecting" /* ConnectionState.Disconnecting */) {
             // A call to stop() induced this call to stopConnection and needs to be completed.
             // Any stop() awaiters will be scheduled to continue after the onclose callback fires.
@@ -3104,6 +3458,9 @@ class HttpConnection {
             this._sendQueue = undefined;
         }
         this.connectionId = undefined;
+        this._connectionToken = undefined;
+        this._connectionUrl = undefined;
+        delete this.features.authenticationRefresh;
         this._connectionState = "Disconnected" /* ConnectionState.Disconnected */;
         if (this._connectionStarted) {
             this._connectionStarted = false;
@@ -3161,6 +3518,12 @@ class HttpConnection {
 }
 function transportMatches(requestedTransport, actualTransport) {
     return !requestedTransport || ((actualTransport & requestedTransport) !== 0);
+}
+function getAuthenticationTokenLifetimeInSeconds(tokenLifetimeSeconds) {
+    if (typeof tokenLifetimeSeconds !== "number" || !Number.isFinite(tokenLifetimeSeconds) || tokenLifetimeSeconds <= 0) {
+        return undefined;
+    }
+    return Math.min(tokenLifetimeSeconds, MAX_TOKEN_LIFETIME_IN_SECONDS);
 }
 /** @private */
 class TransportSendQueue {
@@ -3239,7 +3602,7 @@ class PromiseSource {
     }
 }
 
-;// CONCATENATED MODULE: ./src/JsonHubProtocol.ts
+;// ./src/JsonHubProtocol.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -3359,7 +3722,7 @@ class JsonHubProtocol {
     }
 }
 
-;// CONCATENATED MODULE: ./src/HubConnectionBuilder.ts
+;// ./src/HubConnectionBuilder.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -3479,6 +3842,14 @@ class HubConnectionBuilder {
         this._statefulReconnectBufferSize = options === null || options === void 0 ? void 0 : options.bufferSize;
         return this;
     }
+    /** Enables and configures automatic authentication refresh for the {@link @microsoft/signalr.HubConnection}.
+     *
+     * Options from multiple calls are merged. Values from later calls take precedence.
+     */
+    withAuthenticationRefresh(options = {}) {
+        this._authenticationRefreshOptions = { ...this._authenticationRefreshOptions, ...options };
+        return this;
+    }
     /** Creates a {@link @microsoft/signalr.HubConnection} from the configuration options specified in this builder.
      *
      * @returns {HubConnection} The configured {@link @microsoft/signalr.HubConnection}.
@@ -3497,14 +3868,14 @@ class HubConnectionBuilder {
             throw new Error("The 'HubConnectionBuilder.withUrl' method must be called before building the connection.");
         }
         const connection = new HttpConnection(this.url, httpConnectionOptions);
-        return HubConnection.create(connection, this.logger || NullLogger.instance, this.protocol || new JsonHubProtocol(), this.reconnectPolicy, this._serverTimeoutInMilliseconds, this._keepAliveIntervalInMilliseconds, this._statefulReconnectBufferSize);
+        return HubConnection.create(connection, this.logger || NullLogger.instance, this.protocol || new JsonHubProtocol(), this.reconnectPolicy, this._serverTimeoutInMilliseconds, this._keepAliveIntervalInMilliseconds, this._statefulReconnectBufferSize, this._authenticationRefreshOptions);
     }
 }
 function isLogger(logger) {
     return logger.log !== undefined;
 }
 
-;// CONCATENATED MODULE: ./src/index.ts
+;// ./src/index.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -3520,7 +3891,7 @@ function isLogger(logger) {
 
 
 
-;// CONCATENATED MODULE: ./src/browser-index.ts
+;// ./src/browser-index.ts
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // This is where we add any polyfills we'll need for the browser. It is the entry module for browser-specific builds.

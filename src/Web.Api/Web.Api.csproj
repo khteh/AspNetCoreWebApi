@@ -10,6 +10,22 @@
     <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
     <OpenApiGenerationEnvironment>Development</OpenApiGenerationEnvironment>
   </PropertyGroup>  
+  <!-- LibMan cache root = Environment.SpecialFolder.LocalApplicationData/.librarymanager/cache -->
+  <PropertyGroup>
+    <LibManCacheRoot Condition="'$(OS)' == 'Windows_NT'">$(LOCALAPPDATA)\.librarymanager\cache</LibManCacheRoot>
+    <LibManCacheRoot Condition="'$(OS)' != 'Windows_NT' And '$(XDG_DATA_HOME)' != ''">$(XDG_DATA_HOME)/.librarymanager/cache</LibManCacheRoot>
+    <LibManCacheRoot Condition="'$(OS)' != 'Windows_NT' And '$(XDG_DATA_HOME)' == ''">$(HOME)/.local/share/.librarymanager/cache</LibManCacheRoot>
+    <!-- Refresh @latest libraries on Release builds; override with -p:RefreshLibMan=true|false -->
+    <RefreshLibMan Condition="'$(RefreshLibMan)' == '' And '$(Configuration)' == 'Release'">true</RefreshLibMan>
+  </PropertyGroup>
+
+  <Target Name="CleanLibManCache"
+          BeforeTargets="LibraryManagerRestore"
+          Condition="'$(RefreshLibMan)' == 'true'">
+    <!-- Equivalent of `libman cache clean unpkg` -->
+    <RemoveDir Directories="$(LibManCacheRoot)/unpkg" />
+    <Message Importance="high" Text="Cleared LibMan unpkg cache: $(LibManCacheRoot)/unpkg" />
+  </Target>    
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
@@ -27,6 +43,7 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="11.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="3.0.114" />
     <PackageReference Include="Serilog.Enrichers.HttpContext" Version="8.3.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
