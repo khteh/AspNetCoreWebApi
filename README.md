@@ -1,6 +1,6 @@
 # AspNetCoreWebApi
 
-An ASP.NET 11.0 Web API, SignalR and GRPC project using Clean Architecture to quickly bootstrap new projects. Includes Identity, JWT authentication w/ refresh tokens. The design of the application is driven by both Domain-Driven-Design and Clean Architecture (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). It makes use of Command and Decorator pattern, and MediatR for in-process synchronous messaging.
+An ASP.NET 11.0 Web API, SignalR and GRPC project using Clean Architecture to quickly bootstrap new projects. Includes Identity, JWT authentication w/ refresh tokens. The design of the application is driven by both Domain-Driven-Design and Clean Architecture (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). It makes use of Command and Decorator pattern, and MediatR for in-process synchronous messaging. 270 test cases and counting!
 
 # Development environment
 
@@ -60,7 +60,6 @@ export NODE_USE_SYSTEM_CA=1
 
 ## Unit Testing
 
-- 270 test cases and counting!
 - Install .Net Core Test Explorer
 - `echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p`
 - https://github.com/dotnet/aspnetcore/issues/8449
