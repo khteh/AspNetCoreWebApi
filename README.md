@@ -26,12 +26,7 @@ An ASP.NET 11.0 Web API, SignalR and GRPC project using Clean Architecture to qu
   $ dotnet ef database update -c AppIdentityDbContext
   ```
 
-# SignalR Client Setup
-
-- `npm install @microsoft/signalr`
-- Copy content of `node_modules\@microsoft\signalr\dist\browser` to `wwwroot/lib/signalr`
-
-## JWT login, connect and authenticaion refresh
+# JWT login, connect and authenticaion refresh
 
 ![SignalR JWT](./signalr-jwt-sequence.jpg?raw=true "SignalR JWT")
 
