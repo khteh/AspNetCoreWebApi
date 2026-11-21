@@ -49,6 +49,7 @@ public class UserRepository : EfRepository<User>, IUserRepository
                 return new CreateUserResponse(Guid.Parse(appUser.Id), false, identityResult.Errors.Select(e => new Error(e.Code, e.Description)).ToList());
             // add the email claim and value for this user
             await _userManager.AddClaimAsync(appUser, new Claim(ClaimTypes.Name, appUser.UserName));
+            await _userManager.AddClaimAsync(appUser, new Claim(ClaimTypes.Email, appUser.Email));
             var user = new User(firstName, lastName, appUser.Id, appUser.UserName, appUser.Email, appUser.PhoneNumber);
             _appDbContext.Users.Add(user);
             await _appDbContext.SaveChangesAsync();
