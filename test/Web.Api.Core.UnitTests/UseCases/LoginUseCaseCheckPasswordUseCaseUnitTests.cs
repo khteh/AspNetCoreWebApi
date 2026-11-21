@@ -27,17 +27,22 @@ public class LogInUseCaseCheckPasswordUnitTests
         var mockJwtFactory = new Mock<IJwtFactory>();
         mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new AccessToken("", 0));
 
+        // A real ITokenFactory always returns a random token; refresh tokens are hashed before storage, so null/empty is rejected.
+        const string refreshToken = "cvVsJXuuvb+gTyz+Rk0mBbitkw3AaLgsLecU3cwsUXU=";
         var mockTokenFactory = new Mock<ITokenFactory>();
+        mockTokenFactory.Setup(factory => factory.GenerateToken(It.IsAny<int>())).Returns(refreshToken);
         var mockLogger = new Mock<ILogger<LogInUseCase>>();
         var useCase = new LogInUseCase(mockLogger.Object, mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
         var mockOutputPort = new Mock<IOutputPort<LogInResponse>>();
-        mockOutputPort.Setup(outputPort => outputPort.Handle(It.IsAny<LogInResponse>()));
+        mockOutputPort.Setup(outputPort => outputPort.Handle(It.Is<LogInResponse>(r => r.RefreshToken == refreshToken)));
 
         // act
         var response = await useCase.Handle(new LogInRequest("userName", "password", "127.0.0.1"), mockOutputPort.Object);
 
         // assert
         Assert.True(response);
+        Assert.True(user.HasValidRefreshToken(refreshToken)); // the raw token returned to the client matches the stored hash
+        Assert.NotEqual(refreshToken, Assert.Single(user.RefreshTokens).Token);
         mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         mockUserRepository.Verify(factory => factory.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);
         mockOutputPort.VerifyAll();
