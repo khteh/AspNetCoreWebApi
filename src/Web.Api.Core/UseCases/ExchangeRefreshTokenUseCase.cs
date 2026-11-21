@@ -17,7 +17,7 @@ public sealed class ExchangeRefreshTokenUseCase : IExchangeRefreshTokenUseCase
     {
         if (string.IsNullOrEmpty(message.AccessToken) || string.IsNullOrEmpty(message.RefreshToken) || string.IsNullOrEmpty(message.SigningKey))
         {
-            await outputPort.Handle(new ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), $"Invalid access token {message.AccessToken} / refresh token {message.RefreshToken} / signing key {message.SigningKey}!") }));
+            await outputPort.Handle(new ExchangeRefreshTokenResponse(new List<Error>() { new Error(HttpStatusCode.BadRequest.ToString(), "Access token and refresh token are required.") }));
             return false;
         }
         DTO.GatewayResponses.Repositories.ExchangeRefreshTokenResponse response = await _userRepository.ExchangeRefreshToken(message.AccessToken, message.RefreshToken, message.SigningKey);
