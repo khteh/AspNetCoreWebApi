@@ -136,21 +136,32 @@ try
     // JWT signing key: configured value (env var AuthSettings__SecretKey / user secrets / secret store) or, in Development only,
     // a per-machine generated key stored outside the repository. Startup fails elsewhere if it is missing or shorter than 64 bytes.
     string jwtSigningKey = JwtSigningKey.GetOrCreate(builder.Configuration, env);
-    // Highest-priority configuration source, so IOptions<AuthSettings>.SecretKey (AuthController, AuthService) sees the same key.
+    /* 
+     * Highest-priority configuration source, so IOptions<AuthSettings>.SecretKey (AuthController, AuthService) sees the same key.
+        How it works
+
+        AddInMemoryCollection adds a new configuration source holding one entry: AuthSettings:SecretKey = the resolved key.
+        In ASP.NET Core, a configuration source added later wins over earlier ones for the same key. This one is added after appsettings*.json, environment variables and user secrets, so it has the highest priority.
+        IOptions<AuthSettings> is bound when it's first used, after the app starts, so it sees the value from this source.
+
+        When it matters
+
+        Key configured (environment variable, user secrets, appsettings.IntegrationTests.json): it writes back the same value that was already there, so it changes nothing.
+        Development with no key configured: the generated key would otherwise exist only in the local variable. This makes it visible to the AuthSettings options as well.     
+    */
     builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?> { [JwtSigningKey.ConfigurationKey] = jwtSigningKey });
     IConfigurationSection authSettings = builder.Configuration.GetSection(nameof(AuthSettings));
-    builder.Services.Configure<AuthSettings>(authSettings);
-    SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey));
+    builder.Services.Configure<AuthSettings>(authSettings); // binds the AuthSettings section of configuration. The ExchangeRefreshTokenCommandHandler (and the gRPC AuthService) read _authSettings.SecretKey from it and pass it to JwtTokenValidator, which checks the old access token's signature during refresh.
+    SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey)); // Build the key that JwtBearerHandler validates tokens with and that JwtFactory signs them with.
     // jwt wire up
     // Get options from app settings
-    IConfigurationSection? jwtAppSettingOptions = builder.Configuration.GetSection(nameof(JwtIssuerOptions));
+    IConfigurationSection jwtAppSettingOptions = builder.Configuration.GetSection(nameof(JwtIssuerOptions));
     builder.Services.Configure<JwtIssuerOptions>(jwtAppSettingOptions);
     // Configure JwtIssuerOptions
     builder.Services.Configure<JwtIssuerOptions>(options =>
     {
         options.SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha512);
     });
-
     var tokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -225,15 +236,6 @@ try
             }));
     });
     // The automatic CSRF protection is the recommended defense, and most apps no longer need the token-based antiforgery system.
-#if false
-    builder.Services.AddAntiforgery(options =>
-    {
-        // Set Cookie properties using CookieBuilder properties†.
-        options.FormFieldName = "AntiforgeryFieldname";
-        options.HeaderName = "X-CSRF-TOKEN-HEADERNAME";
-        options.SuppressXFrameOptionsHeader = false;
-    });
-#endif
     // add identity
     var identityBuilder = builder.Services.AddIdentityCore<AppUser>(o =>
     {
@@ -260,7 +262,7 @@ try
             LocalCacheExpiration = TimeSpan.FromMinutes(5)
         };
     });
-    var emailSettings = builder.Configuration.GetSection(nameof(EmailSettings));
+    IConfigurationSection emailSettings = builder.Configuration.GetSection(nameof(EmailSettings));
     builder.Services.Configure<EmailSettings>(emailSettings);
     builder.Services.AddTransient<IEmailSender, EmailSender>();
     IConfigurationSection redisCacheConfig = builder.Configuration.GetSection(nameof(RedisCache));

@@ -18,7 +18,18 @@ public static class JwtSigningKey
     public const int MinKeyBytes = 64; // HMAC-SHA512 requires a key of at least 512 bits
     public static readonly string ConfigurationKey = $"{nameof(AuthSettings)}:{nameof(AuthSettings.SecretKey)}";
     public static string DefaultDevelopmentKeyPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AspNetCoreWebApi", "jwt-signing-key");
-
+    /// <summary>
+    /// Return a key that isn't in configuration at all: the one generated in Development and stored in a file under your user profile. 
+    /// Without this line
+    /// 1. Program.cs SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey)); would get the generated key
+    /// 2. IOptions<AuthSettings> would read AuthSettings:SecretKey from appsettings.json, which is now "". 
+    ///    Tokens would be signed with one key and checked during refresh with an empty one, so every refresh would fail with "Invalid credential!".
+    /// </summary>
+    /// <param name="configuration"></param>
+    /// <param name="environment"></param>
+    /// <param name="developmentKeyPath"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static string GetOrCreate(IConfiguration configuration, IHostEnvironment environment, string? developmentKeyPath = null)
     {
         string? key = configuration[ConfigurationKey];
