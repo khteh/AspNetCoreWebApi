@@ -74,7 +74,7 @@ public class LogInUseCaseCheckPasswordUnitTests
         Assert.False(response);
         mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         mockUserRepository.Verify(factory => factory.SignIn(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);
-        mockTokenFactory.Verify(factory => factory.GenerateToken(32), Times.Never);
+        mockTokenFactory.Verify(factory => factory.GenerateToken(64), Times.Never);
         mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
         mockOutputPort.VerifyAll();
         mockTokenFactory.VerifyAll();
@@ -102,7 +102,7 @@ public class LogInUseCaseCheckPasswordUnitTests
 
         // assert
         Assert.False(response);
-        mockTokenFactory.Verify(factory => factory.GenerateToken(32), Times.Never);
+        mockTokenFactory.Verify(factory => factory.GenerateToken(64), Times.Never);
         mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
         mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         mockOutputPort.VerifyAll();
@@ -131,7 +131,7 @@ public class LogInUseCaseCheckPasswordUnitTests
 
         // assert
         Assert.False(response);
-        mockTokenFactory.Verify(factory => factory.GenerateToken(32), Times.Never);
+        mockTokenFactory.Verify(factory => factory.GenerateToken(64), Times.Never);
         mockUserRepository.Verify(factory => factory.FindByName(""), Times.Never);
         mockUserRepository.Verify(factory => factory.CheckPassword(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         mockOutputPort.VerifyAll();

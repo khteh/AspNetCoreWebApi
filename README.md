@@ -1,6 +1,6 @@
 # AspNetCoreWebApi
 
-An ASP.NET 11.0 Web API, SignalR and GRPC project using Clean Architecture to quickly bootstrap new projects. Includes Identity, JWT authentication w/ refresh tokens. The design of the application is driven by both Domain-Driven-Design and Clean Architecture (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). It makes use of Command and Decorator pattern, and MediatR for in-process synchronous messaging. 270 test cases and counting!
+An ASP.NET 11.0 Web API, SignalR and GRPC project using Clean Architecture to quickly bootstrap new projects. Includes Identity, JWT authentication w/ refresh tokens. The design of the application is driven by both Domain-Driven-Design and Clean Architecture (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). It makes use of Command and Decorator pattern, and MediatR for in-process synchronous messaging. 320 test cases and counting!
 
 # Development environment
 
@@ -72,7 +72,7 @@ The HMAC-SHA512 key that signs and validates JWTs (`AuthSettings:SecretKey`) is 
 - Every other environment: set the environment variable `AuthSettings__SecretKey` (e.g. from a Kubernetes Secret or a vault). Startup fails if it is missing or shorter than 64 bytes.
 - Generate a key: `openssl rand -base64 64 | tr -d '\n'` (Linux) or `[Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(64))` (PowerShell).
 
-Refresh tokens are stored as SHA-256 hashes, are single-use (rotated on every exchange), and presenting an invalid refresh token with a valid access token revokes all of that user's refresh tokens. `/api/auth/login`, `/api/auth/refreshtoken` and the gRPC `Auth` service are rate limited per client IP.
+Refresh tokens are stored as SHA-512 hashes, are single-use (rotated on every exchange), and presenting an invalid refresh token with a valid access token revokes all of that user's refresh tokens. `/api/auth/login`, `/api/auth/refreshtoken` and the gRPC `Auth` service are rate limited per client IP.
 
 # Swagger Enabled
 

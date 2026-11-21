@@ -13,7 +13,7 @@ public class RefreshTokenHasherUnitTests
         string hash2 = RefreshTokenHasher.Hash(token);
         Assert.Equal(hash1, hash2);
         Assert.NotEqual(token, hash1);
-        Assert.Equal(44, hash1.Length); // Base64 of a 32-byte SHA-256 digest
+        Assert.Equal(88, hash1.Length); // Base64 of a 32-byte SHA-512 digest
     }
     [Fact]
     public void Hash_DifferentTokensProduceDifferentHashes() =>

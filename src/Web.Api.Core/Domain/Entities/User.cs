@@ -45,7 +45,7 @@ public class User : BaseEntity
         Email = email;
         PhoneNumber = phoneNumber;
     }
-    // Refresh tokens are persisted as SHA-256 hashes (RefreshToken.Token holds the hash). Callers always pass the raw token.
+    // Refresh tokens are persisted as SHA-512 hashes (RefreshToken.Token holds the hash). Callers always pass the raw token.
     public bool HasValidRefreshToken(string refreshToken) => _refreshTokens.Any(rt => rt.Active && RefreshTokenHasher.Matches(refreshToken, rt.Token));
     public void AddRefreshToken(string token, string? remoteIpAddress, double daysToExpire = 5) =>
         _refreshTokens.Add(new RefreshToken(RefreshTokenHasher.Hash(token), DateTimeOffset.UtcNow.AddDays(daysToExpire), Id, remoteIpAddress));
