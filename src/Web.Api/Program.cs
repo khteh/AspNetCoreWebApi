@@ -431,13 +431,7 @@ try
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
     }
-    app.UseWhen(
-            ctx => ctx.Request.ContentType != "application/grpc",
-            builder =>
-            {
-                builder.UseHttpLogging();
-            }
-        );
+    app.UseWhen(ctx => ctx.Request.ContentType != "application/grpc", builder => builder.UseHttpLogging());
     //app.UseHttpLogging(); https://github.com/dotnet/aspnetcore/issues/39317
     app.UseForwardedHeaders();
     app.UseHttpsRedirection();
@@ -509,7 +503,7 @@ try
         .SelectMany(t => t.GetMethods())
         .Count(m => m.GetCustomAttributes(typeof(ModelContextProtocol.Server.McpServerToolAttribute), true).Any());
     app.Logger.LogInformation($"Starting MCP Server with {toolCount} registered tools.");
-    app.MapMcp("/mcp").RequireAuthorization();
+    app.MapMcp("/mcp"); //.RequireAuthorization(); https://github.com/modelcontextprotocol/csharp-sdk/issues/1782#issuecomment-5579131647
     app.MapRazorPages();
     app.MapControllers();
     app.MapHub<ChatHub>("/chatHub", o =>
