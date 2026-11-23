@@ -30,23 +30,21 @@ public static class InfrastructureServices
                 .AddScoped<SignInManager<AppUser>>();
         service.AddDbContextPool<AppIdentityDbContext>(options =>
         {
-            options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), o => { o.SetPostgresVersion(18, 0); o.MigrationsAssembly("Web.Api.Infrastructure"); });
+            options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), o => o.MigrationsAssembly("Web.Api.Infrastructure"));
             options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             if (isIntegrationTest)
             {
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
-                options.LogTo(Console.WriteLine);
             }
         }).AddDbContextPool<AppDbContext>(options =>
         {
-            options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), o => { o.SetPostgresVersion(18, 0); o.MigrationsAssembly("Web.Api.Infrastructure"); });
+            options.UseNpgsql(configuration.GetConnectionString(isIntegrationTest ? "IntegrationTests" : "Default"), o => o.MigrationsAssembly("Web.Api.Infrastructure"));
             options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             if (isIntegrationTest)
             {
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
-                options.LogTo(Console.WriteLine);
             }
         });
         service.AddTransient<CustomEmailConfirmationTokenProvider<AppUser>>();

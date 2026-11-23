@@ -24,7 +24,7 @@ using static System.Console;
 // https://github.com/xunit/xunit/issues/3305
 //[assembly: AssemblyFixture(typeof(CustomGRPCWebApplicationFactory<Program>))]
 namespace Web.Api.IntegrationTests;
-
+#if false
 public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, IAsyncLifetime where TStartup : class
 {
     private GrpcChannel _grpcChannel;
@@ -35,7 +35,7 @@ public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<T
         builder.UseEnvironment("IntegrationTests");
         builder.ConfigureLogging((p) => p.SetMinimumLevel(LogLevel.Debug));
         builder.UseTestServer();
-        builder.ConfigureServices((context, services) =>
+        builder.ConfigureServices((context, services) => // This runs before the host exists.
         {
             GrpcConfig grpcConfig = context.Configuration.GetSection(nameof(GrpcConfig)).Get<GrpcConfig>();
             var client = CreateDefaultClient(new Http3Handler());
@@ -56,27 +56,27 @@ public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<T
             });
         });
     }
-    public async ValueTask InitializeAsync() 
+    public async ValueTask InitializeAsync()
     {
         // Create a scope to obtain a reference to the database contexts
         using (var scope = Services.CreateScope())
-        try
-        {
-            var scopedServices = scope.ServiceProvider;
-            var appDb = scopedServices.GetRequiredService<AppDbContext>();
-            var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
-            var logger = scopedServices.GetRequiredService<ILogger<CustomGRPCWebApplicationFactory<TStartup>>>();
-            // Ensure the database is created.
-            appDb.Database.EnsureCreated();
-            identityDb.Database.EnsureCreated();
-            // Seed the database with test data.
-            logger.LogDebug($"{nameof(InitializeAsync)} populate test data...");
-            await SeedData.PopulateGrpcTestData(identityDb, appDb);
-        }
-        catch (Exception ex)
-        {
-            WriteLine($"{nameof(InitializeAsync)} exception! {ex}");
-        }
+            try
+            {
+                var scopedServices = scope.ServiceProvider;
+                var appDb = scopedServices.GetRequiredService<AppDbContext>();
+                var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
+                var logger = scopedServices.GetRequiredService<ILogger<CustomGRPCWebApplicationFactory<TStartup>>>();
+                // Ensure the database is created.
+                appDb.Database.EnsureCreated();
+                identityDb.Database.EnsureCreated();
+                // Seed the database with test data.
+                logger.LogDebug($"{nameof(InitializeAsync)} populate test data...");
+                await SeedData.PopulateGrpcTestData(identityDb, appDb);
+            }
+            catch (Exception ex)
+            {
+                WriteLine($"{nameof(InitializeAsync)} exception! {ex}");
+            }
     }
     public async override ValueTask DisposeAsync()
     {
@@ -92,3 +92,4 @@ public class CustomGRPCWebApplicationFactory<TStartup> : WebApplicationFactory<T
         GC.SuppressFinalize(this);
     }
 }
+#endif

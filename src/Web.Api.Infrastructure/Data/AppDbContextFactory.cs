@@ -12,6 +12,7 @@ using Web.Api.Infrastructure.Identity;
  * https://docs.microsoft.com/en-us/ef/core/cli/dbcontext-creation?tabs=dotnet-core-cli
  */
 namespace Web.Api.Infrastructure.Data;
+
 public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)
@@ -32,11 +33,11 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         DbContextOptionsBuilder<AppDbContext> builder = new DbContextOptionsBuilder<AppDbContext>();
         builder.UseApplicationServiceProvider(serviceProvider);
-        builder.UseNpgsql(connectionString, o => { o.SetPostgresVersion(18, 0); o.MigrationsAssembly("Web.Api.Infrastructure"); });
+        builder.UseNpgsql(connectionString, o => o.MigrationsAssembly("Web.Api.Infrastructure"));
         builder.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
-            builder.EnableSensitiveDataLogging();
-            builder.EnableDetailedErrors();
-            builder.LogTo(Console.WriteLine);
+        builder.EnableSensitiveDataLogging();
+        builder.EnableDetailedErrors();
+        builder.LogTo(Console.WriteLine);
         return new AppDbContext(builder.Options);
     }
     public static IServiceCollection AddIdentity(IServiceCollection services)

@@ -1,6 +1,4 @@
-﻿namespace Web.Api.IntegrationTests.Services;
-
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +14,7 @@ using Web.Api.Infrastructure.Data;
 using Web.Api.Infrastructure.Data.Repositories;
 using Web.Api.Infrastructure.Identity;
 using Xunit;
+namespace Web.Api.IntegrationTests.Services;
 
 public delegate void LogMessage(LogLevel logLevel, string categoryName, EventId eventId, string message, Exception? exception);
 
@@ -38,11 +37,14 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
         IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(contentRootFull)
                 .AddJsonFile("appsettings.json", false, true)
-                .AddJsonFile($"appsettings.Development.json", true, true)
+                .AddJsonFile("appsettings.IntegrationTests.json", false, true)
+                .AddJsonFile("appsettings.postgresql.json", true, true)
                 .AddEnvironmentVariables().Build();
         _grpcConfig = config.GetSection(nameof(GrpcConfig)).Get<GrpcConfig>();
         _connectionString = config.GetConnectionString("IntegrationTests");
-        LoggerFactory = new LoggerFactory();
+        LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(b => b
+            .AddConfiguration(config.GetSection("Logging"))   // applies Logging:LogLevel from the JSON
+            .AddProvider(new ForwardingLoggerProvider((logLevel, category, eventId, message, exception) => LoggedMessage?.Invoke(logLevel, category, eventId, message, exception))));
         LoggerFactory.AddProvider(new ForwardingLoggerProvider((logLevel, category, eventId, message, exception) => LoggedMessage?.Invoke(logLevel, category, eventId, message, exception)));
         _logger = LoggerFactory.CreateLogger<GrpcTestFixture<TStartup>>();
     }
@@ -59,17 +61,15 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
                         services.AddSingleton<ILoggerFactory>(LoggerFactory);
                         services.AddDbContextPool<AppIdentityDbContext>(options =>
                         {
-                            options.UseNpgsql(_connectionString, o => o.SetPostgresVersion(18, 0));
+                            options.UseNpgsql(_connectionString);
                             options.EnableSensitiveDataLogging();
                             options.EnableDetailedErrors();
-                            options.LogTo(Console.WriteLine);
                         })
                             .AddDbContextPool<AppDbContext>(options =>
                             {
-                                options.UseNpgsql(_connectionString, o => o.SetPostgresVersion(18, 0));
+                                options.UseNpgsql(_connectionString);
                                 options.EnableSensitiveDataLogging();
                                 options.EnableDetailedErrors();
-                                options.LogTo(Console.WriteLine);
                             });
                         services.AddScoped<SignInManager<AppUser>>();
                         services.AddScoped<ILogger<UserRepository>>(provider =>
@@ -125,7 +125,7 @@ public class GrpcTestFixture<TStartup> : IDisposable where TStartup : class
             }
     }
 
-    public LoggerFactory LoggerFactory { get; }
+    public ILoggerFactory LoggerFactory { get; }
 
     public HttpMessageHandler Handler
     {

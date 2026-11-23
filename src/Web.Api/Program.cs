@@ -78,8 +78,8 @@ try
     builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", false, true)
                     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
-                    .AddJsonFile($"appsettings.postgresql.json", true, true)
-                    .AddJsonFile($"appsettings.email.json", true, true)
+                    .AddJsonFile("appsettings.postgresql.json", true, true)
+                    .AddJsonFile("appsettings.email.json", true, true)
                     .AddEnvironmentVariables()
                     .AddCommandLine(args);
     /* https://www.elastic.co/docs/reference/ecs/logging/dotnet/serilog-formatter
@@ -92,12 +92,6 @@ try
     builder.Host.UseSerilog((ctx, svc, config) =>
     {
         config.ReadFrom.Configuration(ctx.Configuration).ReadFrom.Services(svc).Enrich.FromLogContext();
-#if false
-        if (ctx.HostingEnvironment.IsDevelopment() || ctx.HostingEnvironment.IsStaging())
-            config.WriteTo.Async(a => a.Console(LogEventLevel.Verbose, "{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}"));
-        else
-            config.WriteTo.Async(a => a.Console(new EcsTextFormatter()));
-#endif
     }, preserveStaticLogger: true);
     int originalMinWorker, originalMinIOC;
     int minWorker = 1000;
