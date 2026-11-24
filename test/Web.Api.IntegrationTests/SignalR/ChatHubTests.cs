@@ -20,7 +20,7 @@ public class ChatHubTests
     public ChatHubTests(ITestOutputHelper output, CustomWebApplicationFactory<Program> factory)
     {
         _output = output;
-        _client = factory.Client;
+        _client = factory.CreateHttpsClient();
         _testServer = factory.Server;
     }
     private async Task<string> AccessTokenProvider()

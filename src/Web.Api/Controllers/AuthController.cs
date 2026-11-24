@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
@@ -14,6 +15,7 @@ namespace Web.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [EnableRateLimiting(RateLimitPolicies.Auth)]
+[HttpLogging(SensitiveHttpLogging.Fields)] // login / refreshtoken bodies carry passwords and tokens
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;

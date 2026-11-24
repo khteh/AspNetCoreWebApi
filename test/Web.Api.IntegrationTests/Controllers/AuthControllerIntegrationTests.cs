@@ -13,7 +13,7 @@ public class AuthControllerIntegrationTests
 {
     private readonly HttpClient _client;
     private readonly ITestOutputHelper _output;
-    public AuthControllerIntegrationTests(CustomWebApplicationFactory<Program> factory, ITestOutputHelper output) => (_output, _client) = (output, factory.Client);
+    public AuthControllerIntegrationTests(CustomWebApplicationFactory<Program> factory, ITestOutputHelper output) => (_output, _client) = (output, factory.CreateHttpsClient());
 
     [Fact]
     public async Task CanLoginWithValidCredentials()
@@ -63,7 +63,7 @@ public class AuthControllerIntegrationTests
         Assert.NotNull(response.AccessToken.Token);
         Assert.False(string.IsNullOrEmpty(response.RefreshToken));
         Assert.Equal(600, (int)response.AccessToken.ExpiresIn);
-        Assert.Null(response.Errors);
+        Assert.Empty(response.Errors);
     }
     [Fact]
     public async Task CantExchangeInvalidRefreshToken()

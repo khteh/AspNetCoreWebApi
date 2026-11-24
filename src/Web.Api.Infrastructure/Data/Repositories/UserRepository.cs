@@ -151,8 +151,8 @@ public class UserRepository : EfRepository<User>, IUserRepository
             AppUser? user = await _userManager.FindByNameAsync(username);
             if (user == null)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username {username} and password {password}!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username or password for user {username}!");
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("NotSucceeded", $"Invalid username or password for user {username}!") });
             }
             SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, password, logoutOnFailure); ;
             if (result.IsNotAllowed)
@@ -172,8 +172,8 @@ public class UserRepository : EfRepository<User>, IUserRepository
             }
             if (!result.Succeeded)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username {username} and password {password}!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("NotSucceeded", $"Invalid username {username} and password {password}!") });
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} Invalid username or password for user {username}!");
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error("NotSucceeded", $"Invalid username or password for user {username}!") });
             }
             // Use _userManager.IsInRoleAsync(user,  to check if user is in the required role
             _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignInMobile)} User {username} signed in successfully!");
@@ -192,8 +192,8 @@ public class UserRepository : EfRepository<User>, IUserRepository
             AppUser? user = await _userManager.FindByNameAsync(username);
             if (user == null)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password} from remoteIP: {remoteIP}!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username or password for user {username} from remoteIP: {remoteIP}!");
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username or password for user {username}!") });
             }
             SignInResult result = await _signInManager.PasswordSignInAsync(username, password, rememberMe, logoutOnFailure);
             if (result.IsNotAllowed)
@@ -213,8 +213,8 @@ public class UserRepository : EfRepository<User>, IUserRepository
             }
             if (!result.Succeeded)
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username {username} and password {password} from remoteIP: {remoteIP}!");
-                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username {username} and password {password}!") });
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(SignIn)} Invalid username or password for user {username} from remoteIP: {remoteIP}!");
+                return new SignInResponse(Guid.Empty, null, false, false, false, new List<Error>() { new Error(HttpStatusCode.Forbidden.ToString(), $"Invalid username or password for user {username}!") });
             }
             _logger.LogInformation(2, $"{nameof(UserRepository)}.{nameof(SignIn)} User {username} signed in successfully from remoteIP: {remoteIP}!");
             return new SignInResponse(Guid.Parse(user.Id), user.UserName, true);
@@ -322,7 +322,7 @@ public class UserRepository : EfRepository<User>, IUserRepository
             AppUser? user = await _userManager.FindByNameAsync(username);
             if (user == null || !await _userManager.CheckPasswordAsync(user, password))
             {
-                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Invalid username {username} and password {password}!");
+                _logger.LogWarning(2, $"{nameof(UserRepository)}.{nameof(CheckPassword)} Invalid username or password for user {username}!");
                 return new LogInResponse(null, false, new List<Error>() { new Error(HttpStatusCode.Unauthorized.ToString(), $"Invalid username or password!") });
             }
             else if (user == null)

@@ -16,7 +16,7 @@ public class AccountsControllerIntegrationTests
 {
     private readonly HttpClient _client;
     private readonly ITestOutputHelper _output;
-    public AccountsControllerIntegrationTests(ITestOutputHelper output, CustomWebApplicationFactory<Program> factory) => (_output, _client) = (output, factory.Client);
+    public AccountsControllerIntegrationTests(ITestOutputHelper output, CustomWebApplicationFactory<Program> factory) => (_output, _client) = (output, factory.CreateHttpsClient());
     [Fact]
     public async Task CanRegisterUserWithValidAccountDetails()
     {
@@ -27,7 +27,7 @@ public class AccountsControllerIntegrationTests
         Assert.False(string.IsNullOrEmpty(stringResponse));
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.True((bool)result["success"]);
-        Assert.Null(result["errors"]);
+        Assert.Empty(result["errors"]!.AsArray());
         Assert.False(string.IsNullOrEmpty((string)result["id"]));
     }
     [Fact]
@@ -93,9 +93,15 @@ public class AccountsControllerIntegrationTests
     [Fact]
     public async Task CanFindById()
     {
-        DateTimeOffset dt = DateTimeOffset.UtcNow;
-        _client.DefaultRequestHeaders.Add(HeaderNames.IfModifiedSince, dt.ToString("R", CultureInfo.InvariantCulture));
-        var httpResponse = await _client.GetAsync("/api/accounts/id/41532945-599e-4910-9599-0e7402017fbe", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
+        string ifModifiedSince = DateTimeOffset.UtcNow.ToString("R", CultureInfo.InvariantCulture);
+        // Per-request header: never mutate DefaultRequestHeaders, it would stick to every later request from this client.
+        HttpRequestMessage ConditionalGet()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/accounts/id/41532945-599e-4910-9599-0e7402017fbe"); // UserManager is NOT case sensitive!
+            request.Headers.TryAddWithoutValidation(HeaderNames.IfModifiedSince, ifModifiedSince);
+            return request;
+        }
+        var httpResponse = await _client.SendAsync(ConditionalGet(), TestContext.Current.CancellationToken);
         httpResponse.EnsureSuccessStatusCode();
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
         string stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -105,8 +111,7 @@ public class AccountsControllerIntegrationTests
         string id = (string)result["id"];
         Assert.False(string.IsNullOrEmpty(id));
         Assert.Equal("41532945-599e-4910-9599-0e7402017fbe", id);
-        httpResponse = await _client.GetAsync("/api/accounts/id/41532945-599e-4910-9599-0e7402017fbe", TestContext.Current.CancellationToken); // UserManager is NOT case sensitive!
-        // This can only be tested once since _client is shared.
+        httpResponse = await _client.SendAsync(ConditionalGet(), TestContext.Current.CancellationToken);
         //httpResponse.EnsureSuccessStatusCode(); This will throw for any status code outside of [200-299] range. https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpresponsemessage.ensuresuccessstatuscode
         Assert.Equal(HttpStatusCode.NotModified, httpResponse.StatusCode); // https://github.com/dotnet/aspnetcore/issues/64763
         stringResponse = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -166,7 +171,7 @@ public class AccountsControllerIntegrationTests
         Models.Response.LogInResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(strLoginSuccessResponse);
         Assert.NotNull(loginResult);
         Assert.True(loginResult.Success);
-        Assert.Null(loginResult.Errors);
+        Assert.Empty(loginResult.Errors);
         Assert.NotNull(loginResult.AccessToken);
         Assert.NotNull(loginResult.AccessToken.Token);
         Assert.Equal(600, (int)loginResult.AccessToken.ExpiresIn);
@@ -180,7 +185,7 @@ public class AccountsControllerIntegrationTests
         Assert.False(string.IsNullOrEmpty(strPwdResponse));
         Models.Response.ChangePasswordResponse pwdResponse1 = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ChangePasswordResponse>(strPwdResponse);
         Assert.True(pwdResponse1.Success);
-        Assert.Null(pwdResponse1.Errors);
+        Assert.Empty(pwdResponse1.Errors);
 
         // Should fail login with previous password
         var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonSerializer.Serialize(loginRequest), Encoding.UTF8, Application.Json), TestContext.Current.CancellationToken);
@@ -228,7 +233,7 @@ public class AccountsControllerIntegrationTests
         Models.Response.LogInResponse loginResult = Serialization.JsonSerializer.DeSerializeObject<Models.Response.LogInResponse>(strLoginSuccessResponse);
         Assert.NotNull(loginResult);
         Assert.True(loginResult.Success);
-        Assert.Null(loginResult.Errors);
+        Assert.Empty(loginResult.Errors);
         Assert.NotNull(loginResult.AccessToken);
         Assert.Equal(600, (int)loginResult.AccessToken.ExpiresIn);
         Assert.False(string.IsNullOrEmpty(loginResult.AccessToken.Token));
@@ -243,7 +248,7 @@ public class AccountsControllerIntegrationTests
         Models.Response.ResetPasswordResponse pwdResponse1 = Serialization.JsonSerializer.DeSerializeObject<Models.Response.ResetPasswordResponse>(strPwdResponse);
         Assert.True(pwdResponse1.Success);
         Assert.Equal(HttpStatusCode.OK, pwdResponse.StatusCode);
-        Assert.Null(pwdResponse1.Errors);
+        Assert.Empty(pwdResponse1.Errors);
 
         // Should fail login with previous password
         var loginFailResponse = await _client.PostAsync("/api/auth/login", new StringContent(JsonSerializer.Serialize(loginRequest), Encoding.UTF8, Application.Json), TestContext.Current.CancellationToken);

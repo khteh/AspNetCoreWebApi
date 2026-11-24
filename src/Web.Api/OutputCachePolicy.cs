@@ -56,10 +56,10 @@ public class OutputCachePolicy : IOutputCachePolicy
         // to be cached
         var request = context.HttpContext.Request;
 
-        // Verify the method
+        // Verify the method. Never cache POST: the cache key (path + query) ignores the request body,
+        // so e.g. a successful POST /api/auth/login (with its tokens) would be replayed for any later credentials.
         if (!HttpMethods.IsGet(request.Method) &&
-            !HttpMethods.IsHead(request.Method) &&
-            !HttpMethods.IsPost(request.Method))
+            !HttpMethods.IsHead(request.Method))
         {
             return false;
         }

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using Web.Api.Commands;
 using Web.Api.Core.DTO.UseCaseRequests;
 using Web.Api.Core.Interfaces.UseCases;
+using Web.Api.Helpers;
 using Web.Api.Models.Response;
 using Web.Api.Presenters;
 using static System.Net.Mime.MediaTypeNames;
@@ -30,6 +32,7 @@ public class AccountsController : ControllerBase
 
     // POST api/accounts/register
     [HttpPost("register")]
+    [HttpLogging(SensitiveHttpLogging.Fields)] // request body carries passwords
     [Consumes(Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -47,6 +50,7 @@ public class AccountsController : ControllerBase
     }
     // POST api/accounts
     [HttpPost("changepassword")]
+    [HttpLogging(SensitiveHttpLogging.Fields)] // request body carries passwords
     [Consumes(Application.Json)]
     public async Task<IActionResult> ChangePassword([FromBody] Models.Request.ChangePasswordRequest request)
     {
@@ -56,6 +60,7 @@ public class AccountsController : ControllerBase
         return _mapper.Map<JsonContentResult>(response);
     }
     [HttpPost("resetpassword")]
+    [HttpLogging(SensitiveHttpLogging.Fields)] // request body carries passwords
     [Consumes(Application.Json)]
     public async Task<IActionResult> ResetPassword([FromBody] Models.Request.ResetPasswordRequest request)
     {
@@ -73,6 +78,7 @@ public class AccountsController : ControllerBase
     }
     // POST api/accounts/id/{id}
     [HttpGet("id/{id}")]
+    [HttpLogging(SensitiveHttpLogging.Fields)] // response body carries user PII (email, names, phone)
     public async Task<IActionResult> FindById(string id)
     {
         await _findUserUseCase.Handle(new FindUserRequest(string.Empty, string.Empty, id), _findUserPresenter);
@@ -80,6 +86,7 @@ public class AccountsController : ControllerBase
     }
     // POST api/accounts/username/{username}
     [HttpGet("username/{username}")]
+    [HttpLogging(SensitiveHttpLogging.Fields)] // response body carries user PII (email, names, phone)
     public async Task<IActionResult> FindByUserName(string username)
     {
         await _findUserUseCase.Handle(new FindUserRequest(string.Empty, username, string.Empty), _findUserPresenter);
@@ -87,6 +94,7 @@ public class AccountsController : ControllerBase
     }
     // POST api/accounts/FindByEmail
     [HttpGet("email/{email}")]
+    [HttpLogging(SensitiveHttpLogging.Fields)] // response body carries user PII (email, names, phone)
     public async Task<IActionResult> FindByEmail(string email)
     {
         await _findUserUseCase.Handle(new FindUserRequest(email, string.Empty, string.Empty), _findUserPresenter);

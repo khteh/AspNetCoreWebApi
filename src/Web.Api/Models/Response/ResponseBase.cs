@@ -6,7 +6,8 @@ namespace Web.Api.Models.Response;
 public record ResponseBase
 {
     public bool Success { get; init; } = false;
-    public List<Error> Errors { get; init; } = new List<Error>();
+    /// <summary>Never null: an empty list means no errors, so clients can always iterate it.</summary>
+    public List<Error> Errors { get; init; } = [];
     [JsonConstructor]
-    public ResponseBase(bool success, List<Error> errors) => (Success, Errors) = (success, errors);
+    public ResponseBase(bool success, List<Error>? errors) => (Success, Errors) = (success, errors ?? []);
 }

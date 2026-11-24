@@ -11,7 +11,8 @@ namespace Web.Api.IntegrationTests.Controllers;
 public class ProtectedControllerIntegrationTests
 {
     private readonly HttpClient _client;
-    public ProtectedControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) => _client = factory.CreateClient();
+    // Own HTTPS client per test: see CustomWebApplicationFactory.CreateHttpsClient.
+    public ProtectedControllerIntegrationTests(CustomWebApplicationFactory<Program> factory) => _client = factory.CreateHttpsClient();
 
     [Fact]
     public async Task CantAccessProtectedResourceWithoutLogin()

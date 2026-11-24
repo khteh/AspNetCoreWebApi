@@ -426,7 +426,6 @@ try
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
     }
-    app.UseWhen(ctx => ctx.Request.ContentType != "application/grpc", builder => builder.UseHttpLogging());
     //app.UseHttpLogging(); https://github.com/dotnet/aspnetcore/issues/39317
     app.UseForwardedHeaders();
     app.UseHttpsRedirection();
@@ -434,6 +433,8 @@ try
     app.UseCookiePolicy(new CookiePolicyOptions() { HttpOnly = HttpOnlyPolicy.Always, Secure = CookieSecurePolicy.Always });
     app.UsePathBase(pathBase);
     app.UseRouting();
+    // After UseRouting: HttpLoggingMiddleware reads [HttpLogging] endpoint metadata on entry, so before routing it is silently ignored.
+    app.UseWhen(ctx => ctx.Request.ContentType != "application/grpc", builder => builder.UseHttpLogging());
     app.UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true }); // Must be added between UseRouting and UseEndpoints
     app.UseCors(); // UseCors must be called before UseResponseCaching, after UseRouting, but before UseAuthorization
     app.UseOutputCache(); // UseOutputCache must be called after UseCors an after UseRouting.

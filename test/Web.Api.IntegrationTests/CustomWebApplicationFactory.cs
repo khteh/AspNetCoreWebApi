@@ -30,6 +30,26 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     private GrpcConfig _grpcConfig;
     private GrpcChannel _grpcChannel;
     public GrpcChannel GrpcChannel { get => _grpcChannel; }
+    /// <summary>
+    /// A new client on the shared in-memory TestServer: its own DefaultRequestHeaders and cookies, so tests can't leak state into each other.
+    /// Always HTTPS: over http:// UseHttpsRedirection (https_port 4433) answers 307, and the redirect drops the Authorization header.
+    /// Cheap (no sockets), so create one per test, e.g. in the test class constructor.
+    /// </summary>
+    public HttpClient CreateHttpsClient()
+    {
+        HttpClient client = CreateClient(new WebApplicationFactoryClientOptions
+        {
+            BaseAddress = new Uri("https://localhost:4433")
+        });
+        client.DefaultRequestVersion = HttpVersion.Version30;
+        /*
+         * https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/http3
+         * client.DefaultRequestVersion = HttpVersion.Version30; // Configure for HTTP/3
+         * client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact; // Ensure HTTP/3 is used
+        */
+        client.Timeout = TimeSpan.FromSeconds(10);
+        return client;
+    }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // Route the application's logs to the xunit output
@@ -98,17 +118,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         };
         var handler2 = Server.CreateHandler();
         // Client = new HttpClient(...) No connection could be made because the target machine actively refused it. (localhost:4433)
-        Client = CreateClient(new WebApplicationFactoryClientOptions
-        {
-            BaseAddress = new Uri("https://localhost:4433")
-        });
-        Client.DefaultRequestVersion = HttpVersion.Version30;
-        /*
-         * https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/http3
-         * Client.DefaultRequestVersion = HttpVersion.Version30; // Configure for HTTP/3
-         * Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact; // Ensure HTTP/3 is used
-        */
-        Client.Timeout = TimeSpan.FromSeconds(10);
+        Client = CreateHttpsClient();
 
         Server.BaseAddress = new Uri(_grpcConfig.Endpoint);
         _grpcChannel = GrpcChannel.ForAddress(Server.BaseAddress, new GrpcChannelOptions
@@ -136,6 +146,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 await identityDb.Database.EnsureCreatedAsync();
                 // Seed the database with test data.
                 logger.LogDebug($"{nameof(InitializeAsync)} populate test data...");
+                // Remove leftovers from a previous run that never reached DisposeAsync (e.g. debugger stopped),
+                // otherwise registering "johndoe" etc. fails with DuplicateUserName (400).
+                await SeedData.CleanUpTestData(identityDb, appDb);
                 await SeedData.PopulateTestData(identityDb, appDb);
             }
             catch (Exception ex)
