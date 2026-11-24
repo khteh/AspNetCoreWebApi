@@ -167,7 +167,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
         Assert.NotNull(loginResponse.AccessToken);
         Assert.NotNull(loginResponse.AccessToken.Token);
         Assert.False(string.IsNullOrEmpty(loginResponse.RefreshToken));
-        Assert.Equal(7200, loginResponse.AccessToken.ExpiresIn);
+        Assert.Equal(600, loginResponse.AccessToken.ExpiresIn);
 
         // Change Password
         Identity.Response pwdResponse = await _accountsClient.ChangePasswordAsync(new ChangePasswordRequest()
@@ -209,7 +209,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
         Assert.NotNull(loginResponse2.AccessToken);
         Assert.NotNull(loginResponse2.AccessToken.Token);
         Assert.False(string.IsNullOrEmpty(loginResponse2.RefreshToken));
-        Assert.Equal(7200, loginResponse2.AccessToken.ExpiresIn);
+        Assert.Equal(600, loginResponse2.AccessToken.ExpiresIn);
     }
     [Fact]
     public async Task CanResetPasswordWithValidAccountDetails()
@@ -244,7 +244,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
         Assert.NotNull(loginResponse.AccessToken);
         Assert.NotNull(loginResponse.AccessToken.Token);
         Assert.False(string.IsNullOrEmpty(loginResponse.RefreshToken));
-        Assert.Equal(7200, loginResponse.AccessToken.ExpiresIn);
+        Assert.Equal(600, loginResponse.AccessToken.ExpiresIn);
 
         // Reset Password
         Identity.Response pwdResponse = await _accountsClient.ResetPasswordAsync(new ResetPasswordRequest()
@@ -285,6 +285,6 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
         Assert.NotNull(loginResponse2.AccessToken);
         Assert.NotNull(loginResponse2.AccessToken.Token);
         Assert.False(string.IsNullOrEmpty(loginResponse2.RefreshToken));
-        Assert.Equal(7200, loginResponse2.AccessToken.ExpiresIn);
+        Assert.Equal(600, loginResponse2.AccessToken.ExpiresIn);
     }
 }

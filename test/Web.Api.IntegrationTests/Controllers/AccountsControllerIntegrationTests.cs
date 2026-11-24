@@ -169,7 +169,7 @@ public class AccountsControllerIntegrationTests
         Assert.Null(loginResult.Errors);
         Assert.NotNull(loginResult.AccessToken);
         Assert.NotNull(loginResult.AccessToken.Token);
-        Assert.Equal(7200, (int)loginResult.AccessToken.ExpiresIn);
+        Assert.Equal(600, (int)loginResult.AccessToken.ExpiresIn);
         Assert.NotNull(loginResult.RefreshToken);
 
         // Change Password
@@ -203,7 +203,7 @@ public class AccountsControllerIntegrationTests
         JsonNode loginResult1 = JsonNode.Parse(strLoginSuccessResponse1);
         Assert.NotNull(loginResult1["accessToken"]);
         Assert.False(string.IsNullOrEmpty((string)loginResult1["accessToken"]["token"]));
-        Assert.Equal(7200, (int)loginResult1["accessToken"]["expiresIn"]);
+        Assert.Equal(600, (int)loginResult1["accessToken"]["expiresIn"]);
         Assert.False(string.IsNullOrEmpty((string)loginResult1["refreshToken"]));
     }
     [Fact]
@@ -230,7 +230,7 @@ public class AccountsControllerIntegrationTests
         Assert.True(loginResult.Success);
         Assert.Null(loginResult.Errors);
         Assert.NotNull(loginResult.AccessToken);
-        Assert.Equal(7200, (int)loginResult.AccessToken.ExpiresIn);
+        Assert.Equal(600, (int)loginResult.AccessToken.ExpiresIn);
         Assert.False(string.IsNullOrEmpty(loginResult.AccessToken.Token));
         Assert.False(string.IsNullOrEmpty(loginResult.RefreshToken));
 
@@ -266,7 +266,7 @@ public class AccountsControllerIntegrationTests
         JsonNode loginResult1 = JsonNode.Parse(strLoginSuccessResponse1);
         Assert.NotNull(loginResult1["accessToken"]);
         Assert.False(string.IsNullOrEmpty((string)loginResult1["accessToken"]["token"]));
-        Assert.Equal(7200, (int)loginResult1["accessToken"]["expiresIn"]);
+        Assert.Equal(600, (int)loginResult1["accessToken"]["expiresIn"]);
         Assert.False(string.IsNullOrEmpty((string)loginResult1["refreshToken"]));
     }
 }

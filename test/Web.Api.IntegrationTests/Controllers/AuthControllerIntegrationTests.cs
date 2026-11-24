@@ -26,7 +26,7 @@ public class AuthControllerIntegrationTests
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.NotNull(result["accessToken"]);
         Assert.False(string.IsNullOrEmpty((string)result["accessToken"]["token"]));
-        Assert.Equal(7200, (int)result["accessToken"]["expiresIn"]);
+        Assert.Equal(600, (int)result["accessToken"]["expiresIn"]);
         Assert.False(string.IsNullOrEmpty((string)result["refreshToken"]));
     }
     [Fact]
@@ -49,7 +49,7 @@ public class AuthControllerIntegrationTests
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.NotNull(result["accessToken"]);
         Assert.False(string.IsNullOrEmpty((string)result["accessToken"]["token"]));
-        Assert.Equal(7200, (int)result["accessToken"]["expiresIn"]);
+        Assert.Equal(600, (int)result["accessToken"]["expiresIn"]);
         Assert.False(string.IsNullOrEmpty((string)result["refreshToken"]));
         string token = (string)result["accessToken"]["token"];
         string refreshToken = (string)result["refreshToken"];
@@ -62,7 +62,7 @@ public class AuthControllerIntegrationTests
         Assert.NotNull(response.AccessToken);
         Assert.NotNull(response.AccessToken.Token);
         Assert.False(string.IsNullOrEmpty(response.RefreshToken));
-        Assert.Equal(7200, (int)response.AccessToken.ExpiresIn);
+        Assert.Equal(600, (int)response.AccessToken.ExpiresIn);
         Assert.Null(response.Errors);
     }
     [Fact]

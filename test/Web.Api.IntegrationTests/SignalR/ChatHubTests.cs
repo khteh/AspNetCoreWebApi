@@ -33,7 +33,7 @@ public class ChatHubTests
         Assert.NotNull(response.AccessToken);
         Assert.False(string.IsNullOrEmpty(response.AccessToken.Token));
         Assert.False(string.IsNullOrEmpty(response.RefreshToken));
-        Assert.Equal(7200, (int)response.AccessToken.ExpiresIn);
+        Assert.Equal(600, (int)response.AccessToken.ExpiresIn);
         return response.AccessToken.Token;
     }
     [Fact]

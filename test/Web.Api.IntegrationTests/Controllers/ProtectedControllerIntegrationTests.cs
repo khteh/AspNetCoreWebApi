@@ -29,7 +29,7 @@ public class ProtectedControllerIntegrationTests
         JsonNode result = JsonNode.Parse(stringResponse);
         Assert.NotNull(result["accessToken"]);
         Assert.False(string.IsNullOrEmpty((string)result["accessToken"]["token"]));
-        Assert.Equal(7200, (int)result["accessToken"]["expiresIn"]);
+        Assert.Equal(600, (int)result["accessToken"]["expiresIn"]);
         Assert.False(string.IsNullOrEmpty((string)result["refreshToken"]));
 
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", (string)result["accessToken"]["token"]);

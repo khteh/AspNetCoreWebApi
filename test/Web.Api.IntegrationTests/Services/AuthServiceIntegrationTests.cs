@@ -28,7 +28,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         Assert.NotNull(response.AccessToken);
         Assert.NotNull(response.AccessToken.Token);
         Assert.False(string.IsNullOrEmpty(response.RefreshToken));
-        Assert.Equal(7200, response.AccessToken.ExpiresIn);
+        Assert.Equal(600, response.AccessToken.ExpiresIn);
     }
     [Fact]
     public async Task CantLoginWithInvalidCredentials()
@@ -68,7 +68,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         Assert.NotNull(response.AccessToken);
         Assert.NotNull(response.AccessToken.Token);
         Assert.False(string.IsNullOrEmpty(response.RefreshToken));
-        Assert.Equal(7200, response.AccessToken.ExpiresIn);
+        Assert.Equal(600, response.AccessToken.ExpiresIn);
 
         ExchangeRefreshTokenResponse response1 = await client.RefreshTokenAsync(new ExchangeRefreshTokenRequest()
         {
@@ -82,7 +82,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         Assert.NotNull(response1.AccessToken);
         Assert.NotNull(response1.AccessToken.Token);
         Assert.False(string.IsNullOrEmpty(response1.RefreshToken));
-        Assert.Equal(7200, response1.AccessToken.ExpiresIn);
+        Assert.Equal(600, response1.AccessToken.ExpiresIn);
     }
     [Fact]
     public async Task CantExchangeInvalidRefreshToken()
