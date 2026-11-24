@@ -100,9 +100,10 @@ try
         minWorker = minWorkerThreads;
     // Get the current settings.
     ThreadPool.GetMinThreads(out originalMinWorker, out originalMinIOC);
-    // Change the minimum number of worker threads to four, but
-    // keep the old setting for minimum asynchronous I/O 
-    // completion threads.
+    /* Change the minimum number of worker threads to four, but
+    * keep the old setting for minimum asynchronous I/O 
+    * completion threads.
+    */
     if (ThreadPool.SetMinThreads(minWorker, originalMinIOC))
         // The minimum number of threads was set successfully.
         Log.Information($"Using {minWorker} threads");
