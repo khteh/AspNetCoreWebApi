@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-namespace Web.Api.IntegrationTests.Services;
+namespace Web.Api.IntegrationTests;
 
 public class Http3Handler : DelegatingHandler
 {

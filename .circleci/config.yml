@@ -37,7 +37,7 @@ jobs:
       - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.Core.UnitTests/Web.Api.Core.UnitTests.csproj
       - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.UnitTests/Web.Api.UnitTests.csproj
       - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.Infrastructure.UnitTests/Web.Api.Infrastructure.UnitTests.csproj
-      - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.IntegrationTests
+      - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.IntegrationTests/Web.Api.IntegrationTests.csproj
       - run:
           name: Wait for PostgreSQL Server
           command: pg_isready -U postgres -h localhost -p 5432

@@ -11,7 +11,7 @@ using Web.Api.Models.Response;
 using Xunit;
 using static System.Net.Mime.MediaTypeNames;
 namespace Web.Api.IntegrationTests.SignalR;
-//[Collection(SignalRTestsCollection.Name)]
+
 public class ChatHubTests
 {
     private readonly HttpClient _client;
