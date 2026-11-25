@@ -149,7 +149,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 // Remove leftovers from a previous run that never reached DisposeAsync (e.g. debugger stopped),
                 // otherwise registering "johndoe" etc. fails with DuplicateUserName (400).
                 await SeedData.CleanUpTestData(identityDb, appDb);
+                await SeedData.CleanUpGrpcTestData(identityDb, appDb);
                 await SeedData.PopulateTestData(identityDb, appDb);
+                await SeedData.PopulateGrpcTestData(identityDb, appDb); // testusergrpc, deletemegrpc for the gRPC service tests
             }
             catch (Exception ex)
             {
@@ -168,6 +170,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             var appDb = scopedServices.GetRequiredService<AppDbContext>();
             var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
             await SeedData.CleanUpTestData(identityDb, appDb);
+            await SeedData.CleanUpGrpcTestData(identityDb, appDb);
         }
         await base.DisposeAsync();
         GC.SuppressFinalize(this);

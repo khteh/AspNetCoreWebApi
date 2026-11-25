@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Api.Core.Domain.Entities;
@@ -174,12 +174,23 @@ public static class SeedData
             if (user != null)
                 dbContext.Users.Remove(user);
         }
+        // Seeded by PopulateGrpcTestData; normally deleted by CanDeleteUserWithValidAccountDetails, but not if that test didn't run or failed.
+        appUser = await dbIdentityContext.Users.FirstOrDefaultAsync(i => i.UserName.Equals("deletemegrpc"));
+        if (appUser != null)
+        {
+            User user = await dbContext.Users.FirstOrDefaultAsync(i => i.IdentityId.Equals(appUser.Id));
+            dbIdentityContext.Users.Remove(appUser);
+            if (user != null)
+                dbContext.Users.Remove(user);
+        }
         bool flag = false;
         for (int i = 0; !flag && i < 3; i++)
             try
             {
-                dbIdentityContext.SaveChangesAsync();
-                dbContext.SaveChangesAsync();
+                // Must be awaited: unawaited, the scope was disposed before the deletes were saved, so leftovers
+                // (johndoegrpc, user1grpc, user2grpc) made the next run's registrations fail with DuplicateUserName.
+                await dbIdentityContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
                 flag = true;
             }
             catch (DbUpdateConcurrencyException ex)

@@ -1,4 +1,5 @@
-﻿using Elastic.CommonSchema;
+﻿using System;
+using Elastic.CommonSchema;
 using System.Linq;
 using System.Net;
 using System.Threading.Channels;
@@ -10,13 +11,11 @@ using static Web.Api.Identity.Accounts.Accounts;
 using static Web.Api.Identity.Auth.Auth;
 namespace Web.Api.IntegrationTests.Services;
 
-//[Collection("GRPC Test Collection")]
-public class AccountsServiceIntegrationTests// : IntegrationTestBase
+public class AccountsServiceIntegrationTests
 {
     private readonly ITestOutputHelper _output;
     private readonly AccountsClient _accountsClient;
     private readonly AuthClient _authClient;
-    //public AccountsServiceIntegrationTests(GrpcTestFixture<Program> fixture, ITestOutputHelper output) : base(fixture, output) { }
     public AccountsServiceIntegrationTests(ITestOutputHelper output, CustomWebApplicationFactory<Program> factory)
     {
         _output = output;
@@ -29,7 +28,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
         // Arrange
         Assert.NotNull(_accountsClient);
         // Act
-        RegisterUserResponse response = await _accountsClient.RegisterAsync(new RegisterUserRequest()
+        UserResponse response = await _accountsClient.RegisterAsync(new RegisterUserRequest()
         {
             FirstName = "John Grpc",
             LastName = "Doe",
@@ -51,7 +50,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
     public async Task CanDeleteUserWithValidAccountDetails()
     {
         Assert.NotNull(_accountsClient);
-        DeleteUserResponse response = await _accountsClient.DeleteAsync(new StringInputParameter() { Value = "deletemegrpc" }, null, null, TestContext.Current.CancellationToken);
+        UserResponse response = await _accountsClient.DeleteAsync(new StringInputParameter() { Value = "deletemegrpc" }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.True(response.Response.Success);
@@ -63,7 +62,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
     {
         Assert.NotNull(_accountsClient);
         // Act
-        RegisterUserResponse response = await _accountsClient.RegisterAsync(new RegisterUserRequest()
+        UserResponse response = await _accountsClient.RegisterAsync(new RegisterUserRequest()
         {
             FirstName = "John Grpc",
             LastName = "Doe",
@@ -80,14 +79,15 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
         Assert.False(response.Response.Success);
         Assert.Single(response.Response.Errors);
         Assert.True(string.IsNullOrEmpty(response.Id));
-        Assert.Equal("InvalidUserName", response.Response.Errors.First().Code);
-        //Assert.Equal("'Email' is not a valid email address.", response.Response.Errors.First().Description);
+        // RegisterUserUseCase rejects empty/invalid input before Identity runs, same as the REST CantRegisterUserWithInvalidAccountDetails.
+        Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Response.Errors.First().Code);
+        Assert.Equal("Invalid request input!", response.Response.Errors.First().Description);
     }
     [Fact]
     public async Task CantDeleteUserWithInvalidAccountDetails()
     {
         Assert.NotNull(_accountsClient);
-        DeleteUserResponse response = await _accountsClient.DeleteAsync(new StringInputParameter() { Value = "DeleteMeNot" }, null, null, TestContext.Current.CancellationToken);
+        UserResponse response = await _accountsClient.DeleteAsync(new StringInputParameter() { Value = "DeleteMeNot" }, null, null, TestContext.Current.CancellationToken);
         Assert.NotNull(response);
         Assert.NotNull(response.Response);
         Assert.False(response.Response.Success);
@@ -98,7 +98,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
     }
     [Theory]
     [InlineData("CE73A87D-0AA6-4191-B65B-6B49F333E316")]
-    [InlineData("3ABE9D63-777C-4865-8FA0-A53A657313D5")]
+    // Not deletemegrpc (3ABE9D63-...): CanDeleteUserWithValidAccountDetails deletes it, and test order is not guaranteed.
     public async Task CanFindById(string id)
     {
         Assert.NotNull(_accountsClient);
@@ -108,7 +108,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
         Assert.True(response.Response.Success);
         Assert.Empty(response.Response.Errors);
         Assert.False(string.IsNullOrEmpty(response.Id));
-        Assert.Equal(id, response.Id);
+        Assert.Equal(Guid.Parse(id), Guid.Parse(response.Id)); // the server returns the canonical lower-case form
     }
     [Fact]
     public async Task CanFindByUsername()
@@ -120,7 +120,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
         Assert.True(response.Response.Success);
         Assert.Empty(response.Response.Errors);
         Assert.False(string.IsNullOrEmpty(response.Id));
-        Assert.Equal("CE73A87D-0AA6-4191-B65B-6B49F333E316", response.Id);
+        Assert.Equal(Guid.Parse("CE73A87D-0AA6-4191-B65B-6B49F333E316"), Guid.Parse(response.Id));
     }
     [Fact]
     public async Task CanFindByEmail()
@@ -132,7 +132,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
         Assert.True(response.Response.Success);
         Assert.Empty(response.Response.Errors);
         Assert.False(string.IsNullOrEmpty(response.Id));
-        Assert.Equal("CE73A87D-0AA6-4191-B65B-6B49F333E316", response.Id);
+        Assert.Equal(Guid.Parse("CE73A87D-0AA6-4191-B65B-6B49F333E316"), Guid.Parse(response.Id));
     }
     [Fact]
     public async Task CanChangePasswordWithValidAccountDetails()
@@ -140,7 +140,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
         Assert.NotNull(_accountsClient);
         Assert.NotNull(_authClient);
         // Create User
-        RegisterUserResponse response = await _accountsClient.RegisterAsync(new RegisterUserRequest()
+        UserResponse response = await _accountsClient.RegisterAsync(new RegisterUserRequest()
         {
             FirstName = "FirstName",
             LastName = "LastName",
@@ -217,7 +217,7 @@ public class AccountsServiceIntegrationTests// : IntegrationTestBase
         Assert.NotNull(_accountsClient);
         Assert.NotNull(_authClient);
         // Create User
-        RegisterUserResponse response = await _accountsClient.RegisterAsync(new RegisterUserRequest()
+        UserResponse response = await _accountsClient.RegisterAsync(new RegisterUserRequest()
         {
             FirstName = "FirstName",
             LastName = "LastName",

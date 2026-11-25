@@ -6,15 +6,17 @@ using Xunit;
 using static Web.Api.Identity.Auth.Auth;
 namespace Web.Api.IntegrationTests.Services;
 
-[Collection("GRPC Test Collection")]
-public class AuthServiceIntegrationTests : IntegrationTestBase
+// Same setup as AccountsServiceIntegrationTests: the gRPC channel of the shared CustomWebApplicationFactory (assembly fixture).
+// GrpcTestFixture can't host this app: UseStartup<Program> needs Startup-style Configure methods, which a minimal-hosting Program
+// doesn't have (https://github.com/dotnet/aspnetcore/issues/64500).
+public class AuthServiceIntegrationTests
 {
-    public AuthServiceIntegrationTests(GrpcTestFixture<Program> fixture, ITestOutputHelper output) : base(fixture, output) { }
+    private readonly AuthClient _client;
+    public AuthServiceIntegrationTests(CustomWebApplicationFactory<Program> factory) => _client = new AuthClient(factory.GrpcChannel);
     [Fact]
     public async Task CanLoginWithValidCredentials()
     {
-        //AuthClient client = new AuthClient(_factory.GrpcChannel);
-        var client = new AuthClient(Channel);
+        var client = _client;
         Assert.NotNull(client);
         LogInResponse response = await client.LogInAsync(new LogInRequest()
         {
@@ -33,8 +35,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
     [Fact]
     public async Task CantLoginWithInvalidCredentials()
     {
-        //AuthClient client = new AuthClient(_factory.GrpcChannel);
-        var client = new AuthClient(Channel);
+        var client = _client;
         Assert.NotNull(client);
         LogInResponse response = await client.LogInAsync(new LogInRequest()
         {
@@ -53,8 +54,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
     [Fact]
     public async Task CanExchangeValidRefreshToken()
     {
-        //AuthClient client = new AuthClient(_factory.GrpcChannel);
-        var client = new AuthClient(Channel);
+        var client = _client;
         Assert.NotNull(client);
         LogInResponse response = await client.LogInAsync(new LogInRequest()
         {
@@ -87,8 +87,7 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
     [Fact]
     public async Task CantExchangeInvalidRefreshToken()
     {
-        //AuthClient client = new AuthClient(_factory.GrpcChannel);
-        var client = new AuthClient(Channel);
+        var client = _client;
         Assert.NotNull(client);
         ExchangeRefreshTokenResponse response = await client.RefreshTokenAsync(new ExchangeRefreshTokenRequest()
         {
@@ -102,6 +101,6 @@ public class AuthServiceIntegrationTests : IntegrationTestBase
         Assert.Null(response.AccessToken);
         Assert.True(string.IsNullOrEmpty(response.RefreshToken));
         Assert.Equal(HttpStatusCode.BadRequest.ToString(), response.Response.Errors.First().Code);
-        Assert.Equal("Invalid token!", response.Response.Errors.First().Description);
+        Assert.Equal("Invalid credential!", response.Response.Errors.First().Description);
     }
 }

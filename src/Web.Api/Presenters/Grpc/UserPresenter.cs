@@ -12,6 +12,6 @@ public class UserPresenter : PresenterBase<UseCaseResponseMessage>
     public override async Task Handle(UseCaseResponseMessage response)
     {
         await base.Handle(response);
-        Response = new Identity.Accounts.UserResponse() { Id = response.Id.ToString(), Response = BaseResponse };
+        Response = new Identity.Accounts.UserResponse() { Id = ToProtoId(response.Id), Response = BaseResponse };
     }
 }

@@ -13,7 +13,7 @@ public class FindUserPresenter : PresenterBase<FindUserResponse>
     {
         await base.Handle(response);
         Response = new Identity.Accounts.FindUserResponse() { Response = BaseResponse };
-        Response.Id = response.Id.ToString();
+        Response.Id = ToProtoId(response.Id);
         if (response.User != null && !string.IsNullOrEmpty(response.User.IdentityId))
             Response.User = _mapper.Map<Identity.User>(response.User);
     }
