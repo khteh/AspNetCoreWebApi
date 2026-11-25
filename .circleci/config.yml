@@ -34,10 +34,6 @@ jobs:
           method: full
       - run: dotnet restore
       - run: dotnet build -c Release --no-restore /p:Version=11.0 --version-suffix $CIRCLE_BUILD_NUM
-      - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.Core.UnitTests/Web.Api.Core.UnitTests.csproj
-      - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.UnitTests/Web.Api.UnitTests.csproj
-      - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.Infrastructure.UnitTests/Web.Api.Infrastructure.UnitTests.csproj
-      - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.IntegrationTests/Web.Api.IntegrationTests.csproj
       - run:
           name: Wait for PostgreSQL Server
           command: pg_isready -U postgres -h localhost -p 5432
@@ -53,6 +49,10 @@ jobs:
             cd src/Web.Api.Infrastructure
             dotnet-ef database update -c AppDbContext
             dotnet-ef database update -c AppIdentityDbContext
+      - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.Core.UnitTests/Web.Api.Core.UnitTests.csproj
+      - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.UnitTests/Web.Api.UnitTests.csproj
+      - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.Infrastructure.UnitTests/Web.Api.Infrastructure.UnitTests.csproj
+      - run: dotnet test -c Release --no-restore --no-build --project test/Web.Api.IntegrationTests/Web.Api.IntegrationTests.csproj
       - run: dotnet publish -c Release --no-restore --no-build src/Web.Api
       - setup_remote_docker:
           docker_layer_caching: true
